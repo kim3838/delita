@@ -6,6 +6,9 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withBindings([
+        'response_json' => fn() => new App\Concrete\JsonResponseScaffolder()
+    ])
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
@@ -19,18 +22,18 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->stopIgnoring([HttpException::class]);
 
-        $exceptions->report(function (Exception $e) {})->stop();
+        $exceptions->report(function (Exception $exception) {})->stop();
 
         $exceptions->render(function(Exception $exception, \Illuminate\Http\Request $request){
             \Illuminate\Support\Facades\Log::info([
-                'Render Request' => $request->url(),
-                'Render Exception Class' => get_class($exception),
-                'Render Exception Message' => $exception->getMessage()
+                'exception' => get_class($exception),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'request' => $request->url(),
+                'session' => json_encode(Session::all())
             ]);
 
-            return response()->json([
-                'message' => $exception->getMessage()
-            ]);
+            return ResponseJson::serverErrorResponse();
         });
 
 
