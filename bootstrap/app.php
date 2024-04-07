@@ -1,9 +1,21 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withBindings([
@@ -22,19 +34,40 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->stopIgnoring([HttpException::class]);
 
-        $exceptions->report(function (Exception $exception) {})->stop();
+        $exceptions->report(function(Throwable $throwable) {})->stop();
 
-        $exceptions->render(function(Exception $exception, \Illuminate\Http\Request $request){
+        $exceptions->render(function(Throwable $throwable){
             \Illuminate\Support\Facades\Log::info([
-                'exception' => get_class($exception),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'request' => $request->url(),
+                ('thrown') => get_class($throwable),
+                'Exception instance?' => ($throwable instanceof Exception ? 'TRUE' : 'FALSE'),
+                'Error instance?' => ($throwable instanceof Error ? 'TRUE' : 'FALSE'),
+                'message' => $throwable->getMessage(),
+                'file' => $throwable->getFile(),
+                'line' => $throwable->getLine(),
+                'request' => Request::url(),
                 'session' => json_encode(Session::all())
             ]);
 
+            if($throwable instanceof Exception){
+                $render = match(true){
+                    $throwable instanceof NotFoundHttpException => ResponseJson::notFoundResponse(),
+                    $throwable instanceof BackedEnumCaseNotFoundException => ResponseJson::notFoundResponse($throwable->getMessage()),
+                    $throwable instanceof ModelNotFoundException => ResponseJson::notFoundResponse($throwable->getMessage()),
+                    $throwable instanceof AuthorizationException && !$throwable->hasStatus() => ResponseJson::responseByCode(Response::HTTP_FORBIDDEN),
+                    $throwable instanceof SuspiciousOperationException => ResponseJson::notFoundResponse('Bad hostname provided.'),
+                    $throwable instanceof RecordsNotFoundException => ResponseJson::notFoundResponse(),
+                    $throwable instanceof TokenMismatchException => ResponseJson::notAcceptableResponse(),
+                    $throwable instanceof AuthenticationException => ResponseJson::unauthorizedResponse(),
+                    $throwable instanceof ValidationException => ResponseJson::unprocessableResponse(),
+                    $throwable instanceof ThrottleRequestsException => ResponseJson::tooManyRequestsResponse(),
+                    default => $throwable,
+                };
+
+                if($render instanceof \Illuminate\Http\JsonResponse){
+                    return $render;
+                }
+            }
+
             return ResponseJson::serverErrorResponse();
         });
-
-
     })->create();

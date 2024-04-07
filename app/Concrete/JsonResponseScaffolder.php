@@ -44,7 +44,7 @@ class JsonResponseScaffolder
         return $this->response(false, [], $message, [], Response::HTTP_UNAUTHORIZED);
     }
 
-    public function noAcceptableResponse($message = 'Not Acceptable'): JsonResponse
+    public function notAcceptableResponse($message = 'Not Acceptable'): JsonResponse
     {
         return $this->response(false, [], $message, [], Response::HTTP_NOT_ACCEPTABLE);
     }
@@ -81,7 +81,7 @@ class JsonResponseScaffolder
         return $this->response(false, [], $message, [], Response::HTTP_TOO_MANY_REQUESTS);
     }
 
-    protected function responseByCode($code): JsonResponse
+    public function responseByCode($code): JsonResponse
     {
         return match (true){
             $code == Response::HTTP_INTERNAL_SERVER_ERROR => $this->serverErrorResponse(),
