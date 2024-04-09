@@ -1,5 +1,6 @@
 <?php
 
+use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -20,7 +21,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withBindings([
-        'response_json' => fn() => new App\Concrete\JsonResponseScaffolder()
+        'response_json' => fn() => new App\Concrete\JsonResponseScaffolder(),
+        'fractal' => fn() => new App\Concrete\FractalTransformer(),
     ])
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
