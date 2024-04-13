@@ -15,5 +15,10 @@ Route::group([
 ], function(){
 
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
+
+    //Verify X-XSRF-TOKEN on destructive action
+    Route::post('test-post', [AuthenticatedSessionController::class, 'testPost']);
+
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
