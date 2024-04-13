@@ -44,9 +44,14 @@ class JsonResponseScaffolder
         return $this->response(false, [], $message, [], Response::HTTP_UNAUTHORIZED);
     }
 
-    public function notAcceptableResponse($message = 'Not Acceptable'): JsonResponse
+    public function notAcceptableResponse($message = 'Not acceptable'): JsonResponse
     {
         return $this->response(false, [], $message, [], Response::HTTP_NOT_ACCEPTABLE);
+    }
+
+    public function methodNotAllowedResponse($message = 'Method not allowed.'): JsonResponse
+    {
+        return $this->response(false, [], $message, [], Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function unprocessableResponse($errors = [], $message = 'Unprocessable entity.'): JsonResponse

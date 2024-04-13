@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static JsonResponse validationErrorResponse(array $errors = [], string $message = 'Validation error.')
  * @method static JsonResponse unauthorizedResponse(string $message = 'Unauthorized.')
  * @method static JsonResponse notAcceptableResponse(string $message = 'Not Acceptable.')
+ * @method static JsonResponse methodNotAllowedResponse(string $message = 'Method not allowed.')
  * @method static JsonResponse unprocessableResponse(array $errors = [], string $message = 'Unprocessable entity.')
  * @method static JsonResponse forbiddenResponse(string $message = 'Forbidden.')
  * @method static JsonResponse sessionExpired(string $message = 'Session expired.')

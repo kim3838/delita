@@ -17,6 +17,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -65,9 +66,10 @@ return Application::configure(basePath: dirname(__DIR__))
                     $throwable instanceof SuspiciousOperationException => ResponseJson::notFoundResponse('Bad hostname provided.'),
                     $throwable instanceof RecordsNotFoundException => ResponseJson::notFoundResponse(),
                     $throwable instanceof TokenMismatchException => ResponseJson::notAcceptableResponse(),
-                    $throwable instanceof AuthenticationException => ResponseJson::unauthorizedResponse(),
-                    $throwable instanceof ValidationException => ResponseJson::unprocessableResponse(),
+                    $throwable instanceof AuthenticationException => ResponseJson::unauthorizedResponse($throwable->getMessage()),
+                    $throwable instanceof ValidationException => ResponseJson::unprocessableResponse($throwable->errors(), $throwable->getMessage()),
                     $throwable instanceof ThrottleRequestsException => ResponseJson::tooManyRequestsResponse(),
+                    $throwable instanceof MethodNotAllowedHttpException => ResponseJson::methodNotAllowedResponse(),
                     default => $throwable,
                 };
 
