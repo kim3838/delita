@@ -70,6 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $throwable instanceof ValidationException => ResponseJson::unprocessableResponse($throwable->errors(), $throwable->getMessage()),
                     $throwable instanceof ThrottleRequestsException => ResponseJson::tooManyRequestsResponse(),
                     $throwable instanceof MethodNotAllowedHttpException => ResponseJson::methodNotAllowedResponse(),
+                    $throwable instanceof InvalidArgumentException => ResponseJson::validationErrorResponse([], $throwable->getMessage()),
                     default => $throwable,
                 };
 
