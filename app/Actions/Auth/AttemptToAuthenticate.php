@@ -15,6 +15,18 @@ class AttemptToAuthenticate
             ? 'email'
             : 'name';
 
+        \Illuminate\Support\Facades\Log::info([
+            'method' => get_class() . '@' . __FUNCTION__,
+            'line' => __LINE__,
+            'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
+            'cookies' => $request->cookies->all(),
+            'attempt' => array(
+                $identifierField => $request->input('identifier'),
+                'password' => $request->input('password'),
+                'remember' => $request->boolean('remember')
+            )
+        ]);
+
         if(! Auth::attempt([
             $identifierField => $request->input('identifier'),
             'password' => $request->input('password'),
