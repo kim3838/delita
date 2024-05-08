@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
 use App\Http\Controllers\FormModuleController;
+use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -26,5 +27,11 @@ Route::group([
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
 
     Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+
+    Route::group([
+        'as' => 'prototypes.'
+    ], function(){
+        Route::get('prototypes', [PrototypeController::class, 'index'])->name('index');
+    });
 });
 

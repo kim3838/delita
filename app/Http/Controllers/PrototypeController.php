@@ -2,18 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Prototype;
+use App\Blueprint\Repositories\PrototypeRepository;
+use App\Facades\Fractal;
+use App\Facades\ResponseJson;
 use App\Http\Requests\StorePrototypeRequest;
 use App\Http\Requests\UpdatePrototypeRequest;
+use App\Models\Prototype;
+use App\Transformers\Prototype\DataTableTransformer;
 
 class PrototypeController extends Controller
 {
+    public function __construct(
+        protected PrototypeRepository $prototypeRepository
+    ){}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        if(request()->expectsJson()){
+            return ResponseJson::successfulResponse(
+                Fractal::collection($this->prototypeRepository->list(), DataTableTransformer::class)
+            );
+        }
+
+        abort(404);
+
     }
 
     /**
