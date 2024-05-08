@@ -6,7 +6,7 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use Illuminate\Support\Facades\App;
 
-class FormModulesController extends Controller
+class FormModuleController extends Controller
 {
     public function selection($module)
     {

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
-use App\Http\Controllers\FormModulesController;
+use App\Http\Controllers\FormModuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -25,6 +25,6 @@ Route::group([
     Route::post('logout-other-device', [AuthenticatedSessionController::class, 'logoutOtherDevice']);
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
 
-    Route::get('selections/{module}', [FormModulesController::class, 'selection'])->name('selection');
+    Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
 });
 
