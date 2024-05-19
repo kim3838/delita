@@ -6,6 +6,8 @@ use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+
 Route::group([
     'middleware' => ['guest']
 ], function(){
@@ -25,8 +27,12 @@ Route::group([
     Route::post('update-password', [UpdateUserPasswordController::class, 'store'])->name('password.update');
     Route::post('logout-other-device', [AuthenticatedSessionController::class, 'logoutOtherDevice']);
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
+});
 
-    Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+Route::group([
+    'middleware' => ['auth:sanctum'],
+    'prefix' => 'v1'
+], function(){
 
     Route::group([
         'as' => 'prototypes.'
@@ -34,4 +40,3 @@ Route::group([
         Route::get('prototypes', [PrototypeController::class, 'index'])->name('index');
     });
 });
-
