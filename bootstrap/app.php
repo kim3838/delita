@@ -58,7 +58,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 'file' => $throwable->getFile(),
                 'line' => $throwable->getLine(),
                 'request' => Request::url(),
-                'session' => json_encode(Session::all())
+                'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
+                'cookies' => request()->cookies->all()
             ]);
 
             if($throwable instanceof Exception){
