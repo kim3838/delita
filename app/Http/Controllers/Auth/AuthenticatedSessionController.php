@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Actions\Auth\AttemptToAuthenticate;
 use App\Actions\Auth\EnsureLoginIsNotRateLimited;
 use App\Actions\Auth\PrepareAuthenticatedSession;
+use App\Actions\Auth\TwoFactorChallenge;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
@@ -27,6 +28,7 @@ class AuthenticatedSessionController extends Controller
     {
         return Pipeline::send($request)->through([
             EnsureLoginIsNotRateLimited::class,
+            TwoFactorChallenge::class,
             AttemptToAuthenticate::class,
             PrepareAuthenticatedSession::class
         ])->then(function ($request){
@@ -89,6 +91,28 @@ class AuthenticatedSessionController extends Controller
         return tap(new Agent, function ($agent) use ($session) {
             $agent->setUserAgent($session->user_agent);
         });
+    }
+
+    public function confirmedPasswordStatus(Request $request)
+    {
+        $passwordConfirmedAt = $request->session()->get('auth.password_confirmed_at', 0);
+        $secondsPastAfterConfirmation = (time() - $passwordConfirmedAt);
+        $passwordConfirmationTimeout = $request->input('seconds', config('auth.password_timeout', 900));
+
+        return ResponseJson::successfulResponse([
+            'confirmed' => $secondsPastAfterConfirmation < $passwordConfirmationTimeout,
+        ]);
+    }
+
+    public function confirmPassword(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'string', 'current_password:web']
+        ]);
+
+        $request->session()->put('auth.password_confirmed_at', time());
+
+        return ResponseJson::successfulResponse();
     }
 
     /**
