@@ -2,6 +2,7 @@
 
 namespace App\Actions\Auth;
 
+use App\Facades\ResponseJson;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
@@ -15,12 +16,11 @@ class EnsureLoginIsNotRateLimited
 
             event(new Lockout($request));
 
-            $seconds = RateLimiter::availableIn(Throttle::key($request));
+            $availableIn = RateLimiter::availableIn(Throttle::key($request));
 
-            throw new ThrottleRequestsException(trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]));
+            $rateLimitExceedsMessage = "Too many attempts, try again in $availableIn second" . ($availableIn > 0 ? 's' : '') . ".";
+
+            return ResponseJson::tooManyRequestsResponse($rateLimitExceedsMessage);
         }
 
         return $next($request);
