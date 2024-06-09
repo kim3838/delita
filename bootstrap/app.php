@@ -12,6 +12,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
@@ -76,6 +77,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $throwable instanceof ThrottleRequestsException => ResponseJson::tooManyRequestsResponse(),
                     $throwable instanceof MethodNotAllowedHttpException => ResponseJson::methodNotAllowedResponse(),
                     $throwable instanceof InvalidArgumentException => ResponseJson::validationErrorResponse([], $throwable->getMessage()),
+                    $throwable instanceof InvalidSignatureException => ResponseJson::unprocessableResponse([], $throwable->getMessage()),
                     default => $throwable,
                 };
 

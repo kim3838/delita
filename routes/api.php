@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticatedSessionController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Auth\TwoFactorQrCodeController;
@@ -30,6 +31,8 @@ Route::group([
     //Verify X-XSRF-TOKEN on destructive action
     Route::post('test-post', [AuthenticatedSessionController::class, 'testPost']);
 
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('update-password', [UpdateUserPasswordController::class, 'store'])->name('password.update');
     Route::get('confirmed-password-status', [AuthenticatedSessionController::class, 'confirmedPasswordStatus'])->name('password.confirmation');
@@ -46,7 +49,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['auth:sanctum'],
+    'middleware' => ['auth:sanctum', 'verified'],
     'prefix' => 'v1'
 ], function(){
 
