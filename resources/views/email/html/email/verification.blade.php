@@ -23,7 +23,9 @@
         </o:OfficeDocumentSettings>
     </xml>
     <![endif]--><!--[if !mso]><!-- -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i"><!--<![endif]-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap" rel="stylesheet">
     <style type="text/css">
         .rollover:hover .rollover-first {
             max-height: 0px !important;
@@ -372,7 +374,7 @@
                                                     <table cellpadding="0" cellspacing="0" width="100%"
                                                            role="presentation"
                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                        <tr>
+                                                        <tr style="display: none;">
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
                                                                 <img
@@ -384,23 +386,23 @@
                                                         <tr>
                                                             <td align="center" class="es-m-txt-c"
                                                                 style="padding:0;Margin:0;padding-bottom:10px"><h1
-                                                                    style="Margin:0;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:46px;color:#333333">
+                                                                    style="Margin:0;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:36px;font-style:normal;font-weight:bold;line-height:46px;color:#333333">
                                                                     Confirm Your Email</h1></td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr style="display: none;">
                                                             <td align="center" class="es-m-p0r es-m-p0l"
                                                                 style="Margin:0;padding-top:5px;padding-right:40px;padding-bottom:5px;padding-left:40px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;letter-spacing:0;color:#333333;font-size:16px">
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;letter-spacing:0;color:#333333;font-size:16px">
                                                                     You’ve received this message because your email
                                                                     address has been registered with our site. Please
                                                                     click the button below to verify your email address
                                                                     and confirm that you are the owner of this
                                                                     account.</p></td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr style="display: none;">
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:10px;padding-bottom:5px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
                                                                     If you did not register with us, please disregard
                                                                     this email.</p></td>
                                                         </tr>
@@ -410,28 +412,28 @@
                                                                 <span class="es-button-border"
                                                                       style="border-style:solid;border-color:#2CB543;background:#3d85c6;border-width:0px;display:inline-block;border-radius:6px;width:auto"><a
                                                                         href="{{$verification_url}}" class="es-button" target="_blank"
-                                                                        style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#7d7d7d;border-radius:6px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #7d7d7d;border-left-width:30px;border-right-width:30px">VERIFY EMAIL</a></span>
+                                                                        style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#7d7d7d;border-radius:6px;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #7d7d7d;border-left-width:30px;border-right-width:30px">VERIFY EMAIL</a></span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td align="center" class="es-m-txt-c"
                                                                 style="padding:0;Margin:0;padding-top:10px;padding-left:20px;padding-right:20px">
-                                                                <h3 style="Margin:0;line-height:30px;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-size:14px;color:#333333">
-                                                                    This verification link will expire in {{$expire_in_minutes}} minutes.</h3></td>
+                                                                <div style="Margin:0;line-height:30px;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;font-size:14px;color:#333333;">
+                                                                    Verification link will expire in {{$expire_in_minutes}} minutes.</div></td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr style="display: none;">
                                                             <td align="center" class="es-m-p0r es-m-p0l"
                                                                 style="Margin:0;padding-top:5px;padding-right:40px;padding-bottom:5px;padding-left:40px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
                                                                     Once confirmed, this email will be uniquely
                                                                     associated with your account.</p></td>
                                                         </tr>
                                                         <tr style="display: none">
                                                             <td align="center"
                                                                 style="Margin:0;padding-bottom:10px;padding-left:20px;padding-right:20px;padding-top:40px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;color:#333333;font-size:12px">
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;color:#333333;font-size:12px">
                                                                     If you’re having trouble clicking the "VERIFY EMAIL" button, copy and paste the URL below into your web browser:</p>
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;color:#333333;font-size:12px">
+                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;color:#333333;font-size:12px">
                                                                     <a href="{{$verification_url}}"
                                                                        target="_blank"
                                                                        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#3d85c6;font-size:14px;word-break:break-all">{{$verification_url}}</a>
@@ -493,13 +495,13 @@
                                                         <tr>
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-bottom:35px"><p
-                                                                    style="Margin:0;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
-                                                                    Endevoor © 2024 Endevoor Inc. All Rights Reserved.</p>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
+                                                                    style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
+                                                                    Name © 1999 Name Inc. All Rights Reserved.</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
                                                                     Manila, Philippines</p></td>
                                                         </tr>
                                                         <tr style="display: none">
-                                                            <td style="padding:0;Margin:0;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif">
+                                                            <td style="padding:0;Margin:0;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">
                                                                 <table cellpadding="0" cellspacing="0" width="100%"
                                                                        class="es-menu" role="presentation"
                                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
@@ -507,17 +509,17 @@
                                                                         <td align="center" valign="top" width="33.33%"
                                                                             style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px">
                                                                             <a target="_blank" href=""
-                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Visit
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Visit
                                                                                 Us </a></td>
                                                                         <td align="center" valign="top" width="33.33%"
                                                                             style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
                                                                             <a target="_blank" href=""
-                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Privacy
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Privacy
                                                                                 Policy</a></td>
                                                                         <td align="center" valign="top" width="33.33%"
                                                                             style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
                                                                             <a target="_blank" href=""
-                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Terms
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Terms
                                                                                 of Use</a></td>
                                                                     </tr>
                                                                 </table>
@@ -554,10 +556,10 @@
                                                                 style="padding:0;Margin:0"><p
                                                                     style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#CCCCCC;font-size:12px">
                                                                     <span
-                                                                        style="font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif">No longer want to receive these emails?&nbsp;</span><a
+                                                                        style="font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">No longer want to receive these emails?&nbsp;</span><a
                                                                         href="" target="_blank"
-                                                                        style="mso-line-height-rule:exactly;text-decoration:underline;color:#CCCCCC;font-size:12px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif">Unsubscribe</a><span
-                                                                        style="font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif">.</span>
+                                                                        style="mso-line-height-rule:exactly;text-decoration:underline;color:#CCCCCC;font-size:12px;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">Unsubscribe</a><span
+                                                                        style="font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">.</span>
                                                                 </p></td>
                                                         </tr>
                                                     </table>

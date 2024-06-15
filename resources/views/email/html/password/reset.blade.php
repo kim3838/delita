@@ -6,7 +6,7 @@
     <meta name="x-apple-disable-message-reformatting">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="telephone=no" name="format-detection">
-    <title>New message</title><!--[if (mso 16)]>
+    <title>New Template</title><!--[if (mso 16)]>
     <style type="text/css">
         a {
             text-decoration: none;
@@ -23,13 +23,39 @@
         </o:OfficeDocumentSettings>
     </xml>
     <![endif]--><!--[if !mso]><!-- -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&display=swap" rel="stylesheet">
     <style type="text/css">
+        .rollover:hover .rollover-first {
+            max-height: 0px !important;
+            display: none !important;
+        }
+
+        .rollover:hover .rollover-second {
+            max-height: none !important;
+            display: inline-block !important;
+        }
+
+        .rollover div {
+            font-size: 0px;
+        }
+
+        u + .body img ~ div div {
+            display: none;
+        }
+
         #outlook a {
             padding: 0;
         }
 
-        .es-button {
+        span.MsoHyperlink,
+        span.MsoHyperlinkFollowed {
+            color: inherit;
+            mso-style-priority: 99;
+        }
+
+        a.es-button {
             mso-style-priority: 100 !important;
             text-decoration: none !important;
         }
@@ -53,12 +79,60 @@
             mso-hide: all;
         }
 
+        .es-button-border:hover > a.es-button {
+            color: #ffffff !important;
+        }
+
         @media only screen and (max-width: 600px) {
-            p, ul li, ol li, a {
+            .es-m-p0r {
+                padding-right: 0px !important
+            }
+
+            .es-m-p0r {
+                padding-right: 0px !important
+            }
+
+            .es-m-p0l {
+                padding-left: 0px !important
+            }
+
+            .es-m-p0r {
+                padding-right: 0px !important
+            }
+
+            .es-m-p0l {
+                padding-left: 0px !important
+            }
+
+            *[class="gmail-fix"] {
+                display: none !important
+            }
+
+            p, a {
                 line-height: 150% !important
             }
 
-            h1, h2, h3, h1 a, h2 a, h3 a {
+            h1, h1 a {
+                line-height: 120% !important
+            }
+
+            h2, h2 a {
+                line-height: 120% !important
+            }
+
+            h3, h3 a {
+                line-height: 120% !important
+            }
+
+            h4, h4 a {
+                line-height: 120% !important
+            }
+
+            h5, h5 a {
+                line-height: 120% !important
+            }
+
+            h6, h6 a {
                 line-height: 120% !important
             }
 
@@ -77,54 +151,78 @@
                 text-align: left
             }
 
-            .es-header-body h1 a, .es-content-body h1 a, .es-footer-body h1 a {
-                font-size: 36px !important;
+            h4 {
+                font-size: 24px !important;
                 text-align: left
+            }
+
+            h5 {
+                font-size: 20px !important;
+                text-align: left
+            }
+
+            h6 {
+                font-size: 16px !important;
+                text-align: left
+            }
+
+            .es-header-body h1 a, .es-content-body h1 a, .es-footer-body h1 a {
+                font-size: 36px !important
             }
 
             .es-header-body h2 a, .es-content-body h2 a, .es-footer-body h2 a {
-                font-size: 26px !important;
-                text-align: left
+                font-size: 26px !important
             }
 
             .es-header-body h3 a, .es-content-body h3 a, .es-footer-body h3 a {
-                font-size: 20px !important;
-                text-align: left
+                font-size: 20px !important
+            }
+
+            .es-header-body h4 a, .es-content-body h4 a, .es-footer-body h4 a {
+                font-size: 24px !important
+            }
+
+            .es-header-body h5 a, .es-content-body h5 a, .es-footer-body h5 a {
+                font-size: 20px !important
+            }
+
+            .es-header-body h6 a, .es-content-body h6 a, .es-footer-body h6 a {
+                font-size: 16px !important
             }
 
             .es-menu td a {
                 font-size: 12px !important
             }
 
-            .es-header-body p, .es-header-body ul li, .es-header-body ol li, .es-header-body a {
+            .es-header-body p, .es-header-body a {
                 font-size: 14px !important
             }
 
-            .es-content-body p, .es-content-body ul li, .es-content-body ol li, .es-content-body a {
+            .es-content-body p, .es-content-body a {
+                font-size: 16px !important
+            }
+
+            .es-footer-body p, .es-footer-body a {
                 font-size: 14px !important
             }
 
-            .es-footer-body p, .es-footer-body ul li, .es-footer-body ol li, .es-footer-body a {
-                font-size: 14px !important
-            }
-
-            .es-infoblock p, .es-infoblock ul li, .es-infoblock ol li, .es-infoblock a {
+            .es-infoblock p, .es-infoblock a {
                 font-size: 12px !important
             }
 
-            *[class="gmail-fix"] {
-                display: none !important
-            }
-
-            .es-m-txt-c, .es-m-txt-c h1, .es-m-txt-c h2, .es-m-txt-c h3 {
+            .es-m-txt-c, .es-m-txt-c h1, .es-m-txt-c h2, .es-m-txt-c h3, .es-m-txt-c h4, .es-m-txt-c h5, .es-m-txt-c h6 {
                 text-align: center !important
             }
 
-            .es-m-txt-r, .es-m-txt-r h1, .es-m-txt-r h2, .es-m-txt-r h3 {
+            .es-m-txt-r, .es-m-txt-r h1, .es-m-txt-r h2, .es-m-txt-r h3, .es-m-txt-r h4, .es-m-txt-r h5, .es-m-txt-r h6 {
                 text-align: right !important
             }
 
-            .es-m-txt-l, .es-m-txt-l h1, .es-m-txt-l h2, .es-m-txt-l h3 {
+            .es-m-txt-j, .es-m-txt-j h1, .es-m-txt-j h2, .es-m-txt-j h3, .es-m-txt-j h4, .es-m-txt-j h5, .es-m-txt-j h6 {
+                text-align: justify !important
+            }
+
+            .es-m-txt-l, .es-m-txt-l h1, .es-m-txt-l h2, .es-m-txt-l h3, .es-m-txt-l h4, .es-m-txt-l h5, .es-m-txt-l h6 {
                 text-align: left !important
             }
 
@@ -132,12 +230,33 @@
                 display: inline !important
             }
 
-            .es-button-border {
-                display: inline-block !important
+            .es-m-txt-r .rollover:hover .rollover-second, .es-m-txt-c .rollover:hover .rollover-second, .es-m-txt-l .rollover:hover .rollover-second {
+                display: inline !important
+            }
+
+            .es-m-txt-r .rollover div, .es-m-txt-c .rollover div, .es-m-txt-l .rollover div {
+                line-height: 0 !important;
+                font-size: 0 !important
+            }
+
+            .es-spacer {
+                display: inline-table
             }
 
             a.es-button, button.es-button {
                 font-size: 20px !important;
+                line-height: 120% !important
+            }
+
+            a.es-button, button.es-button, .es-button-border {
+                display: inline-block !important
+            }
+
+            .es-m-fw, .es-m-fw.es-fw, .es-m-fw .es-button {
+                display: block !important
+            }
+
+            .es-m-il, .es-m-il .es-button, .es-social, .es-social td, .es-menu {
                 display: inline-block !important
             }
 
@@ -150,45 +269,16 @@
                 max-width: 600px !important
             }
 
-            .es-adapt-td {
-                display: block !important;
-                width: 100% !important
-            }
-
             .adapt-img {
                 width: 100% !important;
                 height: auto !important
-            }
-
-            .es-m-p0 {
-                padding: 0 !important
-            }
-
-            .es-m-p0r {
-                padding-right: 0 !important
-            }
-
-            .es-m-p0l {
-                padding-left: 0 !important
-            }
-
-            .es-m-p0t {
-                padding-top: 0 !important
-            }
-
-            .es-m-p0b {
-                padding-bottom: 0 !important
-            }
-
-            .es-m-p20b {
-                padding-bottom: 20px !important
             }
 
             .es-mobile-hidden, .es-hidden {
                 display: none !important
             }
 
-            tr.es-desk-hidden, td.es-desk-hidden, table.es-desk-hidden {
+            .es-desk-hidden {
                 width: auto !important;
                 overflow: visible !important;
                 float: none !important;
@@ -216,175 +306,8 @@
                 width: auto !important
             }
 
-            table.es-social {
-                display: inline-block !important
-            }
-
-            table.es-social td {
-                display: inline-block !important
-            }
-
-            .es-m-p5 {
-                padding: 5px !important
-            }
-
-            .es-m-p5t {
-                padding-top: 5px !important
-            }
-
-            .es-m-p5b {
-                padding-bottom: 5px !important
-            }
-
-            .es-m-p5r {
-                padding-right: 5px !important
-            }
-
-            .es-m-p5l {
-                padding-left: 5px !important
-            }
-
-            .es-m-p10 {
-                padding: 10px !important
-            }
-
-            .es-m-p10t {
-                padding-top: 10px !important
-            }
-
-            .es-m-p10b {
-                padding-bottom: 10px !important
-            }
-
-            .es-m-p10r {
-                padding-right: 10px !important
-            }
-
-            .es-m-p10l {
-                padding-left: 10px !important
-            }
-
-            .es-m-p15 {
-                padding: 15px !important
-            }
-
-            .es-m-p15t {
-                padding-top: 15px !important
-            }
-
-            .es-m-p15b {
-                padding-bottom: 15px !important
-            }
-
-            .es-m-p15r {
-                padding-right: 15px !important
-            }
-
-            .es-m-p15l {
-                padding-left: 15px !important
-            }
-
-            .es-m-p20 {
-                padding: 20px !important
-            }
-
-            .es-m-p20t {
-                padding-top: 20px !important
-            }
-
-            .es-m-p20r {
-                padding-right: 20px !important
-            }
-
-            .es-m-p20l {
-                padding-left: 20px !important
-            }
-
-            .es-m-p25 {
-                padding: 25px !important
-            }
-
-            .es-m-p25t {
-                padding-top: 25px !important
-            }
-
-            .es-m-p25b {
-                padding-bottom: 25px !important
-            }
-
-            .es-m-p25r {
-                padding-right: 25px !important
-            }
-
-            .es-m-p25l {
-                padding-left: 25px !important
-            }
-
-            .es-m-p30 {
-                padding: 30px !important
-            }
-
-            .es-m-p30t {
-                padding-top: 30px !important
-            }
-
-            .es-m-p30b {
-                padding-bottom: 30px !important
-            }
-
-            .es-m-p30r {
-                padding-right: 30px !important
-            }
-
-            .es-m-p30l {
-                padding-left: 30px !important
-            }
-
-            .es-m-p35 {
-                padding: 35px !important
-            }
-
-            .es-m-p35t {
-                padding-top: 35px !important
-            }
-
-            .es-m-p35b {
-                padding-bottom: 35px !important
-            }
-
-            .es-m-p35r {
-                padding-right: 35px !important
-            }
-
-            .es-m-p35l {
-                padding-left: 35px !important
-            }
-
-            .es-m-p40 {
-                padding: 40px !important
-            }
-
-            .es-m-p40t {
-                padding-top: 40px !important
-            }
-
-            .es-m-p40b {
-                padding-bottom: 40px !important
-            }
-
-            .es-m-p40r {
-                padding-right: 40px !important
-            }
-
-            .es-m-p40l {
-                padding-left: 40px !important
-            }
-
-            .es-desk-hidden {
-                display: table-row !important;
-                width: auto !important;
-                overflow: visible !important;
-                max-height: inherit !important
+            .es-social td {
+                padding-bottom: 10px
             }
 
             .h-auto {
@@ -393,8 +316,7 @@
         }
     </style>
 </head>
-<body
-    style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
+<body class="body" style="width:100%;height:100%;padding:0;Margin:0">
 <div dir="ltr" class="es-wrapper-color" lang="en" style="background-color:#FAFAFA"><!--[if gte mso 9]>
     <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
         <v:fill type="tile" color="#fafafa"></v:fill>
@@ -405,14 +327,15 @@
         <tr>
             <td valign="top" style="padding:0;Margin:0">
                 <table cellpadding="0" cellspacing="0" class="es-header" align="center" role="none"
-                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
+                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important;background-color:transparent;background-repeat:repeat;background-position:center top">
                     <tr>
                         <td align="center" style="padding:0;Margin:0">
                             <table bgcolor="#ffffff" class="es-header-body" align="center" cellpadding="0"
                                    cellspacing="0" role="none"
                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px">
                                 <tr>
-                                    <td align="left" style="padding:20px;Margin:0">
+                                    <td align="left"
+                                        style="Margin:0;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">
                                         <table cellpadding="0" cellspacing="0" width="100%" role="none"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                             <tr>
@@ -435,7 +358,7 @@
                     </tr>
                 </table>
                 <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none"
-                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
                     <tr>
                         <td align="center" style="padding:0;Margin:0">
                             <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0"
@@ -443,7 +366,7 @@
                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
                                 <tr>
                                     <td align="left"
-                                        style="padding:0;Margin:0;padding-top:15px;padding-left:20px;padding-right:20px">
+                                        style="Margin:0;padding-right:20px;padding-left:20px;padding-top:30px;padding-bottom:30px">
                                         <table cellpadding="0" cellspacing="0" width="100%" role="none"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                             <tr>
@@ -452,115 +375,25 @@
                                                            role="presentation"
                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                                         <tr>
-                                                            <td align="center"
-                                                                style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
-                                                                <img
-                                                                    src="https://iili.io/JujUaSI.png"
-                                                                    alt
-                                                                    style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"
-                                                                    width="100"></td>
+                                                            <td align="center" class="es-m-txt-c"
+                                                                style="padding:0;Margin:0;padding-bottom:10px"><h1
+                                                                    style="Margin:0;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:36px;font-style:normal;font-weight:bold;line-height:46px;color:#333333">
+                                                                    Password Reset</h1></td>
                                                         </tr>
-                                                        <tr>
-                                                            <td align="center" class="es-m-p0r es-m-p0l es-m-txt-c"
-                                                                style="Margin:0;padding-top:15px;padding-bottom:15px;padding-left:40px;padding-right:40px">
-                                                                <h1 style="Margin:0;line-height:55px;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-size:46px;font-style:normal;font-weight:bold;color:#333333">
-                                                                    Password reset&nbsp;</h1></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="left"
-                                                                style="Margin:0;">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#333333;font-size:16px">
-                                                                    Hello {{$username}},</p></td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="left"
-                                                                style="Margin:0;padding-top:10px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#333333;font-size:16px">
-                                                                    You are receiving this email because we received a password reset request for your account.</p></td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="left"
-                                                                style="padding:0;Margin:0;padding-top:10px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#333333;font-size:16px">
-                                                                    After you click the button, you'll be asked to complete the following steps:</p>
-                                                                <ol>
-                                                                    <li style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:16px">
-                                                                        Enter a new password.
-                                                                    </li>
-                                                                    <li style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:16px">
-                                                                        Confirm your new password.
-                                                                    </li>
-                                                                    <li style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:16px">
-                                                                        Click Submit.
-                                                                    </li>
-                                                                </ol>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="left" style="padding:0;Margin:0">
-                                        <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                               style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                            <tr>
-                                                <td align="center" valign="top" style="padding:0;Margin:0;width:600px">
-                                                    <table cellpadding="0" cellspacing="0" width="100%"
-                                                           style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:5px"
-                                                           role="presentation">
                                                         <tr>
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
-                                                                <!--[if mso]><a href="{{$password_reset_url}}" target="_blank" hidden>
-                                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
-                                                                                 xmlns:w="urn:schemas-microsoft-com:office:word"
-                                                                                 esdevVmlButton href=""
-                                                                                 style="height:44px; v-text-anchor:middle; width:247px"
-                                                                                 arcsize="14%" stroke="f"
-                                                                                 fillcolor="#5c68e2">
-                                                                        <w:anchorlock></w:anchorlock>
-                                                                        <center
-                                                                            style='color:#ffffff; font-family:roboto, "helvetica neue", helvetica, arial, sans-serif; font-size:18px; font-weight:400; line-height:18px;  mso-text-raise:1px'>
-                                                                            RESET PASSWORD
-                                                                        </center>
-                                                                    </v:roundrect>
-                                                                </a>
-                                                                <![endif]--><!--[if !mso]><!-- --><span
-                                                                    class="msohide es-button-border"
-                                                                    style="border-style:solid;border-color:#2CB543;background:#3d85c6;border-width:0px;display:inline-block;border-radius:6px;width:auto;mso-hide:all"><a
+                                                                <span class="es-button-border"
+                                                                      style="border-style:solid;border-color:#2CB543;background:#3d85c6;border-width:0px;display:inline-block;border-radius:6px;width:auto"><a
                                                                         href="{{$password_reset_url}}" class="es-button" target="_blank"
-                                                                        style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#7d7d7d;border-radius:6px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;mso-padding-alt:0;mso-border-alt:10px solid #7d7d7d;padding-left:30px;padding-right:30px">RESET PASSWORD</a></span>
-                                                                <!--<![endif]--></td>
+                                                                        style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#7d7d7d;border-radius:6px;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #7d7d7d;border-left-width:30px;border-right-width:30px">RESET PASSWORD</a></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td align="center" class="es-m-txt-c"
                                                                 style="padding:0;Margin:0;padding-top:10px;padding-left:20px;padding-right:20px">
-                                                                <h3 style="Margin:0;line-height:30px;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-size:20px;font-style:normal;font-weight:bold;color:#333333">
-                                                                    This password reset link will expire in {{$expire_in_minutes}} minutes.</h3></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="Margin:0;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#333333;font-size:16px">
-                                                                    If you didn't request to reset your password, please
-                                                                    disregard this message or contact our customer
-                                                                    service department.</p></td>
-                                                        </tr>
-                                                        <tr style="display: none">
-                                                            <td align="center"
-                                                                style="Margin:0;padding-bottom:10px;padding-left:20px;padding-right:20px;padding-top:40px">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;color:#333333;font-size:12px">
-                                                                    If you’re having trouble clicking the "RESET PASSWORD" button, copy and paste the URL below into your web browser:</p>
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:21px;color:#333333;font-size:12px">
-                                                                    <a href="{{$password_reset_url}}"
-                                                                       target="_blank"
-                                                                       style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#3d85c6;font-size:14px;word-break:break-all">{{$password_reset_url}}</a>
-                                                                </p></td>
+                                                                <div style="Margin:0;line-height:30px;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;font-size:14px;color:#333333;">
+                                                                    Password reset link will expire in {{$expire_in_minutes}} minutes.</div></td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -573,43 +406,43 @@
                     </tr>
                 </table>
                 <table cellpadding="0" cellspacing="0" class="es-footer" align="center" role="none"
-                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
+                       style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important;background-color:transparent;background-repeat:repeat;background-position:center top">
                     <tr>
                         <td align="center" style="padding:0;Margin:0">
                             <table class="es-footer-body" align="center" cellpadding="0" cellspacing="0"
-                                   style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"
+                                   style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:640px"
                                    role="none">
                                 <tr>
                                     <td align="left"
-                                        style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px">
+                                        style="Margin:0;padding-right:20px;padding-left:20px;padding-top:20px;padding-bottom:20px">
                                         <table cellpadding="0" cellspacing="0" width="100%" role="none"
                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                             <tr>
-                                                <td align="left" style="padding:0;Margin:0;width:560px">
+                                                <td align="left" style="padding:0;Margin:0;width:600px">
                                                     <table cellpadding="0" cellspacing="0" width="100%"
                                                            role="presentation"
                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                        <tr>
+                                                        <tr style="display: none">
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;font-size:0">
                                                                 <table cellpadding="0" cellspacing="0"
                                                                        class="es-table-not-adapt es-social"
                                                                        role="presentation"
                                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                                    <tr style="display: none">
+                                                                    <tr>
                                                                         <td align="center" valign="top"
                                                                             style="padding:0;Margin:0;padding-right:40px">
                                                                             <img title="Facebook"
-                                                                                 src="https://ebihvzg.stripocdn.email/content/assets/img/social-icons/logo-colored/facebook-logo-colored.png"
+                                                                                 src="https://ecihjaz.stripocdn.email/content/assets/img/social-icons/logo-colored/facebook-logo-colored.png"
                                                                                  alt="Fb" width="32"
-                                                                                 style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic">
+                                                                                 style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
                                                                         </td>
                                                                         <td align="center" valign="top"
                                                                             style="padding:0;Margin:0"><img
                                                                                 title="Youtube"
-                                                                                src="https://ebihvzg.stripocdn.email/content/assets/img/social-icons/logo-colored/youtube-logo-colored.png"
+                                                                                src="https://ecihjaz.stripocdn.email/content/assets/img/social-icons/logo-colored/youtube-logo-colored.png"
                                                                                 alt="Yt" width="32"
-                                                                                style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic">
+                                                                                style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
                                                                         </td>
                                                                     </tr>
                                                                 </table>
@@ -618,31 +451,31 @@
                                                         <tr>
                                                             <td align="center"
                                                                 style="padding:0;Margin:0;padding-bottom:35px"><p
-                                                                    style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;color:#333333;font-size:12px">
-                                                                    Endevoor © 2024 Endevoor Inc. All Rights Reserved.</p>
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;color:#333333;font-size:12px">
+                                                                    style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
+                                                                    Name © 1999 Name Inc. All Rights Reserved.</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
                                                                     Manila, Philippines</p></td>
                                                         </tr>
                                                         <tr style="display: none">
-                                                            <td style="padding:0;Margin:0">
+                                                            <td style="padding:0;Margin:0;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">
                                                                 <table cellpadding="0" cellspacing="0" width="100%"
                                                                        class="es-menu" role="presentation"
                                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                                                     <tr class="links">
                                                                         <td align="center" valign="top" width="33.33%"
-                                                                            style="Margin:0;padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;border:0">
+                                                                            style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px">
                                                                             <a target="_blank" href=""
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;display:block;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;color:#333333;font-size:12px">Visit
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Visit
                                                                                 Us </a></td>
                                                                         <td align="center" valign="top" width="33.33%"
-                                                                            style="Margin:0;padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;border:0;border-left:1px solid #cccccc">
+                                                                            style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
                                                                             <a target="_blank" href=""
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;display:block;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;color:#333333;font-size:12px">Privacy
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Privacy
                                                                                 Policy</a></td>
                                                                         <td align="center" valign="top" width="33.33%"
-                                                                            style="Margin:0;padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;border:0;border-left:1px solid #cccccc">
+                                                                            style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
                                                                             <a target="_blank" href=""
-                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;display:block;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;color:#333333;font-size:12px">Terms
+                                                                               style="mso-line-height-rule:exactly;text-decoration:none;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif;display:block;color:#999999;font-size:12px">Terms
                                                                                 of Use</a></td>
                                                                     </tr>
                                                                 </table>
@@ -659,7 +492,7 @@
                     </tr>
                 </table>
                 <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none"
-                       style="display:none;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+                       style="display:none;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
                     <tr>
                         <td class="es-info-area" align="center" style="padding:0;Margin:0">
                             <table class="es-content-body" align="center" cellpadding="0" cellspacing="0"
@@ -676,11 +509,13 @@
                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                                         <tr>
                                                             <td align="center" class="es-infoblock"
-                                                                style="padding:0;Margin:0;line-height:14px;font-size:12px;color:#CCCCCC">
-                                                                <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:14px;color:#CCCCCC;font-size:12px">
-                                                                    No longer want to receive these emails? <a href=""
-                                                                                                               target="_blank"
-                                                                                                               style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#CCCCCC;font-size:12px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif">Unsubscribe</a>.
+                                                                style="padding:0;Margin:0"><p
+                                                                    style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#CCCCCC;font-size:12px">
+                                                                    <span
+                                                                        style="font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">No longer want to receive these emails?&nbsp;</span><a
+                                                                        href="" target="_blank"
+                                                                        style="mso-line-height-rule:exactly;text-decoration:underline;color:#CCCCCC;font-size:12px;font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">Unsubscribe</a><span
+                                                                        style="font-family:'Hedvig Letters Sans', 'helvetica neue', helvetica, arial, sans-serif">.</span>
                                                                 </p></td>
                                                         </tr>
                                                     </table>
