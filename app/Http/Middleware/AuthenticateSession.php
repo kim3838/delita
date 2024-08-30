@@ -156,8 +156,7 @@ class AuthenticateSession implements AuthenticatesSessions
         ]);
 
         \Illuminate\Support\Facades\Log::info([
-            'BEFORE user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
-            'BEFORE session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
+            'BEFORE store password hash in session: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
         ]);
 
         $request->session()->put([
@@ -166,8 +165,7 @@ class AuthenticateSession implements AuthenticatesSessions
         ]);
 
         \Illuminate\Support\Facades\Log::info([
-            'AFTER user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
-            'AFTER session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
+            'AFTER store password hash in session: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
         ]);
     }
 
