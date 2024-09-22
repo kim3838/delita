@@ -20,4 +20,5 @@ return [
     'email.already.verified' => 'Email already verified',
     'email.verification.sent' => 'Verification link sent to :email',
     'email.verification.error' => 'Verification confirmation/check neither verified nor marked as verified',
+    'two-factor.confirmed' => 'Please store your recovery codes somewhere safe. They can be used to recover access to your account if your two factor authentication device is lost.',
 ];

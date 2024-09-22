@@ -6,6 +6,7 @@ use App\Actions\Auth\ConfirmTwoFactorAuthentication;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 
 class ConfirmedTwoFactorAuthenticationController extends Controller
 {
@@ -13,6 +14,6 @@ class ConfirmedTwoFactorAuthenticationController extends Controller
     {
         $confirm($request->user(), $request->input('code'));
 
-        return ResponseJson::successfulResponse();
+        return ResponseJson::successfulResponse([], Lang::get('auth.two-factor.confirmed'));
     }
 }
