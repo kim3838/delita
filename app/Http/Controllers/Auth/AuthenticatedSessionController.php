@@ -38,6 +38,11 @@ class AuthenticatedSessionController extends Controller
         });
     }
 
+    public function hit(Request $request)
+    {
+        return ResponseJson::successfulResponse();
+    }
+
     public function authenticated(Request $request)
     {
         \Illuminate\Support\Facades\Log::info([

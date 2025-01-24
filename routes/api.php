@@ -26,6 +26,9 @@ Route::group([
     'middleware' => ['auth:sanctum']
 ], function(){
 
+    //Hit server
+    Route::get('hit', [AuthenticatedSessionController::class, 'hit']);
+
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
 
     //Verify X-XSRF-TOKEN on destructive action
