@@ -185,7 +185,7 @@ class AuthenticatedSessionController extends Controller
             'BEFORE logoutOtherDevices: cookies' => $request->cookies->all(),
         ]);
 
-        $result = Auth::guard('web')->logoutOtherDevices($request->password);
+        Auth::guard('web')->logoutOtherDevices($request->password);
 
         \Illuminate\Support\Facades\Log::info([
             'AFTER logoutOtherDevices: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
@@ -201,9 +201,7 @@ class AuthenticatedSessionController extends Controller
             'AFTER deleteOtherSessionRecords: cookies' => $request->cookies->all(),
         ]);
 
-        return ResponseJson::successfulResponse([
-            'authenticatable' => $result
-        ]);
+        return ResponseJson::successfulResponse();
     }
 
     protected function deleteOtherSessionRecords(Request $request)
