@@ -68,12 +68,15 @@ class AuthenticatedSessionController extends Controller
 
     public function sessions(Request $request)
     {
-        $sessions = collect(
-            DB::connection(config('session.connection'))->table(config('session.table', 'sessions'))
-                ->where('user_id', $request->user()->getAuthIdentifier())
-                ->orderBy('last_activity', 'desc')
-                ->get()
-        )->map(function ($session) use ($request) {
+        $sessionsQueryBuilder = DB::connection(config('session.connection'))
+            ->table(config('session.table', 'sessions'))
+            ->where('user_id', $request->user()->getAuthIdentifier())
+            ->whereNot('user_agent', 'node')
+            ->orderBy('last_activity', 'desc');
+
+        $sessions = collect($sessionsQueryBuilder->get());
+
+        $mappedSessions = $sessions->map(function ($session) use ($request) {
             $agent = $this->createAgent($session);
 
             return (object) [
@@ -88,7 +91,7 @@ class AuthenticatedSessionController extends Controller
             ];
         });
 
-        return ResponseJson::successfulResponse($sessions);
+        return ResponseJson::successfulResponse($mappedSessions);
     }
 
     protected function createAgent($session)
