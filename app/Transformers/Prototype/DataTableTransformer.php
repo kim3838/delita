@@ -13,7 +13,7 @@ class DataTableTransformer extends TransformerAbstract
         return [
             'row_number' => '#' . $model->row_number,
             'id' => (int)$model->id,
-            'name' => $model->name,
+            'name' => html_entity_decode($model->name),
             'code' => $model->code,
             'type' => $model->type,
             'category' => $model->category,
