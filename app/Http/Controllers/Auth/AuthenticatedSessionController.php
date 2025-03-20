@@ -38,11 +38,6 @@ class AuthenticatedSessionController extends Controller
         });
     }
 
-    public function hit(Request $request)
-    {
-        return ResponseJson::successfulResponse();
-    }
-
     public function authenticated(Request $request)
     {
         \Illuminate\Support\Facades\Log::info([
@@ -59,11 +54,6 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         return ResponseJson::successfulResponse($authenticated);
-    }
-
-    public function testPost(Request $request)
-    {
-        return ResponseJson::successfulResponse();
     }
 
     public function sessions(Request $request)

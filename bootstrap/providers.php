@@ -5,4 +5,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\RepositoryServiceProvider::class,
     App\Providers\TransformerServiceProvider::class,
+    App\Providers\UtilityServiceProvider::class,
 ];

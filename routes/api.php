@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
 use App\Http\Controllers\FormModuleController;
+use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,16 +24,23 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['auth:sanctum']
+    'middleware' => ['auth:sanctum'],
+    'prefix' => 'utility'
 ], function(){
 
     //Hit server
-    Route::get('hit', [AuthenticatedSessionController::class, 'hit']);
-
-    Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
+    Route::get('hit', [UtilityController::class, 'hit']);
+    Route::get('debug', [UtilityController::class, 'debug']);
 
     //Verify X-XSRF-TOKEN on destructive action
-    Route::post('test-post', [AuthenticatedSessionController::class, 'testPost']);
+    Route::post('post', [UtilityController::class, 'post']);
+});
+
+Route::group([
+    'middleware' => ['auth:sanctum']
+], function(){
+
+    Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
