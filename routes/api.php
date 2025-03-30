@@ -30,7 +30,7 @@ Route::group([
 
     //Hit server
     Route::get('hit', [UtilityController::class, 'hit']);
-    Route::get('debug', [UtilityController::class, 'debug']);
+    Route::post('debug', [UtilityController::class, 'debug']);
 
     //Verify X-XSRF-TOKEN on destructive action
     Route::post('post', [UtilityController::class, 'post']);
