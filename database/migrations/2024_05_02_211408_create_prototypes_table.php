@@ -20,6 +20,7 @@ return new class extends Migration
             $table->bigInteger('capacity')->nullable();
             $table->dateTime('datetime_added')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
