@@ -52,4 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class)
+            ->withPivot('assignment_type')
+            ->withTimestamps();
+    }
 }

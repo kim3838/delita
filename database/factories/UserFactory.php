@@ -43,4 +43,11 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function superAdmin(): Factory|UserFactory
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserType::SUPER_ADMIN,
+        ]);
+    }
 }

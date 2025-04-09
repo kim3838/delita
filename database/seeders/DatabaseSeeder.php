@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Enums\UserType;
+use App\Enums\CompanyUserAssignmentType;
+use App\Models\Account;
+use App\Models\Company;
 use App\Models\Prototype;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,13 +19,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'kim.123',
-            'email' => 'luxere20@gmail.com',
-            'type' => UserType::SUPER_ADMIN
-        ]);
+        $account = Account::factory()->has(Company::factory()->count(4))
+            ->create();
+
+        $superAdmin = User::factory()->superAdmin()
+            ->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com']);
 
         User::factory(9)->create();
+
+        $superAdmin->companies()
+            ->syncWithPivotValues(
+                $account->companies->pluck('id')->toArray(),
+                ['assignment_type' => CompanyUserAssignmentType::ADMIN]
+            );
 
         Prototype::factory()->count(500)->create();
     }
