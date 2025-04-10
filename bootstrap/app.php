@@ -50,17 +50,25 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->report(function(Throwable $throwable) {})->stop();
 
         $exceptions->render(function(Throwable $throwable){
-            \Illuminate\Support\Facades\Log::info([
-                ('thrown') => get_class($throwable),
-                'Exception instance?' => ($throwable instanceof Exception ? 'TRUE' : 'FALSE'),
-                'Error instance?' => ($throwable instanceof Error ? 'TRUE' : 'FALSE'),
-                'message' => $throwable->getMessage(),
-                'file' => $throwable->getFile(),
-                'line' => $throwable->getLine(),
-                'request' => Request::url(),
-                'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
-                'cookies' => request()->cookies->all()
+
+            $logExempt = _is_instance_of_any($throwable, [
+                AccessDeniedHttpException::class,
+                AuthenticationException::class,
             ]);
+
+            if(!$logExempt){
+                \Illuminate\Support\Facades\Log::info([
+                    ('thrown') => get_class($throwable),
+                    'Exception instance?' => ($throwable instanceof Exception ? 'TRUE' : 'FALSE'),
+                    'Error instance?' => ($throwable instanceof Error ? 'TRUE' : 'FALSE'),
+                    'message' => $throwable->getMessage(),
+                    'file' => $throwable->getFile(),
+                    'line' => $throwable->getLine(),
+                    'request' => Request::url(),
+                    'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
+                    'cookies' => request()->cookies->all()
+                ]);
+            }
 
             if($throwable instanceof Exception){
                 $render = match(true){
