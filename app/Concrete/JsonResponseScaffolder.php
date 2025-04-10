@@ -21,7 +21,7 @@ class JsonResponseScaffolder
 
     public function notFoundResponse($message = 'Not found.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_NOT_FOUND);
+        return $this->response(false, null, $message, [], Response::HTTP_NOT_FOUND);
     }
 
     public function successfulResponse($data = null, $message = 'Success.'): JsonResponse
@@ -31,37 +31,37 @@ class JsonResponseScaffolder
 
     public function serverErrorResponse($errors = [], $message = 'Server error.'): JsonResponse
     {
-        return $this->response(false, [], $message, $errors, Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->response(false, null, $message, $errors, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function validationErrorResponse($errors = [], $message = 'Validation error.'): JsonResponse
     {
-        return $this->response(false, [], $message, $errors, Response::HTTP_BAD_REQUEST);
+        return $this->response(false, null, $message, $errors, Response::HTTP_BAD_REQUEST);
     }
 
     public function unauthorizedResponse($message = 'Unauthorized.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_UNAUTHORIZED);
+        return $this->response(false, null, $message, [], Response::HTTP_UNAUTHORIZED);
     }
 
     public function notAcceptableResponse($message = 'Not acceptable'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_NOT_ACCEPTABLE);
+        return $this->response(false, null, $message, [], Response::HTTP_NOT_ACCEPTABLE);
     }
 
     public function methodNotAllowedResponse($message = 'Method not allowed.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_METHOD_NOT_ALLOWED);
+        return $this->response(false, null, $message, [], Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function unprocessableResponse($errors = [], $message = 'Unprocessable entity.'): JsonResponse
     {
-        return $this->response(false, [], $message, $errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        return $this->response(false, null, $message, $errors, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function forbiddenResponse($message = 'Forbidden.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_FORBIDDEN);
+        return $this->response(false, null, $message, [], Response::HTTP_FORBIDDEN);
     }
 
     /**
@@ -73,17 +73,17 @@ class JsonResponseScaffolder
      */
     public function sessionExpired($message = 'Session expired.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], 419);
+        return $this->response(false, null, $message, [], 419);
     }
 
     public function serviceUnavailableResponse($message = 'Service unavailable.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_SERVICE_UNAVAILABLE);
+        return $this->response(false, null, $message, [], Response::HTTP_SERVICE_UNAVAILABLE);
     }
 
     public function tooManyRequestsResponse($message = 'Too many attempts.'): JsonResponse
     {
-        return $this->response(false, [], $message, [], Response::HTTP_TOO_MANY_REQUESTS);
+        return $this->response(false, null, $message, [], Response::HTTP_TOO_MANY_REQUESTS);
     }
 
     public function responseByCode($code): JsonResponse
