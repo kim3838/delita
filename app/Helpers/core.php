@@ -32,3 +32,9 @@ if (!function_exists('_str_random')) {
     }
 }
 
+if(!function_exists('_is_instance_of_any')){
+    function _is_instance_of_any($object, array $classes): bool {
+        return array_any($classes, fn($class) => $object instanceof $class);
+    }
+}
+
