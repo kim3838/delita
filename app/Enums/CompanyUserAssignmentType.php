@@ -10,8 +10,8 @@ enum CompanyUserAssignmentType: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            CompanyUserAssignmentType::DEFAULT => 'Default',
-            CompanyUserAssignmentType::ADMIN => 'Admin',
+            self::DEFAULT => 'Default',
+            self::ADMIN => 'Admin',
         };
     }
 }

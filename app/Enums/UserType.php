@@ -11,9 +11,9 @@ enum UserType: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            UserType::DEFAULT => 'Default',
-            UserType::ADMIN => 'Admin',
-            UserType::SUPER_ADMIN => 'Super Admin'
+            self::DEFAULT => 'Default',
+            self::ADMIN => 'Admin',
+            self::SUPER_ADMIN => 'Super Admin'
         };
     }
 }

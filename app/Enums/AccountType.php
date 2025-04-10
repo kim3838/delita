@@ -10,8 +10,8 @@ enum AccountType: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            AccountType::STANDARD => 'Standard',
-            AccountType::CORPORATE => 'Corporate'
+            self::STANDARD => 'Standard',
+            self::CORPORATE => 'Corporate'
         };
     }
 }
