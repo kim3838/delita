@@ -41,6 +41,7 @@ Route::group([
 ], function(){
 
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
+    Route::get('associated-companies', [AuthenticatedSessionController::class, 'associatedCompanies']);
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
