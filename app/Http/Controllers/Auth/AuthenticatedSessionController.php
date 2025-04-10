@@ -40,20 +40,7 @@ class AuthenticatedSessionController extends Controller
 
     public function authenticated(Request $request)
     {
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
-            'line' => __LINE__,
-            'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
-            'cookies' => $request->cookies->all(),
-        ]);
-
-        $authenticated = (object)array_merge(
-            $request->user()->toArray(), [
-            'two_factor_enabled' => !is_null($request->user()->two_factor_secret),
-            'two_factor_confirmed' => !is_null($request->user()->two_factor_confirmed_at),
-        ]);
-
-        return ResponseJson::successfulResponse($authenticated);
+        return ResponseJson::successfulResponse($request->user());
     }
 
     public function sessions(Request $request)
