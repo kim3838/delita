@@ -10,6 +10,7 @@ use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
@@ -41,6 +42,11 @@ class AuthenticatedSessionController extends Controller
     public function authenticated(Request $request)
     {
         return ResponseJson::successfulResponse($request->user());
+    }
+
+    public function associatedCompanies(Request $request): JsonResponse
+    {
+        return ResponseJson::successfulResponse($request->user()->companies);
     }
 
     public function sessions(Request $request)
