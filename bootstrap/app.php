@@ -85,7 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $throwable instanceof MethodNotAllowedHttpException => ResponseJson::methodNotAllowedResponse(),
                     $throwable instanceof InvalidArgumentException => ResponseJson::validationErrorResponse([], $throwable->getMessage()),
                     $throwable instanceof InvalidSignatureException => ResponseJson::unprocessableResponse([], $throwable->getMessage()),
-                    $throwable instanceof AccessDeniedHttpException => ResponseJson::unauthorizedResponse($throwable->getMessage()),
+                    $throwable instanceof AccessDeniedHttpException => ResponseJson::forbiddenResponse($throwable->getMessage()),
                     default => $throwable,
                 };
 
