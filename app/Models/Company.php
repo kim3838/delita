@@ -16,6 +16,11 @@ class Company extends Model
         'name',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
