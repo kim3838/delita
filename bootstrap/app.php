@@ -1,6 +1,5 @@
 <?php
 
-use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
