@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         });
     }
 
-    public function authenticated(Request $request)
+    public function authenticated(Request $request): JsonResponse
     {
         return ResponseJson::successfulResponse($request->user());
     }
@@ -49,7 +49,7 @@ class AuthenticatedSessionController extends Controller
         return ResponseJson::successfulResponse($request->user()->companies);
     }
 
-    public function sessions(Request $request)
+    public function sessions(Request $request): JsonResponse
     {
         $sessionsQueryBuilder = DB::connection(config('session.connection'))
             ->table(config('session.table', 'sessions'))
@@ -77,14 +77,14 @@ class AuthenticatedSessionController extends Controller
         return ResponseJson::successfulResponse($mappedSessions);
     }
 
-    protected function createAgent($session)
+    protected function createAgent($session): Agent|\Illuminate\Support\HigherOrderTapProxy
     {
         return tap(new Agent, function ($agent) use ($session) {
             $agent->setUserAgent($session->user_agent);
         });
     }
 
-    public function confirmedPasswordStatus(Request $request)
+    public function confirmedPasswordStatus(Request $request): JsonResponse
     {
         $passwordConfirmedAt = $request->session()->get('auth.password_confirmed_at', 0);
         $secondsPastAfterConfirmation = (time() - $passwordConfirmedAt);
@@ -95,7 +95,7 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    public function confirmPassword(Request $request)
+    public function confirmPassword(Request $request): JsonResponse
     {
         $request->validate([
             'password' => ['required', 'string', 'current_password:web']
@@ -109,7 +109,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): JsonResponse
     {
         \Illuminate\Support\Facades\Log::info([
             'method' => get_class() . '@' . __FUNCTION__,
@@ -150,7 +150,7 @@ class AuthenticatedSessionController extends Controller
         return ResponseJson::successfulResponse();
     }
 
-    public function logoutOtherDevice(Request $request)
+    public function logoutOtherDevice(Request $request): JsonResponse
     {
         \Illuminate\Support\Facades\Log::info([
             'method' => get_class() . '@' . __FUNCTION__,
@@ -187,7 +187,7 @@ class AuthenticatedSessionController extends Controller
         return ResponseJson::successfulResponse();
     }
 
-    protected function deleteOtherSessionRecords(Request $request)
+    protected function deleteOtherSessionRecords(Request $request): void
     {
         \Illuminate\Support\Facades\Log::info([
             'method' => get_class() . '@' . __FUNCTION__,
