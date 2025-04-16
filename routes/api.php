@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -41,7 +42,8 @@ Route::group([
 ], function(){
 
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
-    Route::get('associated-companies', [AuthenticatedSessionController::class, 'associatedCompanies']);
+
+    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
