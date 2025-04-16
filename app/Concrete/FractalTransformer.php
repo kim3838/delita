@@ -24,7 +24,7 @@ class FractalTransformer
         return $item;
     }
 
-    public function collection($collection, $transformer, $meta = true, $key = null): array
+    public function collection($collection, $transformer, $key = null, $meta = true): array
     {
         if (($collection instanceof Collection && $collection->count() === 0)
             || (is_array($collection) && count($collection) === 0)
