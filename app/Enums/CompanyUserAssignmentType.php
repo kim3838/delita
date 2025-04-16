@@ -14,4 +14,12 @@ enum CompanyUserAssignmentType: int implements BaseEnum
             self::ADMIN => 'Admin',
         };
     }
+
+    public function toArray(): array
+    {
+        return [
+            'value' => $this->value,
+            'label' => $this->label(),
+        ];
+    }
 }
