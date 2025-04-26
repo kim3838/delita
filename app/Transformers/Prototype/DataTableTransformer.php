@@ -23,6 +23,7 @@ class DataTableTransformer extends TransformerAbstract
             'type' => $model->type,
             'category' => $model->category,
             'capacity' => $model->capacity,
+            'json_data' => $model->json_data,
             'datetime_added' => Carbon::parse($model->datetime_added)->toDateTimeString(),
             'created_at' => Carbon::parse($model->created_at)->toDateTimeString(),
             'updated_at' => Carbon::parse($model->updated_at)->toDateTimeString()
