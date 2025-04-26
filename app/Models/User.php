@@ -71,16 +71,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function twoFactorEnabled(): Attribute
     {
-        return new Attribute(
-            get: fn() => !is_null($this->two_factor_secret),
-        );
+        return Attribute::get(fn() => !is_null($this->two_factor_secret));
     }
 
     public function twoFactorConfirmed(): Attribute
     {
-        return new Attribute(
-            get: fn() => !is_null($this->two_factor_confirmed_at),
-        );
+        return Attribute::get(fn() => !is_null($this->two_factor_confirmed_at));
     }
 
     public function isSuperAdmin(): bool
