@@ -45,6 +45,7 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
                 'type',
                 'category',
                 'capacity',
+                'json_data',
                 'datetime_added',
                 'created_at',
                 'updated_at'

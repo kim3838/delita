@@ -10,6 +10,11 @@ class DataTableTransformer extends TransformerAbstract
 {
     public function transform(PrototypeDataTable $model)
     {
+        \Log::debug([
+            'id' => $model->id,
+            'json_data' => $model->json_data
+        ]);
+
         return [
             'row_number' => '#' . $model->row_number,
             'id' => (int)$model->id,

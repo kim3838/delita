@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('category')->nullable();
             $table->bigInteger('capacity')->nullable();
             $table->dateTime('datetime_added')->nullable();
+            $table->json('json_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

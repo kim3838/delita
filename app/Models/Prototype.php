@@ -16,6 +16,12 @@ class Prototype extends Model
         'type',
         'category',
         'capacity',
+        'json_data',
+        'json_data->foo',
         'datetime_added'
+    ];
+
+    protected $casts = [
+        'json_data' => 'array',
     ];
 }

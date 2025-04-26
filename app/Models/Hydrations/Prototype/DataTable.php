@@ -14,6 +14,7 @@ class DataTable extends Model
         'type' => 'int',
         'category' => 'int',
         'capacity' => 'int',
+        'json_data' => 'array',
         'datetime_added' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
