@@ -41,12 +41,8 @@ Route::group([
     'middleware' => ['auth:sanctum']
 ], function(){
 
+    //User authentication
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
-
-    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
-
-    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
-
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('update-password', [UpdateUserPasswordController::class, 'store'])->name('password.update');
     Route::get('confirmed-password-status', [AuthenticatedSessionController::class, 'confirmedPasswordStatus'])->name('password.confirmation');
@@ -54,12 +50,19 @@ Route::group([
     Route::post('logout-other-device', [AuthenticatedSessionController::class, 'logoutOtherDevice']);
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
 
+    //Email verification
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
+
+    //Two-factor authentication
     Route::post('two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
     Route::get('two-factor-qr-code', [TwoFactorQrCodeController::class, 'show'])->name('two-factor.qr-code');
     Route::get('two-factor-secret-key', [TwoFactorSecretKeyController::class, 'show'])->name('two-factor.secret-key');
     Route::get('two-factor-recovery-codes', [TwoFactorRecoveryCodeController::class, 'index'])->name('two-factor.recovery-codes');
     Route::post('confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
     Route::delete('two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
+
+    //Company assignment
+    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
 });
 
 Route::group([
