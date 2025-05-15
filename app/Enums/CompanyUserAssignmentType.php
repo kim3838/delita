@@ -19,7 +19,15 @@ enum CompanyUserAssignmentType: int implements BaseEnum
     {
         return [
             'value' => $this->value,
-            'label' => $this->label(),
+            'text' => $this->label(),
         ];
+    }
+
+    public static function all(): array
+    {
+        return array_map(
+            fn(self $case) => $case->toArray(),
+            self::cases()
+        );
     }
 }

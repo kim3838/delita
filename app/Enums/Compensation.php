@@ -2,18 +2,18 @@
 
 namespace App\Enums;
 
-enum UserType: int implements BaseEnum
+enum Compensation: int implements BaseEnum
 {
-    case DEFAULT = 0;
-    case ADMIN = 1;
-    case SUPER_ADMIN = 2;
+    case SALARY = 0;
+    case OVERTIME = 1;
+    case BENEFIT = 2;
 
     public function label(): string
     {
         return match ($this) {
-            self::DEFAULT => 'Default',
-            self::ADMIN => 'Admin',
-            self::SUPER_ADMIN => 'Super Admin'
+            self::SALARY => 'Salary',
+            self::OVERTIME => 'Overtime',
+            self::BENEFIT => 'Benefit',
         };
     }
 

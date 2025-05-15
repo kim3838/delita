@@ -16,4 +16,20 @@ enum Gender: int implements BaseEnum
             self::FEMALE => "Female",
         };
     }
+
+    public function toArray(): array
+    {
+        return [
+            'value' => $this->value,
+            'text' => $this->label(),
+        ];
+    }
+
+    public static function all(): array
+    {
+        return array_map(
+            fn(self $case) => $case->toArray(),
+            self::cases()
+        );
+    }
 }

@@ -10,12 +10,14 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+Route::get('enum/selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
 
 Route::group([
     'middleware' => ['guest']

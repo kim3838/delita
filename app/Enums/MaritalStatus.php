@@ -22,4 +22,20 @@ enum MaritalStatus: int implements BaseEnum
             self::SEPARATED => "Separated",
         };
     }
+
+    public function toArray(): array
+    {
+        return [
+            'value' => $this->value,
+            'text' => $this->label(),
+        ];
+    }
+
+    public static function all(): array
+    {
+        return array_map(
+            fn(self $case) => $case->toArray(),
+            self::cases()
+        );
+    }
 }
