@@ -34,6 +34,12 @@ class Company extends Model
             ->withTimestamps();
     }
 
+    public function formulas()
+    {
+        return $this->belongsToMany(Formula::class)
+            ->withTimestamps();
+    }
+
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
