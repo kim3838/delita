@@ -2,20 +2,14 @@
 
 namespace App\Enums;
 
-enum Compensation: int implements BaseEnum
+enum IncomeTax: int implements BaseEnum
 {
-    case SALARY = 0;
-    case OVERTIME = 1;
-    case BENEFIT = 2;
-    case REGULAR_ALLOWANCE = 3;
+    case WITHHOLDING_TAX = 0;
 
     public function label(): string
     {
         return match ($this) {
-            self::SALARY => 'Salary',
-            self::OVERTIME => 'Overtime',
-            self::BENEFIT => 'Benefit',
-            self::REGULAR_ALLOWANCE => 'Regular Allowance',
+            self::WITHHOLDING_TAX => 'Withholding Tax',
         };
     }
 
