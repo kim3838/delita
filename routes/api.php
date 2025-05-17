@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\Internal\UtilityController;
@@ -52,6 +53,9 @@ Route::group([
     Route::post('logout-other-device', [AuthenticatedSessionController::class, 'logoutOtherDevice']);
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
 
+    //User relation
+    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+
     //Email verification
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
@@ -63,8 +67,8 @@ Route::group([
     Route::post('confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
     Route::delete('two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
 
-    //Company assignment
-    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+    //Company
+    Route::get('selections/company/formula', [FormulaController::class, 'selection']);
 });
 
 Route::group([
