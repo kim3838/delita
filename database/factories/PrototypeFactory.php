@@ -24,6 +24,10 @@ class PrototypeFactory extends Factory
             ],
             'string_value_key' => 'string',
             'int_value_key' => 123,
+            'array_of_key_object' => [
+                'key_1' => 'value_1',
+                'key_2' => 'value_2',
+            ],
             'array_of_objects' => [
                 [
                     'value' => 1,
@@ -50,7 +54,7 @@ class PrototypeFactory extends Factory
             'type' => $this->faker->numberBetween(1, 5),
             'category' => $this->faker->randomElement([null, $this->faker->numberBetween(1, 200)]),
             'capacity' => $this->faker->numberBetween(0, 50),
-            'json_data' => json_encode($jsonData),
+            'json_data' => $jsonData,
             'datetime_added' => $this->faker->dateTimeBetween('-2 years', '-1 week'),
         ];
     }

@@ -12,7 +12,8 @@ class Formula extends Model
         'name',
         'formulable_type',
         'component_type',
-        'interpolation'
+        'interpolation',
+        'default_settings'
     ];
 
     protected $hidden = [
@@ -23,12 +24,14 @@ class Formula extends Model
     protected $casts = [
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
-        'interpolation' => 'boolean'
+        'interpolation' => 'boolean',
+        'default_settings' => 'object'
     ];
 
     public function companies()
     {
         return $this->belongsToMany(Company::class)
+            ->withPivot('settings')
             ->withTimestamps();
     }
 }

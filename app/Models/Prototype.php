@@ -22,6 +22,6 @@ class Prototype extends Model
     ];
 
     protected $casts = [
-        'json_data' => 'array',
+        'json_data' => 'object',
     ];
 }

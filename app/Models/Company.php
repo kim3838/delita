@@ -37,6 +37,7 @@ class Company extends Model
     public function formulas()
     {
         return $this->belongsToMany(Formula::class)
+            ->withPivot('settings')
             ->withTimestamps();
     }
 

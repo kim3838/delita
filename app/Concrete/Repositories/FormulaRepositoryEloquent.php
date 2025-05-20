@@ -25,9 +25,12 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where('companies.id', $value);
             })
-            ->when(Formulable::tryFrom($filters->formulable_type) !== null, function ($builder) use ($filters) {
-                $builder->where('formulas.formulable_type', $filters->formulable_type);
-            })
+            ->when(
+                isset($filters->formulable_type) && Formulable::tryFrom($filters->formulable_type) !== null,
+                function ($builder) use ($filters) {
+                    $builder->where('formulas.formulable_type', $filters->formulable_type);
+                }
+            )
             ->when(isset($filters->component_type), function ($builder) use ($filters) {
                 $builder->where('formulas.component_type', $filters->component_type);
             })

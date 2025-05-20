@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false],
             ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false],
+            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false, 'default_settings' => ['start_date' => 'Nov 02 of last year', 'end_date' => 'Nov 01 of current year']],
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-Absent', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
@@ -55,7 +55,12 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($formulas as $formula) {
-            Formula::create($formula)->companies()->sync($account->companies->pluck('id'));
+            Formula::create($formula)
+                ->companies()
+                ->syncWithPivotValues(
+                    $account->companies->pluck('id'),
+                    ['settings' => isset($formula['default_settings']) ? json_encode($formula['default_settings']) : null]
+                );
         }
 
         Prototype::factory()->count(500)->create();

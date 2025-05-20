@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('formula_id')->constrained('formulas')->onDelete('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->json('settings')->nullable();
             $table->timestamps();
         });
     }

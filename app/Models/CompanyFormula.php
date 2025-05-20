@@ -8,11 +8,16 @@ class CompanyFormula extends Pivot
 {
     protected $fillable =[
         'formula_id',
-        'company_id'
+        'company_id',
+        'settings'
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
+    ];
+
+    protected $casts = [
+        'settings' => 'object'
     ];
 }
