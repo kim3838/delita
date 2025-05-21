@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
-use App\Http\Controllers\FormulaController;
+use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\Internal\UtilityController;
@@ -68,7 +68,7 @@ Route::group([
     Route::delete('two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
 
     //Company
-    Route::get('selections/company/formula', [FormulaController::class, 'selection']);
+    Route::get('selections/company/formula', [CompanyFormulaController::class, 'selection']);
 });
 
 Route::group([

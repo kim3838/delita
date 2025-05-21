@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Transformers\Formula;
+namespace App\Transformers\CompanyFormula;
 
-use App\Models\Formula;
+use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
 use League\Fractal\TransformerAbstract;
 
 class SelectionTransformer extends TransformerAbstract
 {
-    public function transform(Formula $model): array
+    public function transform(FormulaSelection $model): array
     {
         return [
             'value' => $model->id,

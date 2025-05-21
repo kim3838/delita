@@ -2,7 +2,7 @@
 
 namespace App\Blueprint\Repositories;
 
-interface FormulaRepository
+interface CompanyFormulaRepository
 {
 
 }

@@ -5,21 +5,21 @@ namespace App\Concrete\Repositories;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Formulable;
 use App\Models\CompanyFormula;
-use App\Models\Formula;
+use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
 use Illuminate\Support\Facades\Request;
 
-class FormulaRepositoryEloquent extends BaseRepositoryEloquent
+class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent
 {
     public function model(): string
     {
-        return Formula::class;
+        return CompanyFormula::class;
     }
 
     public function selection()
     {
         $filters = json_decode(Request::get('filters'));
 
-        $queryBuilder = CompanyFormula::getQuery()
+        $queryBuilder = $this->model::getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')
             ->when($filters->company_id ?? false, function ($builder, $value) {
@@ -35,9 +35,10 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent
                 $builder->where('formulas.component_type', $filters->component_type);
             })
             ->select([
-                'formulas.*'
+                'company_formula.id AS id',
+                'formulas.name AS name'
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return FormulaSelection::hydrate($queryBuilder->get()->toArray());
     }
 }

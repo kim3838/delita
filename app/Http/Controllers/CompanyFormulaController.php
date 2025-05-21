@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Blueprint\Repositories\FormulaRepository;
+use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\Formula\SelectionTransformer;
+use App\Transformers\CompanyFormula\SelectionTransformer;
 use Illuminate\Support\Facades\App;
 
-class FormulaController extends Controller
+class CompanyFormulaController extends Controller
 {
     public function selection()
     {
@@ -16,7 +16,7 @@ class FormulaController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(FormulaRepository::class)->selection(),
+                    App::make(CompanyFormulaRepository::class)->selection(),
                     SelectionTransformer::class,
                     'selection'
                 )
