@@ -4,7 +4,6 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Concrete\BaseRepositoryEloquent;
-use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\Hydrations\AssociatedCompany;
 use Illuminate\Support\Facades\Request;
