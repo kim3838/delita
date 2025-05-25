@@ -2,13 +2,14 @@
 
 namespace App\Concrete\Repositories;
 
+use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Formulable;
 use App\Models\CompanyFormula;
 use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
 use Illuminate\Support\Facades\Request;
 
-class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent
+class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements CompanyFormulaRepository
 {
     public function model(): string
     {

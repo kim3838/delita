@@ -111,6 +111,15 @@ abstract class BaseRepositoryEloquent
         return $class::hydrate($items);
     }
 
+    public function reOrder(): void
+    {
+        $orderables = json_decode(Request::get('orderables'));
+
+        foreach ($orderables as $orderable) {
+            $this->model::find($orderable->id)->update(['order' => $orderable->order]);
+        }
+    }
+
     /**
      * Trigger static method calls to the model
      *

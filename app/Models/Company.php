@@ -37,12 +37,17 @@ class Company extends Model
     public function formulas()
     {
         return $this->belongsToMany(Formula::class)
-            ->withPivot('settings')
+            ->withPivot(['id', 'settings'])
             ->withTimestamps();
     }
 
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
+    }
+
+    public function compensations(): HasMany
+    {
+        return $this->hasMany(Compensation::class);
     }
 }

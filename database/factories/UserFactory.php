@@ -50,4 +50,11 @@ class UserFactory extends Factory
             'type' => UserType::SUPER_ADMIN,
         ]);
     }
+
+    public function default(): Factory|UserFactory
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserType::DEFAULT,
+        ]);
+    }
 }

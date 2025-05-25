@@ -18,7 +18,7 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'number' => $this->faker->randomNumber(),
+            'number' => $this->faker->numberBetween(1000, 1100),
             'type' => AccountType::STANDARD
         ];
     }
