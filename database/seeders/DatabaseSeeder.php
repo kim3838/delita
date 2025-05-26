@@ -41,7 +41,25 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false],
             ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false, 'default_settings' => ['start_date' => 'Nov 02 of last year', 'end_date' => 'Nov 01 of current year']],
+            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
+                'default_settings' => [
+                    [
+                        'key' => 'start_date',
+                        'label' => 'Start Date',
+                        'order' => 1,
+                        'type' => 'date',
+                        'value_type' => 'natural_language',
+                        'value' => 'Nov 02 last year'
+                    ],[
+                        'key' => 'end_date',
+                        'label' => 'End Date',
+                        'order' => 2,
+                        'type' => 'date',
+                        'value_type' => 'natural_language',
+                        'value' => 'Nov 01 current year'
+                    ]
+                ]
+            ],
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-Absent', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
