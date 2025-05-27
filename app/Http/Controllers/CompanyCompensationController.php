@@ -7,6 +7,7 @@ use App\Blueprint\Repositories\CompensationRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\StoreCompensationRequest;
+use App\Http\Requests\UpdateCompensationRequest;
 use App\Transformers\CompanyCompensation\ListTransformer;
 use App\Transformers\Compensation\ItemTransformer as CompensationTransformer;
 use Illuminate\Support\Facades\App;
@@ -32,6 +33,20 @@ class CompanyCompensationController extends Controller
             return ResponseJson::successfulResponse([
                 'company_compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->store($request->validated()),
+                    CompensationTransformer::class
+                )
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function update(UpdateCompensationRequest $request, $compensationId)
+    {
+        if(request()->expectsJson()){
+            return ResponseJson::successfulResponse([
+                'company_compensation' => Fractal::item(
+                    App::make(CompensationRepository::class)->update($compensationId, $request->validated()),
                     CompensationTransformer::class
                 )
             ]);

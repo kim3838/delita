@@ -14,6 +14,7 @@ class CompanyCompensation extends Model
         'order' => 'int',
         'assignable' => 'boolean',
         'type' => Compensation::class,
+        'company_formula_id' => 'int',
         'formula' => 'string',
         'settings' => 'object'
     ];

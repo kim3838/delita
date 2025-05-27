@@ -79,6 +79,7 @@ Route::group([
     //Compensation
     Route::get('company/compensations', [CompanyCompensationController::class, 'index']);
     Route::post('company/compensation', [CompanyCompensationController::class, 'store']);
+    Route::patch('company/compensation/{compensationId}', [CompanyCompensationController::class, 'update']);
 });
 
 Route::group([
