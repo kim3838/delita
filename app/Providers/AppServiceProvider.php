@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Compensation;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
