@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Observers\EmployeeObserver;
+use App\Observers\OrderableObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,6 +40,14 @@ class ObserverServiceProvider extends ServiceProvider
                     EmployeeObserver::class,
                 ]
             ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('compensation'),
+                ],
+                'observers' => [
+                    OrderableObserver::class
+                ]
+            )
         );
     }
 }

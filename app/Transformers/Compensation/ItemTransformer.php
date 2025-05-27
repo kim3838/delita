@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Transformers\CompanyCompensation;
+namespace App\Transformers\Compensation;
 
-use App\Models\Hydrations\CompanyCompensation;
+use App\Models\Compensation;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class ItemTransformer extends TransformerAbstract
 {
-    public function transform(CompanyCompensation $model): array
+    public function transform(Compensation $model): array
     {
         return [
             'id' => $model->id,
@@ -16,8 +16,8 @@ class ListTransformer extends TransformerAbstract
             'order' => $model->order,
             'assignable' => $model->assignable,
             'type' => $model->type->toArray(),
-            'formula' => $model->formula,
-            'settings' => $model->settings,
+            'formula' => $model->companyFormula->formula->name,
+            'settings' => $model->companyFormula->settings,
         ];
     }
 }

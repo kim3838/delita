@@ -36,7 +36,7 @@ class JsonResponseScaffolder
 
     public function validationErrorResponse($errors = [], $message = 'Validation error.'): JsonResponse
     {
-        return $this->response(false, null, $message, $errors, Response::HTTP_BAD_REQUEST);
+        return $this->response(false, null, $message, $errors, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function unauthorizedResponse($message = 'Unauthorized.'): JsonResponse
@@ -52,11 +52,6 @@ class JsonResponseScaffolder
     public function methodNotAllowedResponse($message = 'Method not allowed.'): JsonResponse
     {
         return $this->response(false, null, $message, [], Response::HTTP_METHOD_NOT_ALLOWED);
-    }
-
-    public function unprocessableResponse($errors = [], $message = 'Unprocessable entity.'): JsonResponse
-    {
-        return $this->response(false, null, $message, $errors, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function forbiddenResponse($message = 'Forbidden.'): JsonResponse

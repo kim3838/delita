@@ -69,10 +69,16 @@ Route::group([
     Route::post('confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
     Route::delete('two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
 
-    //Company
-    Route::get('selections/company/formulas', [CompanyFormulaController::class, 'selection']);
-    Route::get('company/compensations', [CompanyCompensationController::class, 'index']);
+    //Common
     Route::post('orderable/re-order/{module}', [OrderableController::class, 'reOrder']);
+
+    //Company Formula
+    Route::get('selections/company/formulas', [CompanyFormulaController::class, 'selection']);
+    Route::get('company/formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
+
+    //Compensation
+    Route::get('company/compensations', [CompanyCompensationController::class, 'index']);
+    Route::post('company/compensation', [CompanyCompensationController::class, 'store']);
 });
 
 Route::group([

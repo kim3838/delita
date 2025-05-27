@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'user' => User::class,
             'employee' => Employee::class,
+            'compensation' => Compensation::class,
         ]);
     }
 }

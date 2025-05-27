@@ -25,6 +25,7 @@ class Compensation extends Model
     ];
 
     protected $casts = [
+        'assignable' => 'boolean',
         'type' => CompensationEnum::class
     ];
 

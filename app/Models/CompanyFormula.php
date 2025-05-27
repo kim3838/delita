@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -21,6 +22,16 @@ class CompanyFormula extends Pivot
     protected $casts = [
         'settings' => 'object'
     ];
+
+    public function formula(): BelongsTo
+    {
+        return $this->belongsTo(Formula::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function compensations(): HasMany
     {

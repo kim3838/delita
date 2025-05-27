@@ -9,12 +9,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -72,19 +72,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if($throwable instanceof Exception){
                 $render = match(true){
-                    $throwable instanceof NotFoundHttpException => ResponseJson::notFoundResponse(),
-                    $throwable instanceof BackedEnumCaseNotFoundException => ResponseJson::notFoundResponse($throwable->getMessage()),
+                    $throwable instanceof NotFoundHttpException,
+                    $throwable instanceof RecordsNotFoundException => ResponseJson::notFoundResponse(),
+                    $throwable instanceof BackedEnumCaseNotFoundException,
                     $throwable instanceof ModelNotFoundException => ResponseJson::notFoundResponse($throwable->getMessage()),
                     $throwable instanceof AuthorizationException && !$throwable->hasStatus() => ResponseJson::responseByCode(Response::HTTP_FORBIDDEN),
                     $throwable instanceof SuspiciousOperationException => ResponseJson::notFoundResponse('Bad hostname provided.'),
-                    $throwable instanceof RecordsNotFoundException => ResponseJson::notFoundResponse(),
                     $throwable instanceof TokenMismatchException => ResponseJson::notAcceptableResponse(),
                     $throwable instanceof AuthenticationException => ResponseJson::unauthorizedResponse($throwable->getMessage()),
-                    $throwable instanceof ValidationException => ResponseJson::unprocessableResponse($throwable->errors(), $throwable->getMessage()),
+                    $throwable instanceof ValidationException => ResponseJson::validationErrorResponse($throwable->errors(), $throwable->getMessage()),
                     $throwable instanceof ThrottleRequestsException => ResponseJson::tooManyRequestsResponse(),
                     $throwable instanceof MethodNotAllowedHttpException => ResponseJson::methodNotAllowedResponse(),
                     $throwable instanceof InvalidArgumentException => ResponseJson::validationErrorResponse([], $throwable->getMessage()),
-                    $throwable instanceof InvalidSignatureException => ResponseJson::unprocessableResponse([], $throwable->getMessage()),
+                    $throwable instanceof InvalidSignatureException,
                     $throwable instanceof AccessDeniedHttpException => ResponseJson::forbiddenResponse($throwable->getMessage()),
                     default => $throwable,
                 };
