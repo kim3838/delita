@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\CompanyUserAssignmentType;
+use App\Models\Compensation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,8 +14,9 @@ class UpdateCompensationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        //Todo: Authorize on user company admin assignment
-        return true;
+        $compensation = Compensation::findOrfail($this->route('compensationId'));
+
+        return $this->user()->can('update', $compensation);
     }
 
     /**

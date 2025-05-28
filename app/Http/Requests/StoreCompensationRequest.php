@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Compensation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,8 +13,7 @@ class StoreCompensationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        //Todo: Authorize on user company admin assignment
-        return true;
+        return $this->user()->can('create', Compensation::class);
     }
 
     /**
