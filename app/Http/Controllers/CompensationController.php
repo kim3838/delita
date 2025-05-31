@@ -13,7 +13,7 @@ use App\Transformers\CompanyCompensation\ListTransformer;
 use App\Transformers\Compensation\ItemTransformer as CompensationTransformer;
 use Illuminate\Support\Facades\App;
 
-class CompanyCompensationController extends Controller
+class CompensationController extends Controller
 {
     public function index()
     {

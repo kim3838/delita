@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
-use App\Http\Controllers\CompanyCompensationController;
+use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
@@ -73,14 +73,14 @@ Route::group([
     Route::post('orderable/re-order/{module}', [OrderableController::class, 'reOrder']);
 
     //Company Formula
-    Route::get('selections/company/formulas', [CompanyFormulaController::class, 'selection']);
-    Route::get('company/formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
+    Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
+    Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
 
     //Compensation
-    Route::get('company/compensations', [CompanyCompensationController::class, 'index']);
-    Route::post('company/compensation', [CompanyCompensationController::class, 'store']);
-    Route::patch('company/compensation/{compensationId}', [CompanyCompensationController::class, 'update']);
-    Route::delete('company/compensation/{compensationId}', [CompanyCompensationController::class, 'destroy']);
+    Route::get('compensations', [CompensationController::class, 'index']);
+    Route::post('compensation', [CompensationController::class, 'store']);
+    Route::patch('compensation/{compensationId}', [CompensationController::class, 'update']);
+    Route::delete('compensation/{compensationId}', [CompensationController::class, 'destroy']);
 });
 
 Route::group([
