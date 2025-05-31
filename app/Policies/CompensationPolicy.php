@@ -32,4 +32,17 @@ class CompensationPolicy
 
         return $user->isSuperAdmin() || $userCompanyAdminAssignment;
     }
+
+    public function delete(User $user, Compensation $compensation): bool
+    {
+        $userCompanyAdminAssignment = $compensation
+                ->companyFormula
+                ->company
+                ->users
+                ->findOrfail($user->id)
+                ->pivot
+                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
+
+        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+    }
 }

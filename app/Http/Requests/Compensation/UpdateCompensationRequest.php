@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Compensation;
 
 use App\Models\Compensation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCompensationRequest extends FormRequest
+class UpdateCompensationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('create', Compensation::class);
+        $compensation = Compensation::findOrfail($this->route('compensationId'));
+
+        return $this->user()->can('update', $compensation);
     }
 
     /**

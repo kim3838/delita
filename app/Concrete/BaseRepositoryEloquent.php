@@ -42,6 +42,32 @@ abstract class BaseRepositoryEloquent
         return $this->model = $model;
     }
 
+    public function store($attributes)
+    {
+        return $this->model::create($attributes);
+    }
+
+    public function show($id)
+    {
+        return $this->model::findOrfail($id);
+    }
+
+    public function update($id, $attributes)
+    {
+        $model = $this->model::findOrfail($id);
+
+        $model->update($attributes);
+
+        return $model;
+    }
+
+    public function delete($id)
+    {
+        $model = $this->model::findOrfail($id);
+
+        return $model->delete();
+    }
+
     /**
      * Generate a LengthAwarePaginator class based from the count of Builder class
      *

@@ -12,18 +12,4 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
     {
         return Compensation::class;
     }
-
-    public function store($attributes)
-    {
-        return $this->model::create($attributes);
-    }
-
-    public function update($id, $attributes)
-    {
-        $model = $this->model::find($id);
-
-        $model->update($attributes);
-
-        return $model;
-    }
 }

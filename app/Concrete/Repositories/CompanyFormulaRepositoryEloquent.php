@@ -42,9 +42,4 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
         return FormulaSelection::hydrate($queryBuilder->get()->toArray());
     }
-
-    public function show($id)
-    {
-        return $this->model::find($id);
-    }
 }

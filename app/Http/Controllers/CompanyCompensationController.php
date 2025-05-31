@@ -6,8 +6,9 @@ use App\Blueprint\Repositories\CompanyCompensationRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Http\Requests\StoreCompensationRequest;
-use App\Http\Requests\UpdateCompensationRequest;
+use App\Http\Requests\Compensation\DestroyCompensationRequest;
+use App\Http\Requests\Compensation\StoreCompensationRequest;
+use App\Http\Requests\Compensation\UpdateCompensationRequest;
 use App\Transformers\CompanyCompensation\ListTransformer;
 use App\Transformers\Compensation\ItemTransformer as CompensationTransformer;
 use Illuminate\Support\Facades\App;
@@ -50,6 +51,18 @@ class CompanyCompensationController extends Controller
                     CompensationTransformer::class
                 )
             ]);
+        }
+
+        abort(404);
+    }
+
+    public function destroy(DestroyCompensationRequest $request, $compensationId)
+    {
+        if(request()->expectsJson()){
+
+            App::make(CompensationRepository::class)->delete($compensationId);
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);
