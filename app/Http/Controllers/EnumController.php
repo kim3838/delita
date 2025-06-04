@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\AccountType;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
+use App\Enums\Deduction;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use App\Enums\UserType;
@@ -19,6 +20,7 @@ class EnumController extends Controller
             'account_type' => AccountType::class,
             'company_user_assignment_type' => CompanyUserAssignmentType::class,
             'compensation' => Compensation::class,
+            'deduction' => Deduction::class,
             'gender' => Gender::class,
             'marital_status' => MaritalStatus::class,
             'user_type' => UserType::class,

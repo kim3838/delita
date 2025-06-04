@@ -32,7 +32,7 @@ class CompensationController extends Controller
     {
         if(request()->expectsJson()){
             return ResponseJson::successfulResponse([
-                'company_compensation' => Fractal::item(
+                'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->store($request->validated()),
                     CompensationTransformer::class
                 )
@@ -46,7 +46,7 @@ class CompensationController extends Controller
     {
         if(request()->expectsJson()){
             return ResponseJson::successfulResponse([
-                'company_compensation' => Fractal::item(
+                'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->update($compensationId, $request->validated()),
                     CompensationTransformer::class
                 )

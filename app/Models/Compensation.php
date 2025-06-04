@@ -25,8 +25,13 @@ class Compensation extends Model
     ];
 
     protected $casts = [
+        'id' => 'int',
+        'company_id' => 'int',
+        'name' => 'string',
+        'order' => 'int',
         'assignable' => 'boolean',
-        'type' => CompensationEnum::class
+        'type' => CompensationEnum::class,
+        'company_formula_id' => 'int',
     ];
 
     public function company(): BelongsTo

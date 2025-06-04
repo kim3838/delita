@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
+use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\Internal\UtilityController;
@@ -81,6 +82,12 @@ Route::group([
     Route::post('compensation', [CompensationController::class, 'store']);
     Route::patch('compensation/{compensationId}', [CompensationController::class, 'update']);
     Route::delete('compensation/{compensationId}', [CompensationController::class, 'destroy']);
+
+    //Deduction
+    Route::get('deductions', [DeductionController::class, 'index']);
+    Route::post('deduction', [DeductionController::class, 'store']);
+    Route::patch('deduction/{deductionId}', [DeductionController::class, 'update']);
+    Route::delete('deduction/{deductionId}', [DeductionController::class, 'destroy']);
 });
 
 Route::group([

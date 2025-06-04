@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models\Hydrations;
+
+use App\Enums\Deduction as DeductionEnum;
+use Illuminate\Database\Eloquent\Model;
+
+class CompanyDeduction extends Model
+{
+    protected $casts = [
+        'id' => 'int',
+        'company_id' => 'int',
+        'name' => 'string',
+        'order' => 'int',
+        'assignable' => 'boolean',
+        'type' => DeductionEnum::class,
+        'company_formula_id' => 'int',
+        'formula' => 'string',
+        'settings' => 'object'
+    ];
+}
