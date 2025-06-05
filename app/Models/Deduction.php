@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Deduction extends Model
 {
-    protected $table = 'deductions';
-
     protected $fillable = [
         'company_id',
         'name',
