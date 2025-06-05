@@ -7,6 +7,7 @@ use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
 use App\Enums\Gender;
+use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
 use App\Enums\UserType;
 use App\Facades\ResponseJson;
@@ -21,6 +22,7 @@ class EnumController extends Controller
             'company_user_assignment_type' => CompanyUserAssignmentType::class,
             'compensation' => Compensation::class,
             'deduction' => Deduction::class,
+            'income_tax' => IncomeTax::class,
             'gender' => Gender::class,
             'marital_status' => MaritalStatus::class,
             'user_type' => UserType::class,

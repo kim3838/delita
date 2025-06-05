@@ -6,15 +6,19 @@ use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Blueprint\Repositories\CompanyCompensationRepository;
 use App\Blueprint\Repositories\CompanyDeductionRepository;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
+use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Blueprint\Repositories\DeductionRepository;
+use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Concrete\Repositories\AssociatedCompanyRepositoryEloquent;
 use App\Concrete\Repositories\CompanyCompensationRepositoryEloquent;
 use App\Concrete\Repositories\CompanyDeductionRepositoryEloquent;
 use App\Concrete\Repositories\CompanyFormulaRepositoryEloquent;
+use App\Concrete\Repositories\CompanyIncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\CompensationRepositoryEloquent;
 use App\Concrete\Repositories\DeductionRepositoryEloquent;
+use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +33,8 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         'company_compensation' => CompanyCompensationRepositoryEloquent::class,
         'deduction' => DeductionRepositoryEloquent::class,
         'company_deduction' => CompanyDeductionRepositoryEloquent::class,
+        'income_tax' => IncomeTaxRepositoryEloquent::class,
+        'company_income_tax' => CompanyIncomeTaxRepositoryEloquent::class,
         PrototypeRepository::class => PrototypeRepositoryEloquent::class,
         AssociatedCompanyRepository::class => AssociatedCompanyRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
@@ -36,6 +42,8 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         CompanyCompensationRepository::class => CompanyCompensationRepositoryEloquent::class,
         DeductionRepository::class => DeductionRepositoryEloquent::class,
         CompanyDeductionRepository::class => CompanyDeductionRepositoryEloquent::class,
+        IncomeTaxRepository::class => IncomeTaxRepositoryEloquent::class,
+        CompanyIncomeTaxRepository::class => CompanyIncomeTaxRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -48,6 +56,8 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             'company_compensation',
             'deduction',
             'company_deduction',
+            'income_tax',
+            'company_income_tax',
             PrototypeRepository::class,
             AssociatedCompanyRepository::class,
             CompanyFormulaRepository::class,
@@ -55,6 +65,8 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             CompanyCompensationRepository::class,
             DeductionRepository::class,
             CompanyDeductionRepository::class,
+            IncomeTaxRepository::class,
+            CompanyIncomeTaxRepository::class,
         ];
     }
 }

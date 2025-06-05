@@ -15,6 +15,7 @@ use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
+use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\PrototypeController;
@@ -88,6 +89,12 @@ Route::group([
     Route::post('deduction', [DeductionController::class, 'store']);
     Route::patch('deduction/{deductionId}', [DeductionController::class, 'update']);
     Route::delete('deduction/{deductionId}', [DeductionController::class, 'destroy']);
+
+    //Income Tax
+    Route::get('income-taxes', [IncomeTaxController::class, 'index']);
+    Route::post('income-tax', [IncomeTaxController::class, 'store']);
+    Route::patch('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'update']);
+    Route::delete('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'destroy']);
 });
 
 Route::group([
