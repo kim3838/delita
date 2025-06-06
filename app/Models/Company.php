@@ -50,4 +50,14 @@ class Company extends Model
     {
         return $this->hasMany(Compensation::class);
     }
+
+    public function deductions(): HasMany
+    {
+        return $this->hasMany(Deduction::class);
+    }
+
+    public function incomeTaxes(): HasMany
+    {
+        return $this->hasMany(IncomeTax::class);
+    }
 }

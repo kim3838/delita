@@ -88,44 +88,106 @@ class DatabaseSeeder extends Seeder
                     $company->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings) ? json_encode($formula->default_settings) : null] ]);
                 }
             }
-
-            foreach ($account->companies as $company) {
-
-                $companyFormulas = $company->formulas;
-
-                $company->compensations()->create([
-                    'name' => 'Basic Salary',
-                    'order' => 1,
-                    'assignable' => true,
-                    'type' => Compensation::SALARY,
-                    'company_formula_id' => $companyFormulas->where('formulable_type', Formulable::EARNINGS)->where('component_type', Compensation::SALARY)->first()->pivot->id,
-                ]);
-
-                $company->compensations()->create([
-                    'name' => 'Meal Allowance',
-                    'order' => 2,
-                    'assignable' => true,
-                    'type' => Compensation::REGULAR_ALLOWANCE,
-                    'company_formula_id' => $companyFormulas->where('formulable_type', Formulable::EARNINGS)->where('component_type', Compensation::REGULAR_ALLOWANCE)->first()->pivot->id,
-                ]);
-
-                $company->compensations()->create([
-                    'name' => 'Overtime',
-                    'order' => 3,
-                    'assignable' => true,
-                    'type' => Compensation::OVERTIME,
-                    'company_formula_id' => $companyFormulas->where('formulable_type', Formulable::EARNINGS)->where('component_type', Compensation::OVERTIME)->first()->pivot->id,
-                ]);
-
-                $company->compensations()->create([
-                    'name' => '13th Month',
-                    'order' => 4,
-                    'assignable' => true,
-                    'type' => Compensation::BENEFIT,
-                    'company_formula_id' => $companyFormulas->where('formulable_type', Formulable::EARNINGS)->where('component_type', Compensation::BENEFIT)->first()->pivot->id,
-                ]);
-            }
         }
+
+        $devSubjectCompany = Company::find(2);
+        $devSubjectCompanyFormulas = $devSubjectCompany->formulas;
+
+        //Create Compensation
+        $devSubjectCompany->compensations()->create([
+            'name' => 'Basic Salary',
+            'order' => 1,
+            'assignable' => true,
+            'type' => Compensation::SALARY,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::EARNINGS)
+                ->where('component_type', Compensation::SALARY)->first()->pivot->id,
+        ]);
+
+        $devSubjectCompany->compensations()->create([
+            'name' => 'Meal Allowance',
+            'order' => 2,
+            'assignable' => true,
+            'type' => Compensation::REGULAR_ALLOWANCE,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::EARNINGS)
+                ->where('component_type', Compensation::REGULAR_ALLOWANCE)->first()->pivot->id,
+        ]);
+
+        $devSubjectCompany->compensations()->create([
+            'name' => 'Overtime',
+            'order' => 3,
+            'assignable' => true,
+            'type' => Compensation::OVERTIME,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::EARNINGS)
+                ->where('component_type', Compensation::OVERTIME)
+                ->where('interpolation', false)
+                ->first()->pivot->id,
+        ]);
+
+        $devSubjectCompany->compensations()->create([
+            'name' => '13th Month',
+            'order' => 4,
+            'assignable' => true,
+            'type' => Compensation::BENEFIT,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::EARNINGS)
+                ->where('component_type', Compensation::BENEFIT)
+                ->where('interpolation', false)
+                ->first()->pivot->id,
+        ]);
+
+        //Create Deduction
+        $devSubjectCompany->deductions()->create([
+            'name' => 'Tardiness',
+            'order' => 1,
+            'assignable' => true,
+            'type' => Deduction::DEDUCTION,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::DEDUCTIONS)
+                ->where('component_type', Deduction::DEDUCTION)
+                ->where('name', 'Standard-Tardiness')
+                ->first()->pivot->id,
+        ]);
+
+        $devSubjectCompany->deductions()->create([
+            'name' => 'Absent',
+            'order' => 2,
+            'assignable' => true,
+            'type' => Deduction::DEDUCTION,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::DEDUCTIONS)
+                ->where('component_type', Deduction::DEDUCTION)
+                ->where('name', 'Standard-Absent')
+                ->first()->pivot->id,
+        ]);
+
+        $devSubjectCompany->deductions()->create([
+            'name' => 'SSS-Employed',
+            'order' => 3,
+            'assignable' => true,
+            'type' => Deduction::CONTRIBUTION,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::DEDUCTIONS)
+                ->where('component_type', Deduction::CONTRIBUTION)
+                ->where('name', 'Standard-SSS-Employed-Contribution')
+                ->first()->pivot->id,
+        ]);
+
+        //Create Income Tax
+        $devSubjectCompany->incomeTaxes()->create([
+            'name' => 'Income Tax',
+            'order' => 1,
+            'assignable' => true,
+            'type' => IncomeTax::WITHHOLDING_TAX,
+            'company_formula_id' => $devSubjectCompanyFormulas
+                ->where('formulable_type', Formulable::INCOME_TAX)
+                ->where('component_type', IncomeTax::WITHHOLDING_TAX)
+                ->where('name', 'Standard-Withholding-Tax')
+                ->where('interpolation', false)
+                ->first()->pivot->id,
+        ]);
 
         Prototype::factory()->count(500)->create();
     }
