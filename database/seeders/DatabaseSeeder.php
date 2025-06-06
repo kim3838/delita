@@ -49,14 +49,14 @@ class DatabaseSeeder extends Seeder
                         'order' => 1,
                         'type' => 'date',
                         'value_type' => 'natural_language',
-                        'value' => 'Nov 02 last year'
+                        'value' => 'Nov 02 of last year'
                     ],[
                         'key' => 'end_date',
                         'label' => 'End Date',
                         'order' => 2,
                         'type' => 'date',
                         'value_type' => 'natural_language',
-                        'value' => 'Nov 01 current year'
+                        'value' => 'Nov 01 of current year'
                     ]
                 ]
             ],
