@@ -16,8 +16,7 @@ class ItemTransformer extends TransformerAbstract
             'order' => $model->order,
             'assignable' => $model->assignable,
             'type' => $model->type->toArray(),
-            'formula' => $model->companyFormula->formula->name,
-            'settings' => $model->companyFormula->settings,
+            'formula' => $model->companyFormula->formula->name
         ];
     }
 }

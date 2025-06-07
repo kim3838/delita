@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\Parsable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
@@ -20,7 +21,7 @@ class CompanyFormula extends Pivot
     ];
 
     protected $casts = [
-        'settings' => 'object'
+        'settings' => Parsable::class
     ];
 
     public function formula(): BelongsTo

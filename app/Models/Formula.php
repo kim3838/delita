@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\FormulaComponentType;
+use App\Casts\Parsable;
 use App\Enums\Formulable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,7 +26,7 @@ class Formula extends Model
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
         'interpolation' => 'boolean',
-        'default_settings' => 'object'
+        'default_settings' => Parsable::class
     ];
 
     public function companies()

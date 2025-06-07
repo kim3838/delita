@@ -2,6 +2,7 @@
 
 namespace App\Models\Hydrations;
 
+use App\Casts\Parsable;
 use App\Enums\Compensation;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +17,6 @@ class CompanyCompensation extends Model
         'type' => Compensation::class,
         'company_formula_id' => 'int',
         'formula' => 'string',
-        'settings' => 'object'
+        'settings' => Parsable::class
     ];
 }

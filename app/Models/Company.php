@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends Model
 {
@@ -59,5 +60,10 @@ class Company extends Model
     public function incomeTaxes(): HasMany
     {
         return $this->hasMany(IncomeTax::class);
+    }
+
+    public function payPeriodSetting(): HasOne
+    {
+        return $this->hasOne(PayPeriodSetting::class);
     }
 }

@@ -48,15 +48,27 @@ class DatabaseSeeder extends Seeder
                         'label' => 'Start Date',
                         'order' => 1,
                         'type' => 'date',
-                        'value_type' => 'natural_language',
-                        'value' => 'Nov 02 of last year'
+                        'readable' => 'November 02 of last year',
+                        'value' => [
+                            'base' => 'Nov 02 last year',
+                            'year' => null,
+                            'month' => null,
+                            'day' => null,
+                            'time' => 'startOfDay'
+                        ]
                     ],[
                         'key' => 'end_date',
                         'label' => 'End Date',
                         'order' => 2,
                         'type' => 'date',
-                        'value_type' => 'natural_language',
-                        'value' => 'Nov 01 of current year'
+                        'readable' => 'November 01 of current year',
+                        'value' => [
+                            'base' => 'Nov 01',
+                            'year' => null,
+                            'month' => null,
+                            'day' => null,
+                            'time' => 'endOfDay'
+                        ]
                     ]
                 ]
             ],
@@ -85,7 +97,7 @@ class DatabaseSeeder extends Seeder
 
             foreach ($account->companies as $company){
                 foreach ($formulas as $formula) {
-                    $company->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings) ? json_encode($formula->default_settings) : null] ]);
+                    $company->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
                 }
             }
         }
@@ -187,6 +199,95 @@ class DatabaseSeeder extends Seeder
                 ->where('name', 'Standard-Withholding-Tax')
                 ->where('interpolation', false)
                 ->first()->pivot->id,
+        ]);
+
+        //Create Pay Period Setting
+        $devSubjectCompany->payPeriodSetting()->create([
+            'days_to_pay_after_cut_off' => 5,
+            'monthly_pay_period' => [
+                [
+                    'key' => 'start_date',
+                    'label' => 'Start Date',
+                    'order' => 1,
+                    'type' => 'date',
+                    'readable' => '01 of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 'startOfMonth',
+                        'time' => 'startOfDay'
+                    ]
+                ],[
+                    'key' => 'end_date',
+                    'label' => 'End Date',
+                    'order' => 2,
+                    'type' => 'date',
+                    'readable' => 'End of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 'endOfMonth',
+                        'time' => 'endOfDay'
+                    ]
+                ]
+            ],
+            'semimonthly_pay_period' => [
+                [
+                    'key' => '1st_half_start_date',
+                    'label' => '1st Half Start Date',
+                    'order' => 1,
+                    'type' => 'date',
+                    'readable' => '01 of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 'startOfMonth',
+                        'time' => 'startOfDay'
+                    ]
+                ],[
+                    'key' => '1st_half_end_date',
+                    'label' => '1st Half End Date',
+                    'order' => 2,
+                    'type' => 'date',
+                    'readable' => '15 of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 15,
+                        'time' => 'endOfDay'
+                    ]
+                ],[
+                    'key' => '2nd_half_start_date',
+                    'label' => '2nd Half Start Date',
+                    'order' => 3,
+                    'type' => 'date',
+                    'readable' => '16 of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 16,
+                        'time' => 'startOfDay'
+                    ]
+                ],[
+                    'key' => '2nd_half_end_date',
+                    'label' => '2nd Half End Date',
+                    'order' => 4,
+                    'type' => 'date',
+                    'readable' => 'End of month',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 'endOfMonth',
+                        'time' => 'endOfDay'
+                    ]
+                ],
+            ]
         ]);
 
         Prototype::factory()->count(500)->create();

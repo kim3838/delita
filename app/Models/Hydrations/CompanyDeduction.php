@@ -2,6 +2,7 @@
 
 namespace App\Models\Hydrations;
 
+use App\Casts\Parsable;
 use App\Enums\Deduction as DeductionEnum;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +17,6 @@ class CompanyDeduction extends Model
         'type' => DeductionEnum::class,
         'company_formula_id' => 'int',
         'formula' => 'string',
-        'settings' => 'object'
+        'settings' => Parsable::class
     ];
 }

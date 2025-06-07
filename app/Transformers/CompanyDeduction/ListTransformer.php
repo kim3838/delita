@@ -18,7 +18,7 @@ class ListTransformer extends TransformerAbstract
             'type' => $model->type->toArray(),
             'company_formula_id' => $model->company_formula_id,
             'formula' => $model->formula,
-            'settings' => $model->settings,
+            'settings' => $model->settings->cast,
         ];
     }
 }
