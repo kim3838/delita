@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
             $table->string('code')->nullable();
             $table->string('name');
+            $table->string('timezone')->default('UTC');
             $table->timestamps();
         });
     }
