@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $superAdmin = User::factory()->superAdmin()
-            ->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com']);
+            ->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com', 'timezone' => 'Asia/Manila']);
 
         $defaultUser = User::factory()->default()
             ->create(['name' => 'user.123', 'email' => 'kimdeguzman20@yahoo.com']);
