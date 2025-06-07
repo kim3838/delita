@@ -133,6 +133,8 @@ class AuthenticateSession implements AuthenticatesSessions
             $this->logout($request);
         }
 
+        $this->setUserTimezone();
+
         return tap($next($request), function () use ($request) {
             if ($this->logger) {
                 \Illuminate\Support\Facades\Log::info([
@@ -257,5 +259,15 @@ class AuthenticateSession implements AuthenticatesSessions
     public static function redirectUsing(callable $redirectToCallback)
     {
         static::$redirectToCallback = $redirectToCallback;
+    }
+
+    protected function setUserTimezone(): void
+    {
+        if(auth()->check()){
+
+            $timezone = auth()->user()->timezone ?? config('app.timezone');
+
+            date_default_timezone_set($timezone);
+        }
     }
 }
