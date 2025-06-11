@@ -21,8 +21,8 @@ use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
-Route::get('enum/selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
+Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
 
 Route::group([
     'middleware' => ['guest']
