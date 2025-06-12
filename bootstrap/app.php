@@ -34,6 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
 
+        //Disable encryption for a subset of custom-generated cookies
+        $middleware->encryptCookies([
+
+        ]);
+
         $middleware->append([
             \App\Http\Middleware\TransformQueryParameters::class
         ]);
