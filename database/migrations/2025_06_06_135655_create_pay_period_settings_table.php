@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->smallInteger('days_to_pay_after_cut_off')->default(5);
+            $table->string('time_period_preset_reference');
             $table->json('monthly_pay_period');
             $table->json('semimonthly_pay_period');
             $table->timestamps();

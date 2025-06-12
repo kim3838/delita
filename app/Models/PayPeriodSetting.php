@@ -11,6 +11,7 @@ class PayPeriodSetting extends Model
     protected $fillable = [
         'company_id',
         'days_to_pay_after_cut_off',
+        'time_period_preset_reference',
         'monthly_pay_period',
         'semimonthly_pay_period',
     ];
