@@ -65,7 +65,8 @@ class AuthenticateSession implements AuthenticatesSessions
                 'config default driver' => config('auth.defaults.guard'),
                 'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
                 'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
-                'cookies' => $request->cookies->all()
+                'cookies' => $request->cookies->all(),
+                'raw cookies' => $request->headers->get('cookie')
             ]);
         }
 
