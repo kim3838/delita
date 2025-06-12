@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\CompanyPayPeriodSettingController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
@@ -18,6 +19,8 @@ use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\OrderableController;
+use App\Http\Controllers\PayPeriodPresetController;
+use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +80,15 @@ Route::group([
     //Company Formula
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
     Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
+
+    //Pay Period Preset Selection
+    Route::get('pay-period-preset-selections', [PayPeriodPresetController::class, 'selection']);
+
+    //Company Pay Period Setting
+    Route::get('company-pay-period-setting/{companyId}', [CompanyPayPeriodSettingController::class, 'index']);
+
+    //Pay Period
+    Route::patch('pay-period-setting/{payPeriodSettingId}', [PayPeriodSettingController::class, 'update']);
 
     //Compensation
     Route::get('compensations', [CompensationController::class, 'index']);
