@@ -23,7 +23,7 @@ abstract class BaseRepositoryEloquent
      *
      * @return string
      */
-    abstract public function model();
+    abstract public function model(): string;
 
     public function __construct(Application $app)
     {
