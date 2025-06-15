@@ -2,7 +2,9 @@
 
 namespace App\Blueprint\Repositories;
 
-interface IncomeTaxRepository
+use App\Blueprint\Orderable;
+
+interface IncomeTaxRepository extends Orderable
 {
 
 }

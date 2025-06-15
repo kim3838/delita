@@ -2,7 +2,9 @@
 
 namespace App\Blueprint\Repositories;
 
-interface DeductionRepository
+use App\Blueprint\Orderable;
+
+interface DeductionRepository extends Orderable
 {
 
 }
