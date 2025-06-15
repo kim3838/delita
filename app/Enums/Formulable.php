@@ -7,7 +7,7 @@ enum Formulable: int implements BaseEnum
     case EARNINGS = 0;
     case DEDUCTIONS = 1;
     case TAXABLE_INCOME = 2;
-    case NON_TAXABLE_INCOME = 3;
+    case NONTAXABLE_INCOME = 3;
     case INCOME_TAX = 4;
     case NET_INCOME = 5;
 
@@ -17,7 +17,7 @@ enum Formulable: int implements BaseEnum
             self::EARNINGS => 'Earnings',
             self::DEDUCTIONS => 'Deductions',
             self::TAXABLE_INCOME => 'Taxable Income',
-            self::NON_TAXABLE_INCOME => 'Non Taxable Income',
+            self::NONTAXABLE_INCOME => 'Non-Taxable Income',
             self::INCOME_TAX => 'Income Tax',
             self::NET_INCOME => 'Net Income',
         };
