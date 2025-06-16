@@ -12,6 +12,7 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\Formula;
 use App\Models\Prototype;
+use App\Models\SalaryStatementModule;
 use App\Models\TimePeriodPreset;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -33,6 +34,100 @@ class DatabaseSeeder extends Seeder
             ->create(['name' => 'user.123', 'email' => 'kimdeguzman20@yahoo.com']);
 
         User::factory(8)->create();
+
+        $salaryStatementModules = [
+            [
+                'formulable_type' => Formulable::EARNINGS,
+                'order' => 1,
+                'name' => 'Assigned Compensations',
+                'reference' => 'employee_compensation',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::EARNINGS,
+                'order' => 2,
+                'name' => 'Global Compensations',
+                'reference' => 'compensation',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '0',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::DEDUCTIONS,
+                'order' => 3,
+                'name' => 'Assigned Deductions',
+                'reference' => 'employee_deduction',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::DEDUCTIONS,
+                'order' => 4,
+                'name' => 'Global Deductions',
+                'reference' => 'deduction',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '0',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::TAXABLE_INCOME,
+                'order' => 5,
+                'name' => 'Taxable Income',
+                'reference' => null,
+                'conditions' => null
+            ],[
+                'formulable_type' => Formulable::NONTAXABLE_INCOME,
+                'order' => 6,
+                'name' => 'Non-Taxable Income',
+                'reference' => null,
+                'conditions' => null
+            ],[
+                'formulable_type' => Formulable::INCOME_TAX,
+                'order' => 7,
+                'name' => 'Assigned Income Taxes',
+                'reference' => 'employee_income_tax',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::INCOME_TAX,
+                'order' => 8,
+                'name' => 'Global Income Taxes',
+                'reference' => 'income_tax',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '0',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::NET_INCOME,
+                'order' => 9,
+                'name' => 'Net Income',
+                'reference' => null,
+                'conditions' => null
+            ],
+        ];
 
         //Create time period presets
         $timePeriodPresets = [
@@ -363,7 +458,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
             ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
             ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
-            ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NON_TAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
+            ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
             ['name' => 'Standard-Withholding-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::WITHHOLDING_TAX, 'interpolation' => false],
             ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'interpolation' => true]
         ];
@@ -388,6 +483,12 @@ class DatabaseSeeder extends Seeder
         }
 
         $devSubjectCompany = Company::find(2);
+
+        //Create company salary statement modules
+        foreach ($salaryStatementModules as $salaryStatementModule) {
+            $devSubjectCompany->salaryStatementModules()->create($salaryStatementModule);
+        }
+
         $devSubjectCompanyFormulas = $devSubjectCompany->formulas;
 
         //Create Compensation

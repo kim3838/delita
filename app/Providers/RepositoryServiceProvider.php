@@ -13,6 +13,7 @@ use App\Blueprint\Repositories\DeductionRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\PayPeriodSettingRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
+use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Concrete\Repositories\AssociatedCompanyRepositoryEloquent;
 use App\Concrete\Repositories\CompanyCompensationRepositoryEloquent;
@@ -25,6 +26,7 @@ use App\Concrete\Repositories\DeductionRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\PayPeriodSettingRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
+use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
 use App\Concrete\Repositories\TimePeriodPresetRepositoryEloquent;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -44,6 +46,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         'company_income_tax' => CompanyIncomeTaxRepositoryEloquent::class,
         'pey_period_setting' => PayPeriodSettingRepositoryEloquent::class,
         'time_period_preset' => TimePeriodPresetRepositoryEloquent::class,
+        'salary_statement_module' => SalaryStatementModuleRepositoryEloquent::class,
         PrototypeRepository::class => PrototypeRepositoryEloquent::class,
         AssociatedCompanyRepository::class => AssociatedCompanyRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
@@ -56,6 +59,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         PayPeriodSettingRepository::class => PayPeriodSettingRepositoryEloquent::class,
         TimePeriodPresetRepository::class => TimePeriodPresetRepositoryEloquent::class,
         CompanyRepository::class => CompanyRepositoryEloquent::class,
+        SalaryStatementModuleRepository::class => SalaryStatementModuleRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -73,6 +77,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             'company_income_tax',
             'pey_period_setting',
             'time_period_preset',
+            'salary_statement_module',
             PrototypeRepository::class,
             CompanyRepository::class,
             AssociatedCompanyRepository::class,
@@ -85,6 +90,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             CompanyIncomeTaxRepository::class,
             PayPeriodSettingRepository::class,
             TimePeriodPresetRepository::class,
+            SalaryStatementModuleRepository::class,
         ];
     }
 }

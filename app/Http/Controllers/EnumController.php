@@ -6,6 +6,7 @@ use App\Enums\AccountType;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
+use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
@@ -26,6 +27,7 @@ class EnumController extends Controller
             'gender' => Gender::class,
             'marital_status' => MaritalStatus::class,
             'user_type' => UserType::class,
+            'formulable_type' => Formulable::class,
             default => throw new \InvalidArgumentException('Invalid enum type'),
         };
 

@@ -66,4 +66,9 @@ class Company extends Model
     {
         return $this->hasOne(PayPeriodSetting::class);
     }
+
+    public function salaryStatementModules(): HasMany
+    {
+        return $this->hasMany(SalaryStatementModule::class);
+    }
 }

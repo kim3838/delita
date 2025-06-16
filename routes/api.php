@@ -22,6 +22,7 @@ use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\PayPeriodPresetController;
 use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
+use App\Http\Controllers\SalaryStatementModuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
@@ -107,6 +108,9 @@ Route::group([
     Route::post('income-tax', [IncomeTaxController::class, 'store']);
     Route::patch('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'update']);
     Route::delete('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'destroy']);
+
+    Route::get('salary-statement-modules', [SalaryStatementModuleController::class, 'index']);
+    Route::post('re-order/salary-statement-modules', [SalaryStatementModuleController::class, 'reOrder']);
 });
 
 Route::group([
