@@ -30,7 +30,7 @@ class CompensationController extends Controller
 
     public function store(StoreCompensationRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->store($request->validated()),
@@ -44,7 +44,7 @@ class CompensationController extends Controller
 
     public function update(UpdateCompensationRequest $request, $compensationId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->update($compensationId, $request->validated()),
@@ -58,7 +58,7 @@ class CompensationController extends Controller
 
     public function destroy(DestroyCompensationRequest $request, $compensationId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             App::make(CompensationRepository::class)->delete($compensationId);
 

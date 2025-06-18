@@ -30,7 +30,7 @@ class IncomeTaxController extends Controller
 
     public function store(StoreIncomeTaxRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'income_tax' => Fractal::item(
                     App::make(IncomeTaxRepository::class)->store($request->validated()),
@@ -44,7 +44,7 @@ class IncomeTaxController extends Controller
 
     public function update(UpdateIncomeTaxRequest $request, $incomeTaxId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'income_tax' => Fractal::item(
                     App::make(IncomeTaxRepository::class)->update($incomeTaxId, $request->validated()),
@@ -58,7 +58,7 @@ class IncomeTaxController extends Controller
 
     public function destroy(DestroyIncomeTaxRequest $request, $incomeTaxId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             App::make(IncomeTaxRepository::class)->delete($incomeTaxId);
 

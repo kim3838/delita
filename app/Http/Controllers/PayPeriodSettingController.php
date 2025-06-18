@@ -13,7 +13,7 @@ class PayPeriodSettingController extends Controller
 {
     public function update(UpdatePayPeriodSettingRequest $request, $payPeriodSettingId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'pay_period_setting' => Fractal::item(
                     App::make(PayPeriodSettingRepository::class)->update($payPeriodSettingId, $request->validated()),

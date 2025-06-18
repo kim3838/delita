@@ -30,7 +30,7 @@ class DeductionController extends Controller
 
     public function store(StoreDeductionRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'deduction' => Fractal::item(
                     App::make(DeductionRepository::class)->store($request->validated()),
@@ -44,7 +44,7 @@ class DeductionController extends Controller
 
     public function update(UpdateDeductionRequest $request, $deductionId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
             return ResponseJson::successfulResponse([
                 'deduction' => Fractal::item(
                     App::make(DeductionRepository::class)->update($deductionId, $request->validated()),
@@ -58,7 +58,7 @@ class DeductionController extends Controller
 
     public function destroy(DestroyDeductionRequest $request, $deductionId)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             App::make(DeductionRepository::class)->delete($deductionId);
 

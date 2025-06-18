@@ -7,13 +7,14 @@ use App\Enums\TimePeriodType;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Transformers\PayPeriodPreset\SelectionTransformer as PayPeriodPresetSelectionTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class PayPeriodPresetController extends Controller
 {
-    public function selection()
+    public function selection(Request $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $filters = [
                 'type' => TimePeriodType::PAY_PERIOD
