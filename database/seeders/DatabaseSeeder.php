@@ -49,20 +49,8 @@ class DatabaseSeeder extends Seeder
                     ]
                 ]
             ],[
-                'formulable_type' => Formulable::EARNINGS,
-                'order' => 2,
-                'name' => 'Global Compensations',
-                'reference' => 'compensation',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '0',
-                    ]
-                ]
-            ],[
                 'formulable_type' => Formulable::DEDUCTIONS,
-                'order' => 3,
+                'order' => 2,
                 'name' => 'Assigned Deductions',
                 'reference' => 'employee_deduction',
                 'conditions' => [
@@ -73,32 +61,20 @@ class DatabaseSeeder extends Seeder
                     ]
                 ]
             ],[
-                'formulable_type' => Formulable::DEDUCTIONS,
-                'order' => 4,
-                'name' => 'Global Deductions',
-                'reference' => 'deduction',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '0',
-                    ]
-                ]
-            ],[
                 'formulable_type' => Formulable::TAXABLE_INCOME,
-                'order' => 5,
+                'order' => 3,
                 'name' => 'Taxable Income',
                 'reference' => null,
                 'conditions' => null
             ],[
                 'formulable_type' => Formulable::NONTAXABLE_INCOME,
-                'order' => 6,
+                'order' => 4,
                 'name' => 'Non-Taxable Income',
                 'reference' => null,
                 'conditions' => null
             ],[
                 'formulable_type' => Formulable::INCOME_TAX,
-                'order' => 7,
+                'order' => 5,
                 'name' => 'Assigned Income Taxes',
                 'reference' => 'employee_income_tax',
                 'conditions' => [
@@ -109,20 +85,8 @@ class DatabaseSeeder extends Seeder
                     ]
                 ]
             ],[
-                'formulable_type' => Formulable::INCOME_TAX,
-                'order' => 8,
-                'name' => 'Global Income Taxes',
-                'reference' => 'income_tax',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '0',
-                    ]
-                ]
-            ],[
                 'formulable_type' => Formulable::NET_INCOME,
-                'order' => 9,
+                'order' => 6,
                 'name' => 'Net Income',
                 'reference' => null,
                 'conditions' => null
@@ -445,13 +409,37 @@ class DatabaseSeeder extends Seeder
             ->where('type', TimePeriodType::THIRTEENTH_MONTH)
             ->first();
 
+        $thirteenMonth = ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
+            'default_settings' => $november2ndThirteenMonthPeriodPreset['yearly_period']
+        ];
+
         $formulas = [
-            ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false],
-            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
-            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
-                'default_settings' => $november2ndThirteenMonthPeriodPreset['yearly_period']
+            ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false,
+                'default_settings' => [
+                    [
+                        'key' => 'regular_rate',
+                        'label' => 'Regular Rate',
+                        'order' => 1,
+                        'type' => 'text',
+                        'readable' => '100%',
+                        'value' => '1'
+                    ]
+                ]
             ],
+            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
+            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
+                'default_settings' => [
+                    [
+                        'key' => 'regular_overtime_rate',
+                        'label' => 'Regular Overtime Rate',
+                        'order' => 1,
+                        'type' => 'text',
+                        'readable' => '125%',
+                        'value' => '1'
+                    ]
+                ]
+            ],
+            //...[$thirteenMonth],
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-Absent', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
@@ -524,17 +512,17 @@ class DatabaseSeeder extends Seeder
                 ->first()->pivot->id,
         ]);
 
-        $devSubjectCompany->compensations()->create([
-            'name' => '13th Month',
-            'order' => 4,
-            'assignable' => true,
-            'type' => Compensation::BENEFIT,
-            'company_formula_id' => $devSubjectCompanyFormulas
-                ->where('formulable_type', Formulable::EARNINGS)
-                ->where('component_type', Compensation::BENEFIT)
-                ->where('interpolation', false)
-                ->first()->pivot->id,
-        ]);
+//        $devSubjectCompany->compensations()->create([
+//            'name' => '13th Month',
+//            'order' => 4,
+//            'assignable' => true,
+//            'type' => Compensation::BENEFIT,
+//            'company_formula_id' => $devSubjectCompanyFormulas
+//                ->where('formulable_type', Formulable::EARNINGS)
+//                ->where('component_type', Compensation::BENEFIT)
+//                ->where('interpolation', false)
+//                ->first()->pivot->id,
+//        ]);
 
         //Create Deduction
         $devSubjectCompany->deductions()->create([
