@@ -32,7 +32,8 @@ class Parsable implements CastsAttributes
                 $item->readable = $payload->readable;
 
                 $item->value = match($payload->type){
-                    'date' => $this->getDateFromPayload($payload->value)
+                    'date' => $this->getDateFromPayload($payload->value),
+                    default => $payload->value,
                 };
 
                 $parsed[] = $item;
@@ -53,7 +54,8 @@ class Parsable implements CastsAttributes
             $parsed->readable = $decoded->readable;
 
             $parsed->value = match($decoded->type){
-                'date' => $this->getDateFromPayload($decoded->value)
+                'date' => $this->getDateFromPayload($decoded->value),
+                default => $payload->value,
             };
         }
 
