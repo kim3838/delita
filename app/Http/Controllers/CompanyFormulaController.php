@@ -5,12 +5,29 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Transformers\CompanyFormula\FormulaSettingTransformer as CompanyFormulaSettingTransformer;
 use App\Transformers\CompanyFormula\ItemTransformer as CompanyFormulaTransformer;
 use App\Transformers\CompanyFormula\SelectionTransformer;
 use Illuminate\Support\Facades\App;
 
 class CompanyFormulaController extends Controller
 {
+    public function index()
+    {
+        if(request()->expectsJson()){
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(CompanyFormulaRepository::class)->list(),
+                    CompanyFormulaSettingTransformer::class,
+                    'formula_settings'
+                )
+            );
+        }
+
+        abort(404);
+    }
+
     public function selection()
     {
         if(request()->expectsJson()){

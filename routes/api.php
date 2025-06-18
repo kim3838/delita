@@ -81,6 +81,7 @@ Route::group([
     //Company Formula
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
     Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
+    Route::get('company-formulas', [CompanyFormulaController::class, 'index']);
 
     //Pay Period Preset Selection
     Route::get('pay-period-preset-selections', [PayPeriodPresetController::class, 'selection']);
