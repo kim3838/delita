@@ -6,7 +6,9 @@ use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
 use App\Enums\Formulable;
+use App\Enums\Gender;
 use App\Enums\IncomeTax;
+use App\Enums\MaritalStatus;
 use App\Enums\TimePeriodType;
 use App\Models\Account;
 use App\Models\Formula;
@@ -492,8 +494,13 @@ class Development extends Seeder
         //Assign 1002User01 to Company 1002-A as Employee
         $account1002User01->companies()->syncWithoutDetaching([$company1002A->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
 
+
         //Assign 1002User01 to Company 1002-B as Admin
         $account1002User01->companies()->syncWithoutDetaching([$company1002B->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
+
+        //Assign 1002User02 to Company 1002-B as Employee
+        $account1002User02->companies()->syncWithoutDetaching([$company1002B->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
+
 
         //Assign 1002User01 to Company 1002-C as Employee Admin
         $account1002User01->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
@@ -567,6 +574,56 @@ class Development extends Seeder
             $this->createPayrollComponent($company1002B, $index, Formulable::INCOME_TAX, 'incomeTaxes', $incomeTaxesPreset);
             $this->createPayrollComponent($company1002C, $index, Formulable::INCOME_TAX, 'incomeTaxes', $incomeTaxesPreset);
         }
+
+        /**************************************************************************************************************************************************************************************************************/
+
+        //Create Employee Info 1002User01 to Company 1002-A
+        $account1002User01->employee()->create([
+            'company_id' => $company1002A->id,
+            'number' => 'A1001',
+            'given_name' => 'Employee 01',
+            'middle_name' => 'A',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
+
+        //Create Employee Info 1002User01 to Company 1002-C
+        $account1002User01->employee()->create([
+            'company_id' => $company1002C->id,
+            'number' => 'C1001',
+            'given_name' => 'Employee 01',
+            'middle_name' => 'C',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
+
+        //Create Employee Info 1002User01 to Company 1002-B
+        $account1002User02->employee()->create([
+            'company_id' => $company1002B->id,
+            'number' => 'B1001',
+            'given_name' => 'Employee 01',
+            'middle_name' => 'B',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
+
+        //Create Employee Info 1002User02 to Company 1002-C
+        $account1002User02->employee()->create([
+            'company_id' => $company1002C->id,
+            'number' => 'C1002',
+            'given_name' => 'Employee 02',
+            'middle_name' => 'C',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
     }
 
     public function createPayrollComponent(Model $company, $index, $formulableType, $component, $attributes): void
