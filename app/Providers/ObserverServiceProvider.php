@@ -45,6 +45,7 @@ class ObserverServiceProvider extends ServiceProvider
                     Relation::getMorphedModel('compensation'),
                     Relation::getMorphedModel('deduction'),
                     Relation::getMorphedModel('income_tax'),
+                    Relation::getMorphedModel('salary_statement_module'),
                 ],
                 'observers' => [
                     OrderableObserver::class
