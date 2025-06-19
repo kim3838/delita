@@ -23,6 +23,15 @@ class AccountFactory extends Factory
         ];
     }
 
+    public function standard(): Factory|AccountFactory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => AccountType::STANDARD
+            ];
+        });
+    }
+
     public function corporate(): Factory|AccountFactory
     {
         return $this->state(function (array $attributes) {
