@@ -4,8 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
-use App\Models\Company;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,8 +26,6 @@ class EmployeeFactory extends Factory
         );
 
         return [
-            'user_id' => User::find(1)->id,
-            'company_id' => Company::find(1)->id,
             'given_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->randomElement([null, $this->faker->lastName()]),
             'family_name' => $this->faker->lastName(),
