@@ -14,6 +14,7 @@ use App\Http\Controllers\CompanyPayPeriodSettingController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\IncomeTaxController;
@@ -112,6 +113,9 @@ Route::group([
 
     Route::get('salary-statement-modules', [SalaryStatementModuleController::class, 'index']);
     Route::post('re-order/salary-statement-modules', [SalaryStatementModuleController::class, 'reOrder']);
+
+    //Employees
+    Route::get('employees', [EmployeeController::class, 'index']);
 });
 
 Route::group([

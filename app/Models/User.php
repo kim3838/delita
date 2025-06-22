@@ -7,7 +7,7 @@ use App\Traits\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -63,9 +63,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function employee(): HasOne
+    public function employees(): HasMany
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasMany(Employee::class);
     }
 
     public function companies()

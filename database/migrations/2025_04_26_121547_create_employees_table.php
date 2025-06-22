@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->ulid('ulid')->unique()->index();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('number')->unique();
@@ -26,6 +27,8 @@ return new class extends Migration
             $table->smallInteger('marital_status')->default(MaritalStatus::NOT_SPECIFIED);
             $table->date('date_registered')->default(now());
             $table->timestamps();
+
+            $table->unique(['user_id', 'company_id']);
         });
     }
 

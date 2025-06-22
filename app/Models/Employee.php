@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Gender;
+use App\Enums\MaritalStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +29,14 @@ class Employee extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
+    ];
+
+    protected $casts = [
+        'id' => 'int',
+        'number' => 'string',
+        'gender' => Gender::class,
+        'marital_status' => MaritalStatus::class,
+        'birth_date' => 'date',
     ];
 
     protected $appends = [

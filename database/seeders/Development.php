@@ -11,6 +11,7 @@ use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
 use App\Enums\TimePeriodType;
 use App\Models\Account;
+use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\Prototype;
 use App\Models\TimePeriodPreset;
@@ -18,6 +19,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class Development extends Seeder
 {
@@ -578,7 +580,8 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Create Employee Info 1002User01 to Company 1002-A
-        $account1002User01->employee()->create([
+        $account1002User01->employees()->create([
+            'ulid' => Str::ulid(),
             'company_id' => $company1002A->id,
             'number' => 'A1001',
             'given_name' => 'Employee 01',
@@ -590,7 +593,8 @@ class Development extends Seeder
         ]);
 
         //Create Employee Info 1002User01 to Company 1002-C
-        $account1002User01->employee()->create([
+        $account1002User01->employees()->create([
+            'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
             'number' => 'C1001',
             'given_name' => 'Employee 01',
@@ -602,7 +606,8 @@ class Development extends Seeder
         ]);
 
         //Create Employee Info 1002User01 to Company 1002-B
-        $account1002User02->employee()->create([
+        $account1002User02->employees()->create([
+            'ulid' => Str::ulid(),
             'company_id' => $company1002B->id,
             'number' => 'B1001',
             'given_name' => 'Employee 01',
@@ -614,7 +619,8 @@ class Development extends Seeder
         ]);
 
         //Create Employee Info 1002User02 to Company 1002-C
-        $account1002User02->employee()->create([
+        $account1002User02->employees()->create([
+            'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
             'number' => 'C1002',
             'given_name' => 'Employee 02',

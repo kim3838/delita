@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Observers\EmployeeObserver;
+use App\Observers\HasUlid;
 use App\Observers\OrderableObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -50,7 +51,15 @@ class ObserverServiceProvider extends ServiceProvider
                 'observers' => [
                     OrderableObserver::class
                 ]
-            )
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('employee'),
+                ],
+                'observers' => [
+                    HasUlid::class,
+                ]
+            ),
         );
     }
 }
