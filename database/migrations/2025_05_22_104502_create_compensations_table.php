@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('name');
             $table->smallInteger('order');
-            $table->boolean('assignable');
+            $table->boolean('assignable')->default(true);
             $table->smallInteger('type');
             $table->foreignId('company_formula_id')->constrained('company_formula')->onDelete('cascade');
             $table->timestamps();
