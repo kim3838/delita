@@ -111,6 +111,7 @@ Route::group([
     Route::patch('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'update']);
     Route::delete('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'destroy']);
 
+    //Salary Statement Modules
     Route::get('salary-statement-modules', [SalaryStatementModuleController::class, 'index']);
     Route::post('re-order/salary-statement-modules', [SalaryStatementModuleController::class, 'reOrder']);
 
