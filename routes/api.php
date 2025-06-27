@@ -95,6 +95,7 @@ Route::group([
 
     //Compensation
     Route::get('compensations', [CompensationController::class, 'index']);
+    Route::get('compensation-selections', [CompensationController::class, 'selection']);
     Route::post('compensation', [CompensationController::class, 'store']);
     Route::patch('compensation/{compensationId}', [CompensationController::class, 'update']);
     Route::delete('compensation/{compensationId}', [CompensationController::class, 'destroy']);

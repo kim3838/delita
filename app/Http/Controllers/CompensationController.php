@@ -11,6 +11,7 @@ use App\Http\Requests\Compensation\StoreCompensationRequest;
 use App\Http\Requests\Compensation\UpdateCompensationRequest;
 use App\Transformers\CompanyCompensation\ListTransformer;
 use App\Transformers\Compensation\ItemTransformer as CompensationTransformer;
+use App\Transformers\Compensation\SelectionTransformer;
 use Illuminate\Support\Facades\App;
 
 class CompensationController extends Controller
@@ -23,6 +24,22 @@ class CompensationController extends Controller
                 ListTransformer::class,
                 'compensations'
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection()
+    {
+        if(request()->expectsJson()){
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(CompensationRepository::class)->selection(),
+                    SelectionTransformer::class,
+                    'selection'
+                )
+            );
         }
 
         abort(404);
