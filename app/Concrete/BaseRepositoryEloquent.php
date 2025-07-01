@@ -117,6 +117,11 @@ abstract class BaseRepositoryEloquent
         return $paginator->setCollection($class::hydrate($items));
     }
 
+    public function hydrateItem(array $attributes = [])
+    {
+        return $this->model::hydrate([$attributes])->first();
+    }
+
     /**
      * Hydrate collection to the specified class
      *
