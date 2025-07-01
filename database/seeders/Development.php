@@ -215,11 +215,11 @@ class Development extends Seeder
                     'label' => 'Start Date',
                     'order' => 1,
                     'type' => 'date',
-                    'readable' => '11 of last month',
+                    'readable' => '11 of current month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => 'subMonth.1',
+                        'month' => null,
                         'day' => 11,
                         'time' => 'startOfDay'
                     ]
@@ -228,11 +228,11 @@ class Development extends Seeder
                     'label' => 'End Date',
                     'order' => 2,
                     'type' => 'date',
-                    'readable' => '10 of current month',
+                    'readable' => '10 of next month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => null,
+                        'month' => 'addMonth.1',
                         'day' => 10,
                         'time' => 'endOfDay'
                     ]
@@ -244,11 +244,11 @@ class Development extends Seeder
                     'label' => '1st Half Start Date',
                     'order' => 1,
                     'type' => 'date',
-                    'readable' => '11 of last month',
+                    'readable' => '11 of current month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => 'subMonth.1',
+                        'month' => null,
                         'day' => 11,
                         'time' => 'startOfDay'
                     ]
@@ -257,11 +257,11 @@ class Development extends Seeder
                     'label' => '1st Half End Date',
                     'order' => 2,
                     'type' => 'date',
-                    'readable' => '25 of last month',
+                    'readable' => '25 of current month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => 'subMonth.1',
+                        'month' => null,
                         'day' => 25,
                         'time' => 'endOfDay'
                     ]
@@ -270,11 +270,11 @@ class Development extends Seeder
                     'label' => '2nd Half Start Date',
                     'order' => 3,
                     'type' => 'date',
-                    'readable' => '26 of last month',
+                    'readable' => '26 of current month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => 'subMonth.1',
+                        'month' => null,
                         'day' => 26,
                         'time' => 'startOfDay'
                     ]
@@ -283,11 +283,11 @@ class Development extends Seeder
                     'label' => '2nd Half End Date',
                     'order' => 4,
                     'type' => 'date',
-                    'readable' => '10 of current month',
+                    'readable' => '10 of next month',
                     'value' => [
                         'base' => 'now',
                         'year' => null,
-                        'month' => null,
+                        'month' => 'addMonth.1',
                         'day' => 10,
                         'time' => 'endOfDay'
                     ]
