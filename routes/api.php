@@ -118,6 +118,7 @@ Route::group([
 
     //Employees
     Route::get('employees', [EmployeeController::class, 'index']);
+    Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
 });
 
 Route::group([
