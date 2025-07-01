@@ -10,6 +10,9 @@ use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
+use App\Enums\PayFrequency;
+use App\Enums\PayPeriod;
+use App\Enums\PayType;
 use App\Enums\UserType;
 use App\Facades\ResponseJson;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +31,9 @@ class EnumController extends Controller
             'marital_status' => MaritalStatus::class,
             'user_type' => UserType::class,
             'formulable_type' => Formulable::class,
+            'pay_period' => PayPeriod::class,
+            'pay_type' => PayType::class,
+            'pay_frequency' => PayFrequency::class,
             default => throw new \InvalidArgumentException('Invalid enum type'),
         };
 
