@@ -13,19 +13,21 @@ class FractalTransformer
 {
     public function item($item, $transformer, $meta = false): array
     {
+        $item = clone $item;
+
         $fractal = new FractalManager();
 
         if(!$meta){$fractal->setSerializer(new ArraySerializer());}
 
         $data = new Item($item, new $transformer);
 
-        $item = $fractal->createData($data)->toArray();
-
-        return $item;
+        return $fractal->createData($data)->toArray();
     }
 
     public function collection($collection, $transformer, $key = null, $meta = true): array
     {
+        $collection = clone $collection;
+
         if (($collection instanceof Collection && $collection->count() === 0)
             || (is_array($collection) && count($collection) === 0)
         ) {

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  *
  * @method static item($item, $transformer, boolean $meta = false)
- * @method static collection($collection, $transformer, boolean $meta = true, string $key = null)
+ * @method static collection($collection, $transformer, string $key = null, boolean $meta = true)
  */
 class Fractal extends Facade
 {
