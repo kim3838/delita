@@ -15,6 +15,7 @@ use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\IncomeTaxController;
@@ -102,12 +103,14 @@ Route::group([
 
     //Deduction
     Route::get('deductions', [DeductionController::class, 'index']);
+    Route::get('deduction-selections', [DeductionController::class, 'selection']);
     Route::post('deduction', [DeductionController::class, 'store']);
     Route::patch('deduction/{deductionId}', [DeductionController::class, 'update']);
     Route::delete('deduction/{deductionId}', [DeductionController::class, 'destroy']);
 
     //Income Tax
     Route::get('income-taxes', [IncomeTaxController::class, 'index']);
+    Route::get('income-tax-selections', [IncomeTaxController::class, 'selection']);
     Route::post('income-tax', [IncomeTaxController::class, 'store']);
     Route::patch('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'update']);
     Route::delete('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'destroy']);
@@ -119,6 +122,16 @@ Route::group([
     //Employees
     Route::get('employees', [EmployeeController::class, 'index']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
+
+    //Employee Payroll Component
+    Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);
+    Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollComponentController::class, 'deductions']);
+    Route::get('employee-payroll-info/{employeeUlid}/income-taxes', [EmployeePayrollComponentController::class, 'incomeTaxes']);
+
+    Route::post('employee-payroll-component-validate', [EmployeePayrollComponentController::class, 'validate']);
+    Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
+    Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
+    Route::delete('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'destroy']);
 });
 
 Route::group([

@@ -11,6 +11,7 @@ use App\Http\Requests\Deduction\StoreDeductionRequest;
 use App\Http\Requests\Deduction\UpdateDeductionRequest;
 use App\Transformers\CompanyDeduction\ListTransformer;
 use App\Transformers\Deduction\ItemTransformer as DeductionTransformer;
+use App\Transformers\Deduction\SelectionTransformer;
 use Illuminate\Support\Facades\App;
 
 class DeductionController extends Controller
@@ -23,6 +24,21 @@ class DeductionController extends Controller
                 ListTransformer::class,
                 'deductions'
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection()
+    {
+        if(request()->expectsJson()){
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(DeductionRepository::class)->selection(),
+                    SelectionTransformer::class,
+                    'selection'
+                )
+            );
         }
 
         abort(404);

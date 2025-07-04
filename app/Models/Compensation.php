@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Compensation as CompensationEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Compensation extends Model
 {
@@ -42,5 +43,10 @@ class Compensation extends Model
     public function companyFormula(): BelongsTo
     {
         return $this->belongsTo(CompanyFormula::class);
+    }
+
+    public function employeePayrollComponents(): MorphMany
+    {
+        return $this->morphMany(EmployeePayrollComponent::class, 'payroll_componentable');
     }
 }

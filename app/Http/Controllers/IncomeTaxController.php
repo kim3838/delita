@@ -11,6 +11,7 @@ use App\Http\Requests\IncomeTax\StoreIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\UpdateIncomeTaxRequest;
 use App\Transformers\CompanyIncomeTax\ListTransformer;
 use App\Transformers\IncomeTax\ItemTransformer as IncomeTaxTransformer;
+use App\Transformers\IncomeTax\SelectionTransformer;
 use Illuminate\Support\Facades\App;
 
 class IncomeTaxController extends Controller
@@ -22,6 +23,20 @@ class IncomeTaxController extends Controller
                 App::make(CompanyIncomeTaxRepository::class)->list(),
                 ListTransformer::class,
                 'income_taxes'
+            ));
+        }
+
+        abort(404);
+    }
+
+    public function selection()
+    {
+        if(request()->expectsJson()){
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(IncomeTaxRepository::class)->selection(),
+                    SelectionTransformer::class,
+                    'selection'
             ));
         }
 

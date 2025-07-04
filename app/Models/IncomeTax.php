@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\IncomeTax as IncomeTaxEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class IncomeTax extends Model
 {
@@ -40,5 +41,10 @@ class IncomeTax extends Model
     public function companyFormula(): BelongsTo
     {
         return $this->belongsTo(CompanyFormula::class);
+    }
+
+    public function employeePayrollComponents(): MorphMany
+    {
+        return $this->morphMany(EmployeePayrollComponent::class, 'payroll_componentable');
     }
 }

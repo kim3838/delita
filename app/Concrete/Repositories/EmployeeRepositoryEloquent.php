@@ -43,4 +43,11 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
         return $this->hydratePaginationItems($paginator, new $this->model);
     }
+
+    public function show($ulid)
+    {
+        $queryBuilder = $this->model::where('ulid', $ulid);
+
+        return $queryBuilder->first();
+    }
 }

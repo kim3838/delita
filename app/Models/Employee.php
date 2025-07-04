@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
@@ -62,5 +63,28 @@ class Employee extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function payrollComponents(): HasMany
+    {
+        return $this->hasMany(EmployeePayrollComponent::class);
+    }
+
+    public function compensations(): HasMany
+    {
+        return $this->hasMany(EmployeePayrollComponent::class)
+            ->where('payroll_componentable_type', 'compensation');
+    }
+
+    public function deductions(): HasMany
+    {
+        return $this->hasMany(EmployeePayrollComponent::class)
+            ->where('payroll_componentable_type', 'deduction');
+    }
+
+    public function incomeTaxes(): HasMany
+    {
+        return $this->hasMany(EmployeePayrollComponent::class)
+            ->where('payroll_componentable_type', 'income_tax');
     }
 }

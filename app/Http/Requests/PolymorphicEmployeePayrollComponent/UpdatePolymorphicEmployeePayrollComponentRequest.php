@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Requests\PolymorphicEmployeePayrollComponent;
+
+use App\Http\Requests\BasePolymorphicEmployeePayrollComponentRequest;
+use App\Models\EmployeePayrollComponent;
+
+class UpdatePolymorphicEmployeePayrollComponentRequest extends BasePolymorphicEmployeePayrollComponentRequest
+{
+    public function authorize(): bool
+    {
+        $employeePayrollComponent = EmployeePayrollComponent::findOrFail($this->route('employeePayrollComponentId'));
+
+        return $this->user()->can('update', $employeePayrollComponent);
+    }
+}
