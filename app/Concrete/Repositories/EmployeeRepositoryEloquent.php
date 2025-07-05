@@ -21,23 +21,14 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
         $queryBuilder = $this->model::getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("company_id"), $value);
+                $builder->where(DB::raw("employees.company_id"), $value);
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER() AS 'row_number'"),
-                'id',
-                'ulid',
-                'number',
-                'given_name',
-                'middle_name',
-                'family_name',
-                'birth_date',
-                'gender',
-                'marital_status',
-                'date_registered'
+                "employees.*"
             ])
-            ->orderBy('family_name', 'ASC')
-            ->orderBy('given_name', 'ASC');
+            ->orderBy("employees.family_name", 'ASC')
+            ->orderBy("employees.given_name", 'ASC');
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

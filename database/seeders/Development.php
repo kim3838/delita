@@ -486,6 +486,7 @@ class Development extends Seeder
         //Account 1002User01
         $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com']);
         $account1002User02 = User::factory()->default()->create(['name' => '1002.user.2', 'email' => 'luxere20@gmail.com']);
+        $account1002User03 = User::factory()->default()->create(['name' => '1002.user.3', 'email' => 'luxere20@gmail.com']);
 
         /*
          * Employee: has employee info and default assigned to a company
@@ -510,6 +511,8 @@ class Development extends Seeder
         //Assign 1002User02 to Company 1002-C as Employee
         $account1002User02->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
 
+        //Assign 1002User03 to Company 1002-C as Employee
+        $account1002User03->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
@@ -579,11 +582,43 @@ class Development extends Seeder
 
         /**************************************************************************************************************************************************************************************************************/
 
+        //Create Departments to Company 1002-B
+        $company1002B->departments()->create(['name' => 'Executive']);
+        $company1002B->departments()->create(['name' => 'HR']);
+        $company1002BHrDepartment = $company1002B->departments()->where('name', 'HR')->first();
+        $company1002B->departments()->create(['name' => 'Payroll', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002B->departments()->create(['name' => 'Training & Development', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002B->departments()->create(['name' => 'Finance & Accounting']);
+        $company1002BFinanceAndAccountingDepartment = $company1002B->departments()->where('name', 'Finance & Accounting')->first();
+        $company1002B->departments()->create(['name' => 'Accounts Payable', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+        $company1002B->departments()->create(['name' => 'Internal Audit', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+
+        //Create Departments to Company 1002-C
+        $company1002C->departments()->create(['name' => 'Executive']);
+        $company1002C->departments()->create(['name' => 'HR']);
+        $company1002CHrDepartment = $company1002C->departments()->where('name', 'HR')->first();
+        $company1002C->departments()->create(['name' => 'Payroll', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002C->departments()->create(['name' => 'Training & Development', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002C->departments()->create(['name' => 'Finance & Accounting']);
+        $company1002CFinanceAndAccountingDepartment = $company1002C->departments()->where('name', 'Finance & Accounting')->first();
+        $company1002C->departments()->create(['name' => 'Accounts Payable', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+        $company1002C->departments()->create(['name' => 'Internal Audit', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+
+        /**************************************************************************************************************************************************************************************************************/
+
         //Create Designations to Company 1002-B
+        $company1002B->designations()->create(['name' => 'CEO']);
         $company1002B->designations()->create(['name' => 'HR Manager']);
         $company1002B->designations()->create(['name' => 'HR Assistant']);
         $company1002B->designations()->create(['name' => 'Account Manager']);
-        $company1002B->designations()->create(['name' => 'Clerical Staff']);
+        $company1002B->designations()->create(['name' => 'Accounting Staff']);
+
+        //Create Designations to Company 1002-C
+        $company1002C->designations()->create(['name' => 'CEO']);
+        $company1002C->designations()->create(['name' => 'HR Manager']);
+        $company1002C->designations()->create(['name' => 'HR Assistant']);
+        $company1002C->designations()->create(['name' => 'Account Manager']);
+        $company1002C->designations()->create(['name' => 'Accounting Staff']);
 
         /**************************************************************************************************************************************************************************************************************/
 
@@ -604,6 +639,8 @@ class Development extends Seeder
         $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
+            'department_id' => $company1002C->departments()->where('name', 'HR')->first()->id,
+            'designation_id' => $company1002C->designations()->where('name', 'HR Manager')->first()->id,
             'number' => 'C1001',
             'given_name' => 'Employee 01',
             'middle_name' => 'C',
@@ -630,12 +667,31 @@ class Development extends Seeder
         $account1002User02->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
+            'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
+            'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
+            'manager_id' => $account1002User01->id,
             'number' => 'C1002',
             'given_name' => 'Employee 02',
             'middle_name' => 'C',
             'family_name' => '1002',
             'birth_date' => '1990-01-01',
             'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
+
+        //Create Employee Info 1002User03 to Company 1002-C
+        $account1002User03->employees()->create([
+            'ulid' => Str::ulid(),
+            'company_id' => $company1002C->id,
+            'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
+            'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
+            'manager_id' => $account1002User01->id,
+            'number' => 'C1003',
+            'given_name' => 'Employee 03',
+            'middle_name' => 'C',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::NOT_SPECIFIED,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
     }

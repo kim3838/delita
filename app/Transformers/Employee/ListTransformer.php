@@ -5,7 +5,7 @@ namespace App\Transformers\Employee;
 use App\Models\Employee;
 use League\Fractal\TransformerAbstract;
 
-class BasicListTransformer extends TransformerAbstract
+class ListTransformer extends TransformerAbstract
 {
     public function transform(Employee $employee)
     {
@@ -16,7 +16,10 @@ class BasicListTransformer extends TransformerAbstract
             'number' => $employee->number,
             'full_name' => $employee->full_name,
             'gender' => $employee->gender->toArray(),
-            'marital_status' => $employee->marital_status->toArray()
+            'marital_status' => $employee->marital_status->toArray(),
+            'department' => $employee->department,
+            'designation' => $employee->designation,
+            'manager' => $employee->manager,
         ];
     }
 }

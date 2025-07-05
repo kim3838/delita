@@ -18,6 +18,9 @@ return new class extends Migration
             $table->ulid('ulid')->unique()->index();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
+            $table->foreignId('designation_id')->nullable()->constrained('designations')->onDelete('set null');
+            $table->foreignId('manager_id')->nullable()->constrained('employees')->onDelete('set null');
             $table->string('number')->unique();
             $table->string('given_name');
             $table->string('middle_name')->nullable();

@@ -17,6 +17,9 @@ class Employee extends Model
     protected $fillable = [
         'user_id',
         'company_id',
+        'department_id',
+        'designation_id',
+        'manager_id',
         'number',
         'given_name',
         'middle_name',
@@ -63,6 +66,28 @@ class Employee extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function designation(): BelongsTo
+    {
+        return $this->belongsTo(Designation::class);
+    }
+
+    // Manager of the employee
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    // Employees managed by this employee
+    public function subordinates(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'manager_id');
     }
 
     public function payrollComponents(): HasMany

@@ -10,6 +10,7 @@ use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Blueprint\Repositories\CompanyRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Blueprint\Repositories\DeductionRepository;
+use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
@@ -26,6 +27,7 @@ use App\Concrete\Repositories\CompanyIncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\CompanyRepositoryEloquent;
 use App\Concrete\Repositories\CompensationRepositoryEloquent;
 use App\Concrete\Repositories\DeductionRepositoryEloquent;
+use App\Concrete\Repositories\DepartmentRepositoryEloquent;
 use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
@@ -44,6 +46,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         'company' => CompanyRepositoryEloquent::class,
         'associated_company' => AssociatedCompanyRepositoryEloquent::class,
         'designation' => DesignationRepositoryEloquent::class,
+        'department' => DepartmentRepositoryEloquent::class,
         'employee' => EmployeeRepositoryEloquent::class,
         'employee_payroll_component' => EmployeePayrollComponentRepositoryEloquent::class,
         'company_formula' => CompanyFormulaRepositoryEloquent::class,
@@ -59,6 +62,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         PrototypeRepository::class => PrototypeRepositoryEloquent::class,
         AssociatedCompanyRepository::class => AssociatedCompanyRepositoryEloquent::class,
         DesignationRepository::class => DesignationRepositoryEloquent::class,
+        DepartmentRepository::class => DepartmentRepositoryEloquent::class,
         EmployeeRepository::class => EmployeeRepositoryEloquent::class,
         EmployeePayrollComponentRepository::class => EmployeePayrollComponentRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
@@ -81,6 +85,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             'company',
             'associated_company',
             'designation',
+            'department',
             'employee',
             'employee_payroll_component',
             'company_formula',
@@ -97,6 +102,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             CompanyRepository::class,
             AssociatedCompanyRepository::class,
             DesignationRepository::class,
+            DepartmentRepository::class,
             EmployeeRepository::class,
             EmployeePayrollComponentRepository::class,
             CompanyFormulaRepository::class,

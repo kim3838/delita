@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Account;
+use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\Deduction;
+use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\IncomeTax;
@@ -29,7 +32,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'user' => User::class,
+            'account' => Account::class,
+            'company' => Company::class,
             'employee' => Employee::class,
+            'department' => Department::class,
             'designation' => Designation::class,
             'compensation' => Compensation::class,
             'deduction' => Deduction::class,
