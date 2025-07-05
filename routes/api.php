@@ -14,6 +14,7 @@ use App\Http\Controllers\CompanyPayPeriodSettingController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
+use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
@@ -132,6 +133,13 @@ Route::group([
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
     Route::delete('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'destroy']);
+
+    //Designations
+    Route::get('designations', [DesignationController::class, 'index']);
+    Route::get('designation-selections', [DesignationController::class, 'selection']);
+    Route::post('designation', [DesignationController::class, 'store']);
+    Route::patch('designation/{designationId}', [DesignationController::class, 'update']);
+    Route::delete('designation/{designationId}', [DesignationController::class, 'destroy']);
 });
 
 Route::group([

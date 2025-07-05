@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Compensation;
 use App\Models\Deduction;
+use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\IncomeTax;
 use App\Models\SalaryStatementModule;
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'user' => User::class,
             'employee' => Employee::class,
+            'designation' => Designation::class,
             'compensation' => Compensation::class,
             'deduction' => Deduction::class,
             'income_tax' => IncomeTax::class,

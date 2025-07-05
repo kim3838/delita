@@ -71,4 +71,9 @@ class Company extends Model
     {
         return $this->hasMany(SalaryStatementModule::class);
     }
+
+    public function designations(): HasMany
+    {
+        return $this->hasMany(Designation::class);
+    }
 }

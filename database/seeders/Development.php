@@ -579,6 +579,14 @@ class Development extends Seeder
 
         /**************************************************************************************************************************************************************************************************************/
 
+        //Create Designations to Company 1002-B
+        $company1002B->designations()->create(['name' => 'HR Manager']);
+        $company1002B->designations()->create(['name' => 'HR Assistant']);
+        $company1002B->designations()->create(['name' => 'Account Manager']);
+        $company1002B->designations()->create(['name' => 'Clerical Staff']);
+
+        /**************************************************************************************************************************************************************************************************************/
+
         //Create Employee Info 1002User01 to Company 1002-A
         $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
