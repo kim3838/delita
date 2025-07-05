@@ -19,6 +19,7 @@ class IncomeTaxController extends Controller
     public function index()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(CompanyIncomeTaxRepository::class)->list(),
                 ListTransformer::class,
@@ -32,6 +33,7 @@ class IncomeTaxController extends Controller
     public function selection()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
                     App::make(IncomeTaxRepository::class)->selection(),
@@ -46,6 +48,7 @@ class IncomeTaxController extends Controller
     public function store(StoreIncomeTaxRequest $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'income_tax' => Fractal::item(
                     App::make(IncomeTaxRepository::class)->store($request->validated()),
@@ -60,6 +63,7 @@ class IncomeTaxController extends Controller
     public function update(UpdateIncomeTaxRequest $request, $incomeTaxId)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'income_tax' => Fractal::item(
                     App::make(IncomeTaxRepository::class)->update($incomeTaxId, $request->validated()),

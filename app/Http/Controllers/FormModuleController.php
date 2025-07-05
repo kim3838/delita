@@ -11,6 +11,7 @@ class FormModuleController extends Controller
     public function selection($module)
     {
         if(request()->wantsJson()){
+
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
                     App::make($module)->selection(),

@@ -22,6 +22,7 @@ class PrototypeController extends Controller
     public function index()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(
                 Fractal::collection($this->prototypeRepository->list(), DataTableTransformer::class)
             );

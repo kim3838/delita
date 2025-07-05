@@ -19,6 +19,7 @@ class DesignationController extends Controller
     public function index(Request $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(DesignationRepository::class)->list(),
                 ListTransformer::class,
@@ -48,6 +49,7 @@ class DesignationController extends Controller
     public function store(StoreDesignationRequest $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'designation' => Fractal::item(
                     App::make(DesignationRepository::class)->store($request->validated()),
@@ -62,6 +64,7 @@ class DesignationController extends Controller
     public function update(UpdateDesignationRequest $request, $designationId)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'designation' => Fractal::item(
                     App::make(DesignationRepository::class)->update($designationId, $request->validated()),

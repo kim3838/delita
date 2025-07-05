@@ -47,6 +47,7 @@ class CompanyFormulaController extends Controller
     public function show($companyFormulaId)
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'company_formula' => Fractal::item(
                     App::make(CompanyFormulaRepository::class)->show($companyFormulaId),

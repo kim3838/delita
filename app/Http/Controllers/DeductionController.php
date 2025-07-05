@@ -19,6 +19,7 @@ class DeductionController extends Controller
     public function index()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(CompanyDeductionRepository::class)->list(),
                 ListTransformer::class,
@@ -32,6 +33,7 @@ class DeductionController extends Controller
     public function selection()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
                     App::make(DeductionRepository::class)->selection(),
@@ -47,6 +49,7 @@ class DeductionController extends Controller
     public function store(StoreDeductionRequest $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'deduction' => Fractal::item(
                     App::make(DeductionRepository::class)->store($request->validated()),
@@ -61,6 +64,7 @@ class DeductionController extends Controller
     public function update(UpdateDeductionRequest $request, $deductionId)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'deduction' => Fractal::item(
                     App::make(DeductionRepository::class)->update($deductionId, $request->validated()),

@@ -15,6 +15,7 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(EmployeeRepository::class)->list(),
                 BasicListTransformer::class,

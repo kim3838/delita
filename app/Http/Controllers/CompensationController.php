@@ -19,6 +19,7 @@ class CompensationController extends Controller
     public function index()
     {
         if(request()->expectsJson()){
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(CompanyCompensationRepository::class)->list(),
                 ListTransformer::class,
@@ -48,6 +49,7 @@ class CompensationController extends Controller
     public function store(StoreCompensationRequest $request)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->store($request->validated()),
@@ -62,6 +64,7 @@ class CompensationController extends Controller
     public function update(UpdateCompensationRequest $request, $compensationId)
     {
         if($request->expectsJson()){
+
             return ResponseJson::successfulResponse([
                 'compensation' => Fractal::item(
                     App::make(CompensationRepository::class)->update($compensationId, $request->validated()),
