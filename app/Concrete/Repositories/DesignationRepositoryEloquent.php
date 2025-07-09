@@ -27,7 +27,8 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
                 'designations.id AS id',
                 'designations.company_id AS company_id',
                 'designations.name AS name'
-            ]);
+            ])
+            ->orderBy('name', 'ASC');
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
@@ -42,7 +43,6 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
             })
             ->select([
                 'designations.id AS id',
-                'designations.company_id AS company_id',
                 'designations.name AS name',
             ])
             ->orderBy('name', 'ASC');
