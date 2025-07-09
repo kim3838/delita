@@ -15,6 +15,11 @@ class Account extends Model
         'type'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function companies(): HasMany
     {
         return $this->hasMany(Company::class);

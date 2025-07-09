@@ -18,6 +18,11 @@ class Designation extends Model
         'name' => 'string',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

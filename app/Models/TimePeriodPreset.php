@@ -24,4 +24,9 @@ class TimePeriodPreset extends Model
         'monthly_period' => 'array',
         'semimonthly_period' => 'array',
     ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }
