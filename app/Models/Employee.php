@@ -51,9 +51,9 @@ class Employee extends Model
     {
         return Attribute::get(function () {
             return collect([
-                $this->given_name,
-                $this->middle_name,
                 $this->family_name,
+                $this->middle_name,
+                $this->given_name,
             ])->filter()->implode(' ');
         });
     }

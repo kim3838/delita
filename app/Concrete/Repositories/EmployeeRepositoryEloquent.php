@@ -35,6 +35,29 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return $this->hydratePaginationItems($paginator, new $this->model);
     }
 
+    public function selection()
+    {
+        $filters = json_decode(Request::get('filters'));
+
+        $queryBuilder = $this->model::getQuery()
+            ->when($filters->company_id ?? false, function ($builder, $value) {
+                $builder->where(DB::raw("employees.company_id"), $value);
+            })
+            ->when($filters->search ?? false, function($builder, $value){
+                $builder->whereRaw("CONCAT_WS(' ', family_name, middle_name, given_name) LIKE ?", ["%{$value}%"]);
+            })
+            ->select([
+                "employees.*"
+            ])
+            ->orderBy("employees.family_name", 'ASC')
+            ->orderBy("employees.middle_name", 'ASC')
+            ->orderBy("employees.given_name", 'ASC');
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, new $this->model);
+    }
+
     public function show($ulid)
     {
         $queryBuilder = $this->model::where('ulid', $ulid);

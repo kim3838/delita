@@ -123,6 +123,7 @@ Route::group([
 
     //Employees
     Route::get('employees', [EmployeeController::class, 'index']);
+    Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
 
     //Employee Payroll Component
