@@ -11,6 +11,7 @@ use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\IncomeTax;
 use App\Models\SalaryStatementModule;
+use App\Models\TimePeriodPreset;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
             'compensation' => Compensation::class,
             'deduction' => Deduction::class,
             'income_tax' => IncomeTax::class,
+            'time_period_preset' => TimePeriodPreset::class,
             'salary_statement_module' => SalaryStatementModule::class,
         ]);
     }
