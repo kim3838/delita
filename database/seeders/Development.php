@@ -381,6 +381,39 @@ class Development extends Seeder
                     ]
                 ],
             ]
+        ], [
+            'type' => TimePeriodType::NIGHT_DIFFERENTIAL_HOURS,
+            'name' => 'night_differential_hours',
+            'readable_name' => 'Night Differential Hours',
+            'hour_period' => [
+                [
+                    'key' => 'start_time',
+                    'label' => 'Start Time',
+                    'order' => 1,
+                    'type' => 'date',
+                    'readable' => '10 PM',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => null,
+                        'time' => [22,0,0]
+                    ]
+                ],[
+                    'key' => 'end_time',
+                    'label' => 'End Time',
+                    'order' => 2,
+                    'type' => 'date',
+                    'readable' => '06 AM',
+                    'value' => [
+                        'base' => 'now',
+                        'year' => null,
+                        'month' => null,
+                        'day' => 'addDay.1',
+                        'time' => [6,0,0]
+                    ]
+                ]
+            ]
         ]
     ];
 
@@ -409,6 +442,11 @@ class Development extends Seeder
             ->where('name', '25th_cut_off')
             ->first();
 
+        $nightDifferentialPeriodPreset = collect(self::$timePeriodPresets)
+            ->where('name', 'night_differential_hours')
+            ->where('type', TimePeriodType::NIGHT_DIFFERENTIAL_HOURS)
+            ->first();
+
         //13th Month Formula Preset
         $thirteenMonthFormulaPreset = ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
             'default_settings' => $november2ndThirteenMonthPeriodPreset['yearly_period']
@@ -419,29 +457,312 @@ class Development extends Seeder
             ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false,
                 'default_settings' => [
                     [
-                        'key' => 'regular_rate',
-                        'label' => 'Regular Rate',
+                        'key' => 'regular_rates',
+                        'label' => 'Regular Rates',
                         'order' => 1,
-                        'type' => 'number',
-                        'readable' => '100%',
-                        'value' => '1'
+                        'type' => 'array',
+                        'readable' => 'Regular Rates',
+                        'value' => [
+                            [
+                                'key' => 'regular_day_rate',
+                                'label' => 'Regular Day Rate',
+                                'order' => 1,
+                                'type' => 'number',
+                                'readable' => '100%',
+                                'value' => '1'
+                            ],
+                            [
+                                'key' => 'rest_day_rate',
+                                'label' => 'Rest Day Rate',
+                                'order' => 2,
+                                'type' => 'number',
+                                'readable' => '130%',
+                                'value' => '1.3'
+                            ],
+                            [
+                                'key' => 'special_holiday_rate',
+                                'label' => 'Special Holiday Rate',
+                                'order' => 3,
+                                'type' => 'number',
+                                'readable' => '130%',
+                                'value' => '1.3'
+                            ],
+                            [
+                                'key' => 'special_holiday_and_rest_day_rate',
+                                'label' => 'Special Holiday & Rest Day Rate',
+                                'order' => 4,
+                                'type' => 'number',
+                                'readable' => '150%',
+                                'value' => '1.5'
+                            ],
+                            [
+                                'key' => 'legal_holiday_rate',
+                                'label' => 'Legal Holiday Rate',
+                                'order' => 5,
+                                'type' => 'number',
+                                'readable' => '200%',
+                                'value' => '2'
+                            ],
+                            [
+                                'key' => 'legal_holiday_and_rest_day_rate',
+                                'label' => 'Legal Holiday & Rest Day Rate',
+                                'order' => 6,
+                                'type' => 'number',
+                                'readable' => '260%',
+                                'value' => '2.6'
+                            ],
+                            [
+                                'key' => 'double_holiday_rate',
+                                'label' => 'Double Holiday Rate',
+                                'order' => 7,
+                                'type' => 'number',
+                                'readable' => '300%',
+                                'value' => '3'
+                            ],
+                            [
+                                'key' => 'double_holiday_and_rest_day_rate',
+                                'label' => 'Double Holiday & Rest Day Rate',
+                                'order' => 8,
+                                'type' => 'number',
+                                'readable' => '390%',
+                                'value' => '3.9'
+                            ],
+                        ]
+                    ],
+                    [
+                        'key' => 'night_differential_hours',
+                        'label' => 'Night Differential Hours',
+                        'order' => 2,
+                        'type' => 'array',
+                        'readable' => 'Night Differential Hours',
+                        'value' => [...$nightDifferentialPeriodPreset['hour_period']]
+                    ],
+                    [
+                        'key' => 'night_differential_rates',
+                        'label' => 'Night Differential Rates',
+                        'order' => 3,
+                        'type' => 'array',
+                        'readable' => 'Night Differential Rates',
+                        'value' => [
+                            [
+                                'key' => 'regular_day_rate',
+                                'label' => 'Regular Day Rate',
+                                'order' => 1,
+                                'type' => 'number',
+                                'readable' => '110%',
+                                'value' => '1.10'
+                            ],
+                            [
+                                'key' => 'rest_day_rate',
+                                'label' => 'Rest Day Rate',
+                                'order' => 2,
+                                'type' => 'number',
+                                'readable' => '143%',
+                                'value' => '1.43'
+                            ],
+                            [
+                                'key' => 'special_holiday_rate',
+                                'label' => 'Special Holiday Rate',
+                                'order' => 3,
+                                'type' => 'number',
+                                'readable' => '143%',
+                                'value' => '1.43'
+                            ],
+                            [
+                                'key' => 'special_holiday_and_rest_day_rate',
+                                'label' => 'Special Holiday & Rest Day Rate',
+                                'order' => 4,
+                                'type' => 'number',
+                                'readable' => '165%',
+                                'value' => '1.65'
+                            ],
+                            [
+                                'key' => 'legal_holiday_rate',
+                                'label' => 'Legal Holiday Rate',
+                                'order' => 5,
+                                'type' => 'number',
+                                'readable' => '220%',
+                                'value' => '2.2'
+                            ],
+                            [
+                                'key' => 'legal_holiday_and_rest_day_rate',
+                                'label' => 'Legal Holiday & Rest Day Rate',
+                                'order' => 6,
+                                'type' => 'number',
+                                'readable' => '286%',
+                                'value' => '2.86'
+                            ],
+                            [
+                                'key' => 'double_holiday_rate',
+                                'label' => 'Double Holiday Rate',
+                                'order' => 7,
+                                'type' => 'number',
+                                'readable' => '330%',
+                                'value' => '3.30'
+                            ],
+                            [
+                                'key' => 'double_holiday_and_rest_day_rate',
+                                'label' => 'Double Holiday & Rest Day Rate',
+                                'order' => 8,
+                                'type' => 'number',
+                                'readable' => '429%',
+                                'value' => '4.29'
+                            ],
+                        ]
+                    ]
+                ]
+            ],
+            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
+                'default_settings' => [
+                    [
+                        'key' => 'regular_rates',
+                        'label' => 'Regular Rates',
+                        'order' => 1,
+                        'type' => 'array',
+                        'readable' => 'Regular Rates',
+                        'value' => [
+                            [
+                                'key' => 'regular_day_overtime_rate',
+                                'label' => 'Regular Day Overtime Rate',
+                                'order' => 1,
+                                'type' => 'number',
+                                'readable' => '125%',
+                                'value' => '1.25'
+                            ],
+                            [
+                                'key' => 'rest_day_overtime_rate',
+                                'label' => 'Rest Day Overtime Rate',
+                                'order' => 2,
+                                'type' => 'number',
+                                'readable' => '169%',
+                                'value' => '1.69'
+                            ],
+                            [
+                                'key' => 'special_holiday_overtime_rate',
+                                'label' => 'Special Holiday Overtime Rate',
+                                'order' => 3,
+                                'type' => 'number',
+                                'readable' => '169%',
+                                'value' => '1.69'
+                            ],
+                            [
+                                'key' => 'special_holiday_and_rest_day_overtime_rate',
+                                'label' => 'Special Holiday & Rest Day Overtime Rate',
+                                'order' => 4,
+                                'type' => 'number',
+                                'readable' => '195%',
+                                'value' => '1.95'
+                            ],
+                            [
+                                'key' => 'legal_holiday_overtime_rate',
+                                'label' => 'Legal Holiday Overtime Rate',
+                                'order' => 5,
+                                'type' => 'number',
+                                'readable' => '260%',
+                                'value' => '2.6'
+                            ],
+                            [
+                                'key' => 'legal_holiday_and_rest_day_overtime_rate',
+                                'label' => 'Legal Holiday & Rest Day Overtime Rate',
+                                'order' => 6,
+                                'type' => 'number',
+                                'readable' => '338%',
+                                'value' => '3.38'
+                            ],
+                            [
+                                'key' => 'double_holiday_overtime_rate',
+                                'label' => 'Double Holiday Overtime Rate',
+                                'order' => 7,
+                                'type' => 'number',
+                                'readable' => '390%',
+                                'value' => '3.9'
+                            ],
+                            [
+                                'key' => 'double_holiday_and_rest_day_overtime_rate',
+                                'label' => 'Double Holiday & Rest Day Overtime Rate',
+                                'order' => 8,
+                                'type' => 'number',
+                                'readable' => '507%',
+                                'value' => '5.07'
+                            ],
+                        ]
+                    ],
+                    [
+                        'key' => 'night_differential_rates',
+                        'label' => 'Night Differential Rates',
+                        'order' => 2,
+                        'type' => 'array',
+                        'readable' => 'Night Differential Rates',
+                        'value' => [
+                            [
+                                'key' => 'regular_day_rate',
+                                'label' => 'Regular Day Rate',
+                                'order' => 1,
+                                'type' => 'number',
+                                'readable' => '137.5%',
+                                'value' => '1.375'
+                            ],
+                            [
+                                'key' => 'rest_day_rate',
+                                'label' => 'Rest Day Rate',
+                                'order' => 2,
+                                'type' => 'number',
+                                'readable' => '185.9%',
+                                'value' => '1.859'
+                            ],
+                            [
+                                'key' => 'special_holiday_rate',
+                                'label' => 'Special Holiday Rate',
+                                'order' => 3,
+                                'type' => 'number',
+                                'readable' => '185.9%',
+                                'value' => '1.859'
+                            ],
+                            [
+                                'key' => 'special_holiday_and_rest_day_rate',
+                                'label' => 'Special Holiday & Rest Day Rate',
+                                'order' => 4,
+                                'type' => 'number',
+                                'readable' => '214.5%',
+                                'value' => '2.145'
+                            ],
+                            [
+                                'key' => 'legal_holiday_rate',
+                                'label' => 'Legal Holiday Rate',
+                                'order' => 5,
+                                'type' => 'number',
+                                'readable' => '286%',
+                                'value' => '2.86'
+                            ],
+                            [
+                                'key' => 'legal_holiday_and_rest_day_rate',
+                                'label' => 'Legal Holiday & Rest Day Rate',
+                                'order' => 6,
+                                'type' => 'number',
+                                'readable' => '371.8%',
+                                'value' => '3.718'
+                            ],
+                            [
+                                'key' => 'double_holiday_rate',
+                                'label' => 'Double Holiday Rate',
+                                'order' => 7,
+                                'type' => 'number',
+                                'readable' => '429%',
+                                'value' => '4.29'
+                            ],
+                            [
+                                'key' => 'double_holiday_and_rest_day_rate',
+                                'label' => 'Double Holiday & Rest Day Rate',
+                                'order' => 8,
+                                'type' => 'number',
+                                'readable' => '557.7%',
+                                'value' => '5.577'
+                            ],
+                        ]
                     ]
                 ]
             ],
             ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
-            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
-                'default_settings' => [
-                    [
-                        'key' => 'regular_overtime_rate',
-                        'label' => 'Regular Overtime Rate',
-                        'order' => 1,
-                        'type' => 'number',
-                        'readable' => '125%',
-                        'value' => '1.25'
-                    ]
-                ]
-            ],
-            //...[$thirteenMonth],
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-Absent', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
