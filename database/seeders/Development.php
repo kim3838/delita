@@ -9,6 +9,9 @@ use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
+use App\Enums\PayFrequency;
+use App\Enums\PayPeriod;
+use App\Enums\PayType;
 use App\Enums\TimePeriodType;
 use App\Models\Account;
 use App\Models\Employee;
@@ -943,8 +946,8 @@ class Development extends Seeder
 
         /**************************************************************************************************************************************************************************************************************/
 
-        //Create Employee Info 1002User01 to Company 1002-A
-        $account1002User01->employees()->create([
+        //Create Employee Info A1001 to Company 1002-A
+        $employeeA1001 = $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002A->id,
             'number' => 'A1001',
@@ -956,8 +959,23 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
-        //Create Employee Info 1002User01 to Company 1002-C
-        $account1002User01->employees()->create([
+        //Create Employee Info B1001 to Company 1002-B
+        $employeeB1001 = $account1002User02->employees()->create([
+            'ulid' => Str::ulid(),
+            'company_id' => $company1002B->id,
+            'department_id' => $company1002B->departments()->where('name', 'Accounts Payable')->first()->id,
+            'designation_id' => $company1002B->designations()->where('name', 'Accounting Staff')->first()->id,
+            'number' => 'B1001',
+            'given_name' => 'Employee 01',
+            'middle_name' => 'B',
+            'family_name' => '1002',
+            'birth_date' => '1990-01-01',
+            'gender' => Gender::FEMALE,
+            'marital_status' => MaritalStatus::SINGLE,
+        ]);
+
+        //Create Employee Info C1001 to Company 1002-C
+        $employeeC1001 = $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
             'department_id' => $company1002C->departments()->where('name', 'HR')->first()->id,
@@ -971,21 +989,8 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
-        //Create Employee Info 1002User01 to Company 1002-B
-        $account1002User02->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002B->id,
-            'number' => 'B1001',
-            'given_name' => 'Employee 01',
-            'middle_name' => 'B',
-            'family_name' => '1002',
-            'birth_date' => '1990-01-01',
-            'gender' => Gender::FEMALE,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
-
-        //Create Employee Info 1002User02 to Company 1002-C
-        $account1002User02->employees()->create([
+        //Create Employee Info C1002 to Company 1002-C
+        $employeeC1002 = $account1002User02->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
             'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
@@ -1000,8 +1005,8 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
-        //Create Employee Info 1002User03 to Company 1002-C
-        $account1002User03->employees()->create([
+        //Create Employee Info C1003 to Company 1002-C
+        $employeeC1003 = $account1002User03->employees()->create([
             'ulid' => Str::ulid(),
             'company_id' => $company1002C->id,
             'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
@@ -1015,6 +1020,78 @@ class Development extends Seeder
             'gender' => Gender::NOT_SPECIFIED,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
+
+        /**************************************************************************************************************************************************************************************************************/
+
+        //Company 1002-B Compensations
+        $company1002BBasicSalary = $company1002B->compensations->where('name', 'Basic Salary')->where('type', Compensation::SALARY)->first();
+        $company1002BMealAllowance = $company1002B->compensations->where('name', 'Meal Allowance')->where('type', Compensation::REGULAR_ALLOWANCE)->first();
+        $company1002BOvertime = $company1002B->compensations->where('name', 'Overtime')->where('type', Compensation::OVERTIME)->first();
+
+        //Company 1002-B Deductions
+        $company1002BTardiness = $company1002B->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
+        $company1002BAbsent = $company1002B->deductions->where('name', 'Absent')->where('type', Deduction::DEDUCTION)->first();
+        $company1002BSSSEmployed = $company1002B->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
+
+        //Company 1002-B Income Taxes
+        $company1002BCompensationTax = $company1002B->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
+
+        //Create Compensations for Employee B1001
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation']);
+        //Create Deductions for Employee B1001
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        //Create Income Tax for Employee B1001
+        $employeeB1001->payrollComponents()->create(['payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+
+        //Company 1002-C Compensations
+        $company1002CBasicSalary = $company1002C->compensations->where('name', 'Basic Salary')->where('type', Compensation::SALARY)->first();
+        $company1002CMealAllowance = $company1002C->compensations->where('name', 'Meal Allowance')->where('type', Compensation::REGULAR_ALLOWANCE)->first();
+        $company1002COvertime = $company1002C->compensations->where('name', 'Overtime')->where('type', Compensation::OVERTIME)->first();
+
+        //Company 1002-C Deductions
+        $company1002CTardiness = $company1002C->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
+        $company1002CAbsent = $company1002C->deductions->where('name', 'Absent')->where('type', Deduction::DEDUCTION)->first();
+        $company1002CSSSEmployed = $company1002C->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
+
+        //Company 1002-C Income Taxes
+        $company1002CCompensationTax = $company1002C->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
+
+        //Create Compensations for Employee C1001
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        //Create Deductions for Employee C1001
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        //Create Income Tax for Employee C1001
+        $employeeC1001->payrollComponents()->create(['payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+
+        //Create Compensations for Employee C1002
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        //Create Deductions for Employee C1002
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        //Create Income Tax for Employee C1002
+        $employeeC1002->payrollComponents()->create(['payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+
+        //Create Compensations for Employee C1003
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        //Create Deductions for Employee C1003
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        //Create Income Tax for Employee C1003
+        $employeeC1003->payrollComponents()->create(['payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
     }
 
     public function createPayrollComponent(Model $company, $index, $formulableType, $component, $attributes): void
