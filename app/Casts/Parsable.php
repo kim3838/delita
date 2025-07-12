@@ -23,20 +23,10 @@ class Parsable implements CastsAttributes
             $parsed = [];
 
             foreach ($decoded as $payload) {
-                $item = new StdClass();
 
-                $item->key = $payload->key;
-                $item->type = $payload->type;
-                $item->label = $payload->label;
-                $item->order = $payload->order;
-                $item->readable = $payload->readable;
+                $parsedPayload = $this->parsePayload($payload);
 
-                $item->value = match($payload->type){
-                    'date' => $this->getDateFromPayload($payload->value),
-                    default => $payload->value,
-                };
-
-                $parsed[] = $item;
+                $parsed[] = $parsedPayload;
             }
 
             usort($parsed, function ($a, $b) {
@@ -45,24 +35,32 @@ class Parsable implements CastsAttributes
         }
 
         if(is_object($decoded)){
-            $parsed = new StdClass();
 
-            $parsed->key = $decoded->key;
-            $parsed->type = $decoded->type;
-            $parsed->label = $decoded->label;
-            $parsed->order = $decoded->order;
-            $parsed->readable = $decoded->readable;
-
-            $parsed->value = match($decoded->type){
-                'date' => $this->getDateFromPayload($decoded->value),
-                default => $payload->value,
-            };
+            $parsed = $this->parsePayload($decoded);
         }
 
         return (object)[
             'cast' => $decoded,
             'parsed' => $parsed,
         ];
+    }
+
+    protected function parsePayload($payload): StdClass
+    {
+        $item = new StdClass();
+        $item->key = $payload->key ?? null;
+        $item->type = $payload->type ?? null;
+        $item->label = $payload->label ?? null;
+        $item->order = $payload->order ?? null;
+        $item->readable = $payload->readable ?? null;
+
+        $item->value = match($item->type) {
+            'date' => $this->getDateFromPayload($payload->value ?? null),
+            'array' => collect($payload->value ?? [])->map(fn ($p) => $this->parsePayload($p))->all(),
+            default => $payload->value ?? null,
+        };
+
+        return $item;
     }
 
     public function getDateFromPayload($payload): string
