@@ -6,12 +6,14 @@ enum TimePeriodType: int implements BaseEnum
 {
     case PAY_PERIOD = 0;
     case THIRTEENTH_MONTH = 1;
+    case NIGHT_DIFFERENTIAL_HOURS = 2;
 
     public function label(): string
     {
         return match ($this) {
             self::PAY_PERIOD => 'Pay Period',
             self::THIRTEENTH_MONTH => '13th Month',
+            self::NIGHT_DIFFERENTIAL_HOURS => 'Night Differential Hours',
         };
     }
 

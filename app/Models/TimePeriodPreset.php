@@ -14,6 +14,7 @@ class TimePeriodPreset extends Model
         'yearly_period',
         'monthly_period',
         'semimonthly_pay_period',
+        'hour_period'
     ];
 
     protected $casts = [
@@ -23,6 +24,7 @@ class TimePeriodPreset extends Model
         'yearly_period' => 'array',
         'monthly_period' => 'array',
         'semimonthly_period' => 'array',
+        'hour_period' => 'array',
     ];
 
     protected $hidden = [
