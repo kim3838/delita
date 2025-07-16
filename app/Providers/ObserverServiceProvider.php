@@ -54,6 +54,7 @@ class ObserverServiceProvider extends ServiceProvider
             ),
             array(
                 'observables' => [
+                    Relation::getMorphedModel('account'),
                     Relation::getMorphedModel('employee'),
                 ],
                 'observers' => [

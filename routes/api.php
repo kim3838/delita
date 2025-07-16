@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
@@ -65,7 +67,14 @@ Route::group([
     Route::post('logout-other-device', [AuthenticatedSessionController::class, 'logoutOtherDevice']);
     Route::get('sessions', [AuthenticatedSessionController::class, 'sessions']);
 
+    //Account
+    Route::get('accounts', [AccountController::class, 'index']);
+    Route::get('account/{ulid}', [AccountController::class, 'show']);
+    Route::post('account', [AccountController::class, 'store']);
+    Route::patch('account/{accountId}', [AccountController::class, 'update']);
+
     //User relation
+    Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
 
     //Email verification

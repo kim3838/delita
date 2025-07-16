@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AccountType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,15 @@ class Account extends Model
 
     protected $fillable = [
         'number',
-        'type'
+        'type',
+        'date_registered',
+    ];
+
+    protected $casts = [
+        'id' => 'int',
+        'ulid' => 'string',
+        'number' => 'string',
+        'type' => AccountType::class
     ];
 
     protected $hidden = [

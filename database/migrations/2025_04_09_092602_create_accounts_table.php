@@ -14,8 +14,10 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->ulid('ulid')->unique()->index();
             $table->string('number')->unique();
             $table->smallInteger('type')->default(AccountType::STANDARD);
+            $table->dateTime('date_registered')->nullable();
             $table->timestamps();
         });
     }
