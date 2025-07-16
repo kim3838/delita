@@ -19,6 +19,7 @@ use App\Models\Formula;
 use App\Models\Prototype;
 use App\Models\TimePeriodPreset;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
@@ -787,9 +788,11 @@ class Development extends Seeder
         $superAdmin = User::factory()->superAdmin()->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com', 'timezone' => 'Asia/Manila']);
 
         //Account 1001
-        $account1001 = Account::factory()->standard()->create(['number' => 'ACC-1001']);
+        $account1001 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString()]);
         //Account 1002
-        $account1002 = Account::factory()->standard()->create(['number' => 'ACC-1002']);
+        $account1002 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
+        //Account 1003
+        $account1003 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
 
         //Account 1001 Companies
         $company1001A = $account1001->companies()->create(['name' => 'Company 1001-A', 'code' => '1001-A', 'timezone' => 'Asia/Manila']);
@@ -799,12 +802,16 @@ class Development extends Seeder
         $company1002B = $account1002->companies()->create(['name' => 'Company 1002-B', 'code' => '1002-B', 'timezone' => 'Asia/Manila']);
         $company1002C = $account1002->companies()->create(['name' => 'Company 1002-C', 'code' => '1002-C', 'timezone' => 'Asia/Manila']);
 
-        //Assign 1001, 1002 Companies to Superadmin as Admin
+        //Account 1001 Companies
+        $company1003A = $account1003->companies()->create(['name' => 'Company 1003-A', 'code' => '1003-A', 'timezone' => 'Asia/Manila']);
+
+        //Assign 1001, 1002, 1003 Companies to Superadmin as Admin
         $superAdmin->companies()->syncWithoutDetaching([
             $company1001A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
             $company1002A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
             $company1002B->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
             $company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
+            $company1003A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
         ]);
 
         //Account 1002User01
@@ -817,6 +824,9 @@ class Development extends Seeder
          * Employee Admin: has employee info and admin assigned to a company
          * Admin: no employee info and admin assigned to a company
          * */
+
+        //Assign 1002User01 to Company 1001-A as Admin
+        $account1002User01->companies()->syncWithoutDetaching([$company1001A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign 1002User01 to Company 1002-A as Employee
         $account1002User01->companies()->syncWithoutDetaching([$company1002A->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
