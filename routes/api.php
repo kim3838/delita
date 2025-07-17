@@ -29,10 +29,12 @@ use App\Http\Controllers\PayPeriodPresetController;
 use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
+use App\Http\Controllers\TimezoneController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
 Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
+Route::get('timezone-selections', [TimezoneController::class, 'selection']);
 
 Route::group([
     'middleware' => ['guest']
