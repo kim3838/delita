@@ -16,6 +16,16 @@ class Company extends Model
         'account_id',
         'code',
         'name',
+        'timezone',
+    ];
+
+    protected $casts = [
+        'id' => 'int',
+        'ulid' => 'string',
+        'account_id' => 'int',
+        'code' => 'string',
+        'name' => 'string',
+        'timezone' => 'string',
     ];
 
     protected $hidden = [

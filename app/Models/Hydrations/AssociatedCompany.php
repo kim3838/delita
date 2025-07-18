@@ -9,7 +9,11 @@ class AssociatedCompany extends Model
 {
     protected $casts = [
         'company_id' => 'int',
+        'company_ulid' => 'string',
+        'account_number' => 'string',
         'company_name' => 'string',
+        'company_code' => 'string',
+        'timezone' => 'string',
         'assignment_type' => CompanyUserAssignmentType::class,
     ];
 }
