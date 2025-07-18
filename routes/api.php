@@ -76,6 +76,7 @@ Route::group([
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
 
     //User relation
+    Route::get('is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
     Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
 

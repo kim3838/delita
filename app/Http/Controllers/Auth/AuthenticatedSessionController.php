@@ -6,9 +6,11 @@ use App\Actions\Auth\AttemptToAuthenticate;
 use App\Actions\Auth\EnsureLoginIsNotRateLimited;
 use App\Actions\Auth\PrepareAuthenticatedSession;
 use App\Actions\Auth\TwoFactorChallenge;
+use App\Enums\CompanyUserAssignmentType;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\CompanyUser;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -207,5 +209,14 @@ class AuthenticatedSessionController extends Controller
             ->where('user_id', $request->user()->getAuthIdentifier())
             ->where('id', '!=', $request->session()->getId())
             ->delete();
+    }
+
+    public function isAdminInAnyCompany(Request $request): JsonResponse
+    {
+        return ResponseJson::successfulResponse([
+            'is_admin_in_any_company' => (bool)CompanyUser::where('user_id', $request->user()->id)
+                ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
+                ->count()
+        ]);
     }
 }
