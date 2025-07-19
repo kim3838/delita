@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyPayPeriodSettingController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
@@ -71,14 +72,26 @@ Route::group([
 
     //Account
     Route::get('accounts', [AccountController::class, 'index']);
+    Route::get('account-selections', [AccountController::class, 'selection']);
     Route::get('account/{ulid}', [AccountController::class, 'show']);
     Route::post('account', [AccountController::class, 'store']);
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
 
+    //Company
+    Route::get('companies', [CompanyController::class, 'index']);
+    Route::get('company-selections', [CompanyController::class, 'selection']);
+    Route::get('company/{ulid}', [CompanyController::class, 'show']);
+    Route::post('company', [CompanyController::class, 'store']);
+    Route::patch('company/{companyId}', [CompanyController::class, 'update']);
+
     //User relation
     Route::get('is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
+
     Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
+    Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
+
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+    Route::get('associated-company-selections', [AssociatedCompanyController::class, 'selection']);
 
     //Email verification
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');

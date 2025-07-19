@@ -11,7 +11,9 @@ use App\Http\Requests\Account\UpdateAccountRequest;
 use App\Http\Requests\Account\ViewAccountRequest;
 use App\Transformers\Account\ItemTransformer;
 use App\Transformers\Account\ListTransformer;
+use App\Transformers\Account\SelectionTransformer;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class AccountController extends Controller
@@ -20,10 +22,28 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
-            return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(AccountRepository::class)->list(),
-                ListTransformer::class
-            ));
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(AccountRepository::class)->list(),
+                    ListTransformer::class
+                )
+            );
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(AccountRepository::class)->selection(),
+                    SelectionTransformer::class,
+                    'selection'
+                )
+            );
         }
 
         abort(404);

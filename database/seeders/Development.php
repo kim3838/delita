@@ -795,24 +795,15 @@ class Development extends Seeder
         $account1003 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
 
         //Account 1001 Companies
-        $company1001A = $account1001->companies()->create(['name' => 'Company 1001-A', 'code' => '1001-A', 'timezone' => 'Asia/Manila']);
+        $company1001A = $account1001->companies()->create(['name' => 'Company 1001-A', 'code' => '1001-A', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002 Companies
-        $company1002A = $account1002->companies()->create(['name' => 'Company 1002-A', 'code' => '1002-A', 'timezone' => 'Asia/Manila']);
-        $company1002B = $account1002->companies()->create(['name' => 'Company 1002-B', 'code' => '1002-B', 'timezone' => 'Asia/Manila']);
-        $company1002C = $account1002->companies()->create(['name' => 'Company 1002-C', 'code' => '1002-C', 'timezone' => 'Asia/Manila']);
+        $company1002A = $account1002->companies()->create(['name' => 'Company 1002-A', 'code' => '1002-A', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002B = $account1002->companies()->create(['name' => 'Company 1002-B', 'code' => '1002-B', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002C = $account1002->companies()->create(['name' => 'Company 1002-C', 'code' => '1002-C', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1001 Companies
-        $company1003A = $account1003->companies()->create(['name' => 'Company 1003-A', 'code' => '1003-A', 'timezone' => 'Asia/Manila']);
-
-        //Assign 1001, 1002, 1003 Companies to Superadmin as Admin
-        $superAdmin->companies()->syncWithoutDetaching([
-            $company1001A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
-            $company1002A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
-            $company1002B->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
-            $company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
-            $company1003A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN],
-        ]);
+        $company1003A = $account1003->companies()->create(['name' => 'Company 1003-A', 'code' => '1003-A', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002User01
         $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com']);

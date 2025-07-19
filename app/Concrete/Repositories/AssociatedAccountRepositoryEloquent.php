@@ -2,17 +2,17 @@
 
 namespace App\Concrete\Repositories;
 
-use App\Blueprint\Repositories\AssociatedCompanyRepository;
+use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\CompanyUser;
-use App\Models\Hydrations\AssociatedCompany;
+use App\Models\Hydrations\AssociatedAccount;
 use Illuminate\Support\Facades\Request;
 
-class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedCompanyRepository
+class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedAccountRepository
 {
     public function model(): string
     {
-        return AssociatedCompany::class;
+        return AssociatedAccount::class;
     }
 
     public function list()
@@ -28,25 +28,17 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
-            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
-                $builder->whereIn('companies.account_id', $filters->account_id);
-            })
-            ->when($filters->search ?? false, function($builder, $value){
-                $builder->where(function($clause) use($value){
-                    $clause->where('companies.name', 'LIKE', ('%' . $value . '%'))
-                        ->orWhere('accounts.number', 'LIKE', ('%' . $value . '%'))
-                        ->orWhere('companies.code', 'LIKE', ('%' . $value . '%'));
-                });
+            ->when(!empty($filters->account_type) && is_array($filters->account_type), function ($builder) use ($filters) {
+                $builder->whereIn('accounts.type', $filters->account_type);
             })
             ->select([
-                'companies.id as company_id',
-                'companies.ulid as company_ulid',
-                'companies.name as company_name',
-                'companies.code as company_code',
-                'companies.timezone as company_timezone',
+                'accounts.id as account_id',
+                'accounts.ulid as account_ulid',
                 'accounts.number as account_number',
-                'company_user.assignment_type as assignment_type',
-            ]);
+                'accounts.type as account_type',
+                'accounts.date_registered as account_date_registered',
+            ])
+            ->groupBy('accounts.id');
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
@@ -59,6 +51,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
 
         $queryBuilder = CompanyUser::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
+            ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
@@ -66,10 +59,10 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
             ->select([
-                'companies.id as company_id',
-                'companies.name as company_name',
-                'company_user.assignment_type as assignment_type',
-            ]);
+                'accounts.id as account_id',
+                'accounts.number as account_number',
+            ])
+            ->groupBy('accounts.id');
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }

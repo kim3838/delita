@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Transformers\AssociatedCompany\ListTransformer;
 use App\Transformers\AssociatedCompany\SelectionTransformer;
 use Illuminate\Support\Arr;
 
@@ -15,6 +16,21 @@ class AssociatedCompanyController extends Controller
     ){}
 
     public function index()
+    {
+        if(request()->expectsJson()){
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    $this->repository->list(),
+                    ListTransformer::class
+                )
+            );
+        }
+
+        abort(404);
+    }
+
+    public function selection()
     {
         if(request()->expectsJson()){
 

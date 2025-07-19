@@ -35,6 +35,15 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
         return $this->hydratePaginationItems($paginator, $this->model);
     }
 
+    public function selection()
+    {
+        $filters = json_decode(Request::get('filters'));
+
+        $queryBuilder = $this->model::getQuery()->select(['accounts.*']);
+
+        return $this->model::hydrate($queryBuilder->get()->toArray());
+    }
+
     public function show($ulid)
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
