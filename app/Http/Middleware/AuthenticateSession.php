@@ -134,6 +134,8 @@ class AuthenticateSession implements AuthenticatesSessions
             $this->logout($request);
         }
 
+        //Todo: logout user if status is Inactive
+
         $this->setUserTimezone();
 
         return tap($next($request), function () use ($request) {
