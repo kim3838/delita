@@ -785,7 +785,7 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Superadmin
-        $superAdmin = User::factory()->superAdmin()->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com', 'timezone' => 'Asia/Manila']);
+        $superAdmin = User::factory()->superAdmin()->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1001
         $account1001 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString()]);
@@ -801,14 +801,17 @@ class Development extends Seeder
         $company1002A = $account1002->companies()->create(['name' => 'Company 1002-A', 'code' => '1002-A', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
         $company1002B = $account1002->companies()->create(['name' => 'Company 1002-B', 'code' => '1002-B', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
         $company1002C = $account1002->companies()->create(['name' => 'Company 1002-C', 'code' => '1002-C', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002D = $account1002->companies()->create(['name' => 'Company 1002-D', 'code' => '1002-D', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1001 Companies
         $company1003A = $account1003->companies()->create(['name' => 'Company 1003-A', 'code' => '1003-A', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002User01
-        $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com']);
-        $account1002User02 = User::factory()->default()->create(['name' => '1002.user.2', 'email' => 'luxere20@gmail.com']);
-        $account1002User03 = User::factory()->default()->create(['name' => '1002.user.3', 'email' => 'luxere20@gmail.com']);
+        $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
+        $account1002User02 = User::factory()->default()->create(['name' => '1002.user.2', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
+        $account1002User03 = User::factory()->default()->create(['name' => '1002.user.3', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
+        $account1002User04 = User::factory()->default()->create(['name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
+        $user05 = User::factory()->default()->create(['name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
 
         /*
          * Employee: has employee info and default assigned to a company
@@ -838,6 +841,12 @@ class Development extends Seeder
 
         //Assign 1002User03 to Company 1002-C as Employee
         $account1002User03->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
+
+        //Assign 1002User04 to Company 1002-C as Admin
+        $account1002User04->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
+
+        //Assign 1002User04 to Company 1002-D as Admin
+        $account1002User04->companies()->syncWithoutDetaching([$company1002D->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
@@ -996,7 +1005,7 @@ class Development extends Seeder
             'company_id' => $company1002C->id,
             'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
             'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
-            'manager_id' => $account1002User01->id,
+            'manager_id' => $employeeC1001->id,
             'number' => 'C1002',
             'given_name' => 'Employee 02',
             'middle_name' => 'C',
@@ -1012,7 +1021,7 @@ class Development extends Seeder
             'company_id' => $company1002C->id,
             'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
             'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
-            'manager_id' => $account1002User01->id,
+            'manager_id' => $employeeC1001->id,
             'number' => 'C1003',
             'given_name' => 'Employee 03',
             'middle_name' => 'C',

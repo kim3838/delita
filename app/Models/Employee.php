@@ -37,6 +37,7 @@ class Employee extends Model
 
     protected $casts = [
         'id' => 'int',
+        'ulid' => 'string',
         'number' => 'string',
         'gender' => Gender::class,
         'marital_status' => MaritalStatus::class,
