@@ -58,6 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
+            'ulid' => 'string',
             'email_verified_at' => 'datetime:Y-m-d H:i:s',
             'password' => 'hashed',
             'type' => UserType::class,
