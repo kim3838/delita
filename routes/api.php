@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
+use App\Http\Controllers\AssociatedUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -86,6 +87,8 @@ Route::group([
 
     //User relation
     Route::get('is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
+
+    Route::get('associated-users', [AssociatedUserController::class, 'index']);
 
     Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
     Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
