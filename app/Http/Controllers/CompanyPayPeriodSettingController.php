@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Blueprint\Repositories\CompanyRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Models\Company;
 use App\Transformers\CompanyPayPeriodSetting\ItemTransformer as CompanyPayPeriodSettingTransformer;
 use Illuminate\Support\Facades\App;
 use stdClass;
@@ -15,7 +15,7 @@ class CompanyPayPeriodSettingController extends Controller
     {
         if(request()->expectsJson()){
 
-            $payPeriodSetting = App::make(CompanyRepository::class)->show($companyId)->payPeriodSetting;
+            $payPeriodSetting = Company::find($companyId)?->payPeriodSetting;
 
             return ResponseJson::successfulResponse([
                 'pay_period_setting' => $payPeriodSetting
