@@ -1,6 +1,7 @@
 <?php
 
 use App\Facades\ResponseJson;
+use App\Helpers\CookieHelper;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -36,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         //Disable encryption for a subset of custom-generated cookies
         $middleware->encryptCookies([
-
+            'persist_company'
         ]);
 
         $middleware->append([
@@ -71,7 +72,10 @@ return Application::configure(basePath: dirname(__DIR__))
                     'line' => $throwable->getLine(),
                     'request' => Request::url(),
                     'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
-                    'cookies' => request()->cookies->all()
+                    'cookies' => [
+                        'decrpyted' => request()->cookies->all(),
+                        'raw' => CookieHelper::parseCookieString(request()->headers->get('cookie'))
+                    ]
                 ]);
             }
 
