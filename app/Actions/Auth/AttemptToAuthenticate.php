@@ -2,6 +2,8 @@
 
 namespace App\Actions\Auth;
 
+use App\Enums\UserStatus;
+use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +28,16 @@ class AttemptToAuthenticate
                 'remember' => $request->boolean('remember')
             )
         ]);
+
+        // First check if user exists and has active status
+        $user = User::where($identifierField, $request->input('identifier'))
+            ->first();
+
+        if ($user && $user->status !== UserStatus::ACTIVE) {
+            RateLimiter::hit(Throttle::key($request));
+            throw new AuthenticationException(__('auth.inactive'));
+        }
+
 
         if(! Auth::attempt([
             $identifierField => $request->input('identifier'),

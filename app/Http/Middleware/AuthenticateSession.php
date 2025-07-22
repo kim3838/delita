@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserStatus;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\SessionGuard;
@@ -135,6 +136,22 @@ class AuthenticateSession implements AuthenticatesSessions
         }
 
         //Todo: logout user if status is Inactive
+        if ($request->user() && $request->user()->status !== UserStatus::ACTIVE) {
+            if ($this->logger) {
+                \Illuminate\Support\Facades\Log::info([
+                    'method' => get_class() . '@' . __FUNCTION__,
+                    'line' => __LINE__,
+                    'uri' => $request->getRequestUri(),
+                    'user_id' => $request->user()->id,
+                    'user_status' => $request->user()->status,
+                    'reason' => 'User account is inactive',
+                    'call' => 'logout'
+                ]);
+            }
+
+            $this->logout($request, __('auth.inactive'));
+        }
+
 
         $this->setUserTimezone();
 
@@ -209,7 +226,7 @@ class AuthenticateSession implements AuthenticatesSessions
      *
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    protected function logout($request)
+    protected function logout($request, $message = 'Unauthenticated.')
     {
         $this->guard()->logoutCurrentDevice();
 
@@ -223,7 +240,11 @@ class AuthenticateSession implements AuthenticatesSessions
             ]);
         }
 
-        $message = $this->guard()->viaRemember() ? 'Please try again.' : 'Unauthenticated.';
+        if($this->guard()->viaRemember()){
+
+            $rememberKey = 'remember_web_' . sha1(SessionGuard::class);
+            Cookie::queue(Cookie::forget($rememberKey));
+        }
 
         throw new AuthenticationException(
             $message, [$this->auth->getDefaultDriver()], $this->redirectTo($request)
