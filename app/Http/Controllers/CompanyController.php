@@ -61,6 +61,18 @@ class CompanyController extends Controller
         abort(404);
     }
 
+    public function check(Request $request, $ulid)
+    {
+        if($request->expectsJson()){
+
+            $company = App::make(CompanyRepository::class)->check($ulid);
+
+            return ResponseJson::successfulResponse(['company' => $company]);
+        }
+
+        abort(404);
+    }
+
     public function store(StoreCompanyRequest $request)
     {
         if($request->expectsJson()){

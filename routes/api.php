@@ -75,6 +75,7 @@ Route::group([
     Route::get('accounts', [AccountController::class, 'index']);
     Route::get('account-selections', [AccountController::class, 'selection']);
     Route::get('account/{ulid}', [AccountController::class, 'show']);
+    Route::get('account-check/{ulid}', [AccountController::class, 'check']);
     Route::post('account', [AccountController::class, 'store']);
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
 
@@ -82,6 +83,7 @@ Route::group([
     Route::get('companies', [CompanyController::class, 'index']);
     Route::get('company-selections', [CompanyController::class, 'selection']);
     Route::get('company/{ulid}', [CompanyController::class, 'show']);
+    Route::get('company-check/{ulid}', [CompanyController::class, 'check']);
     Route::post('company', [CompanyController::class, 'store']);
     Route::patch('company/{companyId}', [CompanyController::class, 'update']);
 
@@ -152,6 +154,7 @@ Route::group([
     Route::get('employees', [EmployeeController::class, 'index']);
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
+    Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
 
     //Employee Payroll Component
     Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);

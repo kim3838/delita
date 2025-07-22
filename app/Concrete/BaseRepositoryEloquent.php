@@ -3,8 +3,10 @@
 namespace App\Concrete;
 
 use App\Exceptions\RepositoryException;
+use App\Facades\Fractal;
 use Illuminate\Container\Container as Application;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -18,6 +20,8 @@ abstract class BaseRepositoryEloquent
 
     protected $model;
 
+    protected $modelAlias;
+
     /**
      * Specify Model class name
      *
@@ -29,6 +33,7 @@ abstract class BaseRepositoryEloquent
     {
         $this->app = $app;
         $this->makeModel();
+        $this->makeModelAlias();
     }
 
     public function makeModel()
@@ -42,6 +47,13 @@ abstract class BaseRepositoryEloquent
         return $this->model = $model;
     }
 
+    public function makeModelAlias()
+    {
+        $morphMap = Relation::morphMap();
+
+        return $this->modelAlias = array_search($this->model(), $morphMap, true);
+    }
+
     public function store($attributes)
     {
         return $this->model::create($attributes);
@@ -50,6 +62,19 @@ abstract class BaseRepositoryEloquent
     public function show($id)
     {
         return $this->model::findOrfail($id);
+    }
+
+    //Minimal version of show
+    public function check($identifier)
+    {
+        $model = $this->show($identifier);
+
+        $transformer = $this->app->make('Transformer', [
+            'module' => $this->modelAlias,
+            'type' => 'basic'
+        ]);
+
+        return $model ? Fractal::item($model, $transformer) : $model;
     }
 
     public function update($id, $attributes)

@@ -53,4 +53,16 @@ class EmployeeController extends Controller
 
         abort(404);
     }
+
+    public function check(Request $request, $ulid)
+    {
+        if($request->expectsJson()){
+
+            $employee = App::make(EmployeeRepository::class)->check($ulid);
+
+            return ResponseJson::successfulResponse(['employee' => $employee]);
+        }
+
+        abort(404);
+    }
 }

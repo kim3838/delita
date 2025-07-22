@@ -62,6 +62,18 @@ class AccountController extends Controller
         abort(404);
     }
 
+    public function check(ViewAccountRequest $request, $ulid)
+    {
+        if($request->expectsJson()){
+
+            $account = App::make(AccountRepository::class)->check($ulid);
+
+            return ResponseJson::successfulResponse(['account' => $account]);
+        }
+
+        abort(404);
+    }
+
     public function store(StoreAccountRequest $request)
     {
         if($request->expectsJson()){
