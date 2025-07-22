@@ -120,8 +120,7 @@ Route::group([
 
     //Company Pay Period Setting
     Route::get('company-pay-period-setting/{companyId}', [CompanyPayPeriodSettingController::class, 'index']);
-
-    //Pay Period
+    Route::post('pay-period-setting', [PayPeriodSettingController::class, 'store']);
     Route::patch('pay-period-setting/{payPeriodSettingId}', [PayPeriodSettingController::class, 'update']);
 
     //Compensation

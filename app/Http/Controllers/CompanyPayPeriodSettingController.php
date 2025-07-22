@@ -20,7 +20,10 @@ class CompanyPayPeriodSettingController extends Controller
             return ResponseJson::successfulResponse([
                 'pay_period_setting' => $payPeriodSetting
                     ? Fractal::item($payPeriodSetting, CompanyPayPeriodSettingTransformer::class)
-                    : new StdClass()
+                    : [
+                        'company_id' => $companyId,
+                        'days_to_pay_after_cut_off' => 0
+                    ]
             ]);
         }
 
