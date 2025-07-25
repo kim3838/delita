@@ -11,7 +11,6 @@ use Illuminate\Contracts\Session\Middleware\AuthenticatesSessions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Session;
 
 class AuthenticateSession implements AuthenticatesSessions
 {
@@ -86,14 +85,14 @@ class AuthenticateSession implements AuthenticatesSessions
             $passwordHash = explode('|', $request->cookies->get($this->guard()->getRecallerName()))[2] ?? null;
 
             if ($this->logger) {
-                \Log::debug(print_r([
+                \Log::debug([
                     'recalled name' => $this->auth->getRecallerName(),
                     'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
                     'cookies' => $request->cookies->all(),
                     'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
                     'cookie value' => $request->cookies->get($this->auth->getRecallerName()),
                     'cookie password hash' => $passwordHash
-                ], true));
+                ]);
             }
 
             if (! $passwordHash || ! hash_equals($request->user()->getAuthPassword(), $passwordHash)) {
@@ -116,6 +115,7 @@ class AuthenticateSession implements AuthenticatesSessions
                     'cookies' => $request->cookies->all(),
                 ]);
             }
+
             $this->storePasswordHashInSession($request);
         }
 
@@ -159,12 +159,14 @@ class AuthenticateSession implements AuthenticatesSessions
             if ($this->logger) {
                 \Illuminate\Support\Facades\Log::info([
                     'tapped' => $request->getRequestUri(),
-                    'tapped parameters' => $request->all(),
+                    'has_login_web__' => $request->session()->has('login_web_' . sha1(SessionGuard::class)),
                     'guard user' => ($this->guard()->user() ? $this->guard()->user()->getAuthIdentifier() : null)
                 ]);
             }
 
-            if (! is_null($this->guard()->user())) {
+            if (! is_null($this->guard()->user())
+                && $request->session()->has('login_web_' . sha1(SessionGuard::class))
+            ) {
                 if ($this->logger) {
                     \Illuminate\Support\Facades\Log::info([
                         'store password hash in session' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
