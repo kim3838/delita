@@ -22,7 +22,13 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
         $queryBuilder = User::getQuery()
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
             ->when(!empty($filters->associated_companies) && is_array($filters->associated_companies), function ($builder) use ($filters) {
-                $builder->whereIn('company_user.company_id', $filters->associated_companies);
+
+                $builder->where(function($clause) use($filters){
+                    $clause->whereIn('company_user.company_id', $filters->associated_companies)
+                        ->when($filters->user_id ?? false, function ($builder, $value) {
+                            $builder->orWhere('users.created_by', $value);
+                        });
+                });
             })
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('users.status', $filters->status);
