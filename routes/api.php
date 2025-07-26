@@ -32,6 +32,8 @@ use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
 use App\Http\Controllers\TimezoneController;
+use App\Http\Controllers\UserCompanyAssignmentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
@@ -78,6 +80,16 @@ Route::group([
     Route::get('account-check/{ulid}', [AccountController::class, 'check']);
     Route::post('account', [AccountController::class, 'store']);
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
+
+    //User
+    Route::get('user/{ulid}', [UserController::class, 'show']);
+    Route::post('user', [UserController::class, 'store']);
+    Route::patch('user/{userId}', [UserController::class, 'update']);
+    Route::get('user-check/{ulid}', [UserController::class, 'check']);
+
+    //User-Company Assignment
+    Route::get('user-company-assignment/{userUlid}', [UserCompanyAssignmentController::class, 'index']);
+    Route::post('user-company-assignment/{userId}', [UserCompanyAssignmentController::class, 'sync']);
 
     //Company
     Route::get('companies', [CompanyController::class, 'index']);
