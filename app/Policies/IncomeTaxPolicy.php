@@ -35,14 +35,6 @@ class IncomeTaxPolicy
 
     public function delete(User $user, IncomeTax $incomeTax): bool
     {
-        $userCompanyAdminAssignment = $incomeTax
-                ->companyFormula
-                ->company
-                ->users
-                ->findOrfail($user->id)
-                ->pivot
-                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
-
-        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+        return $user->isSuperAdmin();
     }
 }
