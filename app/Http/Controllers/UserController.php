@@ -25,10 +25,6 @@ class UserController extends Controller
                 'password' => Hash::make($request->validated()['password'])
             ]);
 
-            \Log::debug([
-                'store' => $data,
-            ]);
-
             return ResponseJson::successfulResponse([
                 'user' => Fractal::item(
                     App::make(UserRepository::class)->store($data),
