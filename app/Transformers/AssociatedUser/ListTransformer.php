@@ -14,12 +14,17 @@ class ListTransformer extends TransformerAbstract
     {
         $associatedCompanies = User::find($model->user_id)
             ->companies->map(function($assignedCompany){
+
+                $employee = Employee::where('user_id', $assignedCompany->pivot->user_id)
+                    ->where('company_id', $assignedCompany->id)
+                    ->first();
+
                 return [
                     'name' => $assignedCompany->name,
                     'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
-                    'employee' => Employee::where('user_id', $assignedCompany->pivot->user_id)
-                        ->where('company_id', $assignedCompany->id)
-                        ->first()?->full_name
+                    'is_employee' => (bool)$employee,
+                    'employee_number' => $employee?->number,
+                    'employee_full_name' => $employee?->full_name,
                 ];
             });
 
