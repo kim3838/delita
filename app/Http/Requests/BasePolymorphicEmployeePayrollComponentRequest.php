@@ -14,7 +14,9 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'payroll_componentable_id' => 'required|numeric|integer',
             'payroll_componentable_type' => 'required|string',
 
-            'amount' => 'sometimes|required|numeric|min:1',
+            'formulable_type' => 'required|numeric|integer',
+
+            'amount' => 'sometimes|required|numeric|min:1|regex:/^\d{1,12}(\.\d{1,6})?$/',
             'currency' => 'sometimes|nullable',
             'pay_period' => 'sometimes|required|numeric|integer',
             'pay_type' => 'sometimes|required|numeric|integer',
@@ -30,6 +32,7 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
         return [
             'payroll_componentable_id.required' => 'Payroll component is required',
             'amount.required' => 'Amount is required',
+            'amount.regex' => 'Amount must be a valid number with up to 12 digits and maximum 6 decimal places',
             'pay_period.required' => 'Pay period is required',
             'pay_type.required' => 'Pay type is required',
             'pay_frequency.required' => 'Pay frequency is required',

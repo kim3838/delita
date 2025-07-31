@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('employee_payroll_components', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->unsignedBigInteger('payroll_componentable_id');
             $table->string('payroll_componentable_type');
-            $table->decimal('amount', 12, 6)->nullable();
+            $table->unsignedBigInteger('payroll_componentable_id');
+            $table->smallInteger('formulable_type')->nullable();
+            $table->decimal('amount', 24, 6)->nullable();
             $table->string('currency')->nullable();
             $table->smallInteger('pay_period')->nullable();
             $table->smallInteger('pay_type')->nullable();
