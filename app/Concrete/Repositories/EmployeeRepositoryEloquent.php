@@ -46,6 +46,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when(!empty($filters->id) && is_array($filters->id), function ($builder) use ($filters) {
                 $builder->whereIn('employees.id', $filters->id);
             })
+            ->when(!empty($filters->except_id) && is_array($filters->except_id), function ($builder) use ($filters) {
+                $builder->whereNotIn('employees.id', $filters->except_id);
+            })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->whereRaw("CONCAT_WS(' ', family_name, middle_name, given_name) LIKE ?", ["%{$value}%"]);
             })
