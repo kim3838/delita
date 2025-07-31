@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Formulable;
 use App\Enums\PayFrequency;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
