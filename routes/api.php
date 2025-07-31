@@ -27,6 +27,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
+use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\PayPeriodPresetController;
 use App\Http\Controllers\PayPeriodSettingController;
@@ -87,6 +88,8 @@ Route::group([
     Route::post('user', [UserController::class, 'store']);
     Route::patch('user/{userId}', [UserController::class, 'update']);
     Route::get('user-check/{ulid}', [UserController::class, 'check']);
+
+    Route::get('non-employee-user-selections', [NonEmployeeUserController::class, 'selection']);
 
     //User-Company Assignment
     Route::get('user-company-assignment/{userUlid}', [UserCompanyAssignmentController::class, 'index']);
