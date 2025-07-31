@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Requests\EmployeeContact;
+
+use App\Models\EmployeeContact;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreEmployeeContactRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()->can('create', EmployeeContact::class);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'employee_id' => 'sometimes|required|numeric|integer',
+            'office_email' => [
+                'nullable',
+                'email:rfc',
+                'different:personal_email',
+                function ($attribute, $value, $fail) {
+                    if ($value && $this->isEmailTaken($value)) {
+                        $fail('Office email has already been taken.');
+                    }
+                },
+            ],
+            'personal_email' => [
+                'nullable',
+                'email:rfc',
+                'different:office_email',
+                function ($attribute, $value, $fail) {
+                    if ($value && $this->isEmailTaken($value)) {
+                        $fail('Personal email has already been taken.');
+                    }
+                },
+            ],
+            'office_phone' => [
+                'nullable',
+                'string',
+                'max:255',
+                'different:personal_phone',
+                function ($attribute, $value, $fail) {
+                    if ($value && $this->isPhoneTaken($value)) {
+                        $fail('Personal phone has already been taken.');
+                    }
+                },
+            ],
+            'personal_phone' => [
+                'nullable',
+                'string',
+                'max:255',
+                'different:office_phone',
+                function ($attribute, $value, $fail) {
+                    if ($value && $this->isPhoneTaken($value)) {
+                        $fail('Personal phone has already been taken.');
+                    }
+                },
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'employee_id.required' => 'Employee account is required',
+            'office_email.email' => 'The office email must be a valid email address.',
+            'office_email.different' => 'The office email and personal email must be different.',
+            'personal_email.email' => 'The personal email must be a valid email address.',
+            'personal_email.different' => 'The personal email and office email must be different.',
+            'office_phone.different' => 'The office phone and personal phone must be different.',
+            'personal_phone.different' => 'The personal phone and office phone must be different.',
+        ];
+
+    }
+
+    private function isEmailTaken(string $email): bool
+    {
+        $queryBuilder = EmployeeContact::getQuery()->where('office_email', $email)
+            ->orWhere('personal_email', $email);
+
+        return $queryBuilder->exists();
+    }
+
+    private function isPhoneTaken(string $phone): bool
+    {
+        $queryBuilder = EmployeeContact::getQuery()->where('office_phone', $phone)
+            ->orWhere('personal_phone', $phone);
+
+        return $queryBuilder->exists();
+    }
+}

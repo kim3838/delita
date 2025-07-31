@@ -15,6 +15,7 @@ use App\Blueprint\Repositories\CompensationRepository;
 use App\Blueprint\Repositories\DeductionRepository;
 use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\DesignationRepository;
+use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
@@ -63,6 +64,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         'designation' => DesignationRepositoryEloquent::class,
         'department' => DepartmentRepositoryEloquent::class,
         'employee' => EmployeeRepositoryEloquent::class,
+        'employee_contact' => EmployeeContactRepositoryEloquent::class,
         'employee_payroll_component' => EmployeePayrollComponentRepositoryEloquent::class,
         'company_formula' => CompanyFormulaRepositoryEloquent::class,
         'compensation' => CompensationRepositoryEloquent::class,
@@ -84,6 +86,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         DesignationRepository::class => DesignationRepositoryEloquent::class,
         DepartmentRepository::class => DepartmentRepositoryEloquent::class,
         EmployeeRepository::class => EmployeeRepositoryEloquent::class,
+        EmployeeContactRepository::class => EmployeeContactRepositoryEloquent::class,
         EmployeePayrollComponentRepository::class => EmployeePayrollComponentRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
         CompensationRepository::class => CompensationRepositoryEloquent::class,
@@ -112,6 +115,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             'designation',
             'department',
             'employee',
+            'employee_contact',
             'employee_payroll_component',
             'company_formula',
             'compensation',
@@ -134,6 +138,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             DesignationRepository::class,
             DepartmentRepository::class,
             EmployeeRepository::class,
+            EmployeeContactRepository::class,
             EmployeePayrollComponentRepository::class,
             CompanyFormulaRepository::class,
             CompensationRepository::class,

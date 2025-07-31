@@ -20,6 +20,7 @@ use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
@@ -167,6 +168,12 @@ Route::group([
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
     Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
+
+    //Employee Contact
+    Route::get('employee-contact/{employeeId}', [EmployeeContactController::class, 'show']);
+    Route::post('employee-contact-validate', [EmployeeContactController::class, 'validate']);
+    Route::post('employee-contact', [EmployeeContactController::class, 'store']);
+    Route::patch('employee-contact/{employeeId}', [EmployeeContactController::class, 'update']);
 
     //Employee Payroll Component
     Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);
