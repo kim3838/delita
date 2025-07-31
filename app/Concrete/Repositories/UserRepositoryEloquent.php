@@ -5,8 +5,10 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\UserStatus;
+use App\Helpers\SafeExecutor;
 use App\Models\Company;
 use App\Models\User;
+use App\Notifications\NewUserRegistered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -15,6 +17,18 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     public function model(): string
     {
         return User::class;
+    }
+
+    public function store($attributes)
+    {
+        $user = $this->model::create($attributes);
+
+        SafeExecutor::try(function () use ($user, $attributes) {
+
+            $user->notify(new NewUserRegistered($attributes['name'], $attributes['email'], $attributes['pre_hash_password']));
+        });
+
+        return $user;
     }
 
     public function show($ulid)
@@ -37,11 +51,13 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
         $familyName = strtolower($familyName);
         $givenNameFirstCharacter = substr(strtolower($givenName), 0, 1);
         $username = "$familyName.$givenNameFirstCharacter." . ($userCount+1);
+        $password = Str::random(8);
 
         return $this->store([
             'name' => $username,
             'email' => $officeEmail,
-            'password' => Hash::make(Str::random(8)),
+            'pre_hash_password' => $password,
+            'password' => Hash::make($password),
             'status' => UserStatus::ACTIVE->value,
             'timezone' => $companyTimezone,
         ]);

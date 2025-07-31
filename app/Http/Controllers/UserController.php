@@ -63,6 +63,7 @@ class UserController extends Controller
             $data = array_merge($request->validated(), [
                 'created_by' => $request->user()->id,
                 'remember_token' => Str::random(10),
+                'pre_hash_password' => $request->validated()['password'],
                 'password' => Hash::make($request->validated()['password'])
             ]);
 
