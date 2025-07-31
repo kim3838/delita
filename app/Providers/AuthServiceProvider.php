@@ -36,10 +36,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            return (new EmailVerification((object)array(
+            return new EmailVerification((object)array(
                 'verification_url' => $url,
                 'expire_in_minutes' => config('auth.verification.expire', 60),
-            )))->to($notifiable->getEmailForVerification());
+            ))->to($notifiable->getEmailForVerification());
         });
 
         VerifyEmail::createUrlUsing(function(object $notifiable){
@@ -51,11 +51,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         ResetPassword::toMailUsing(function(object $notifiable, string $token){
-            return (new PasswordReset((object)array(
+            return new PasswordReset((object)array(
                 'notifiable' => $notifiable,
                 'password_reset_url' => $this->passwordResetUrl($notifiable, $token),
                 'expire_in_minutes' => config('auth.passwords.' . config('auth.defaults.passwords') . '.expire')
-            )))->to($notifiable->getEmailForPasswordReset());
+            ))->to($notifiable->getEmailForPasswordReset());
         });
     }
 
