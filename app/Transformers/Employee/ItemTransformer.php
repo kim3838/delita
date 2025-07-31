@@ -13,6 +13,8 @@ class ItemTransformer extends TransformerAbstract
         return [
             'id' => $employee->id,
             'ulid' => $employee->ulid,
+            'user_id' => $employee->user_id,
+            'user' => $employee->user,
             'department_id' => $employee->department_id,
             'designation_id' => $employee->designation_id,
             'manager_id' => $employee->manager_id,

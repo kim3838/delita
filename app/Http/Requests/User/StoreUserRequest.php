@@ -41,6 +41,12 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name.required' => 'Username is required',
+            'name.unique' => 'Username has already been taken',
+            'email.required' => 'User email is required',
+            'email.unique' => 'User email has already been taken',
+            'password.required' => 'Password is required',
+            'timezone.required' => 'User timezone is required',
+            'password.confirmed' => 'Password confirmation does not match',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\UserRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\User\StoreAutogenerateUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Transformers\User\ItemTransformer;
@@ -15,6 +16,46 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    public function autoGenerateValidate(StoreAutogenerateUserRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse([
+                'user' => null
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function autoGenerate(StoreAutogenerateUserRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $user = App::make(UserRepository::class)->autoGenerate($request->validated());
+            $user = $user ? Fractal::item($user, ItemTransformer::class) : $user;
+
+            return ResponseJson::successfulResponse(['user' => $user]);
+        }
+
+        abort(404);
+    }
+
+    public function validate(StoreUserRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse([
+                'user' => Fractal::item(
+                    App::make(UserRepository::class)->hydrateItem($request->validated()),
+                    ItemTransformer::class
+                )
+            ]);
+        }
+
+        abort(404);
+    }
+
     public function store(StoreUserRequest $request)
     {
         if($request->expectsJson()){

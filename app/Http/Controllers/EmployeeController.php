@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Employee\StoreEmployeeRequest;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Transformers\Employee\ItemTransformer;
 use App\Transformers\Employee\ListTransformer;
 use App\Transformers\Employee\SelectionTransformer;
@@ -21,6 +23,51 @@ class EmployeeController extends Controller
                 App::make(EmployeeRepository::class)->list(),
                 ListTransformer::class,
             ));
+        }
+
+        abort(404);
+    }
+
+    public function validate(StoreEmployeeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse([
+                'employee' => Fractal::item(
+                    App::make(EmployeeRepository::class)->hydrateItem($request->validated()),
+                    ItemTransformer::class
+                )
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function store(StoreEmployeeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse([
+                'employee' => Fractal::item(
+                    App::make(EmployeeRepository::class)->store($request->validated()),
+                    ItemTransformer::class
+                )
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function update(UpdateEmployeeRequest $request, $employeeId)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse([
+                'employee' => Fractal::item(
+                    App::make(EmployeeRepository::class)->update($employeeId, $request->validated()),
+                    ItemTransformer::class
+                )
+            ]);
         }
 
         abort(404);

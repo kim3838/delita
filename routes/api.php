@@ -85,9 +85,13 @@ Route::group([
 
     //User
     Route::get('user/{ulid}', [UserController::class, 'show']);
+    Route::post('user-validate', [UserController::class, 'validate']);
     Route::post('user', [UserController::class, 'store']);
     Route::patch('user/{userId}', [UserController::class, 'update']);
     Route::get('user-check/{ulid}', [UserController::class, 'check']);
+
+    Route::post('autogenerate-user-validate', [UserController::class, 'autoGenerateValidate']);
+    Route::post('autogenerate-user', [UserController::class, 'autoGenerate']);
 
     Route::get('non-employee-user-selections', [NonEmployeeUserController::class, 'selection']);
 
@@ -168,6 +172,9 @@ Route::group([
 
     //Employees
     Route::get('employees', [EmployeeController::class, 'index']);
+    Route::post('employee-validate', [EmployeeController::class, 'validate']);
+    Route::post('employee', [EmployeeController::class, 'store']);
+    Route::patch('employee/{employeeId}', [EmployeeController::class, 'update']);
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
     Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
