@@ -19,6 +19,7 @@ use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
+use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\PayPeriodSettingRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
@@ -38,9 +39,11 @@ use App\Concrete\Repositories\CompensationRepositoryEloquent;
 use App\Concrete\Repositories\DeductionRepositoryEloquent;
 use App\Concrete\Repositories\DepartmentRepositoryEloquent;
 use App\Concrete\Repositories\DesignationRepositoryEloquent;
+use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
+use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\PayPeriodSettingRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
@@ -56,6 +59,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         'account' => AccountRepositoryEloquent::class,
         'associated_account' => AssociatedAccountRepositoryEloquent::class,
         'user' => UserRepositoryEloquent::class,
+        'non_employee_user' => NonEmployeeUserRepositoryEloquent::class,
         'user_company_assignment' => UserCompanyAssignmentRepositoryEloquent::class,
         'associated_user' => AssociatedUserRepositoryEloquent::class,
         'prototype' => PrototypeRepositoryEloquent::class,
@@ -79,6 +83,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
+        NonEmployeeUserRepository::class => NonEmployeeUserRepositoryEloquent::class,
         UserCompanyAssignmentRepository::class => UserCompanyAssignmentRepositoryEloquent::class,
         AssociatedUserRepository::class => AssociatedUserRepositoryEloquent::class,
         PrototypeRepository::class => PrototypeRepositoryEloquent::class,
@@ -107,6 +112,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             'account',
             'associated_account',
             'user',
+            'non_employee_user',
             'user_company_assignment',
             'associated_user',
             'prototype',
@@ -130,6 +136,7 @@ class RepositoryServiceProvider extends ServiceProvider implements DeferrablePro
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
+            NonEmployeeUserRepository::class,
             UserCompanyAssignmentRepository::class,
             AssociatedUserRepository::class,
             PrototypeRepository::class,
