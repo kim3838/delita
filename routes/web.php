@@ -9,6 +9,10 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+Route::get('/php-info', function () {
+    phpinfo();
+});
+
 Route::group([
     'middleware' => ['signed']
 ], function(){
