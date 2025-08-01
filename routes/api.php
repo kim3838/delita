@@ -33,14 +33,16 @@ use App\Http\Controllers\PayPeriodPresetController;
 use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
-use App\Http\Controllers\TimezoneController;
+use App\Http\Controllers\WorldController;
 use App\Http\Controllers\UserCompanyAssignmentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
 Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
-Route::get('timezone-selections', [TimezoneController::class, 'selection']);
+Route::get('timezone-selections', [WorldController::class, 'timezoneSelection']);
+Route::get('country-selections', [WorldController::class, 'countrySelection']);
+Route::get('currency-selections', [WorldController::class, 'currencySelection']);
 
 Route::group([
     'middleware' => ['guest']
