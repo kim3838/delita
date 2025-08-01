@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Nnjeim\World\Models\Country;
 
 class Company extends Model
 {
@@ -14,8 +15,10 @@ class Company extends Model
 
     protected $fillable = [
         'account_id',
+        'country_id',
         'code',
         'name',
+        'currency',
         'timezone',
     ];
 
@@ -23,8 +26,10 @@ class Company extends Model
         'id' => 'int',
         'ulid' => 'string',
         'account_id' => 'int',
+        'country_id' => 'int',
         'code' => 'string',
         'name' => 'string',
+        'currency' => 'string',
         'timezone' => 'string',
     ];
 
@@ -36,6 +41,11 @@ class Company extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function users()

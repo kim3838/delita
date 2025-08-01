@@ -13,8 +13,10 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'account_id' => $model->account_id,
+            'country_id' => $model->country_id,
             'code' => $model->code,
             'name' => $model->name,
+            'currency' => $model->currency,
             'timezone' => $model->timezone,
         ];
     }

@@ -19,8 +19,10 @@ class UpdateCompanyRequest extends FormRequest
     {
         return [
             'account_id' => 'required|numeric',
+            'country_id' => 'required|numeric',
+            'currency' => 'required|string',
             'code' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
                 Rule::unique('companies')->ignore($this->route('companyId'))
@@ -34,6 +36,9 @@ class UpdateCompanyRequest extends FormRequest
     {
         return [
             'account_id.required' => 'Account number is required',
+            'code.required' => 'Company code is required',
+            'country_id.required' => 'Country is required',
+            'currency.required' => 'Currency is required',
             'code.unique' => 'Code has already been taken',
             'code.max' => 'Code must not be greater than 255 characters',
             'name.required' => 'Company name is required',

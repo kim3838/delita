@@ -13,8 +13,10 @@ class ListTransformer extends TransformerAbstract
             'id' => $model->company_id,
             'ulid' => $model->company_ulid,
             'account_number' => $model->account_number,
-            'name' => $model->company_name,
             'code' => $model->company_code,
+            'name' => $model->company_name,
+            'country' => $model->country_name,
+            'currency' => $model->company_currency,
             'timezone' => $model->company_timezone,
         ];
     }

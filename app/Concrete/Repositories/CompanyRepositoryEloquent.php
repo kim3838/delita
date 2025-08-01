@@ -20,6 +20,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
 
         $queryBuilder = $this->model::getQuery()
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
+            ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
             ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
                 $builder->whereIn('companies.account_id', $filters->account_id);
             })
@@ -33,10 +34,12 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
             ->select([
                 'companies.id as company_id',
                 'companies.ulid as company_ulid',
-                'companies.name as company_name',
-                'companies.code as company_code',
-                'companies.timezone as company_timezone',
                 'accounts.number as account_number',
+                'companies.code as company_code',
+                'companies.name as company_name',
+                'countries.name as country_name',
+                'companies.currency as company_currency',
+                'companies.timezone as company_timezone',
             ]);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);

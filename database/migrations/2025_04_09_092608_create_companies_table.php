@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->ulid('ulid')->unique()->index();
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('country_id');
+            $table->string('currency');
             $table->string('code')->nullable();
             $table->string('name');
             $table->string('timezone')->default('UTC');
