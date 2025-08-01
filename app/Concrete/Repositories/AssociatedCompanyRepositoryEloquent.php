@@ -71,6 +71,8 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->select([
                 'companies.id as company_id',
                 'companies.name as company_name',
+                'companies.currency as company_currency',
+                'companies.timezone as company_timezone',
                 'company_user.assignment_type as assignment_type',
             ]);
 

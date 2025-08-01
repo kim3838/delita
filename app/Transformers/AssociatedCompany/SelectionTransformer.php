@@ -13,7 +13,9 @@ class SelectionTransformer extends TransformerAbstract
             'value' => $model->company_id,
             'text' => $model->company_name,
             'payload' => [
-                'assignment_type' => $model->assignment_type->toArray()
+                'currency' => $model->company_currency,
+                'timezone' => $model->company_timezone,
+                'assignment_type' => $model->assignment_type->toArray(),
             ]
         ];
     }
