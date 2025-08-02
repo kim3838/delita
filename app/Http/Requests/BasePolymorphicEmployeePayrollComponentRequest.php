@@ -17,7 +17,7 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'formulable_type' => 'required|numeric|integer',
 
             'amount' => 'sometimes|required|numeric|min:1|regex:/^\d{1,12}(\.\d{1,6})?$/',
-            'currency' => 'sometimes|nullable',
+            'currency' => 'sometimes|string',
             'pay_period' => 'sometimes|required|numeric|integer',
             'pay_type' => 'sometimes|required|numeric|integer',
             'pay_frequency' => 'sometimes|required|numeric|integer',
