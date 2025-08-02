@@ -30,7 +30,7 @@ class EmployeePayrollComponent extends Model
         'payroll_componentable_id' => 'int',
         'payroll_componentable_type' => 'string',
         'formulable_type' => Formulable::class,
-        'amount' => 'decimal:4',
+        'amount' => 'decimal:6',
         'currency' => 'string',
         'pay_period' => PayPeriod::class,
         'pay_type' => PayType::class,
