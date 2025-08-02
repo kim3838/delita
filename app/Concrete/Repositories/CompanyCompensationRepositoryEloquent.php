@@ -32,6 +32,7 @@ class CompanyCompensationRepositoryEloquent extends BaseRepositoryEloquent imple
             ->select([
                 'compensations.id AS id',
                 'compensations.company_id AS company_id',
+                'compensations.code AS code',
                 'compensations.name AS name',
                 'compensations.order AS order',
                 'compensations.assignable AS assignable',

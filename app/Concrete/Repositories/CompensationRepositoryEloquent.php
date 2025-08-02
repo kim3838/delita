@@ -28,6 +28,7 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
             })
             ->select([
                 'compensations.id AS id',
+                'compensations.code AS code',
                 'compensations.name AS name',
                 'compensations.type AS type',
                 'compensations.assignable AS assignable',

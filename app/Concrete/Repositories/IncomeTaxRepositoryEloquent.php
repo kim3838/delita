@@ -28,6 +28,7 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
             })
             ->select([
                 'income_taxes.id AS id',
+                'income_taxes.code AS code',
                 'income_taxes.name AS name',
                 'income_taxes.type AS type',
                 'income_taxes.assignable AS assignable',

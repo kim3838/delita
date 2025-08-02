@@ -32,6 +32,7 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
             ->select([
                 'deductions.id AS id',
                 'deductions.company_id AS company_id',
+                'deductions.code AS code',
                 'deductions.name AS name',
                 'deductions.order AS order',
                 'deductions.assignable AS assignable',

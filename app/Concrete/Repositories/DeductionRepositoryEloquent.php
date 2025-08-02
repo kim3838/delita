@@ -28,6 +28,7 @@ class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements Dedu
             })
             ->select([
                 'deductions.id AS id',
+                'deductions.code AS code',
                 'deductions.name AS name',
                 'deductions.type AS type',
                 'deductions.assignable AS assignable',

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('income_taxes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->string('code');
             $table->string('name');
             $table->smallInteger('order');
             $table->boolean('assignable')->default(true);

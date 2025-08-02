@@ -11,6 +11,7 @@ class CompanyIncomeTax extends Model
     protected $casts = [
         'id' => 'int',
         'company_id' => 'int',
+        'code' => 'string',
         'name' => 'string',
         'order' => 'int',
         'assignable' => 'boolean',

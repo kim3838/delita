@@ -32,6 +32,7 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
             ->select([
                 'income_taxes.id AS id',
                 'income_taxes.company_id AS company_id',
+                'income_taxes.code AS code',
                 'income_taxes.name AS name',
                 'income_taxes.order AS order',
                 'income_taxes.assignable AS assignable',
