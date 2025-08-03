@@ -45,6 +45,11 @@ class WorldController extends Controller
     {
         $collection = Timezone::select('name')->distinct()->orderBy('name')->get();
 
+        if (!$collection->contains('name', 'UTC')) {
+            $collection->add(Timezone::hydrate([['name' => 'UTC']])->first());
+        }
+
+
         $formatted = $collection->map(function($item){
             return [
                 'text' => $item->name,
