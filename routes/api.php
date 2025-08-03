@@ -22,8 +22,10 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
+use App\Http\Controllers\Export\EmployeeController as EmployeeExportController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
@@ -43,6 +45,9 @@ Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name
 Route::get('timezone-selections', [WorldController::class, 'timezoneSelection']);
 Route::get('country-selections', [WorldController::class, 'countrySelection']);
 Route::get('currency-selections', [WorldController::class, 'currencySelection']);
+
+//Import templates
+Route::get('employee-import-template', [EmployeeImportTemplateController::class, 'index']);
 
 Route::group([
     'middleware' => ['guest']
