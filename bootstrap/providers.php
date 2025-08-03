@@ -7,4 +7,5 @@ return [
     App\Providers\RepositoryServiceProvider::class,
     App\Providers\TransformerServiceProvider::class,
     App\Providers\UtilityServiceProvider::class,
+    \Maatwebsite\Excel\ExcelServiceProvider::class,
 ];
