@@ -21,6 +21,8 @@ return new class extends Migration
             $table->smallInteger('type');
             $table->foreignId('company_formula_id')->constrained('company_formula')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['company_id', 'code']);
         });
     }
 
