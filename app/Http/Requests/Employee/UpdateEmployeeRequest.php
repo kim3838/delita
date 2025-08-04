@@ -27,7 +27,10 @@ class UpdateEmployeeRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('employees')->ignore($this->route('employeeId'))
+                Rule::unique('employees')->where(function ($query) {
+                    return $query->where('company_id', $this->input('company_id'))
+                        ->whereNot('id', $this->route('employeeId'));
+                })
             ],
             'family_name' => 'required|string|max:255',
             'given_name' => 'required|string|max:255',

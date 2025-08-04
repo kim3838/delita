@@ -25,7 +25,9 @@ class StoreEmployeeRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('employees')
+                Rule::unique('employees')->where(function ($query) {
+                    return $query->where('company_id', $this->input('company_id'));
+                })
             ],
             'family_name' => 'required|string|max:255',
             'given_name' => 'required|string|max:255',

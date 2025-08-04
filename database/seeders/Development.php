@@ -969,7 +969,6 @@ class Development extends Seeder
             'given_name' => 'Employee 01',
             'middle_name' => 'A',
             'family_name' => '1002',
-            'birth_date' => '1990-01-01',
             'gender' => Gender::FEMALE,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
@@ -984,7 +983,6 @@ class Development extends Seeder
             'given_name' => 'Employee 01',
             'middle_name' => 'B',
             'family_name' => '1002',
-            'birth_date' => '1990-01-01',
             'gender' => Gender::FEMALE,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
@@ -999,7 +997,6 @@ class Development extends Seeder
             'given_name' => 'Employee 01',
             'middle_name' => 'C',
             'family_name' => '1002',
-            'birth_date' => '1990-01-01',
             'gender' => Gender::FEMALE,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
@@ -1015,7 +1012,6 @@ class Development extends Seeder
             'given_name' => 'Employee 02',
             'middle_name' => 'C',
             'family_name' => '1002',
-            'birth_date' => '1990-01-01',
             'gender' => Gender::FEMALE,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
@@ -1031,7 +1027,6 @@ class Development extends Seeder
             'given_name' => 'Employee 03',
             'middle_name' => 'C',
             'family_name' => '1002',
-            'birth_date' => '1990-01-01',
             'gender' => Gender::NOT_SPECIFIED,
             'marital_status' => MaritalStatus::SINGLE,
         ]);

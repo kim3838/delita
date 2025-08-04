@@ -21,17 +21,18 @@ return new class extends Migration
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             $table->foreignId('designation_id')->nullable()->constrained('designations')->onDelete('set null');
             $table->foreignId('manager_id')->nullable()->constrained('employees')->onDelete('set null');
-            $table->string('number')->unique();
+            $table->string('number');
             $table->string('given_name');
             $table->string('middle_name')->nullable();
             $table->string('family_name');
-            $table->date('birth_date');
+            $table->date('birth_date')->nullable();
             $table->smallInteger('gender')->default(Gender::NOT_SPECIFIED);
             $table->smallInteger('marital_status')->default(MaritalStatus::NOT_SPECIFIED);
-            $table->date('date_registered')->default(now());
+            $table->date('date_registered')->useCurrent();
             $table->timestamps();
 
             $table->unique(['user_id', 'company_id']);
+            $table->unique(['company_id', 'number']);
         });
     }
 
