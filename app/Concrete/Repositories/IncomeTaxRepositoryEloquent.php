@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\IncomeTax;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements IncomeTaxRepository
 {
@@ -15,10 +14,8 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
         return IncomeTax::class;
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("income_taxes.company_id"), $value);

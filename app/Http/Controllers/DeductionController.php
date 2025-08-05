@@ -12,16 +12,19 @@ use App\Http\Requests\Deduction\UpdateDeductionRequest;
 use App\Transformers\CompanyDeduction\ListTransformer;
 use App\Transformers\Deduction\ItemTransformer as DeductionTransformer;
 use App\Transformers\Deduction\SelectionTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class DeductionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(CompanyDeductionRepository::class)->list(),
+                App::make(CompanyDeductionRepository::class)->list($filters),
                 ListTransformer::class,
                 'deductions'
             ));
@@ -30,13 +33,15 @@ class DeductionController extends Controller
         abort(404);
     }
 
-    public function selection()
+    public function selection(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(DeductionRepository::class)->selection(),
+                    App::make(DeductionRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
                 )

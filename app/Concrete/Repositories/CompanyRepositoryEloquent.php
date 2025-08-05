@@ -5,7 +5,6 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\CompanyRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Company;
-use Illuminate\Support\Facades\Request;
 
 class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements CompanyRepository
 {
@@ -14,10 +13,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
         return Company::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
@@ -47,10 +44,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
         return $this->hydratePaginationItems($paginator, $this->model);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->select([
                 'companies.id as id',

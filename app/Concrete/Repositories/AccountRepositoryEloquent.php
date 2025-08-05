@@ -5,7 +5,6 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\AccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Account;
-use Illuminate\Support\Facades\Request;
 
 class AccountRepositoryEloquent extends BaseRepositoryEloquent implements AccountRepository
 {
@@ -14,10 +13,8 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
         return Account::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->when(!empty($filters->account_type) && is_array($filters->account_type), function ($builder) use ($filters) {
                 $builder->whereIn('accounts.type', $filters->account_type);
@@ -35,10 +32,8 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
         return $this->hydratePaginationItems($paginator, $this->model);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()->select(['accounts.*']);
 
         return $this->model::hydrate($queryBuilder->get()->toArray());

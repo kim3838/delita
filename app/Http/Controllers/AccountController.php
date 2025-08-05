@@ -22,9 +22,11 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AccountRepository::class)->list(),
+                    App::make(AccountRepository::class)->list($filters),
                     ListTransformer::class
                 )
             );
@@ -37,9 +39,11 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AccountRepository::class)->selection(),
+                    App::make(AccountRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
                 )

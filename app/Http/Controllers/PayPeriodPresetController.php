@@ -20,11 +20,13 @@ class PayPeriodPresetController extends Controller
                 'type' => TimePeriodType::PAY_PERIOD
             ];
 
-            request()->query->set('filters', json_encode($filters));
+            $request->query->set('filters', json_encode($filters));
+
+            $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(TimePeriodPresetRepository::class)->selection(),
+                    App::make(TimePeriodPresetRepository::class)->selection($filters),
                     PayPeriodPresetSelectionTransformer::class,
                     'selection'
                 )

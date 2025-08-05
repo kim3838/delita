@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\DesignationRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Designation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements DesignationRepository
 {
@@ -15,10 +14,8 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
         return Designation::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("designations.company_id"), $value);
@@ -33,10 +30,8 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("designations.company_id"), $value);

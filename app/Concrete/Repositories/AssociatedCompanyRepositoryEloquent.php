@@ -15,10 +15,8 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
         return AssociatedCompany::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = CompanyUser::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
@@ -56,10 +54,8 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
         return $this->hydratePaginationItems($paginator, $this->model);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = CompanyUser::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {

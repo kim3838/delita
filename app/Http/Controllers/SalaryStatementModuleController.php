@@ -16,8 +16,10 @@ class SalaryStatementModuleController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(SalaryStatementModuleRepository::class)->list(),
+                App::make(SalaryStatementModuleRepository::class)->list($filters),
                 ListTransformer::class,
                 'salary_statement_modules'
             ));
@@ -30,7 +32,9 @@ class SalaryStatementModuleController extends Controller
     {
         if($request->expectsJson()){
 
-            App::make(SalaryStatementModuleRepository::class)->reOrder();
+            $orderables = json_decode($request->get('orderables'));
+
+            App::make(SalaryStatementModuleRepository::class)->reOrder($orderables);
 
             return ResponseJson::successfulResponse();
         }

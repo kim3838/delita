@@ -8,6 +8,7 @@ use App\Facades\ResponseJson;
 use App\Transformers\AssociatedCompany\ListTransformer;
 use App\Transformers\AssociatedCompany\SelectionTransformer;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Request;
 
 class AssociatedCompanyController extends Controller
 {
@@ -19,9 +20,11 @@ class AssociatedCompanyController extends Controller
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode(Request::get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    $this->repository->list(),
+                    $this->repository->list($filters),
                     ListTransformer::class
                 )
             );
@@ -34,7 +37,9 @@ class AssociatedCompanyController extends Controller
     {
         if(request()->expectsJson()){
 
-            $selection = $this->repository->selection();
+            $filters = json_decode(Request::get('filters'));
+
+            $selection = $this->repository->selection($filters);
 
             $selected = Arr::first($selection);
 

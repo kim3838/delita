@@ -17,13 +17,15 @@ use Illuminate\Support\Facades\App;
 
 class CompanyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(CompanyRepository::class)->list(),
+                    App::make(CompanyRepository::class)->list($filters),
                     ListTransformer::class
                 )
             );
@@ -36,7 +38,9 @@ class CompanyController extends Controller
     {
         if($request->expectsJson()){
 
-            $selection = App::make(CompanyRepository::class)->selection();
+            $filters = json_decode($request->get('filters'));
+
+            $selection = App::make(CompanyRepository::class)->selection($filters);
             $selected = Arr::first($selection);
 
             return ResponseJson::successfulResponse([

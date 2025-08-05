@@ -7,7 +7,6 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Deduction;
 use App\Models\Hydrations\CompanyDeduction;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implements CompanyDeductionRepository
 {
@@ -16,10 +15,8 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
         return CompanyDeduction::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = Deduction::getQuery()
             ->leftJoin('company_formula', function ($join) {
                 $join->on(DB::raw("company_formula.id"), '=', DB::raw("deductions.company_formula_id"))

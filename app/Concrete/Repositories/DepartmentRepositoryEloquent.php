@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\DepartmentRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Department;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements DepartmentRepository
 {
@@ -15,10 +14,8 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
         return Department::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("departments.company_id"), $value);
@@ -39,10 +36,8 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("departments.company_id"), $value);

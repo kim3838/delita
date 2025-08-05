@@ -15,9 +15,11 @@ class AssociatedUserController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AssociatedUserRepository::class)->list(),
+                    App::make(AssociatedUserRepository::class)->list($filters),
                     ListTransformer::class
                 )
             );

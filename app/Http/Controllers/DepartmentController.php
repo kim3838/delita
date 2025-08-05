@@ -21,8 +21,10 @@ class DepartmentController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(DepartmentRepository::class)->list(),
+                App::make(DepartmentRepository::class)->list($filters),
                 ListTransformer::class,
                 'departments'
             ));
@@ -31,13 +33,15 @@ class DepartmentController extends Controller
         abort(404);
     }
 
-    public function selection()
+    public function selection(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(DepartmentRepository::class)->selection(),
+                    App::make(DepartmentRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
                 )

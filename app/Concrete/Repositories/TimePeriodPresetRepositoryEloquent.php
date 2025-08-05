@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\TimePeriodType;
 use App\Models\TimePeriodPreset;
-use Illuminate\Support\Facades\Request;
 
 class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implements TimePeriodPresetRepository
 {
@@ -15,10 +14,8 @@ class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implemen
         return TimePeriodPreset::class;
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->when($filters->name ?? false, function ($builder, $value) {
                 $builder->where('name', $value);

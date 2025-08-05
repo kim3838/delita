@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\CompensationRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Compensation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements CompensationRepository
 {
@@ -15,10 +14,8 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
         return Compensation::class;
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("compensations.company_id"), $value);

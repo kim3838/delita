@@ -9,6 +9,7 @@ use App\Http\Requests\StorePrototypeRequest;
 use App\Http\Requests\UpdatePrototypeRequest;
 use App\Models\Prototype;
 use App\Transformers\Prototype\DataTableTransformer;
+use Illuminate\Http\Request;
 
 class PrototypeController extends Controller
 {
@@ -19,12 +20,14 @@ class PrototypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
-                Fractal::collection($this->prototypeRepository->list(), DataTableTransformer::class)
+                Fractal::collection($this->prototypeRepository->list($filters), DataTableTransformer::class)
             );
         }
 

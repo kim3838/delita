@@ -7,7 +7,6 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Compensation;
 use App\Models\Hydrations\CompanyCompensation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class CompanyCompensationRepositoryEloquent extends BaseRepositoryEloquent implements CompanyCompensationRepository
 {
@@ -16,10 +15,8 @@ class CompanyCompensationRepositoryEloquent extends BaseRepositoryEloquent imple
         return CompanyCompensation::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = Compensation::getQuery()
             ->leftJoin('company_formula', function ($join) {
                 $join->on(DB::raw("company_formula.id"), '=', DB::raw("compensations.company_formula_id"))

@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Facades\ResponseJson;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class OrderableController extends Controller
 {
-    public function reOrder($module)
+    public function reOrder(Request $request, $module)
     {
         if(request()->expectsJson()){
 
-            App::make($module)->reOrder();
+            $orderables = json_decode($request->get('orderables'));
+
+            App::make($module)->reOrder($orderables);
 
             return ResponseJson::successfulResponse();
         }

@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\EmployeeRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements EmployeeRepository
 {
@@ -15,10 +14,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return Employee::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
@@ -35,10 +32,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return $this->hydratePaginationItems($paginator, new $this->model);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);

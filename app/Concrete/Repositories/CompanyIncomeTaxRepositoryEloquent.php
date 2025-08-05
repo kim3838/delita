@@ -7,7 +7,6 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\CompanyIncomeTax;
 use App\Models\IncomeTax;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements CompanyIncomeTaxRepository
 {
@@ -16,10 +15,8 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
         return CompanyIncomeTax::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = IncomeTax::getQuery()
             ->leftJoin('company_formula', function ($join) {
                 $join->on(DB::raw("company_formula.id"), '=', DB::raw("income_taxes.company_formula_id"))

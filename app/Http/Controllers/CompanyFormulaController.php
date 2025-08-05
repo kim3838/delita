@@ -8,17 +8,20 @@ use App\Facades\ResponseJson;
 use App\Transformers\CompanyFormula\FormulaSettingTransformer as CompanyFormulaSettingTransformer;
 use App\Transformers\CompanyFormula\ItemTransformer as CompanyFormulaTransformer;
 use App\Transformers\CompanyFormula\SelectionTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class CompanyFormulaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(CompanyFormulaRepository::class)->list(),
+                    App::make(CompanyFormulaRepository::class)->list($filters),
                     CompanyFormulaSettingTransformer::class,
                     'formula_settings'
                 )
@@ -28,13 +31,15 @@ class CompanyFormulaController extends Controller
         abort(404);
     }
 
-    public function selection()
+    public function selection(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(CompanyFormulaRepository::class)->selection(),
+                    App::make(CompanyFormulaRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
                 )

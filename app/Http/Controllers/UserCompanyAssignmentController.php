@@ -16,7 +16,9 @@ class UserCompanyAssignmentController extends Controller
     {
         if($request->expectsJson()){
 
-            $data = App::make(UserCompanyAssignmentRepository::class)->list($userUlid);
+            $filters = json_decode($request->get('filters'));
+
+            $data = App::make(UserCompanyAssignmentRepository::class)->list($userUlid, $filters);
 
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class, 'company_assignment')

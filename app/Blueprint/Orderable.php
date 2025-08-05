@@ -4,5 +4,5 @@ namespace App\Blueprint;
 
 interface Orderable
 {
-    public function reOrder();
+    public function reOrder($orderables);
 }

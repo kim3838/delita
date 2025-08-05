@@ -8,7 +8,6 @@ use App\Enums\Formulable;
 use App\Models\CompanyFormula;
 use App\Models\Hydrations\CompanyFormula\FormulaSetting;
 use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
-use Illuminate\Support\Facades\Request;
 
 class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements CompanyFormulaRepository
 {
@@ -17,10 +16,8 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
         return CompanyFormula::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')
@@ -46,10 +43,8 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
         return FormulaSetting::hydrate($queryBuilder->get()->toArray());
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model::getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')

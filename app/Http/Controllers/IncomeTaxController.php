@@ -12,16 +12,19 @@ use App\Http\Requests\IncomeTax\UpdateIncomeTaxRequest;
 use App\Transformers\CompanyIncomeTax\ListTransformer;
 use App\Transformers\IncomeTax\ItemTransformer as IncomeTaxTransformer;
 use App\Transformers\IncomeTax\SelectionTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class IncomeTaxController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(CompanyIncomeTaxRepository::class)->list(),
+                App::make(CompanyIncomeTaxRepository::class)->list($filters),
                 ListTransformer::class,
                 'income_taxes'
             ));
@@ -30,13 +33,15 @@ class IncomeTaxController extends Controller
         abort(404);
     }
 
-    public function selection()
+    public function selection(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(IncomeTaxRepository::class)->selection(),
+                    App::make(IncomeTaxRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
             ));

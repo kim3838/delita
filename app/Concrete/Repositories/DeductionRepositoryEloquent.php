@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\DeductionRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Deduction;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements DeductionRepository
 {
@@ -15,10 +14,8 @@ class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements Dedu
         return Deduction::class;
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("deductions.company_id"), $value);

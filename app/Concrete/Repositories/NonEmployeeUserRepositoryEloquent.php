@@ -7,7 +7,6 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\NonEmployeeUser;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implements NonEmployeeUserRepository
 {
@@ -16,10 +15,8 @@ class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implement
         return NonEmployeeUser::class;
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = User::getQuery()
             ->join('company_user', 'company_user.user_id', '=', 'users.id')
             ->leftJoin('employees', function($join){

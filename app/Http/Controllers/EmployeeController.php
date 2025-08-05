@@ -19,8 +19,10 @@ class EmployeeController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(EmployeeRepository::class)->list(),
+                App::make(EmployeeRepository::class)->list($filters),
                 ListTransformer::class,
             ));
         }
@@ -73,13 +75,15 @@ class EmployeeController extends Controller
         abort(404);
     }
 
-    public function selection()
+    public function selection(Request $request)
     {
         if(request()->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
-                    App::make(EmployeeRepository::class)->selection(),
+                    App::make(EmployeeRepository::class)->selection($filters),
                     SelectionTransformer::class
                 )
             ]);

@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\AssociatedUserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
-use Illuminate\Support\Facades\Request;
 
 class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedUserRepository
 {
@@ -15,10 +14,8 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
         return AssociatedUser::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = User::getQuery()
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
             ->when(!empty($filters->associated_companies) && is_array($filters->associated_companies), function ($builder) use ($filters) {

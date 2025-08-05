@@ -6,8 +6,6 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Models\Company;
 use App\Transformers\CompanyPayPeriodSetting\ItemTransformer as CompanyPayPeriodSettingTransformer;
-use Illuminate\Support\Facades\App;
-use stdClass;
 
 class CompanyPayPeriodSettingController extends Controller
 {

@@ -16,9 +16,11 @@ class AssociatedAccountController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AssociatedAccountRepository::class)->list(),
+                    App::make(AssociatedAccountRepository::class)->list($filters),
                     ListTransformer::class
                 )
             );
@@ -31,9 +33,11 @@ class AssociatedAccountController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AssociatedAccountRepository::class)->selection(),
+                    App::make(AssociatedAccountRepository::class)->selection($filters),
                     SelectionTransformer::class,
                     'selection'
                 )

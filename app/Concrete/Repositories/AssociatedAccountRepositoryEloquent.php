@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\CompanyUser;
 use App\Models\Hydrations\AssociatedAccount;
-use Illuminate\Support\Facades\Request;
 
 class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedAccountRepository
 {
@@ -15,10 +14,8 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
         return AssociatedAccount::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = CompanyUser::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
@@ -45,10 +42,8 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
         return $this->hydratePaginationItems($paginator, $this->model);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = CompanyUser::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')

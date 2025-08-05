@@ -7,7 +7,6 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\User\CompanyAssignment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent implements UserCompanyAssignmentRepository
 {
@@ -16,10 +15,8 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
         return CompanyAssignment::class;
     }
 
-    public function list($ulid)
+    public function list($ulid, $filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = User::getQuery()
             ->where('users.ulid', $ulid)
             ->crossJoin('companies')

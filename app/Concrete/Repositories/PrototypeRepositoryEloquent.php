@@ -17,10 +17,8 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
         return Prototype::class;
     }
 
-    public function list()
+    public function list($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $tableName = $this->model->getTable();
 
         $queryBuilder = $this->model->getQuery()
@@ -56,10 +54,8 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
         return $this->hydratePaginationItems($paginator, new PrototypeDataTable);
     }
 
-    public function selection()
+    public function selection($filters)
     {
-        $filters = json_decode(Request::get('filters'));
-
         $queryBuilder = $this->model->getQuery()
             ->orderBy('name', 'ASC')
             ->when($filters->id ?? false, function ($builder, $value) {
