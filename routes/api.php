@@ -25,8 +25,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
-use App\Http\Controllers\Export\EmployeeController as EmployeeExportController;
 use App\Http\Controllers\FormModuleController;
+use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\NonEmployeeUserController;
@@ -185,6 +185,7 @@ Route::group([
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
     Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
+    Route::post('employee-pre-import', [EmployeeImportController::class, 'preImport']);
 
     //Employee Contact
     Route::get('employee-contact/{employeeId}', [EmployeeContactController::class, 'show']);
