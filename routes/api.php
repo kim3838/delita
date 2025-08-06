@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
 Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
+Route::get('payroll-component-pay-selections', [EnumController::class, 'payrollComponentPaySelections']);
 Route::get('timezone-selections', [WorldController::class, 'timezoneSelection']);
 Route::get('country-selections', [WorldController::class, 'countrySelection']);
 Route::get('currency-selections', [WorldController::class, 'currencySelection']);
