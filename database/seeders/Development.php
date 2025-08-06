@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
@@ -796,6 +797,10 @@ class Development extends Seeder
         $account1002 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
         //Account 1003
         $account1003 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
+
+        $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        $account1003->subscriptions()->create(['module' => AccountSubscriptionModules::PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
 
         $philippines = Country::where('iso2', 'PH')->first();
 

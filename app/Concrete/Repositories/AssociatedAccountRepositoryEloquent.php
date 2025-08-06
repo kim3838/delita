@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Models\Account;
 use App\Models\CompanyUser;
 use App\Models\Hydrations\AssociatedAccount;
 
@@ -11,7 +12,7 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
 {
     public function model(): string
     {
-        return AssociatedAccount::class;
+        return Account::class;
     }
 
     public function list($filters)
@@ -29,17 +30,15 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
                 $builder->whereIn('accounts.type', $filters->account_type);
             })
             ->select([
-                'accounts.id as account_id',
-                'accounts.ulid as account_ulid',
-                'accounts.number as account_number',
-                'accounts.type as account_type',
-                'accounts.date_registered as account_date_registered',
+                'accounts.id as id',
+                'accounts.ulid as ulid',
+                'accounts.number as number',
+                'accounts.type as type',
+                'accounts.date_registered as date_registered',
             ])
             ->groupBy('accounts.id');
 
-        $paginator = $this->createPaginationFromBuilder($queryBuilder);
-
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydrateCollection($queryBuilder->get(), $this->model);
     }
 
     public function selection($filters)
@@ -54,8 +53,8 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
             ->select([
-                'accounts.id as account_id',
-                'accounts.number as account_number',
+                'accounts.id as id',
+                'accounts.number as number',
             ])
             ->groupBy('accounts.id');
 

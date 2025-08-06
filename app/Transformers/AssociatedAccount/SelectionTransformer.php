@@ -2,16 +2,16 @@
 
 namespace App\Transformers\AssociatedAccount;
 
-use App\Models\Hydrations\AssociatedAccount;
+use App\Models\Account;
 use League\Fractal\TransformerAbstract;
 
 class SelectionTransformer extends TransformerAbstract
 {
-    public function transform(AssociatedAccount $model): array
+    public function transform(Account $model): array
     {
         return [
-            'value' => $model->account_id,
-            'text' => $model->account_number,
+            'value' => $model->id,
+            'text' => $model->number,
         ];
     }
 }

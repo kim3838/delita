@@ -21,7 +21,8 @@ class Account extends Model
         'id' => 'int',
         'ulid' => 'string',
         'number' => 'string',
-        'type' => AccountType::class
+        'type' => AccountType::class,
+        'date_registered' => 'date:Y-m-d'
     ];
 
     protected $hidden = [
@@ -32,5 +33,10 @@ class Account extends Model
     public function companies(): HasMany
     {
         return $this->hasMany(Company::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(AccountSubscription::class);
     }
 }

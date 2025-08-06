@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class AssociatedAccount extends Model
 {
     protected $casts = [
-        'account_id' => 'int',
-        'account_ulid' => 'string',
-        'account_number' => 'string',
-        'account_type' => AccountType::class
+        'id' => 'int',
+        'ulid' => 'string',
+        'number' => 'string',
+        'type' => AccountType::class,
     ];
 }
