@@ -462,7 +462,7 @@ class Development extends Seeder
 
         //Formula Presets
         $formulaPresets = [
-            ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::SALARY, 'interpolation' => false,
+            ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'interpolation' => false,
                 'default_settings' => [
                     [
                         'key' => 'regular_rates',
@@ -892,7 +892,7 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Compensations
         $compensationsPresets = [
-            ['code' => 'BS', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::SALARY, 'formula' => 'Standard-Salary'],
+            ['code' => 'BS', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Salary'],
             ['code' => 'MA', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Meal'],
             ['code' => 'OT', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
         ];
@@ -1039,7 +1039,7 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B Compensations
-        $company1002BBasicSalary = $company1002B->compensations->where('name', 'Basic Salary')->where('type', Compensation::SALARY)->first();
+        $company1002BBasicSalary = $company1002B->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
         $company1002BMealAllowance = $company1002B->compensations->where('name', 'Meal Allowance')->where('type', Compensation::REGULAR_ALLOWANCE)->first();
         $company1002BOvertime = $company1002B->compensations->where('name', 'Overtime')->where('type', Compensation::OVERTIME)->first();
 
@@ -1063,7 +1063,7 @@ class Development extends Seeder
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Company 1002-C Compensations
-        $company1002CBasicSalary = $company1002C->compensations->where('name', 'Basic Salary')->where('type', Compensation::SALARY)->first();
+        $company1002CBasicSalary = $company1002C->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
         $company1002CMealAllowance = $company1002C->compensations->where('name', 'Meal Allowance')->where('type', Compensation::REGULAR_ALLOWANCE)->first();
         $company1002COvertime = $company1002C->compensations->where('name', 'Overtime')->where('type', Compensation::OVERTIME)->first();
 

@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum Compensation: int implements BaseEnum
 {
-    case SALARY = 0;
+    case BASIC_SALARY = 0;
     case OVERTIME = 1;
     case BENEFIT = 2;
     case REGULAR_ALLOWANCE = 3;
@@ -12,7 +12,7 @@ enum Compensation: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            self::SALARY => 'Salary',
+            self::BASIC_SALARY => 'Basic Salary',
             self::OVERTIME => 'Overtime',
             self::BENEFIT => 'Benefit',
             self::REGULAR_ALLOWANCE => 'Regular Allowance',
