@@ -92,6 +92,7 @@ Route::group([
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
 
     //User
+    Route::get('users', [UserController::class, 'index']);
     Route::get('user/{ulid}', [UserController::class, 'show']);
     Route::post('user-validate', [UserController::class, 'validate']);
     Route::post('user', [UserController::class, 'store']);

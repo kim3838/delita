@@ -15,7 +15,14 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'number' => $model->number,
             'type' => $model->type->toArray(),
-            'date_registered' => Carbon::parse($model->date_registered)->toDateString()
+            'date_registered' => Carbon::parse($model->date_registered)->toDateString(),
+            'subscriptions' => $model->subscriptions->map(function ($subscription) {
+                return [
+                    'id' => $subscription->id,
+                    'module' => $subscription->module->toArray(),
+                    'date_subscribed' => $subscription->date_subscribed
+                ];
+            })
         ];
     }
 }

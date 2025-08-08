@@ -9,6 +9,7 @@ use App\Http\Requests\User\StoreAutogenerateUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Transformers\User\ItemTransformer;
+use App\Transformers\User\ListTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
@@ -51,6 +52,23 @@ class UserController extends Controller
                     ItemTransformer::class
                 )
             ]);
+        }
+
+        abort(404);
+    }
+
+    public function index(Request $request)
+    {
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection(
+                    App::make(UserRepository::class)->list($filters),
+                    ListTransformer::class
+                )
+            );
         }
 
         abort(404);

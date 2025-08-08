@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\UserStatus;
+use App\Enums\UserType;
 use App\Helpers\SafeExecutor;
 use App\Models\Company;
 use App\Models\User;
@@ -17,6 +18,39 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     public function model(): string
     {
         return User::class;
+    }
+
+    public function list($filters)
+    {
+        $queryBuilder = $this->model::getQuery()
+            ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
+            ->whereNot('users.type', UserType::SUPER_ADMIN)
+            ->when(!empty($filters->companies) && is_array($filters->companies), function ($builder) use ($filters) {
+                $builder->whereIn('company_user.company_id', $filters->companies);
+            })
+            ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
+                $builder->whereIn('users.status', $filters->status);
+            })
+            ->when($filters->search ?? false, function($builder, $value){
+                $builder->where(function($clause) use($value){
+                    $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
+                        ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
+                });
+            })
+            ->select([
+                'users.id as id',
+                'users.ulid as ulid',
+                'users.name as username',
+                'users.email as email',
+                'users.status as status',
+                'users.email_verified_at as email_verified_at',
+                'users.timezone as timezone',
+            ])
+            ->groupBy('users.id');
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model);
     }
 
     public function store($attributes)
