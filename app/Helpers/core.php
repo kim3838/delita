@@ -54,3 +54,12 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
     ]);
 }
 
+if(!function_exists('_debug')){
+    function _debug($value): void
+    {
+        \Illuminate\Support\Facades\Log::debug($value);
+    }
+}
+
+
+
