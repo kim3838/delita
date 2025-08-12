@@ -15,6 +15,11 @@ class EmployeeContact extends Model
         'personal_phone'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);

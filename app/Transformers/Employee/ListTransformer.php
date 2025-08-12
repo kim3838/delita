@@ -20,6 +20,7 @@ class ListTransformer extends TransformerAbstract
             'department' => $employee->department,
             'designation' => $employee->designation,
             'manager' => $employee->manager,
+            'contact' => $employee->contact
         ];
     }
 }

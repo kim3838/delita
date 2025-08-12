@@ -989,6 +989,9 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
+        //Create Contact info for Employee A1001
+        $employeeA1001->contact()->create(['office_email' => 'a1001.01@officemail.com', 'personal_email' => 'a1001.01@personalmail.com', 'office_phone' => '+639123456789', 'personal_phone' => '+639123456789']);
+
         //Create Employee Info B1001 to Company 1002-B
         $employeeB1001 = $account1002User02->employees()->create([
             'ulid' => Str::ulid(),
@@ -1003,6 +1006,9 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
+        //Create Contact info for Employee B1001
+        $employeeB1001->contact()->create(['office_email' => 'b1001.01@officemail.com']);
+
         //Create Employee Info C1001 to Company 1002-C
         $employeeC1001 = $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
@@ -1016,6 +1022,9 @@ class Development extends Seeder
             'gender' => Gender::FEMALE,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
+
+        //Create Contact info for Employee C1001
+        $employeeC1001->contact()->create(['office_email' => 'c1001.01@officemail.com', 'personal_email' => 'c1001.01@personalmail.com']);
 
         //Create Employee Info C1002 to Company 1002-C
         $employeeC1002 = $account1002User02->employees()->create([
@@ -1032,6 +1041,9 @@ class Development extends Seeder
             'marital_status' => MaritalStatus::SINGLE,
         ]);
 
+        //Create Contact info for Employee C1002
+        $employeeC1002->contact()->create(['office_email' => 'c1002.01@officemail.com', 'personal_email' => 'c1002.01@personalmail.com', 'office_phone' => '+639122256789']);
+
         //Create Employee Info C1003 to Company 1002-C
         $employeeC1003 = $account1002User03->employees()->create([
             'ulid' => Str::ulid(),
@@ -1046,6 +1058,9 @@ class Development extends Seeder
             'gender' => Gender::NOT_SPECIFIED,
             'marital_status' => MaritalStatus::SINGLE,
         ]);
+
+        //Create Contact info for Employee C1003
+        $employeeC1003->contact()->create(['office_email' => 'c1003.01@officemail.com', 'personal_phone' => '+639122111789']);
 
         /**************************************************************************************************************************************************************************************************************/
 
