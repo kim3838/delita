@@ -13,14 +13,17 @@ use App\Enums\MaritalStatus;
 use App\Enums\PayFrequency;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
+use App\Enums\ShiftType;
 use App\Enums\TimePeriodType;
 use App\Models\Account;
 use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\Prototype;
+use App\Models\Shift;
 use App\Models\TimePeriodPreset;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
@@ -823,6 +826,14 @@ class Development extends Seeder
         $account1002User04 = User::factory()->default()->create(['name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
         $user05 = User::factory()->default()->create(['name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
+        //Company 1002-C Shifts
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSR2DONF1', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSR1DONF1', 'name' => 'REGULAR 1 DAY OFF[SUN] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSRNDONF1', 'name' => 'REGULAR NO DAY OFF 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
+
+        $this->createShiftSchedules(Shift::where('code', 'DSR2DONF1')->first(), false, [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $this->createShiftSchedules(Shift::where('code', 'DSR1DONF1')->first(), false, [CarbonInterface::SUNDAY]);
+        $this->createShiftSchedules(Shift::where('code', 'DSRNDONF1')->first());
         /*
          * Employee: has employee info and default assigned to a company
          * Employee Admin: has employee info and admin assigned to a company
@@ -1121,5 +1132,65 @@ class Development extends Seeder
                 ->where('name', $attributes['formula'])
                 ->first()->pivot->id,
         ]);
+    }
+
+    public function createShiftSchedules(Shift $shift, $flexible = false, $dayoffs = []): void
+    {
+        $restDays = [
+            CarbonInterface::SUNDAY,
+            CarbonInterface::SATURDAY,
+        ];
+
+        $weekdays = [
+            CarbonInterface::SUNDAY,
+            CarbonInterface::MONDAY,
+            CarbonInterface::TUESDAY,
+            CarbonInterface::WEDNESDAY,
+            CarbonInterface::THURSDAY,
+            CarbonInterface::FRIDAY,
+            CarbonInterface::SATURDAY,
+        ];
+
+        foreach ($weekdays as $weekday) {
+
+            $dayOff = in_array($weekday, $dayoffs);
+
+            if($dayOff){
+
+                $shift->schedules()->create([
+                    'week_day' => $weekday,
+                    'is_rest_day' => in_array($weekday, $restDays),
+                    'is_day_off' => true,
+                    'timezone' => null,
+                    'is_flexible' => $flexible,
+                    'work_start' => null,
+                    'work_end' => null,
+                    'total_work_hours_with_breaks' => null,
+                    'has_lunch_break' => false,
+                    'lunch_break_start' => null,
+                    'lunch_break_end' => null,
+                    'total_lunch_break_hours' => null,
+                    'is_lunch_break_compensable' => false
+                ]);
+
+            } else {
+
+                $shift->schedules()->create([
+                    'week_day' => $weekday,
+                    'is_rest_day' => in_array($weekday, $restDays),
+                    'is_day_off' => false,
+                    'timezone' => 'Asia/Manila',
+                    'is_flexible' => $flexible,
+                    'work_start' => '09:00',
+                    'work_end' => '17:00',
+                    'total_work_hours_with_breaks' => '08:00',
+                    'has_lunch_break' => true,
+                    'lunch_break_start' => '12:00',
+                    'lunch_break_end' => '13:00',
+                    'total_lunch_break_hours' => '01:00',
+                    'is_lunch_break_compensable' => false
+                ]);
+            }
+        }
     }
 }

@@ -24,6 +24,8 @@ use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\PayPeriodSettingRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
+use App\Blueprint\Repositories\ShiftRepository;
+use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Blueprint\Repositories\UserRepository;
@@ -49,6 +51,8 @@ use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\PayPeriodSettingRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
+use App\Concrete\Repositories\ShiftRepositoryEloquent;
+use App\Concrete\Repositories\ShiftScheduleRepositoryEloquent;
 use App\Concrete\Repositories\TimePeriodPresetRepositoryEloquent;
 use App\Concrete\Repositories\UserCompanyAssignmentRepositoryEloquent;
 use App\Concrete\Repositories\UserRepositoryEloquent;
@@ -83,6 +87,8 @@ class BindingsServiceProvider extends ServiceProvider implements DeferrableProvi
         'pey_period_setting' => PayPeriodSettingRepositoryEloquent::class,
         'time_period_preset' => TimePeriodPresetRepositoryEloquent::class,
         'salary_statement_module' => SalaryStatementModuleRepositoryEloquent::class,
+        'shift' => ShiftRepositoryEloquent::class,
+        'shift_schedule' => ShiftScheduleRepositoryEloquent::class,
         EnumInterface::class => EnumConcrete::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -108,6 +114,8 @@ class BindingsServiceProvider extends ServiceProvider implements DeferrableProvi
         TimePeriodPresetRepository::class => TimePeriodPresetRepositoryEloquent::class,
         CompanyRepository::class => CompanyRepositoryEloquent::class,
         SalaryStatementModuleRepository::class => SalaryStatementModuleRepositoryEloquent::class,
+        ShiftRepository::class => ShiftRepositoryEloquent::class,
+        ShiftScheduleRepository::class => ShiftScheduleRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -138,6 +146,8 @@ class BindingsServiceProvider extends ServiceProvider implements DeferrableProvi
             'pey_period_setting',
             'time_period_preset',
             'salary_statement_module',
+            'shift',
+            'shift_schedule',
             EnumInterface::class,
             AccountRepository::class,
             AssociatedAccountRepository::class,
@@ -163,6 +173,8 @@ class BindingsServiceProvider extends ServiceProvider implements DeferrableProvi
             PayPeriodSettingRepository::class,
             TimePeriodPresetRepository::class,
             SalaryStatementModuleRepository::class,
+            ShiftRepository::class,
+            ShiftScheduleRepository::class,
         ];
     }
 }

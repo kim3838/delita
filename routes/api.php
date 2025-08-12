@@ -35,6 +35,8 @@ use App\Http\Controllers\PayPeriodPresetController;
 use App\Http\Controllers\PayPeriodSettingController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
+use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\ShiftScheduleController;
 use App\Http\Controllers\WorldController;
 use App\Http\Controllers\UserCompanyAssignmentController;
 use App\Http\Controllers\UserController;
@@ -218,6 +220,16 @@ Route::group([
     Route::post('department', [DepartmentController::class, 'store']);
     Route::patch('department/{departmentId}', [DepartmentController::class, 'update']);
     Route::delete('department/{departmentId}', [DepartmentController::class, 'destroy']);
+
+    //Shifts
+    Route::get('shifts', [ShiftController::class, 'index']);
+    Route::post('shift', [ShiftController::class, 'store']);
+    Route::patch('shift/{shiftId}', [ShiftController::class, 'update']);
+    Route::get('shift/{ulid}', [ShiftController::class, 'show']);
+    Route::get('shift-check/{ulid}', [ShiftController::class, 'check']);
+    Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
+
+    Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
 });
 
 Route::group([
