@@ -189,7 +189,9 @@ Route::group([
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
     Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
-    Route::post('employee-pre-import', [EmployeeImportController::class, 'preImport']);
+    Route::post('employee-import-validate', [EmployeeImportController::class, 'read']);
+    Route::post('employee-import-re-validate', [EmployeeImportController::class, 'reValidate']);
+    Route::post('employee-import-save', [EmployeeImportController::class, 'save']);
 
     //Employee Contact
     Route::get('employee-contact/{employeeId}', [EmployeeContactController::class, 'show']);
