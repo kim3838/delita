@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Blueprint\Repositories\CompanyRepository;
+use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Enums\CompanyUserAssignmentType;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
@@ -85,9 +86,16 @@ class CompanyController extends Controller
 
             if($company){
 
+                //Sync company assignment to the creator
                 $request->user()->companies()->syncWithoutDetaching([
                     $company->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]
                 ]);
+
+                //Create pay frequency defaults
+                foreach (App::make(PayFrequencyRepository::class)->defaultPresets() as $payFrequency) {
+
+                    $company->payFrequencies()->create($payFrequency);
+                }
             }
 
             return ResponseJson::successfulResponse([

@@ -14,6 +14,13 @@ class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implemen
         return TimePeriodPreset::class;
     }
 
+    public function endOfMonthPeriod()
+    {
+        return $this->model::where('type', TimePeriodType::PAY_FREQUENCY)
+            ->where('name', 'end_of_month_cut_off')
+            ->firstOrFail();
+    }
+
     public function selection($filters)
     {
         $queryBuilder = $this->model::getQuery()

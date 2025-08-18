@@ -2,21 +2,19 @@
 
 namespace Database\Seeders;
 
+use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
-use App\Enums\CutOffType;
 use App\Enums\Deduction;
 use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
-use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
 use App\Enums\TimePeriodType;
-use App\Enums\WeekDay;
 use App\Models\Account;
 use App\Models\Formula;
 use App\Models\Prototype;
@@ -28,6 +26,7 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Nnjeim\World\Models\Country;
 
@@ -886,52 +885,13 @@ class Development extends Seeder
             $company1002C->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
         }
 
-        $endOfMonthTimePeriodPreset = TimePeriodPreset::where('name', 'end_of_month_cut_off')->first();
-
-        $payFrequencies = [
-            [
-                'code' => 'DAILY',
-                'order' => 1,
-                'type' => PayFrequencyEnum::DAILY,
-                'time_period_preset_id' => null,
-                'period' => null,
-                'cutoff_type' => null,
-                'cut_off_value' => null,
-                'days_span' => null,
-            ],[
-                'code' => 'WEEKLY',
-                'order' => 2,
-                'type' => PayFrequencyEnum::WEEKLY,
-                'time_period_preset_id' => null,
-                'period' => null,
-                'cutoff_type' => CutOffType::WEEKDAY,
-                'cut_off_value' => WeekDay::FRIDAY,
-                'days_span' => 7,
-            ],[
-                'code' => 'SEMIMONTHLY',
-                'order' => 3,
-                'type' => PayFrequencyEnum::SEMI_MONTHLY,
-                'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
-                'period' => $endOfMonthTimePeriodPreset->semimonthly_period,
-                'cutoff_type' => null,
-                'cut_off_value' => null,
-                'days_span' => null,
-            ],[
-                'code' => 'MONTHLY',
-                'order' => 4,
-                'type' => PayFrequencyEnum::MONTHLY,
-                'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
-                'period' => $endOfMonthTimePeriodPreset->monthly_period,
-                'cutoff_type' => null,
-                'cut_off_value' => null,
-                'days_span' => null,
-            ],
-        ];
-
-        // Company 1002-B and 1002-C Pay Frequencies
-        foreach ($payFrequencies as $payFrequency) {
+        // Company 1001-A, 1002-A, 1002-B, 1002-C, and 1002-D Pay Frequencies
+        foreach (App::make(PayFrequencyRepository::class)->defaultPresets() as $payFrequency) {
+            $company1001A->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002A->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
             $company1002B->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
             $company1002C->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002D->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
         }
 
         //Company 1002-B, 1002-C Pre-create Compensations
