@@ -20,6 +20,8 @@ return new class extends Migration
             $table->json('monthly_period')->nullable();
             $table->json('semimonthly_period')->nullable();
             $table->json('hour_period')->nullable();
+
+            $table->unique(['type', 'name']);
             $table->timestamps();
         });
     }
