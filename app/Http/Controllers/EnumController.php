@@ -22,12 +22,10 @@ class EnumController extends Controller
     {
         $payPeriod = App::make(EnumInterface::class)->selection('pay_period');
         $payType = App::make(EnumInterface::class)->selection('pay_type');
-        $payFrequency = App::make(EnumInterface::class)->selection('pay_frequency');
 
         return ResponseJson::successfulResponse([
             'pay_period' => $payPeriod::all(),
             'pay_type' => $payType::all(),
-            'pay_frequency' => $payFrequency::all()
         ]);
     }
 }

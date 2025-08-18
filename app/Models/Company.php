@@ -72,6 +72,11 @@ class Company extends Model
         return $this->hasMany(Compensation::class);
     }
 
+    public function payFrequencies(): HasMany
+    {
+        return $this->hasMany(PayFrequency::class);
+    }
+
     public function deductions(): HasMany
     {
         return $this->hasMany(Deduction::class);
@@ -80,11 +85,6 @@ class Company extends Model
     public function incomeTaxes(): HasMany
     {
         return $this->hasMany(IncomeTax::class);
-    }
-
-    public function payPeriodSetting(): HasOne
-    {
-        return $this->hasOne(PayPeriodSetting::class);
     }
 
     public function salaryStatementModules(): HasMany

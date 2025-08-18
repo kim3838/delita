@@ -5,18 +5,19 @@ namespace Database\Seeders;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
+use App\Enums\CutOffType;
 use App\Enums\Deduction;
 use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
-use App\Enums\PayFrequency;
+use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
 use App\Enums\TimePeriodType;
+use App\Enums\WeekDay;
 use App\Models\Account;
-use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\Prototype;
 use App\Models\Shift;
@@ -127,9 +128,9 @@ class Development extends Seeder
                 ]
             ]
         ], [
-            'type' => TimePeriodType::PAY_PERIOD,
+            'type' => TimePeriodType::PAY_FREQUENCY,
             'name' => 'end_of_month_cut_off',
-            'readable_name' => 'Cut-off of End of month',
+            'readable_name' => 'End of month',
             'monthly_period' => [
                 [
                     'key' => 'start_date',
@@ -215,9 +216,9 @@ class Development extends Seeder
                 ],
             ]
         ], [
-            'type' => TimePeriodType::PAY_PERIOD,
+            'type' => TimePeriodType::PAY_FREQUENCY,
             'name' => '10th_cut_off',
-            'readable_name' => 'Cut-off of 10th',
+            'readable_name' => '10th',
             'monthly_period' => [
                 [
                     'key' => 'start_date',
@@ -303,9 +304,9 @@ class Development extends Seeder
                 ],
             ]
         ], [
-            'type' => TimePeriodType::PAY_PERIOD,
+            'type' => TimePeriodType::PAY_FREQUENCY,
             'name' => '25th_cut_off',
-            'readable_name' => 'Cut-off of 25th',
+            'readable_name' => '25th',
             'monthly_period' => [
                 [
                     'key' => 'start_date',
@@ -444,12 +445,12 @@ class Development extends Seeder
             ->first();
 
         $endOfMonthCutOffPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('type', TimePeriodType::PAY_PERIOD)
+            ->where('type', TimePeriodType::PAY_FREQUENCY)
             ->where('name', 'end_of_month_cut_off')
             ->first();
 
         $twentyFifthCutOffPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('type', TimePeriodType::PAY_PERIOD)
+            ->where('type', TimePeriodType::PAY_FREQUENCY)
             ->where('name', '25th_cut_off')
             ->first();
 
@@ -885,21 +886,53 @@ class Development extends Seeder
             $company1002C->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
         }
 
-        //Company 1002-B Pay Period Preset of End of Month Cut-off
-        $company1002B->payPeriodSetting()->create([
-            'days_to_pay_after_cut_off' => 5,
-            'time_period_preset_reference' => $endOfMonthCutOffPeriodPreset['name'],
-            'monthly_pay_period' => $endOfMonthCutOffPeriodPreset['monthly_period'],
-            'semimonthly_pay_period' => $endOfMonthCutOffPeriodPreset['semimonthly_period'],
-        ]);
+        $endOfMonthTimePeriodPreset = TimePeriodPreset::where('name', 'end_of_month_cut_off')->first();
 
-        //Company 1002-C Pay Period Preset of 25th Cut-off
-        $company1002C->payPeriodSetting()->create([
-            'days_to_pay_after_cut_off' => 5,
-            'time_period_preset_reference' => $twentyFifthCutOffPeriodPreset['name'],
-            'monthly_pay_period' => $twentyFifthCutOffPeriodPreset['monthly_period'],
-            'semimonthly_pay_period' => $twentyFifthCutOffPeriodPreset['semimonthly_period'],
-        ]);
+        $payFrequencies = [
+            [
+                'code' => 'DAILY',
+                'order' => 1,
+                'type' => PayFrequencyEnum::DAILY,
+                'time_period_preset_id' => null,
+                'period' => null,
+                'cutoff_type' => null,
+                'cut_off_value' => null,
+                'days_span' => null,
+            ],[
+                'code' => 'WEEKLY',
+                'order' => 2,
+                'type' => PayFrequencyEnum::WEEKLY,
+                'time_period_preset_id' => null,
+                'period' => null,
+                'cutoff_type' => CutOffType::WEEKDAY,
+                'cut_off_value' => WeekDay::FRIDAY,
+                'days_span' => 7,
+            ],[
+                'code' => 'SEMIMONTHLY',
+                'order' => 3,
+                'type' => PayFrequencyEnum::SEMI_MONTHLY,
+                'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
+                'period' => $endOfMonthTimePeriodPreset->semimonthly_period,
+                'cutoff_type' => null,
+                'cut_off_value' => null,
+                'days_span' => null,
+            ],[
+                'code' => 'MONTHLY',
+                'order' => 4,
+                'type' => PayFrequencyEnum::MONTHLY,
+                'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
+                'period' => $endOfMonthTimePeriodPreset->monthly_period,
+                'cutoff_type' => null,
+                'cut_off_value' => null,
+                'days_span' => null,
+            ],
+        ];
+
+        // Company 1002-B and 1002-C Pay Frequencies
+        foreach ($payFrequencies as $payFrequency) {
+            $company1002B->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002C->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
+        }
 
         //Company 1002-B, 1002-C Pre-create Compensations
         $compensationsPresets = [
@@ -1064,6 +1097,9 @@ class Development extends Seeder
 
         /**************************************************************************************************************************************************************************************************************/
 
+        //Company 1002-B Monthly Pay Frequency
+        $company1002BMonthlyPayFrequency = $company1002B->payFrequencies()->where('code', 'MONTHLY')->first();
+
         //Company 1002-B Compensations
         $company1002BBasicSalary = $company1002B->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
         $company1002BMealAllowance = $company1002B->compensations->where('name', 'Meal Allowance')->where('type', Compensation::REGULAR_ALLOWANCE)->first();
@@ -1078,8 +1114,8 @@ class Development extends Seeder
         $company1002BCompensationTax = $company1002B->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
 
         //Create Compensations for Employee B1001
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]);
+        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]);
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee B1001
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BTardiness->id, 'payroll_componentable_type' => 'deduction']);
@@ -1087,6 +1123,9 @@ class Development extends Seeder
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee B1001
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+
+        //Company 1002-C Monthly Pay Frequency
+        $company1002CMonthlyPayFrequency = $company1002C->payFrequencies()->where('code', 'MONTHLY')->first();
 
         //Company 1002-C Compensations
         $company1002CBasicSalary = $company1002C->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
@@ -1102,8 +1141,8 @@ class Development extends Seeder
         $company1002CCompensationTax = $company1002C->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
 
         //Create Compensations for Employee C1001
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
+        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1001
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
@@ -1113,8 +1152,8 @@ class Development extends Seeder
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Create Compensations for Employee C1002
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
+        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1002
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
@@ -1124,8 +1163,8 @@ class Development extends Seeder
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Create Compensations for Employee C1003
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency' => PayFrequency::MONTHLY]);
+        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
+        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1003
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);

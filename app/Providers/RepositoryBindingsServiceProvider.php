@@ -20,7 +20,7 @@ use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
-use App\Blueprint\Repositories\PayPeriodSettingRepository;
+use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Blueprint\Repositories\ShiftRepository;
@@ -46,7 +46,7 @@ use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
-use App\Concrete\Repositories\PayPeriodSettingRepositoryEloquent;
+use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
 use App\Concrete\Repositories\ShiftRepositoryEloquent;
@@ -81,11 +81,11 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'company_deduction' => CompanyDeductionRepositoryEloquent::class,
         'income_tax' => IncomeTaxRepositoryEloquent::class,
         'company_income_tax' => CompanyIncomeTaxRepositoryEloquent::class,
-        'pey_period_setting' => PayPeriodSettingRepositoryEloquent::class,
         'time_period_preset' => TimePeriodPresetRepositoryEloquent::class,
         'salary_statement_module' => SalaryStatementModuleRepositoryEloquent::class,
         'shift' => ShiftRepositoryEloquent::class,
         'shift_schedule' => ShiftScheduleRepositoryEloquent::class,
+        'pay_frequency' => PayFrequencyRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -106,12 +106,12 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         CompanyDeductionRepository::class => CompanyDeductionRepositoryEloquent::class,
         IncomeTaxRepository::class => IncomeTaxRepositoryEloquent::class,
         CompanyIncomeTaxRepository::class => CompanyIncomeTaxRepositoryEloquent::class,
-        PayPeriodSettingRepository::class => PayPeriodSettingRepositoryEloquent::class,
         TimePeriodPresetRepository::class => TimePeriodPresetRepositoryEloquent::class,
         CompanyRepository::class => CompanyRepositoryEloquent::class,
         SalaryStatementModuleRepository::class => SalaryStatementModuleRepositoryEloquent::class,
         ShiftRepository::class => ShiftRepositoryEloquent::class,
         ShiftScheduleRepository::class => ShiftScheduleRepositoryEloquent::class,
+        PayFrequencyRepository::class => PayFrequencyRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -138,11 +138,11 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'company_deduction',
             'income_tax',
             'company_income_tax',
-            'pey_period_setting',
             'time_period_preset',
             'salary_statement_module',
             'shift',
             'shift_schedule',
+            'pay_frequency',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -164,11 +164,11 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             CompanyDeductionRepository::class,
             IncomeTaxRepository::class,
             CompanyIncomeTaxRepository::class,
-            PayPeriodSettingRepository::class,
             TimePeriodPresetRepository::class,
             SalaryStatementModuleRepository::class,
             ShiftRepository::class,
             ShiftScheduleRepository::class,
+            PayFrequencyRepository::class,
         ];
     }
 }

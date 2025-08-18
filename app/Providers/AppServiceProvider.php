@@ -10,6 +10,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\IncomeTax;
+use App\Models\PayFrequency;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
 use App\Models\ShiftSchedule;
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
             'account' => Account::class,
             'company' => Company::class,
+            'pay_frequency' => PayFrequency::class,
             'employee' => Employee::class,
             'department' => Department::class,
             'designation' => Designation::class,

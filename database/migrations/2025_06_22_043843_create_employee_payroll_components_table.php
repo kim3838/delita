@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('currency')->nullable();
             $table->smallInteger('pay_period')->nullable();
             $table->smallInteger('pay_type')->nullable();
-            $table->smallInteger('pay_frequency')->nullable();
+            $table->foreignId('pay_frequency_id')->nullable()->constrained('pay_frequencies')->onDelete('set null');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->timestamps();

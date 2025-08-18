@@ -11,7 +11,6 @@ use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
 use App\Enums\MaritalStatus;
-use App\Enums\PayFrequency;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\UserType;
@@ -32,7 +31,6 @@ class EnumConcrete implements EnumInterface
             'formulable_type' => Formulable::class,
             'pay_period' => PayPeriod::class,
             'pay_type' => PayType::class,
-            'pay_frequency' => PayFrequency::class,
             default => throw new \InvalidArgumentException('Invalid enum type'),
         };
     }

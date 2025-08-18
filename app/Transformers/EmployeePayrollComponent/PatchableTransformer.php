@@ -17,7 +17,7 @@ class PatchableTransformer extends TransformerAbstract
             'currency' => $model->currency,
             'pay_period' => $model->pay_period?->value,
             'pay_type' => $model->pay_type?->value,
-            'pay_frequency' => $model->pay_frequency?->value,
+            'pay_frequency_id' => $model->pay_frequency_id,
         ];
     }
 }

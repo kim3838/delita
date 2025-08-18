@@ -2,13 +2,17 @@
 
 namespace App\Transformers\EmployeePayrollComponent;
 
+use App\Facades\Fractal;
 use App\Models\EmployeePayrollComponent;
+use App\Transformers\PayFrequency\ItemTransformer as PayFrequencyItemTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
 {
     public function transform(EmployeePayrollComponent $model)
     {
+        $payFrequency = $model->payFrequency ? Fractal::item($model->payFrequency, PayFrequencyItemTransformer::class) : null;
+
         return [
             'id' => $model->id ? (int)$model->id : null,
             'employee_id' => $model->employee_id ? (int)$model->employee_id : null,
@@ -23,7 +27,8 @@ class ItemTransformer extends TransformerAbstract
             'currency' => $model->currency,
             'pay_period' => $model->pay_period?->toArray(),
             'pay_type' => $model->pay_type?->toArray(),
-            'pay_frequency' => $model->pay_frequency?->toArray(),
+            'pay_frequency_id' => $model->pay_frequency_id,
+            'pay_frequency' => $payFrequency
         ];
     }
 }

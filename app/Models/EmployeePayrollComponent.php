@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\Formulable;
-use App\Enums\PayFrequency;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class EmployeePayrollComponent extends Model
@@ -20,7 +20,7 @@ class EmployeePayrollComponent extends Model
         'currency',
         'pay_period',
         'pay_type',
-        'pay_frequency',
+        'pay_frequency_id',
         'start_date',
         'end_date',
     ];
@@ -34,7 +34,7 @@ class EmployeePayrollComponent extends Model
         'currency' => 'string',
         'pay_period' => PayPeriod::class,
         'pay_type' => PayType::class,
-        'pay_frequency' => PayFrequency::class,
+        'pay_frequency_id' => 'int',
         'start_date' => 'date',
         'end_date' => 'date',
     ];
@@ -47,5 +47,10 @@ class EmployeePayrollComponent extends Model
     public function payrollComponentable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function payFrequency(): BelongsTo
+    {
+        return $this->belongsTo(PayFrequency::class);
     }
 }

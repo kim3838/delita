@@ -2,20 +2,14 @@
 
 namespace App\Enums;
 
-enum PayFrequency: int implements BaseEnum
+enum CutOffType: int implements BaseEnum
 {
-    case DAILY = 0;
-    case WEEKLY = 1;
-    case SEMI_MONTHLY = 2;
-    case MONTHLY = 3;
+    case WEEKDAY = 0;
 
     public function label(): string
     {
         return match ($this) {
-            self::DAILY => "Daily",
-            self::WEEKLY => "Weekly",
-            self::SEMI_MONTHLY => "Semimonthly",
-            self::MONTHLY => "Monthly",
+            self::WEEKDAY => "Weekday",
         };
     }
 

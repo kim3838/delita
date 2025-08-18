@@ -6,18 +6,18 @@ use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Enums\TimePeriodType;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\PayPeriodPreset\SelectionTransformer as PayPeriodPresetSelectionTransformer;
+use App\Transformers\TimePeriodPreset\SelectionTransformer as PayPeriodPresetSelectionTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
-class PayPeriodPresetController extends Controller
+class TimePeriodPresetController extends Controller
 {
     public function selection(Request $request)
     {
         if($request->expectsJson()){
 
             $filters = [
-                'type' => TimePeriodType::PAY_PERIOD
+                'type' => TimePeriodType::PAY_FREQUENCY
             ];
 
             $request->query->set('filters', json_encode($filters));
