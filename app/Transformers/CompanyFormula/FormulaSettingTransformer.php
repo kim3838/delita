@@ -21,7 +21,9 @@ class FormulaSettingTransformer extends TransformerAbstract
             'formulable_component_type' => ($model->formulable_component_type)
                 ? $model->formulable_component_type->toArray()
                 : null,
-            'settings' => $model->formula_settings->cast,
+            'sub_row' => [
+                'settings' => $model->formula_settings->cast
+            ],
         ];
     }
 }
