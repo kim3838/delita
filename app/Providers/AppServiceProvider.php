@@ -9,6 +9,7 @@ use App\Models\Deduction;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
+use App\Models\Formula;
 use App\Models\IncomeTax;
 use App\Models\PayFrequency;
 use App\Models\SalaryStatementModule;
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'user' => User::class,
             'account' => Account::class,
+            'formula' => Formula::class,
             'company' => Company::class,
             'pay_frequency' => PayFrequency::class,
             'employee' => Employee::class,
