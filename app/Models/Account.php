@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\AccountType;
+use App\Enums\AccountPlan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +21,7 @@ class Account extends Model
         'id' => 'int',
         'ulid' => 'string',
         'number' => 'string',
-        'type' => AccountType::class,
+        'plan' => AccountPlan::class,
         'date_registered' => 'date:Y-m-d'
     ];
 

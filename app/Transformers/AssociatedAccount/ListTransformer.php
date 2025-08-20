@@ -14,7 +14,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'number' => $model->number,
-            'type' => $model->type->toArray(),
+            'plan' => $model->plan->toArray(),
             'date_registered' => Carbon::parse($model->date_registered)->toDateString(),
             'subscriptions' => $model->subscriptions->map(function ($subscription) {
                 return [

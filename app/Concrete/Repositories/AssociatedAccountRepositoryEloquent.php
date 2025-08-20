@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Account;
 use App\Models\CompanyUser;
-use App\Models\Hydrations\AssociatedAccount;
 
 class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedAccountRepository
 {
@@ -26,14 +25,14 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
-            ->when(!empty($filters->account_type) && is_array($filters->account_type), function ($builder) use ($filters) {
-                $builder->whereIn('accounts.type', $filters->account_type);
+            ->when(!empty($filters->account_plan) && is_array($filters->account_plan), function ($builder) use ($filters) {
+                $builder->whereIn('accounts.plan', $filters->account_plan);
             })
             ->select([
                 'accounts.id as id',
                 'accounts.ulid as ulid',
                 'accounts.number as number',
-                'accounts.type as type',
+                'accounts.plan as plan',
                 'accounts.date_registered as date_registered',
             ])
             ->groupBy('accounts.id');

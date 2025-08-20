@@ -14,7 +14,7 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'number' => $model->number,
-            'type' => $model->type->toArray(),
+            'plan' => $model->plan->toArray(),
             'date_registered' => Carbon::parse($model->date_registered)->toDateString()
         ];
     }
