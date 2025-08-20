@@ -1,0 +1,47 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "13th month pay is a mandatory monetary benefit in the Philippines, equivalent to one-twelfth (1/12) of an employee’s basic salary within a calendar year.\nIt is usually released not later than December and serves as additional income to help employees during the holiday season.",
+        "value": ""
+    },
+    {
+        "key": "cut_off",
+        "label": "Cut Off",
+        "order": 1,
+        "type": "array",
+        "readable": "Cut off of November 1st",
+        "value": [
+            {
+                "key": "start_date",
+                "label": "Start Date",
+                "order": 1,
+                "type": "date",
+                "readable": "November 02 of last year",
+                "value": {
+                    "base": "Nov 02 last year",
+                    "year": null,
+                    "month": null,
+                    "day": null,
+                    "time": "startOfDay"
+                }
+            },
+            {
+                "key": "end_date",
+                "label": "End Date",
+                "order": 2,
+                "type": "date",
+                "readable": "November 01 of current year",
+                "value": {
+                    "base": "Nov 01",
+                    "year": null,
+                    "month": null,
+                    "day": null,
+                    "time": "endOfDay"
+                }
+            }
+        ]
+    }
+]

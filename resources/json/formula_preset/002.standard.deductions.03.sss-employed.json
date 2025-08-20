@@ -1,0 +1,10 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Monthly deduction shared by the employee and employer, paid to the Social Security System.\nIt helps provide benefits like sickness, maternity, retirement, and other financial assistance when needed.",
+        "value": ""
+    }
+]

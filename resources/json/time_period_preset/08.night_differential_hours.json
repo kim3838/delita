@@ -1,0 +1,30 @@
+[
+    {
+        "key": "start_time",
+        "label": "Start Time",
+        "order": 1,
+        "type": "date",
+        "readable": "10 PM",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": null,
+            "time": [22, 0, 0]
+        }
+    },
+    {
+        "key": "end_time",
+        "label": "End Time",
+        "order": 2,
+        "type": "date",
+        "readable": "06 AM",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": "addDay.1",
+            "time": [6, 0, 0]
+        }
+    }
+]

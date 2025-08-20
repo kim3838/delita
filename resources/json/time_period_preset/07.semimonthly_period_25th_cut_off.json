@@ -1,0 +1,58 @@
+[
+    {
+        "key": "1st_half_start_date",
+        "label": "1st Half Start Date",
+        "order": 1,
+        "type": "date",
+        "readable": "26 of last month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": "subMonth.1",
+            "day": 26,
+            "time": "startOfDay"
+        }
+    },
+    {
+        "key": "1st_half_end_date",
+        "label": "1st Half End Date",
+        "order": 2,
+        "type": "date",
+        "readable": "10 of current month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": 10,
+            "time": "endOfDay"
+        }
+    },
+    {
+        "key": "2nd_half_start_date",
+        "label": "2nd Half Start Date",
+        "order": 3,
+        "type": "date",
+        "readable": "11 of current month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": 11,
+            "time": "startOfDay"
+        }
+    },
+    {
+        "key": "2nd_half_end_date",
+        "label": "2nd Half End Date",
+        "order": 4,
+        "type": "date",
+        "readable": "25 of current month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": 25,
+            "time": "endOfDay"
+        }
+    }
+]

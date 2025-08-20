@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Concrete\JsonPresets;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
@@ -34,398 +35,6 @@ class Development extends Seeder
 {
     use WithoutModelEvents;
 
-    public static $salaryStatementModules = [
-        [
-            'formulable_type' => Formulable::EARNINGS,
-            'order' => 1,
-            'name' => 'Assigned Compensations',
-            'reference' => 'employee_compensation',
-            'conditions' => [
-                [
-                    'subject' => 'assignable',
-                    'operator' => '=',
-                    'value' => '1',
-                ]
-            ]
-        ],[
-            'formulable_type' => Formulable::DEDUCTIONS,
-            'order' => 2,
-            'name' => 'Assigned Deductions',
-            'reference' => 'employee_deduction',
-            'conditions' => [
-                [
-                    'subject' => 'assignable',
-                    'operator' => '=',
-                    'value' => '1',
-                ]
-            ]
-        ],[
-            'formulable_type' => Formulable::TAXABLE_INCOME,
-            'order' => 3,
-            'name' => 'Taxable Income',
-            'reference' => null,
-            'conditions' => null
-        ],[
-            'formulable_type' => Formulable::NONTAXABLE_INCOME,
-            'order' => 4,
-            'name' => 'Non-Taxable Income',
-            'reference' => null,
-            'conditions' => null
-        ],[
-            'formulable_type' => Formulable::INCOME_TAX,
-            'order' => 5,
-            'name' => 'Assigned Income Taxes',
-            'reference' => 'employee_income_tax',
-            'conditions' => [
-                [
-                    'subject' => 'assignable',
-                    'operator' => '=',
-                    'value' => '1',
-                ]
-            ]
-        ],[
-            'formulable_type' => Formulable::NET_INCOME,
-            'order' => 6,
-            'name' => 'Net Income',
-            'reference' => null,
-            'conditions' => null
-        ],
-    ];
-
-    public static $timePeriodPresets = [
-        [
-            'type' => TimePeriodType::THIRTEENTH_MONTH,
-            'name' => 'november_2nd',
-            'readable_name' => 'November 2nd',
-            'yearly_period' => [
-                [
-                    'key' => 'start_date',
-                    'label' => 'Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => 'November 02 of last year',
-                    'value' => [
-                        'base' => 'Nov 02 last year',
-                        'year' => null,
-                        'month' => null,
-                        'day' => null,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => 'end_date',
-                    'label' => 'End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => 'November 01 of current year',
-                    'value' => [
-                        'base' => 'Nov 01',
-                        'year' => null,
-                        'month' => null,
-                        'day' => null,
-                        'time' => 'endOfDay'
-                    ]
-                ]
-            ]
-        ], [
-            'type' => TimePeriodType::PAY_FREQUENCY,
-            'name' => 'end_of_month_cut_off',
-            'readable_name' => 'End of month',
-            'monthly_period' => [
-                [
-                    'key' => 'start_date',
-                    'label' => 'Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '01 of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 'startOfMonth',
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => 'end_date',
-                    'label' => 'End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => 'End of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 'endOfMonth',
-                        'time' => 'endOfDay'
-                    ]
-                ]
-            ],
-            'semimonthly_period' => [
-                [
-                    'key' => '1st_half_start_date',
-                    'label' => '1st Half Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '01 of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 'startOfMonth',
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '1st_half_end_date',
-                    'label' => '1st Half End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '15 of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 15,
-                        'time' => 'endOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_start_date',
-                    'label' => '2nd Half Start Date',
-                    'order' => 3,
-                    'type' => 'date',
-                    'readable' => '16 of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 16,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_end_date',
-                    'label' => '2nd Half End Date',
-                    'order' => 4,
-                    'type' => 'date',
-                    'readable' => 'End of month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 'endOfMonth',
-                        'time' => 'endOfDay'
-                    ]
-                ],
-            ]
-        ], [
-            'type' => TimePeriodType::PAY_FREQUENCY,
-            'name' => '10th_cut_off',
-            'readable_name' => '10th',
-            'monthly_period' => [
-                [
-                    'key' => 'start_date',
-                    'label' => 'Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '11 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 11,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => 'end_date',
-                    'label' => 'End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '10 of next month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => 'addMonth.1',
-                        'day' => 10,
-                        'time' => 'endOfDay'
-                    ]
-                ]
-            ],
-            'semimonthly_period' => [
-                [
-                    'key' => '1st_half_start_date',
-                    'label' => '1st Half Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '11 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 11,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '1st_half_end_date',
-                    'label' => '1st Half End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '25 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 25,
-                        'time' => 'endOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_start_date',
-                    'label' => '2nd Half Start Date',
-                    'order' => 3,
-                    'type' => 'date',
-                    'readable' => '26 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 26,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_end_date',
-                    'label' => '2nd Half End Date',
-                    'order' => 4,
-                    'type' => 'date',
-                    'readable' => '10 of next month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => 'addMonth.1',
-                        'day' => 10,
-                        'time' => 'endOfDay'
-                    ]
-                ],
-            ]
-        ], [
-            'type' => TimePeriodType::PAY_FREQUENCY,
-            'name' => '25th_cut_off',
-            'readable_name' => '25th',
-            'monthly_period' => [
-                [
-                    'key' => 'start_date',
-                    'label' => 'Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '26 of last month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => 'subMonth.1',
-                        'day' => 26,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => 'end_date',
-                    'label' => 'End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '25 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 25,
-                        'time' => 'endOfDay'
-                    ]
-                ]
-            ],
-            'semimonthly_period' => [
-                [
-                    'key' => '1st_half_start_date',
-                    'label' => '1st Half Start Date',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '26 of last month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => 'subMonth.1',
-                        'day' => 26,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '1st_half_end_date',
-                    'label' => '1st Half End Date',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '10 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 10,
-                        'time' => 'endOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_start_date',
-                    'label' => '2nd Half Start Date',
-                    'order' => 3,
-                    'type' => 'date',
-                    'readable' => '11 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 11,
-                        'time' => 'startOfDay'
-                    ]
-                ],[
-                    'key' => '2nd_half_end_date',
-                    'label' => '2nd Half End Date',
-                    'order' => 4,
-                    'type' => 'date',
-                    'readable' => '25 of current month',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 25,
-                        'time' => 'endOfDay'
-                    ]
-                ],
-            ]
-        ], [
-            'type' => TimePeriodType::NIGHT_DIFFERENTIAL_HOURS,
-            'name' => 'night_differential_hours',
-            'readable_name' => 'Night Differential Hours',
-            'hour_period' => [
-                [
-                    'key' => 'start_time',
-                    'label' => 'Start Time',
-                    'order' => 1,
-                    'type' => 'date',
-                    'readable' => '10 PM',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => null,
-                        'time' => [22,0,0]
-                    ]
-                ],[
-                    'key' => 'end_time',
-                    'label' => 'End Time',
-                    'order' => 2,
-                    'type' => 'date',
-                    'readable' => '06 AM',
-                    'value' => [
-                        'base' => 'now',
-                        'year' => null,
-                        'month' => null,
-                        'day' => 'addDay.1',
-                        'time' => [6,0,0]
-                    ]
-                ]
-            ]
-        ]
-    ];
-
     public function run(): void
     {
         $this->call(WorldSeeder::class);
@@ -433,355 +42,91 @@ class Development extends Seeder
         Prototype::factory()->count(500)->create();
 
         //TimePeriod Presets
-        foreach (self::$timePeriodPresets as $timePeriodPreset) {
+        $timePeriodPresets = [
+            [
+                'type' => TimePeriodType::THIRTEENTH_MONTH,
+                'name' => 'november_1st',
+                'readable_name' => 'November 1st',
+                'yearly_period' => JsonPresets::presetValue('timePeriodPresets', 'yearly_period_november_1st'),
+            ],
+            [
+                'type' => TimePeriodType::PAY_FREQUENCY,
+                'name' => 'end_of_month_cut_off',
+                'readable_name' => 'End of month',
+                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_end_of_month_cut_off'),
+                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_end_of_month_cut_off'),
+            ],
+            [
+                'type' => TimePeriodType::PAY_FREQUENCY,
+                'name' => '10th_cut_off',
+                'readable_name' => '10th',
+                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_10th_cut_off'),
+                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_10th_cut_off'),
+            ],
+            [
+                'type' => TimePeriodType::PAY_FREQUENCY,
+                'name' => '25th_cut_off',
+                'readable_name' => '25th',
+                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_25th_cut_off'),
+                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_25th_cut_off'),
+            ],
+            [
+                'type' => TimePeriodType::NIGHT_DIFFERENTIAL_HOURS,
+                'name' => 'night_differential_hours',
+                'readable_name' => 'Night Differential Hours',
+                'hour_period' => JsonPresets::presetValue('timePeriodPresets', 'night_differential_hours'),
+            ]
+        ];
+
+        foreach ($timePeriodPresets as $timePeriodPreset) {
             TimePeriodPreset::create($timePeriodPreset);
         }
 
-        //Yearly Period Preset of Nov 2nd
-        $november2ndThirteenMonthPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('name', 'november_2nd')
-            ->where('type', TimePeriodType::THIRTEENTH_MONTH)
-            ->first();
-
-        $endOfMonthCutOffPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('type', TimePeriodType::PAY_FREQUENCY)
-            ->where('name', 'end_of_month_cut_off')
-            ->first();
-
-        $twentyFifthCutOffPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('type', TimePeriodType::PAY_FREQUENCY)
-            ->where('name', '25th_cut_off')
-            ->first();
-
-        $nightDifferentialPeriodPreset = collect(self::$timePeriodPresets)
-            ->where('name', 'night_differential_hours')
-            ->where('type', TimePeriodType::NIGHT_DIFFERENTIAL_HOURS)
-            ->first();
-
-        //13th Month Formula Preset
-        $thirteenMonthFormulaPreset = ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS  ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
-            'default_settings' => $november2ndThirteenMonthPeriodPreset['yearly_period']
-        ];
-
         //Formula Presets
         $formulaPresets = [
+            //Earnings
             ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'interpolation' => false,
-                'default_settings' => [
-                    [
-                        'key' => 'regular_rates',
-                        'label' => 'Regular Rates',
-                        'order' => 1,
-                        'type' => 'array',
-                        'readable' => 'Regular Rates',
-                        'value' => [
-                            [
-                                'key' => 'regular_day',
-                                'label' => 'Regular Day',
-                                'order' => 1,
-                                'type' => 'number',
-                                'readable' => '100%',
-                                'value' => '1'
-                            ],
-                            [
-                                'key' => 'rest_day',
-                                'label' => 'Rest Day',
-                                'order' => 2,
-                                'type' => 'number',
-                                'readable' => '130%',
-                                'value' => '1.3'
-                            ],
-                            [
-                                'key' => 'special_holiday',
-                                'label' => 'Special Holiday',
-                                'order' => 3,
-                                'type' => 'number',
-                                'readable' => '130%',
-                                'value' => '1.3'
-                            ],
-                            [
-                                'key' => 'special_holiday_and_rest_day',
-                                'label' => 'Special Holiday & Rest Day',
-                                'order' => 4,
-                                'type' => 'number',
-                                'readable' => '150%',
-                                'value' => '1.5'
-                            ],
-                            [
-                                'key' => 'legal_holiday',
-                                'label' => 'Legal Holiday',
-                                'order' => 5,
-                                'type' => 'number',
-                                'readable' => '200%',
-                                'value' => '2'
-                            ],
-                            [
-                                'key' => 'legal_holiday_and_rest_day',
-                                'label' => 'Legal Holiday & Rest Day',
-                                'order' => 6,
-                                'type' => 'number',
-                                'readable' => '260%',
-                                'value' => '2.6'
-                            ],
-                            [
-                                'key' => 'double_holiday',
-                                'label' => 'Double Holiday',
-                                'order' => 7,
-                                'type' => 'number',
-                                'readable' => '300%',
-                                'value' => '3'
-                            ],
-                            [
-                                'key' => 'double_holiday_and_rest_day',
-                                'label' => 'Double Holiday & Rest Day',
-                                'order' => 8,
-                                'type' => 'number',
-                                'readable' => '390%',
-                                'value' => '3.9'
-                            ],
-                        ]
-                    ],
-                    [
-                        'key' => 'night_differential_rates',
-                        'label' => 'Night Differential Rates',
-                        'order' => 2,
-                        'type' => 'array',
-                        'readable' => 'Night Differential Rates',
-                        'value' => [
-                            [
-                                'key' => 'regular_day',
-                                'label' => 'Regular Day',
-                                'order' => 1,
-                                'type' => 'number',
-                                'readable' => '110%',
-                                'value' => '1.10'
-                            ],
-                            [
-                                'key' => 'rest_day',
-                                'label' => 'Rest Day',
-                                'order' => 2,
-                                'type' => 'number',
-                                'readable' => '143%',
-                                'value' => '1.43'
-                            ],
-                            [
-                                'key' => 'special_holiday',
-                                'label' => 'Special Holiday',
-                                'order' => 3,
-                                'type' => 'number',
-                                'readable' => '143%',
-                                'value' => '1.43'
-                            ],
-                            [
-                                'key' => 'special_holiday_and_rest_day',
-                                'label' => 'Special Holiday & Rest Day',
-                                'order' => 4,
-                                'type' => 'number',
-                                'readable' => '165%',
-                                'value' => '1.65'
-                            ],
-                            [
-                                'key' => 'legal_holiday',
-                                'label' => 'Legal Holiday',
-                                'order' => 5,
-                                'type' => 'number',
-                                'readable' => '220%',
-                                'value' => '2.2'
-                            ],
-                            [
-                                'key' => 'legal_holiday_and_rest_day',
-                                'label' => 'Legal Holiday & Rest Day',
-                                'order' => 6,
-                                'type' => 'number',
-                                'readable' => '286%',
-                                'value' => '2.86'
-                            ],
-                            [
-                                'key' => 'double_holiday',
-                                'label' => 'Double Holiday',
-                                'order' => 7,
-                                'type' => 'number',
-                                'readable' => '330%',
-                                'value' => '3.30'
-                            ],
-                            [
-                                'key' => 'double_holiday_and_rest_day',
-                                'label' => 'Double Holiday & Rest Day',
-                                'order' => 8,
-                                'type' => 'number',
-                                'readable' => '429%',
-                                'value' => '4.29'
-                            ],
-                        ]
-                    ],
-                    [
-                        'key' => 'night_differential_hours',
-                        'label' => 'Night Differential Hours',
-                        'order' => 3,
-                        'type' => 'array',
-                        'readable' => 'Night Differential Hours',
-                        'value' => [...$nightDifferentialPeriodPreset['hour_period']]
-                    ],
-                ]
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_basic_salary')
             ],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
-                'default_settings' => [
-                    [
-                        'key' => 'regular_rates',
-                        'label' => 'Regular Rates',
-                        'order' => 1,
-                        'type' => 'array',
-                        'readable' => 'Regular Rates',
-                        'value' => [
-                            [
-                                'key' => 'regular_day',
-                                'label' => 'Regular Day',
-                                'order' => 1,
-                                'type' => 'number',
-                                'readable' => '125%',
-                                'value' => '1.25'
-                            ],
-                            [
-                                'key' => 'rest_day',
-                                'label' => 'Rest Day',
-                                'order' => 2,
-                                'type' => 'number',
-                                'readable' => '169%',
-                                'value' => '1.69'
-                            ],
-                            [
-                                'key' => 'special_holiday_overtime',
-                                'label' => 'Special Holiday',
-                                'order' => 3,
-                                'type' => 'number',
-                                'readable' => '169%',
-                                'value' => '1.69'
-                            ],
-                            [
-                                'key' => 'special_holiday_and_rest_day_overtime',
-                                'label' => 'Special Holiday & Rest Day',
-                                'order' => 4,
-                                'type' => 'number',
-                                'readable' => '195%',
-                                'value' => '1.95'
-                            ],
-                            [
-                                'key' => 'legal_holiday_overtime',
-                                'label' => 'Legal Holiday',
-                                'order' => 5,
-                                'type' => 'number',
-                                'readable' => '260%',
-                                'value' => '2.6'
-                            ],
-                            [
-                                'key' => 'legal_holiday_and_rest_day_overtime',
-                                'label' => 'Legal Holiday & Rest Day',
-                                'order' => 6,
-                                'type' => 'number',
-                                'readable' => '338%',
-                                'value' => '3.38'
-                            ],
-                            [
-                                'key' => 'double_holiday_overtime',
-                                'label' => 'Double Holiday',
-                                'order' => 7,
-                                'type' => 'number',
-                                'readable' => '390%',
-                                'value' => '3.9'
-                            ],
-                            [
-                                'key' => 'double_holiday_and_rest_day_overtime',
-                                'label' => 'Double Holiday & Rest Day',
-                                'order' => 8,
-                                'type' => 'number',
-                                'readable' => '507%',
-                                'value' => '5.07'
-                            ],
-                        ]
-                    ],
-                    [
-                        'key' => 'night_differential_rates',
-                        'label' => 'Night Differential Rates',
-                        'order' => 2,
-                        'type' => 'array',
-                        'readable' => 'Night Differential Rates',
-                        'value' => [
-                            [
-                                'key' => 'regular_day',
-                                'label' => 'Regular Day',
-                                'order' => 1,
-                                'type' => 'number',
-                                'readable' => '137.5%',
-                                'value' => '1.375'
-                            ],
-                            [
-                                'key' => 'rest_day',
-                                'label' => 'Rest Day',
-                                'order' => 2,
-                                'type' => 'number',
-                                'readable' => '185.9%',
-                                'value' => '1.859'
-                            ],
-                            [
-                                'key' => 'special_holiday',
-                                'label' => 'Special Holiday',
-                                'order' => 3,
-                                'type' => 'number',
-                                'readable' => '185.9%',
-                                'value' => '1.859'
-                            ],
-                            [
-                                'key' => 'special_holiday_and_rest_day',
-                                'label' => 'Special Holiday & Rest Day',
-                                'order' => 4,
-                                'type' => 'number',
-                                'readable' => '214.5%',
-                                'value' => '2.145'
-                            ],
-                            [
-                                'key' => 'legal_holiday_rate',
-                                'label' => 'Legal Holiday',
-                                'order' => 5,
-                                'type' => 'number',
-                                'readable' => '286%',
-                                'value' => '2.86'
-                            ],
-                            [
-                                'key' => 'legal_holiday_and_rest_day',
-                                'label' => 'Legal Holiday & Rest Day',
-                                'order' => 6,
-                                'type' => 'number',
-                                'readable' => '371.8%',
-                                'value' => '3.718'
-                            ],
-                            [
-                                'key' => 'double_holiday',
-                                'label' => 'Double Holiday',
-                                'order' => 7,
-                                'type' => 'number',
-                                'readable' => '429%',
-                                'value' => '4.29'
-                            ],
-                            [
-                                'key' => 'double_holiday_and_rest_day',
-                                'label' => 'Double Holiday & Rest Day',
-                                'order' => 8,
-                                'type' => 'number',
-                                'readable' => '557.7%',
-                                'value' => '5.577'
-                            ],
-                        ]
-                    ]
-                ]
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_overtime')
             ],
-            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false],
-            ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
-            ['name' => 'Standard-Absent', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false],
-            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
-            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
-            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false],
+            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_meal')
+            ],
+            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_13th_month')
+            ],
+
+            //Deductions
+            ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_tardiness')
+            ],
+            ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_absence')
+            ],
+            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_sss_employed_contribution')
+            ],
+            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_philhealth_contribution')
+            ],
+            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_pagibig_contribution')
+            ],
+
+            //Taxable Income
             ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
+
+            //Non-taxable Income
             ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
-            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'interpolation' => false],
+
+            //Income Tax
+            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'interpolation' => false,
+                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_compensation_tax')
+            ],
+
+            //Net Income
             ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'interpolation' => true]
         ];
 
@@ -871,7 +216,65 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
-        foreach (self::$salaryStatementModules as $salaryStatementModule) {
+        $salaryStatementModules = [
+            [
+                'formulable_type' => Formulable::EARNINGS,
+                'order' => 1,
+                'name' => 'Assigned Compensations',
+                'reference' => 'employee_compensation',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::DEDUCTIONS,
+                'order' => 2,
+                'name' => 'Assigned Deductions',
+                'reference' => 'employee_deduction',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::TAXABLE_INCOME,
+                'order' => 3,
+                'name' => 'Taxable Income',
+                'reference' => null,
+                'conditions' => null
+            ],[
+                'formulable_type' => Formulable::NONTAXABLE_INCOME,
+                'order' => 4,
+                'name' => 'Non-Taxable Income',
+                'reference' => null,
+                'conditions' => null
+            ],[
+                'formulable_type' => Formulable::INCOME_TAX,
+                'order' => 5,
+                'name' => 'Assigned Income Taxes',
+                'reference' => 'employee_income_tax',
+                'conditions' => [
+                    [
+                        'subject' => 'assignable',
+                        'operator' => '=',
+                        'value' => '1',
+                    ]
+                ]
+            ],[
+                'formulable_type' => Formulable::NET_INCOME,
+                'order' => 6,
+                'name' => 'Net Income',
+                'reference' => null,
+                'conditions' => null
+            ],
+        ];
+
+        foreach ($salaryStatementModules as $salaryStatementModule) {
             $company1002B->salaryStatementModules()->create($salaryStatementModule);
             $company1002C->salaryStatementModules()->create($salaryStatementModule);
         }
@@ -899,6 +302,7 @@ class Development extends Seeder
             ['code' => 'BS', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Salary'],
             ['code' => 'MA', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Meal'],
             ['code' => 'OT', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
+            ['code' => '13THMONTH', 'name' => '13th Month', 'assignable' => true, 'type' => Compensation::BENEFIT, 'formula' => 'Standard-13th-Month'],
         ];
 
         foreach ($compensationsPresets as $index => $compensationPreset) {
@@ -909,7 +313,7 @@ class Development extends Seeder
         //Company 1002-B, 1002-C Pre-create Deductions
         $deductionsPresets = [
             ['code' => 'TRD', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
-            ['code' => 'ABS', 'name' => 'Absent', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absent'],
+            ['code' => 'ABS', 'name' => 'Absent', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
             ['code' => 'SSE', 'name' => 'SSS-Employed', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
         ];
 

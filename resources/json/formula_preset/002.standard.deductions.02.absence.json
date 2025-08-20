@@ -1,0 +1,10 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Pay deduction for days not worked without leave credits.",
+        "value": ""
+    }
+]

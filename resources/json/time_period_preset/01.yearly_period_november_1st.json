@@ -1,0 +1,30 @@
+[
+    {
+        "key": "start_date",
+        "label": "Start Date",
+        "order": 1,
+        "type": "date",
+        "readable": "November 02 of last year",
+        "value": {
+            "base": "Nov 02 last year",
+            "year": null,
+            "month": null,
+            "day": null,
+            "time": "startOfDay"
+        }
+    },
+    {
+        "key": "end_date",
+        "label": "End Date",
+        "order": 2,
+        "type": "date",
+        "readable": "November 01 of current year",
+        "value": {
+            "base": "Nov 01",
+            "year": null,
+            "month": null,
+            "day": null,
+            "time": "endOfDay"
+        }
+    }
+]

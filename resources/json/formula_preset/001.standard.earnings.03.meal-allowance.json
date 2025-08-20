@@ -1,0 +1,10 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Meal allowance is a fixed amount given to employees to help cover their food expenses during work hours.",
+        "value": ""
+    }
+]

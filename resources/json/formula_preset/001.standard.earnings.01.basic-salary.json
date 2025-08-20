@@ -1,0 +1,193 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Refers to the fixed amount an employee regularly receives before\nany additions (like allowances, overtime, bonuses) or deductions (like taxes, contributions, or absences).",
+        "value": ""
+    },
+    {
+        "key": "regular_rates",
+        "label": "Regular Rates",
+        "order": 1,
+        "type": "array",
+        "readable": "Regular Rates",
+        "value": [
+            {
+                "key": "regular_day",
+                "label": "Regular Day",
+                "order": 1,
+                "type": "number",
+                "readable": "100%",
+                "value": "1"
+            },
+            {
+                "key": "rest_day",
+                "label": "Rest Day",
+                "order": 2,
+                "type": "number",
+                "readable": "130%",
+                "value": "1.3"
+            },
+            {
+                "key": "special_holiday",
+                "label": "Special Holiday",
+                "order": 3,
+                "type": "number",
+                "readable": "130%",
+                "value": "1.3"
+            },
+            {
+                "key": "special_holiday_and_rest_day",
+                "label": "Special Holiday & Rest Day",
+                "order": 4,
+                "type": "number",
+                "readable": "150%",
+                "value": "1.5"
+            },
+            {
+                "key": "legal_holiday",
+                "label": "Legal Holiday",
+                "order": 5,
+                "type": "number",
+                "readable": "200%",
+                "value": "2"
+            },
+            {
+                "key": "legal_holiday_and_rest_day",
+                "label": "Legal Holiday & Rest Day",
+                "order": 6,
+                "type": "number",
+                "readable": "260%",
+                "value": "2.6"
+            },
+            {
+                "key": "double_holiday",
+                "label": "Double Holiday",
+                "order": 7,
+                "type": "number",
+                "readable": "300%",
+                "value": "3"
+            },
+            {
+                "key": "double_holiday_and_rest_day",
+                "label": "Double Holiday & Rest Day",
+                "order": 8,
+                "type": "number",
+                "readable": "390%",
+                "value": "3.9"
+            }
+        ]
+    },
+    {
+        "key": "night_differential_rates",
+        "label": "Night Differential Rates",
+        "order": 2,
+        "type": "array",
+        "readable": "Night Differential Rates",
+        "value": [
+            {
+                "key": "regular_day",
+                "label": "Regular Day",
+                "order": 1,
+                "type": "number",
+                "readable": "110%",
+                "value": "1.10"
+            },
+            {
+                "key": "rest_day",
+                "label": "Rest Day",
+                "order": 2,
+                "type": "number",
+                "readable": "143%",
+                "value": "1.43"
+            },
+            {
+                "key": "special_holiday",
+                "label": "Special Holiday",
+                "order": 3,
+                "type": "number",
+                "readable": "143%",
+                "value": "1.43"
+            },
+            {
+                "key": "special_holiday_and_rest_day",
+                "label": "Special Holiday & Rest Day",
+                "order": 4,
+                "type": "number",
+                "readable": "165%",
+                "value": "1.65"
+            },
+            {
+                "key": "legal_holiday",
+                "label": "Legal Holiday",
+                "order": 5,
+                "type": "number",
+                "readable": "220%",
+                "value": "2.2"
+            },
+            {
+                "key": "legal_holiday_and_rest_day",
+                "label": "Legal Holiday & Rest Day",
+                "order": 6,
+                "type": "number",
+                "readable": "286%",
+                "value": "2.86"
+            },
+            {
+                "key": "double_holiday",
+                "label": "Double Holiday",
+                "order": 7,
+                "type": "number",
+                "readable": "330%",
+                "value": "3.30"
+            },
+            {
+                "key": "double_holiday_and_rest_day",
+                "label": "Double Holiday & Rest Day",
+                "order": 8,
+                "type": "number",
+                "readable": "429%",
+                "value": "4.29"
+            }
+        ]
+    },
+    {
+        "key": "night_differential_hours",
+        "label": "Night Differential Hours",
+        "order": 3,
+        "type": "array",
+        "readable": "Night Differential Hours",
+        "value": [
+            {
+                "key": "start_time",
+                "label": "Start Time",
+                "order": 1,
+                "type": "date",
+                "readable": "10 PM",
+                "value": {
+                    "base": "now",
+                    "year": null,
+                    "month": null,
+                    "day": null,
+                    "time": [22, 0, 0]
+                }
+            },
+            {
+                "key": "end_time",
+                "label": "End Time",
+                "order": 2,
+                "type": "date",
+                "readable": "06 AM",
+                "value": {
+                    "base": "now",
+                    "year": null,
+                    "month": null,
+                    "day": "addDay.1",
+                    "time": [6, 0, 0]
+                }
+            }
+        ]
+    }
+]

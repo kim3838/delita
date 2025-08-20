@@ -1,0 +1,10 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "A monthly savings contribution shared by the employee and employer, paid to the Home Development Mutual Fund (Pag-IBIG).\nIt serves as your government savings program that gives access to housing loans, multi-purpose loans, and provident savings benefits.",
+        "value": ""
+    }
+]
