@@ -61,5 +61,25 @@ if(!function_exists('_debug')){
     }
 }
 
+if (!function_exists('read_json')) {
+    /**
+     * Read and decode JSON file from resources/json
+     *
+     * @param string $filename
+     * @return array
+     */
+    function read_json(string $filename): array
+    {
+        $path = resource_path("json/{$filename}");
+
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException("JSON file not found: {$filename}");
+        }
+
+        return json_decode(file_get_contents($path), true) ?? [];
+    }
+}
+
+
 
 
