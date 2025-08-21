@@ -51,6 +51,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
                 'companies.id as id',
                 'companies.code as code',
                 'companies.name as name',
+                'companies.currency as currency',
+                'companies.timezone as timezone',
             ]);
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
