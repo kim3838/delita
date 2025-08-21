@@ -2,21 +2,17 @@
 
 namespace App\Policies;
 
-use App\Enums\CompanyUserAssignmentType;
-use App\Models\Company;
 use App\Models\PayFrequency;
 use App\Models\User;
 
-class PayFrequencyPolicy
+class PayFrequencyPolicy extends BasePolicy
 {
     public function update(User $user, PayFrequency $payFrequency): bool
     {
-        $userCompanyAdminAssignment = Company::findOrFail(request()->input('company_id'))
-                ->users
-                ->findOrfail($user->id)
-                ->pivot
-                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 }

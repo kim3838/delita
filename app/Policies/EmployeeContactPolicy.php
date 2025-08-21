@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\EmployeeContact;
 use App\Models\User;
 
-class EmployeeContactPolicy
+class EmployeeContactPolicy extends BasePolicy
 {
     public function create(User $user): bool
     {

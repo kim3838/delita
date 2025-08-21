@@ -2,30 +2,27 @@
 
 namespace App\Policies;
 
-use App\Enums\CompanyUserAssignmentType;
 use App\Models\Company;
-use App\Models\CompanyUser;
 use App\Models\User;
 
-class CompanyPolicy
+class CompanyPolicy extends BasePolicy
 {
     public function create(User $user): bool
     {
-        $isAdminInAnyCompany = (bool)CompanyUser::where('user_id', $user->id)
-            ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
-            ->count();
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $isAdminInAnyCompany ;
+        return $this->userIsAdminInAnyCompany($user);
     }
 
     public function update(User $user, Company $company): bool
     {
-        $isAdminInCompany = (bool)CompanyUser::where('user_id', $user->id)
-            ->where('company_id', $company->id)
-            ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
-            ->count();
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $isAdminInCompany;
+        return $this->userIsAdminInCompany($user, $company->id);
     }
 
     public function delete(User $user, Company $company): bool

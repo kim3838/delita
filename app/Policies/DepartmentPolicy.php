@@ -2,43 +2,35 @@
 
 namespace App\Policies;
 
-use App\Enums\CompanyUserAssignmentType;
-use App\Models\Company;
 use App\Models\Department;
 use App\Models\User;
 
-class DepartmentPolicy
+class DepartmentPolicy extends BasePolicy
 {
     public function create(User $user): bool
     {
-        $userCompanyAdminAssignment = Company::findOrFail(request()->input('company_id'))
-                ->users
-                ->findOrfail($user->id)
-                ->pivot
-                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 
     public function update(User $user, Department $department): bool
     {
-        $userCompanyAdminAssignment = Company::findOrFail(request()->input('company_id'))
-                ->users
-                ->findOrfail($user->id)
-                ->pivot
-                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 
     public function delete(User $user, Department $department): bool
     {
-        $userCompanyAdminAssignment = Company::findOrFail(request()->input('company_id'))
-                ->users
-                ->findOrfail($user->id)
-                ->pivot
-                ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
+        if($user->isSuperAdmin()){
+            return true;
+        }
 
-        return $user->isSuperAdmin() || $userCompanyAdminAssignment;
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 }
