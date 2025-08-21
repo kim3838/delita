@@ -13,7 +13,7 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'formula_id' => $model->formula_id,
             'company_id' => $model->company_id,
-            'settings' => $model->settings->cast,
+            'settings' => $model->settings?->cast,
         ];
     }
 }

@@ -22,7 +22,7 @@ class FormulaSettingTransformer extends TransformerAbstract
                 ? $model->formulable_component_type->toArray()
                 : null,
             'sub_row' => [
-                'settings' => $model->formula_settings->cast
+                'settings' => $model->formula_settings?->cast
             ],
         ];
     }

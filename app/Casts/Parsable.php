@@ -16,6 +16,10 @@ class Parsable implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if(is_null($value)){
+            return null;
+        }
+
         $decoded = json_decode($value);
         $parsed = null;
 

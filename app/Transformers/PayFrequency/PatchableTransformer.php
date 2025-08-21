@@ -17,7 +17,7 @@ class PatchableTransformer extends TransformerAbstract
             'order' => $model->order,
             'type' => $model->type->value,
             'time_period_preset_id' => $model->time_period_preset_id,
-            'period' => $model->period ? $model->period->cast : null,
+            'period' => $model->period?->cast,
             'cutoff_type' => $model->cutoff_type ? $model->cutoff_type->value : null,
             'cut_off_value' => $model->cut_off_value ? $model->cut_off_value->value : null,
             'days_span' => $model->days_span,
