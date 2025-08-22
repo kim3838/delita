@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('formulas', function (Blueprint $table) {
             $table->id();
+            $table->ulid('ulid')->unique()->index();
             $table->string('name');
             $table->smallInteger('formulable_type');
             $table->smallInteger('component_type')->nullable();

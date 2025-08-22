@@ -23,6 +23,8 @@ class Formula extends Model
     ];
 
     protected $casts = [
+        'ulid' => 'string',
+        'name' => 'string',
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
         'interpolation' => 'boolean',

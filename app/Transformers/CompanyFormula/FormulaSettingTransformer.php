@@ -10,6 +10,7 @@ class FormulaSettingTransformer extends TransformerAbstract
     public function transform(FormulaSetting $model): array
     {
         return [
+            'id' => $model->company_formula_id,
             'company_formula_id' => $model->company_formula_id,
             'company_id' => $model->company_id,
             'formula_id' => $model->formula_id,
