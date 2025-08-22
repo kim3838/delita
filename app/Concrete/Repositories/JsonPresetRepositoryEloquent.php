@@ -19,7 +19,7 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
         $queryBuilder = $this->model->getQuery()
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
-                    $clause->where('json_presets.resource_path', 'LIKE', ('%' . $value . '%'));
+                    $clause->where('json_presets.path', 'LIKE', ('%' . $value . '%'));
                 });
             });
 
