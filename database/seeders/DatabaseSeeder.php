@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(WorldSeeder::class);
+        $this->call(JsonPresetSeeder::class);
+        $this->call(TimePeriodPresetSeeder::class);
+        $this->call(FormulaSeeder::class);
+        $this->call(SuperAdminSeeder::class);
+
         if(App::environment('development')){
             $this->call(Development::class);
         }

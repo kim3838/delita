@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
-use App\Concrete\JsonPresets;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
@@ -15,12 +14,10 @@ use App\Enums\MaritalStatus;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
-use App\Enums\TimePeriodType;
 use App\Models\Account;
 use App\Models\Formula;
 use App\Models\Prototype;
 use App\Models\Shift;
-use App\Models\TimePeriodPreset;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -37,107 +34,8 @@ class Development extends Seeder
 
     public function run(): void
     {
-        $this->call(WorldSeeder::class);
 
-        Prototype::factory()->count(500)->create();
-
-        //TimePeriod Presets
-        $timePeriodPresets = [
-            [
-                'type' => TimePeriodType::THIRTEENTH_MONTH,
-                'name' => 'november_1st',
-                'readable_name' => 'November 1st',
-                'yearly_period' => JsonPresets::presetValue('timePeriodPresets', 'yearly_period_november_1st'),
-            ],
-            [
-                'type' => TimePeriodType::PAY_FREQUENCY,
-                'name' => 'end_of_month_cut_off',
-                'readable_name' => 'End of month',
-                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_end_of_month_cut_off'),
-                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_end_of_month_cut_off'),
-            ],
-            [
-                'type' => TimePeriodType::PAY_FREQUENCY,
-                'name' => '10th_cut_off',
-                'readable_name' => '10th',
-                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_10th_cut_off'),
-                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_10th_cut_off'),
-            ],
-            [
-                'type' => TimePeriodType::PAY_FREQUENCY,
-                'name' => '25th_cut_off',
-                'readable_name' => '25th',
-                'monthly_period' => JsonPresets::presetValue('timePeriodPresets', 'monthly_period_25th_cut_off'),
-                'semimonthly_period' => JsonPresets::presetValue('timePeriodPresets', 'semimonthly_period_25th_cut_off'),
-            ],
-            [
-                'type' => TimePeriodType::NIGHT_DIFFERENTIAL_HOURS,
-                'name' => 'night_differential_hours',
-                'readable_name' => 'Night Differential Hours',
-                'hour_period' => JsonPresets::presetValue('timePeriodPresets', 'night_differential_hours'),
-            ]
-        ];
-
-        foreach ($timePeriodPresets as $timePeriodPreset) {
-            TimePeriodPreset::create($timePeriodPreset);
-        }
-
-        //Formula Presets
-        $formulaPresets = [
-            //Earnings
-            ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_basic_salary')
-            ],
-            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_overtime')
-            ],
-            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_meal')
-            ],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_13th_month')
-            ],
-
-            //Deductions
-            ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_tardiness')
-            ],
-            ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_absence')
-            ],
-            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_sss_employed_contribution')
-            ],
-            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_philhealth_contribution')
-            ],
-            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_pagibig_contribution')
-            ],
-
-            //Taxable Income
-            ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
-
-            //Non-taxable Income
-            ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
-
-            //Income Tax
-            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'interpolation' => false,
-                'default_settings' => JsonPresets::presetValue('formulableSettingPresets', 'standard_compensation_tax')
-            ],
-
-            //Net Income
-            ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'interpolation' => true]
-        ];
-
-        foreach ($formulaPresets as $formula) {
-            Formula::create($formula);
-        }
-
-        /**************************************************************************************************************************************************************************************************************/
-
-        //Superadmin
-        $superAdmin = User::factory()->superAdmin()->create(['name' => 'kim.123', 'email' => 'luxere20@gmail.com', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        Prototype::factory()->count(50)->create();
 
         //Account 1001
         $account1001 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString()]);
