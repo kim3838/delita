@@ -38,7 +38,9 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
                 'formulas.formulable_type AS formulable_type',
                 'formulas.component_type AS formulable_component_type',
                 'company_formula.settings AS formula_settings',
-            ]);
+            ])
+            ->orderBy('formulas.formulable_type', 'ASC')
+            ->orderBy('formulas.component_type', 'ASC');
 
         return FormulaSetting::hydrate($queryBuilder->get()->toArray());
     }
