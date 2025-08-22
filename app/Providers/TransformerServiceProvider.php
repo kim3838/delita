@@ -8,7 +8,8 @@ class TransformerServiceProvider extends ServiceProvider
 {
     private const TRANSFORMER_MAP = [
         'selection' => [
-            'prototype' => \App\Transformers\Prototype\SelectionTransformer::class
+            'prototype' => \App\Transformers\Prototype\SelectionTransformer::class,
+            'json_preset' => \App\Transformers\JsonPreset\SelectionTransformer::class
         ],
         'basic' => [
             'account' => \App\Transformers\BasicTransformer::class,
@@ -16,6 +17,7 @@ class TransformerServiceProvider extends ServiceProvider
             'user' => \App\Transformers\BasicTransformer::class,
             'employee' => \App\Transformers\BasicTransformer::class,
             'shift' => \App\Transformers\BasicTransformer::class,
+            'formula' => \App\Transformers\BasicTransformer::class,
         ]
     ];
 

@@ -25,9 +25,11 @@ use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
+use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
+use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\PayFrequencyController;
@@ -105,6 +107,14 @@ Route::group([
 
     Route::get('non-employee-user-selections', [NonEmployeeUserController::class, 'selection']);
 
+    //Formula
+    Route::get('formulas', [FormulaController::class, 'index']);
+    Route::get('formula-check/{ulid}', [FormulaController::class, 'check']);
+    Route::get('formula/{ulid}', [FormulaController::class, 'show']);
+    Route::post('formula', [FormulaController::class, 'store']);
+    Route::patch('formula/{formulaId}', [FormulaController::class, 'update']);
+    Route::delete('formula/{formulaId}', [FormulaController::class, 'destroy']);
+
     //User-Company Assignment
     Route::get('user-company-assignment/{userUlid}', [UserCompanyAssignmentController::class, 'index']);
     Route::post('user-company-assignment/{userId}', [UserCompanyAssignmentController::class, 'sync']);
@@ -146,6 +156,10 @@ Route::group([
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
     Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
     Route::get('company-formulas', [CompanyFormulaController::class, 'index']);
+
+    //JSON Preset
+    Route::get('json-preset-selections', [JsonPresetController::class, 'selection']);
+    Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
 
     //Time Period Preset Selection
     Route::get('time-period-preset-selections', [TimePeriodPresetController::class, 'selection']);

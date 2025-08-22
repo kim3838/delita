@@ -11,6 +11,7 @@ use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\IncomeTax;
+use App\Models\JsonPreset;
 use App\Models\PayFrequency;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
@@ -39,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
             'account' => Account::class,
             'formula' => Formula::class,
+            'json_preset' => JsonPreset::class,
             'company' => Company::class,
             'pay_frequency' => PayFrequency::class,
             'employee' => Employee::class,

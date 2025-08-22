@@ -18,7 +18,9 @@ use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
+use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
+use App\Blueprint\Repositories\JsonPresetRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
@@ -44,7 +46,9 @@ use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
+use App\Concrete\Repositories\FormulaRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
+use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
@@ -67,6 +71,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'user_company_assignment' => UserCompanyAssignmentRepositoryEloquent::class,
         'associated_user' => AssociatedUserRepositoryEloquent::class,
         'prototype' => PrototypeRepositoryEloquent::class,
+        'formula' => FormulaRepositoryEloquent::class,
+        'json_preset' => JsonPresetRepositoryEloquent::class,
         'company' => CompanyRepositoryEloquent::class,
         'associated_company' => AssociatedCompanyRepositoryEloquent::class,
         'designation' => DesignationRepositoryEloquent::class,
@@ -107,6 +113,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         IncomeTaxRepository::class => IncomeTaxRepositoryEloquent::class,
         CompanyIncomeTaxRepository::class => CompanyIncomeTaxRepositoryEloquent::class,
         TimePeriodPresetRepository::class => TimePeriodPresetRepositoryEloquent::class,
+        FormulaRepository::class => FormulaRepositoryEloquent::class,
+        JsonPresetRepository::class => JsonPresetRepositoryEloquent::class,
         CompanyRepository::class => CompanyRepositoryEloquent::class,
         SalaryStatementModuleRepository::class => SalaryStatementModuleRepositoryEloquent::class,
         ShiftRepository::class => ShiftRepositoryEloquent::class,
@@ -124,6 +132,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'user_company_assignment',
             'associated_user',
             'prototype',
+            'formula',
+            'json_preset',
             'company',
             'associated_company',
             'designation',
@@ -150,6 +160,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             UserCompanyAssignmentRepository::class,
             AssociatedUserRepository::class,
             PrototypeRepository::class,
+            FormulaRepository::class,
+            JsonPresetRepository::class,
             CompanyRepository::class,
             AssociatedCompanyRepository::class,
             DesignationRepository::class,
