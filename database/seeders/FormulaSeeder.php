@@ -10,6 +10,7 @@ use App\Models\Formula;
 use App\Models\JsonPreset;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class FormulaSeeder extends Seeder
@@ -25,33 +26,33 @@ class FormulaSeeder extends Seeder
         $formulaPresets = [
             //Earnings
             ['name' => 'Standard-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_basic_salary')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_salary')->first()->path)
             ],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_overtime')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_overtime')->first()->path)
             ],
             ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_meal')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_meal')->first()->path)
             ],
             ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_13th_month')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],
 
             //Deductions
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_tardiness')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_tardiness')->first()->path)
             ],
             ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_absence')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_absence')->first()->path)
             ],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_sss_employed_contribution')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_sss_employed_contribution')->first()->path)
             ],
             ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_philhealth_contribution')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
             ],
             ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_pagibig_contribution')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pagibig_contribution')->first()->path)
             ],
 
             //Taxable Income
@@ -62,7 +63,7 @@ class FormulaSeeder extends Seeder
 
             //Income Tax
             ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'interpolation' => false,
-                'default_settings' => JsonPreset::presetValue('formulableSettingPresets', 'standard_compensation_tax')
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_compensation_tax')->first()->path)
             ],
 
             //Net Income

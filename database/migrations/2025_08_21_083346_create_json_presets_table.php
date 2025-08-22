@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('json_presets', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
-            $table->string('resource_path');
+            $table->string('disk');
+            $table->string('path');
             $table->timestamps();
         });
     }

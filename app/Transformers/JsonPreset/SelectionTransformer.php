@@ -11,7 +11,7 @@ class SelectionTransformer extends TransformerAbstract
     {
         return [
             'value' => (int)$model->id,
-            'text' => $model->resource_path
+            'text' => $model->path
         ];
     }
 }
