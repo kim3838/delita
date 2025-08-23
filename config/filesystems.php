@@ -47,7 +47,7 @@ return [
         'presets' => [
             'driver' => 'local',
             'root' => storage_path('app/presets'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL').'/presets',
             'visibility' => 'public',
             'throw' => false,
         ],
