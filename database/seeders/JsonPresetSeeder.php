@@ -21,14 +21,14 @@ class JsonPresetSeeder extends Seeder
 
             $filePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
 
-            Storage::disk('presets')->put('json/time_period/' . $jsonPreset['file'], json_encode($this->readJson($filePath)));
+            Storage::disk('presets')->put('json/time_period/' . $jsonPreset['file'], $this->getJsonContent($filePath));
         }
 
         foreach (JsonPreset::formulableSettingPresets() as $jsonPreset){
 
             $filePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
 
-            Storage::disk('presets')->put('json/formula/' . $jsonPreset['file'], json_encode($this->readJson($filePath)));
+            Storage::disk('presets')->put('json/formula/' . $jsonPreset['file'], $this->getJsonContent($filePath));
         }
 
         //Json Presets
@@ -37,7 +37,7 @@ class JsonPresetSeeder extends Seeder
         }
     }
 
-    public function readJson(string $path): array
+    public function getJsonContent(string $path): false|string
     {
         $path = resource_path($path);
 
@@ -45,6 +45,6 @@ class JsonPresetSeeder extends Seeder
             throw new \InvalidArgumentException("JSON file not found: $path");
         }
 
-        return json_decode(file_get_contents($path), true) ?? [];
+        return file_get_contents($path);
     }
 }
