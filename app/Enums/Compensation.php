@@ -6,8 +6,8 @@ enum Compensation: int implements BaseEnum
 {
     case BASIC_SALARY = 0;
     case OVERTIME = 1;
-    case BENEFIT = 2;
-    case REGULAR_ALLOWANCE = 3;
+    case REGULAR_ALLOWANCE = 2;
+    case BENEFIT = 3;
 
     public function label(): string
     {
