@@ -29,6 +29,7 @@ use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
+use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
@@ -156,6 +157,8 @@ Route::group([
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
     Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
     Route::get('company-formulas', [CompanyFormulaController::class, 'index']);
+
+    Route::post('read-json-file', [JsonController::class, 'read']);
 
     //JSON Preset
     Route::get('json-preset-selections', [JsonPresetController::class, 'selection']);
