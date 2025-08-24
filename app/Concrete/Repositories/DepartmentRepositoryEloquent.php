@@ -61,4 +61,18 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
+
+    public function update($id, $attributes)
+    {
+        $model = $this->model::findOrfail($id);
+
+        $model->update($attributes);
+
+        if(!empty($model->parent_id)){
+
+            $this->model::where('parent_id', $model->id)->update(['parent_id' => null]);
+        }
+
+        return $model;
+    }
 }
