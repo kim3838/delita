@@ -11,9 +11,10 @@ class ItemTransformer extends TransformerAbstract
     public function transform(JsonPreset $model): array
     {
         return [
-            'value' => (int)$model->id,
-            'text' => $model->key,
+            'id' => (int)$model->id,
+            'key' => $model->key,
             'path' => $model->path,
+            'json_base_name' => basename(Storage::disk($model->disk)->path($model->path)),
             'json_value' => Storage::disk($model->disk)->json($model->path)
         ];
     }

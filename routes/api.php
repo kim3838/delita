@@ -161,8 +161,14 @@ Route::group([
     Route::post('read-json-file', [JsonController::class, 'read']);
 
     //JSON Preset
+    Route::get('json-presets', [JsonPresetController::class, 'index']);
+    Route::get('json-preset-check/{jsonPresetId}', [JsonPresetController::class, 'check']);
+    Route::post('json-preset', [JsonPresetController::class, 'store']);
     Route::get('json-preset-selections', [JsonPresetController::class, 'selection']);
     Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
+    Route::get('json-preset-download/{jsonPresetId}', [JsonPresetController::class, 'download']);
+    Route::patch('json-preset/{jsonPresetId}', [JsonPresetController::class, 'update']);
+    Route::delete('json-preset/{jsonPresetId}', [JsonPresetController::class, 'destroy']);
 
     //Time Period Preset Selection
     Route::get('time-period-preset-selections', [TimePeriodPresetController::class, 'selection']);
