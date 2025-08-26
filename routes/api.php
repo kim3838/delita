@@ -137,6 +137,8 @@ Route::group([
     Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
 
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+    Route::get('associated-company/{ulid}', [AssociatedCompanyController::class, 'show']);
+    Route::patch('associated-company/{companyId}', [AssociatedCompanyController::class, 'update']);
     Route::get('associated-company-selections', [AssociatedCompanyController::class, 'selection']);
 
     //Email verification

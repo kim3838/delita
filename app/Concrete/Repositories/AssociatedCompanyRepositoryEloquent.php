@@ -4,9 +4,9 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\Hydrations\AssociatedCompany;
-use Illuminate\Support\Facades\Request;
 
 class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedCompanyRepository
 {
@@ -73,5 +73,36 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ]);
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
+    }
+
+    public function show($ulid)
+    {
+        $queryBuilder = CompanyUser::getQuery()
+            ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
+            ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
+            ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
+            ->where('companies.ulid', $ulid)
+            ->select([
+                'companies.id as company_id',
+                'companies.ulid as company_ulid',
+                'accounts.id as account_id',
+                'companies.code as company_code',
+                'companies.name as company_name',
+                'countries.id as country_id',
+                'companies.currency as company_currency',
+                'companies.timezone as company_timezone',
+                'company_user.assignment_type as assignment_type',
+            ]);
+
+        return $this->model::hydrate($queryBuilder->get()->toArray())->first();
+    }
+
+    public function update($id, $attributes)
+    {
+        $model = Company::findOrfail($id);
+
+        $model->update($attributes);
+
+        return $this->show($model->ulid);
     }
 }
