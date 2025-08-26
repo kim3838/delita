@@ -32,7 +32,7 @@ class UserCompanyAssignmentController extends Controller
     {
         if($request->expectsJson()){
 
-            $data = User::findOrFail($userId)->companies()->sync($request->all());
+            $data = App::make(UserCompanyAssignmentRepository::class)->sync($userId, $request->all());
 
             return ResponseJson::successfulResponse($data);
         }

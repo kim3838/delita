@@ -46,4 +46,9 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
+
+    public function sync($userId, $companyAssignments)
+    {
+        return User::findOrFail($userId)->companies()->sync($companyAssignments);
+    }
 }
