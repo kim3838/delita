@@ -24,8 +24,8 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where('company_formula.company_id', $value);
             })
-            ->when(isset($filters->formula_interpolation), function ($builder) use($filters){
-                $builder->where('formulas.interpolation', intval($filters->formula_interpolation));
+            ->when(!empty($filters->interpolations) && is_array($filters->interpolations), function ($builder) use ($filters) {
+                $builder->whereIn('formulas.interpolation', $filters->interpolations);
             })
             ->select([
                 'company_formula.id AS company_formula_id',
