@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', 'daily'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
 
         'debug' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/debug/laravel.log'),
+            'path' => storage_path('logs/debug/debug.log'),
             'level' => 'debug',
             'days' => 14,
             'replace_placeholders' => true,
@@ -62,7 +62,7 @@ return [
 
         'auth' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/auth/laravel.log'),
+            'path' => storage_path('logs/auth/auth.log'),
             'level' => 'info',
             'days' => 14,
             'replace_placeholders' => true,
@@ -70,7 +70,7 @@ return [
 
         'error' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/error/laravel.log'),
+            'path' => storage_path('logs/error/error.log'),
             'level' => 'notice',
             'days' => 30,
             'replace_placeholders' => true,
@@ -91,7 +91,7 @@ return [
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/daily/daily.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
