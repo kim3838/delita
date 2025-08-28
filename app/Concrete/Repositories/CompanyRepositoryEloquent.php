@@ -4,7 +4,9 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\CompanyRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Events\Repositories\CompanyCreated;
 use App\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements CompanyRepository
 {
@@ -63,5 +65,14 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
         $queryBuilder = $this->model::where('ulid', $ulid);
 
         return $queryBuilder->first();
+    }
+
+    public function store($attributes)
+    {
+        $company = $this->model::create($attributes);
+
+        CompanyCreated::dispatchIf((!empty($company) && $company instanceof $this->model), $company, Auth::user());
+
+        return $company;
     }
 }
