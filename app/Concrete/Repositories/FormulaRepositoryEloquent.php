@@ -57,7 +57,8 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
                 'formulas.*'
             ])
             ->orderBy('formulas.formulable_type', 'ASC')
-            ->orderBy('formulas.component_type', 'ASC');
+            ->orderBy('formulas.component_type', 'ASC')
+            ->orderBy('formulas.name', 'ASC');
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

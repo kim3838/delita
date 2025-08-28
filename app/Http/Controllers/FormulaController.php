@@ -13,6 +13,7 @@ use App\Http\Requests\Formula\ViewFormulaRequest;
 use App\Transformers\Formula\ItemTransformer;
 use App\Transformers\Formula\ListTransformer;
 use App\Transformers\Formula\PatchableTransformer;
+use App\Transformers\Formula\SelectionTransformer;
 
 class FormulaController extends Controller
 {
@@ -72,6 +73,23 @@ class FormulaController extends Controller
             $formula = $formula ? Fractal::item($formula, PatchableTransformer::class) : $formula;
 
             return ResponseJson::successfulResponse(['formula' => $formula]);
+        }
+
+        abort(404);
+    }
+
+    public function selection(ListFormulaRequest $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->list($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);

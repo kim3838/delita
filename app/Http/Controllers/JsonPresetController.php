@@ -83,20 +83,6 @@ class JsonPresetController extends Controller
         abort(404);
     }
 
-    public function selection(Request $request)
-    {
-        if($request->expectsJson()){
-
-            $filters = json_decode($request->get('filters'));
-
-            return ResponseJson::successfulResponse(
-                Fractal::collection($this->repository->selection($filters), SelectionTransformer::class)
-            );
-        }
-
-        abort(404);
-    }
-
     public function show(ViewJsonPresetRequest $request, $jsonPresetId)
     {
         if($request->expectsJson()){

@@ -111,6 +111,7 @@ Route::group([
 
     //Formula
     Route::get('formulas', [FormulaController::class, 'index']);
+    Route::get('formula-selections', [FormulaController::class, 'selection']);
     Route::get('formula-check/{ulid}', [FormulaController::class, 'check']);
     Route::get('formula/{ulid}', [FormulaController::class, 'show']);
     Route::post('formula', [FormulaController::class, 'store']);
@@ -160,6 +161,8 @@ Route::group([
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
     Route::get('company-formula/{companyFormulaId}', [CompanyFormulaController::class, 'show']);
     Route::get('company-formulas', [CompanyFormulaController::class, 'index']);
+    Route::post('company-formula-assignment-sync/{companyFormulaId}', [CompanyFormulaController::class, 'sync']);
+    Route::post('company-formula-assignment-sync-without-detaching/{companyFormulaId}', [CompanyFormulaController::class, 'syncWithoutDetaching']);
 
     Route::post('read-json-file', [JsonController::class, 'read']);
 
