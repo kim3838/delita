@@ -13,6 +13,9 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +66,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             if(!$logExempt){
-                \Illuminate\Support\Facades\Log::info([
+                $logAction = _is_instance_of_any($throwable, [
+                    ValidationException::class
+                ]) ? 'notice' : 'error';
+
+                Log::channel('error')->{$logAction}([
                     ('thrown') => get_class($throwable),
                     'Exception instance?' => ($throwable instanceof Exception ? 'TRUE' : 'FALSE'),
                     'Error instance?' => ($throwable instanceof Error ? 'TRUE' : 'FALSE'),

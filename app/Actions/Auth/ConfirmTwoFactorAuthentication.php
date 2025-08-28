@@ -16,11 +16,12 @@ class ConfirmTwoFactorAuthentication
     /**
      * Confirm the two factor authentication configuration for the user.
      *
-     * @param \App\Models\User $user
+     * @param User $user
      * @param string $code
      * @return void
+     * @throws ValidationException
      */
-    public function __invoke(User $user, $code)
+    public function __invoke(User $user, string $code): void
     {
         if (empty($user->two_factor_secret) ||
             empty($code) ||

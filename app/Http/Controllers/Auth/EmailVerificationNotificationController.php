@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 
 class EmailVerificationNotificationController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
             if($request->expectsJson()){

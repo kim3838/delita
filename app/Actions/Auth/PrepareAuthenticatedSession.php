@@ -3,20 +3,18 @@
 namespace App\Actions\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PrepareAuthenticatedSession
 {
     public function handle(Request $request, $next)
     {
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
+        Log::channel('auth')->info([
+            'method' => basename(__FILE__) . '@' . __FUNCTION__,
             'line' => __LINE__,
             'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'session' => collect($request->session()->all())->only(['_token'])->all(),
             'cookies' => $request->cookies->all(),
-        ]);
-
-        \Log::debug([
             'Request has session?' => ($request->hasSession() ? 'TRUE' : 'FALSE'),
             'BEFORE session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
             'BEFORE session regenerate: cookies' => $request->cookies->all(),
@@ -34,7 +32,7 @@ class PrepareAuthenticatedSession
             ]);
         }
 
-        \Log::debug([
+        Log::channel('auth')->info([
             'AFTER session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
             'AFTER session regenerate: cookies' => $request->cookies->all(),
         ]);

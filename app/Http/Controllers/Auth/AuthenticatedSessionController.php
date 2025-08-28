@@ -14,10 +14,9 @@ use App\Models\CompanyUser;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Session;
 use Jenssegers\Agent\Agent;
@@ -113,13 +112,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
+        Log::channel('auth')->info([
+            'method' => basename(__FILE__) . '@' . __FUNCTION__,
             'line' => __LINE__,
             'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
         ]);
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'BEFORE logout: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'BEFORE logout: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'BEFORE logout: cookies' => $request->cookies->all(),
@@ -127,7 +126,7 @@ class AuthenticatedSessionController extends Controller
 
         Auth::guard('web')->logout();
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'AFTER logout: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'AFTER logout: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'AFTER logout: cookies' => $request->cookies->all(),
@@ -135,7 +134,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->invalidate();
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'AFTER session invalidate: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'AFTER session invalidate: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'AFTER session invalidate: cookies' => $request->cookies->all(),
@@ -143,7 +142,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'AFTER session regenerateToken: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'AFTER session regenerateToken: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'AFTER session regenerateToken: cookies' => $request->cookies->all(),
@@ -154,8 +153,8 @@ class AuthenticatedSessionController extends Controller
 
     public function logoutOtherDevice(Request $request): JsonResponse
     {
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
+        Log::channel('auth')->info([
+            'method' => basename(__FILE__) . '@' . __FUNCTION__,
             'line' => __LINE__,
             'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
         ]);
@@ -164,7 +163,7 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required', 'string', 'current_password:web'],
         ]);
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'BEFORE logoutOtherDevices: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'BEFORE logoutOtherDevices: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'BEFORE logoutOtherDevices: cookies' => $request->cookies->all(),
@@ -172,7 +171,7 @@ class AuthenticatedSessionController extends Controller
 
         Auth::guard('web')->logoutOtherDevices($request->password);
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'AFTER logoutOtherDevices: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'AFTER logoutOtherDevices: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'AFTER logoutOtherDevices: cookies' => $request->cookies->all(),
@@ -180,7 +179,7 @@ class AuthenticatedSessionController extends Controller
 
         $this->deleteOtherSessionRecords($request);
 
-        \Illuminate\Support\Facades\Log::info([
+        Log::channel('auth')->info([
             'AFTER deleteOtherSessionRecords: request user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
             'AFTER deleteOtherSessionRecords: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'AFTER deleteOtherSessionRecords: cookies' => $request->cookies->all(),
@@ -191,8 +190,8 @@ class AuthenticatedSessionController extends Controller
 
     protected function deleteOtherSessionRecords(Request $request): void
     {
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
+        Log::channel('auth')->info([
+            'method' => basename(__FILE__) . '@' . __FUNCTION__,
             'line' => __LINE__,
             'session' => collect(Session::all())->except(['_previous', '_flash'])->all(),
             'cookies' => $request->cookies->all(),

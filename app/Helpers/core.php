@@ -49,7 +49,7 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
         $escapedBindings
     );
 
-    \Illuminate\Support\Facades\Log::info([
+    _debug([
         $logKey => $fullSql,
     ]);
 }
@@ -57,6 +57,6 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
 if(!function_exists('_debug')){
     function _debug($value): void
     {
-        \Illuminate\Support\Facades\Log::debug($value);
+        \Illuminate\Support\Facades\Log::channel('debug')->debug($value);
     }
 }

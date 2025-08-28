@@ -13,7 +13,7 @@ class DisableTwoFactorAuthentication
      * @param \App\Models\User $user
      * @return void
      */
-    public function __invoke(User $user)
+    public function __invoke(User $user): void
     {
         if (!is_null($user->two_factor_secret) ||
             !is_null($user->two_factor_recovery_codes) ||

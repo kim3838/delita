@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Auth;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\TwoFactorLoginRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class TwoFactorAuthenticatedSessionController extends Controller
 {
-    public function store(TwoFactorLoginRequest $request)
+    public function store(TwoFactorLoginRequest $request): JsonResponse
     {
         $user = $request->challengedUser();
 

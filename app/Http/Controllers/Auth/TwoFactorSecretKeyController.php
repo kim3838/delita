@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TwoFactorSecretKeyController extends Controller
 {
-    public function show(Request $request)
+    public function show(Request $request): JsonResponse
     {
         if (is_null($request->user()->two_factor_secret)) {
             return ResponseJson::notFoundResponse('Two factor authentication has not been enabled.');

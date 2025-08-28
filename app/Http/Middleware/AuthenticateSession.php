@@ -11,6 +11,7 @@ use Illuminate\Contracts\Session\Middleware\AuthenticatesSessions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticateSession implements AuthenticatesSessions
 {
@@ -56,8 +57,8 @@ class AuthenticateSession implements AuthenticatesSessions
         }
 
         if($this->logger){
-            \Illuminate\Support\Facades\Log::info([
-                'method' => get_class() . '@' . __FUNCTION__,
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
                 'line' => __LINE__,
                 'uri' => $request->getRequestUri(),
                 'auth default driver' => Auth::getDefaultDriver(),
@@ -72,8 +73,8 @@ class AuthenticateSession implements AuthenticatesSessions
 
         if (! $request->hasSession() || ! $request->user() || ! $request->user()->getAuthPassword()) {
             if ($this->logger) {
-                \Illuminate\Support\Facades\Log::info([
-                    'method' => get_class() . '@' . __FUNCTION__,
+                Log::channel('auth')->info([
+                    'method' => basename(__FILE__) . '@' . __FUNCTION__,
                     'line' => __LINE__,
                     'next' => 'No session | No user | No user password'
                 ]);
@@ -85,7 +86,7 @@ class AuthenticateSession implements AuthenticatesSessions
             $passwordHash = explode('|', $request->cookies->get($this->guard()->getRecallerName()))[2] ?? null;
 
             if ($this->logger) {
-                \Log::debug([
+                Log::channel('auth')->info([
                     'recalled name' => $this->auth->getRecallerName(),
                     'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
                     'cookies' => $request->cookies->all(),
@@ -97,8 +98,8 @@ class AuthenticateSession implements AuthenticatesSessions
 
             if (! $passwordHash || ! hash_equals($request->user()->getAuthPassword(), $passwordHash)) {
                 if ($this->logger) {
-                    \Illuminate\Support\Facades\Log::info([
-                        'method' => get_class() . '@' . __FUNCTION__,
+                    Log::channel('auth')->info([
+                        'method' => basename(__FILE__) . '@' . __FUNCTION__,
                         'line' => __LINE__,
                         'call' => 'logout'
                     ]);
@@ -109,7 +110,7 @@ class AuthenticateSession implements AuthenticatesSessions
 
         if (! $request->session()->has('password_hash_'.$this->auth->getDefaultDriver())) {
             if ($this->logger) {
-                \Illuminate\Support\Facades\Log::info([
+                Log::channel('auth')->info([
                     'store password hash in session' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
                     'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
                     'cookies' => $request->cookies->all(),
@@ -121,8 +122,8 @@ class AuthenticateSession implements AuthenticatesSessions
 
         if (! hash_equals($request->session()->get('password_hash_'.$this->auth->getDefaultDriver()), $request->user()->getAuthPassword())) {
             if ($this->logger) {
-                \Illuminate\Support\Facades\Log::info([
-                    'method' => get_class() . '@' . __FUNCTION__,
+                Log::channel('auth')->info([
+                    'method' => basename(__FILE__) . '@' . __FUNCTION__,
                     'line' => __LINE__,
                     'uri' => $request->getRequestUri(),
                     'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
@@ -138,8 +139,8 @@ class AuthenticateSession implements AuthenticatesSessions
         //Todo: logout user if status is Inactive
         if ($request->user() && $request->user()->status !== UserStatus::ACTIVE) {
             if ($this->logger) {
-                \Illuminate\Support\Facades\Log::info([
-                    'method' => get_class() . '@' . __FUNCTION__,
+                Log::channel('auth')->info([
+                    'method' => basename(__FILE__) . '@' . __FUNCTION__,
                     'line' => __LINE__,
                     'uri' => $request->getRequestUri(),
                     'user_id' => $request->user()->id,
@@ -157,7 +158,7 @@ class AuthenticateSession implements AuthenticatesSessions
 
         return tap($next($request), function () use ($request) {
             if ($this->logger) {
-                \Illuminate\Support\Facades\Log::info([
+                Log::channel('auth')->info([
                     'tapped' => $request->getRequestUri(),
                     'has_login_web__' => $request->session()->has('login_web_' . sha1(SessionGuard::class)),
                     'guard user' => ($this->guard()->user() ? $this->guard()->user()->getAuthIdentifier() : null)
@@ -168,7 +169,7 @@ class AuthenticateSession implements AuthenticatesSessions
                 && $request->session()->has('login_web_' . sha1(SessionGuard::class))
             ) {
                 if ($this->logger) {
-                    \Illuminate\Support\Facades\Log::info([
+                    Log::channel('auth')->info([
                         'store password hash in session' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
                         'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
                         'cookies' => $request->cookies->all(),
@@ -192,8 +193,8 @@ class AuthenticateSession implements AuthenticatesSessions
         }
 
         if ($this->logger) {
-            \Illuminate\Support\Facades\Log::info([
-                'method' => get_class() . '@' . __FUNCTION__,
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
                 'line' => __LINE__,
                 'uri' => $request->getRequestUri(),
                 'auth default driver' => Auth::getDefaultDriver(),
@@ -203,7 +204,7 @@ class AuthenticateSession implements AuthenticatesSessions
         }
 
         if ($this->logger) {
-            \Illuminate\Support\Facades\Log::info([
+            Log::channel('auth')->info([
                 'BEFORE store password hash in session: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             ]);
         }
@@ -214,7 +215,7 @@ class AuthenticateSession implements AuthenticatesSessions
         ]);
 
         if ($this->logger) {
-            \Illuminate\Support\Facades\Log::info([
+            Log::channel('auth')->info([
                 'AFTER store password hash in session: session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             ]);
         }
@@ -235,8 +236,8 @@ class AuthenticateSession implements AuthenticatesSessions
         $request->session()->flush();
 
         if ($this->logger) {
-            \Illuminate\Support\Facades\Log::info([
-                'method' => get_class() . '@' . __FUNCTION__,
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
                 'line' => __LINE__,
                 'via remember?' => ($this->guard()->viaRemember() ? 'TRUE' : 'FALSE')
             ]);

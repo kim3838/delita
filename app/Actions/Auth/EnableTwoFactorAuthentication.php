@@ -20,7 +20,7 @@ class EnableTwoFactorAuthentication
      * @param \App\Models\User $user
      * @return void
      */
-    public function __invoke(User $user)
+    public function __invoke(User $user): void
     {
         $user->forceFill([
             'two_factor_secret' => encrypt($this->provider->generateSecretKey()),

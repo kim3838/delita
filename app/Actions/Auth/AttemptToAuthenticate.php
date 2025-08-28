@@ -7,18 +7,22 @@ use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class AttemptToAuthenticate
 {
+    /**
+     * @throws AuthenticationException
+     */
     public function handle(Request $request, $next)
     {
         $identifierField = filter_var($request->input('identifier'), FILTER_VALIDATE_EMAIL)
             ? 'email'
             : 'name';
 
-        \Illuminate\Support\Facades\Log::info([
-            'method' => get_class() . '@' . __FUNCTION__,
+        Log::channel('auth')->info([
+            'method' => basename(__FILE__) . '@' . __FUNCTION__,
             'line' => __LINE__,
             'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
             'cookies' => $request->cookies->all(),
