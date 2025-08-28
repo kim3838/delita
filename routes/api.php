@@ -44,9 +44,6 @@ use App\Http\Controllers\UserCompanyAssignmentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
-Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
-Route::get('payroll-component-pay-selections', [EnumController::class, 'payrollComponentPaySelections']);
 Route::get('timezone-selections', [WorldController::class, 'timezoneSelection']);
 Route::get('country-selections', [WorldController::class, 'countrySelection']);
 Route::get('currency-selections', [WorldController::class, 'currencySelection']);
@@ -77,6 +74,10 @@ Route::group([
 Route::group([
     'middleware' => ['auth:sanctum']
 ], function(){
+
+    Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
+    Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
+    Route::get('payroll-component-pay-selections', [EnumController::class, 'payrollComponentPaySelections']);
 
     //User authentication
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
@@ -166,7 +167,6 @@ Route::group([
     Route::get('json-presets', [JsonPresetController::class, 'index']);
     Route::get('json-preset-check/{jsonPresetId}', [JsonPresetController::class, 'check']);
     Route::post('json-preset', [JsonPresetController::class, 'store']);
-    Route::get('json-preset-selections', [JsonPresetController::class, 'selection']);
     Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
     Route::get('json-preset-download/{jsonPresetId}', [JsonPresetController::class, 'download']);
     Route::patch('json-preset/{jsonPresetId}', [JsonPresetController::class, 'update']);
