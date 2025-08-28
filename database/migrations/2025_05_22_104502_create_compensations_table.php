@@ -19,7 +19,7 @@ return new class extends Migration
             $table->smallInteger('order');
             $table->boolean('assignable')->default(true);
             $table->smallInteger('type');
-            $table->foreignId('company_formula_id')->constrained('company_formula')->onDelete('cascade');
+            $table->foreignId('company_formula_id');
             $table->timestamps();
 
             $table->unique(['company_id', 'code']);

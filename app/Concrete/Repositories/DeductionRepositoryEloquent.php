@@ -5,10 +5,13 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\DeductionRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Deduction;
+use App\Traits\PayrollComponentChain;
 use Illuminate\Support\Facades\DB;
 
 class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements DeductionRepository
 {
+    use PayrollComponentChain;
+
     public function model(): string
     {
         return Deduction::class;
@@ -33,5 +36,14 @@ class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements Dedu
             ->orderBy('order', 'ASC');
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
+    }
+
+    public function delete($id)
+    {
+        $model = $this->model::findOrfail($id);
+
+        $this->deleteEmployeeAssignedComponentable('deduction', $model->id);
+
+        return $model->delete();
     }
 }

@@ -5,10 +5,13 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\IncomeTax;
+use App\Traits\PayrollComponentChain;
 use Illuminate\Support\Facades\DB;
 
 class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements IncomeTaxRepository
 {
+    use PayrollComponentChain;
+
     public function model(): string
     {
         return IncomeTax::class;
@@ -33,5 +36,14 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
             ->orderBy('order', 'ASC');
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
+    }
+
+    public function delete($id)
+    {
+        $model = $this->model::findOrfail($id);
+
+        $this->deleteEmployeeAssignedComponentable('income_tax', $model->id);
+
+        return $model->delete();
     }
 }

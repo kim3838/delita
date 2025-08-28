@@ -5,10 +5,13 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Compensation;
+use App\Traits\PayrollComponentChain;
 use Illuminate\Support\Facades\DB;
 
 class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements CompensationRepository
 {
+    use PayrollComponentChain;
+
     public function model(): string
     {
         return Compensation::class;
@@ -33,5 +36,14 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
             ->orderBy('order', 'ASC');
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
+    }
+
+    public function delete($id)
+    {
+        $model = $this->model::findOrfail($id);
+
+        $this->deleteEmployeeAssignedComponentable('compensation', $model->id);
+
+        return $model->delete();
     }
 }
