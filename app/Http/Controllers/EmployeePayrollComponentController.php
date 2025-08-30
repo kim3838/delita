@@ -14,6 +14,24 @@ use Illuminate\Support\Facades\App;
 
 class EmployeePayrollComponentController extends Controller
 {
+    public function index($employeeUlid)
+    {
+        if(request()->expectsJson()){
+
+            $payrollComponents = App::make(EmployeePayrollComponentRepository::class)->list($employeeUlid);
+
+            $data = [
+                'compensations' => Fractal::collection($payrollComponents['compensations'], ItemTransformer::class),
+                'deductions' => Fractal::collection($payrollComponents['deductions'], ItemTransformer::class),
+                'income_taxes' => Fractal::collection($payrollComponents['income_taxes'], ItemTransformer::class),
+            ];
+
+            return ResponseJson::successfulResponse($data);
+        }
+
+        abort(404);
+    }
+
     public function validate(StorePolymorphicEmployeePayrollComponentRequest $request)
     {
         if($request->expectsJson()){

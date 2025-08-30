@@ -231,6 +231,7 @@ Route::group([
     Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollComponentController::class, 'deductions']);
     Route::get('employee-payroll-info/{employeeUlid}/income-taxes', [EmployeePayrollComponentController::class, 'incomeTaxes']);
 
+    Route::get('employee-payroll-components/{employeeUlid}', [EmployeePayrollComponentController::class, 'index']);
     Route::post('employee-payroll-component-validate', [EmployeePayrollComponentController::class, 'validate']);
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
