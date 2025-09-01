@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\AmountablePayrollComponentEnd;
 use App\Enums\Formulable;
 use App\Enums\PayPeriod;
+use App\Enums\AmountablePayrollComponentStart;
 use App\Enums\PayType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +23,9 @@ class EmployeePayrollComponent extends Model
         'pay_period',
         'pay_type',
         'pay_frequency_id',
+        'amountable_start',
         'start_date',
+        'amountable_end',
         'end_date',
     ];
 
@@ -35,7 +39,9 @@ class EmployeePayrollComponent extends Model
         'pay_period' => PayPeriod::class,
         'pay_type' => PayType::class,
         'pay_frequency_id' => 'int',
+        'amountable_start' => AmountablePayrollComponentStart::class,
         'start_date' => 'date',
+        'amountable_end' => AmountablePayrollComponentEnd::class,
         'end_date' => 'date',
     ];
 
