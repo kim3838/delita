@@ -26,6 +26,7 @@ class ItemTransformer extends TransformerAbstract
             'birth_date' => Carbon::parse($employee->birth_date)->toDateString(),
             'gender' => $employee->gender->toArray(),
             'marital_status' => $employee->marital_status->toArray(),
+            'contact' => $employee->contact,
         ];
     }
 }
