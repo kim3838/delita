@@ -153,9 +153,6 @@ class AuthenticateSession implements AuthenticatesSessions
             $this->logout($request, __('auth.inactive'));
         }
 
-
-        $this->setUserTimezone();
-
         return tap($next($request), function () use ($request) {
             if ($this->logger) {
                 Log::channel('auth')->info([
