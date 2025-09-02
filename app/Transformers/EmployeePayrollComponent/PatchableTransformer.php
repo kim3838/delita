@@ -2,8 +2,8 @@
 
 namespace App\Transformers\EmployeePayrollComponent;
 
+use App\Facades\TimeZoneConverterFacade;
 use App\Models\EmployeePayrollComponent;
-use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
 class PatchableTransformer extends TransformerAbstract
@@ -21,10 +21,10 @@ class PatchableTransformer extends TransformerAbstract
             'pay_frequency_id' => $model->pay_frequency_id,
 
             'amountable_start' => $model->amountable_start?->value,
-            'start_date' => $model->start_date ? Carbon::parse($model->start_date)->format('Y-m-d') : $model->start_date,
+            'start_date' => TimeZoneConverterFacade::localToGlobal($model->start_date),
 
             'amountable_end' => $model->amountable_end?->value,
-            'end_date' => $model->end_date ? Carbon::parse($model->end_date)->format('Y-m-d') : $model->end_date,
+            'end_date' => TimeZoneConverterFacade::localToGlobal($model->end_date),
         ];
     }
 }
