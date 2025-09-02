@@ -17,14 +17,14 @@ class UpdateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|numeric',
+            'plan' => 'required|numeric',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'type.required' => 'Account type is required',
+            'plan.required' => 'Account plan is required',
         ];
     }
 }

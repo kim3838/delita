@@ -16,7 +16,7 @@ class StoreAccountRequest extends FormRequest
     {
         return [
             'number' => 'required|unique:accounts',
-            'type' => 'required|numeric',
+            'plan' => 'required|numeric',
         ];
     }
 
@@ -25,7 +25,7 @@ class StoreAccountRequest extends FormRequest
         return [
             'number.required' => 'Account number is required',
             'number.unique' => 'Account number has already been taken',
-            'type.required' => 'Account type is required',
+            'plan.required' => 'Account plan is required',
         ];
     }
 }

@@ -13,7 +13,7 @@ class Account extends Model
 
     protected $fillable = [
         'number',
-        'type',
+        'plan',
         'date_registered',
     ];
 
