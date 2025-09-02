@@ -2,6 +2,7 @@
 
 namespace App\Transformers\User;
 
+use App\Facades\TimeZoneConverterFacade;
 use App\Models\User;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
@@ -16,7 +17,7 @@ class ItemTransformer extends TransformerAbstract
             'username' => $model->name,
             'email' => $model->email,
             'status' => $model->status->toArray(),
-            'email_verified_at' => $model->email_verified_at ? Carbon::parse($model->email_verified_at)->toDateString() : $model->email_verified_at,
+            'email_verified_at' => TimeZoneConverterFacade::globalToLocal($model->email_verified_at),
             'timezone' => $model->timezone,
         ];
     }
