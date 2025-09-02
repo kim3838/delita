@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withBindings([
         'response_json' => fn() => new App\Concrete\JsonResponseScaffolder(),
         'fractal' => fn() => new App\Concrete\FractalTransformer(),
+        'time_zone_converter' => fn() => new App\Concrete\TimeZoneConverter(),
     ])
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
