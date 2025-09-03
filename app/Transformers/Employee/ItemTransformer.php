@@ -2,7 +2,9 @@
 
 namespace App\Transformers\Employee;
 
+use App\Facades\Fractal;
 use App\Models\Employee;
+use App\Transformers\EmploymentProfile\ListTransformer as EmploymentProfileListTransformer;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
@@ -27,6 +29,7 @@ class ItemTransformer extends TransformerAbstract
             'gender' => $employee->gender->toArray(),
             'marital_status' => $employee->marital_status->toArray(),
             'contact' => $employee->contact,
+            'employment_profiles' => Fractal::collection($employee->employmentProfiles, EmploymentProfileListTransformer::class)['data']
         ];
     }
 }

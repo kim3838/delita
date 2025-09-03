@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\EmploymentStatus;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,6 +70,27 @@ class Employee extends Model
     public function contact(): HasOne
     {
         return $this->hasOne(EmployeeContact::class, 'employee_id');
+    }
+
+    public function employmentProfiles(): HasMany
+    {
+        return $this->hasMany(EmploymentProfile::class);
+    }
+
+    public function currentEmploymentProfile(): null | EmploymentProfile
+    {
+        $now = Carbon::now()
+            ->timezone($this->company->timezone ?? config('app.timezone'))
+            ->toDateString();
+
+        return $this->hasMany(EmploymentProfile::class)
+            ->where('status', EmploymentStatus::ACTIVE->value)
+            ->where('start_date', '<=', $now)
+            ->where(function($builder)use($now){
+                $builder->where(function($closure) use($now){
+                    $closure->whereNull('end_date')->orWhere('end_date', '>=', $now);
+                });
+            })->latest()->first();
     }
 
     public function company(): BelongsTo

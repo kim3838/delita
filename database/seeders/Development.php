@@ -7,6 +7,8 @@ use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
+use App\Enums\EmploymentStatus;
+use App\Enums\EmploymentType;
 use App\Enums\Formulable;
 use App\Enums\Gender;
 use App\Enums\IncomeTax;
@@ -287,6 +289,9 @@ class Development extends Seeder
         //Create Contact info for Employee A1001
         $employeeA1001->contact()->create(['office_email' => 'a1001.01@officemail.com', 'personal_email' => 'a1001.01@personalmail.com', 'office_phone' => '+639123456789', 'personal_phone' => '+639123456789']);
 
+        //Create Employment profile for Employee A1001
+        $employeeA1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
+
         //Create Employee Info B1001 to Company 1002-B
         $employeeB1001 = $account1002User02->employees()->create([
             'ulid' => Str::ulid(),
@@ -304,6 +309,9 @@ class Development extends Seeder
         //Create Contact info for Employee B1001
         $employeeB1001->contact()->create(['office_email' => 'b1001.01@officemail.com']);
 
+        //Create Employment profile for Employee B1001
+        $employeeB1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
+
         //Create Employee Info C1001 to Company 1002-C
         $employeeC1001 = $account1002User01->employees()->create([
             'ulid' => Str::ulid(),
@@ -320,6 +328,9 @@ class Development extends Seeder
 
         //Create Contact info for Employee C1001
         $employeeC1001->contact()->create(['office_email' => 'c1001.01@officemail.com', 'personal_email' => 'c1001.01@personalmail.com']);
+
+        //Create Employment profile for Employee C1001
+        $employeeC1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
 
         //Create Employee Info C1002 to Company 1002-C
         $employeeC1002 = $account1002User02->employees()->create([
@@ -339,6 +350,9 @@ class Development extends Seeder
         //Create Contact info for Employee C1002
         $employeeC1002->contact()->create(['office_email' => 'c1002.01@officemail.com', 'personal_email' => 'c1002.01@personalmail.com', 'office_phone' => '+639122256789']);
 
+        //Create Employment profile for Employee C1002
+        $employeeC1002->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
+
         //Create Employee Info C1003 to Company 1002-C
         $employeeC1003 = $account1002User03->employees()->create([
             'ulid' => Str::ulid(),
@@ -356,6 +370,9 @@ class Development extends Seeder
 
         //Create Contact info for Employee C1003
         $employeeC1003->contact()->create(['office_email' => 'c1003.01@officemail.com', 'personal_phone' => '+639122111789']);
+
+        //Create Employment profile for Employee C1003
+        $employeeC1003->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
 
         /**************************************************************************************************************************************************************************************************************/
 

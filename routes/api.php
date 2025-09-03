@@ -23,6 +23,7 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
+use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
@@ -225,6 +226,13 @@ Route::group([
     Route::post('employee-contact-validate', [EmployeeContactController::class, 'validate']);
     Route::post('employee-contact', [EmployeeContactController::class, 'store']);
     Route::patch('employee-contact/{employeeId}', [EmployeeContactController::class, 'update']);
+
+    //Employment Profile
+    Route::get('employment-profiles', [EmploymentProfileController::class, 'index']);
+    Route::post('employment-profile-validate', [EmploymentProfileController::class, 'validate']);
+    Route::post('employment-profile', [EmploymentProfileController::class, 'store']);
+    Route::patch('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'update']);
+    Route::delete('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'destroy']);
 
     //Employee Payroll Component
     Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);
