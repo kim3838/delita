@@ -2,7 +2,6 @@
 
 namespace App\Transformers\Prototype;
 
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\Hydrations\Prototype\DataTable as PrototypeDataTable;
 use League\Fractal\TransformerAbstract;
 
@@ -19,9 +18,9 @@ class DataTableTransformer extends TransformerAbstract
             'category' => $model->category,
             'capacity' => $model->capacity,
             'json_data' => $model->json_data,
-            'datetime_added' => TimeZoneConverterFacade::globalToLocal($model->datetime_added, 'Y-m-d H:i:s'),
-            'created_at' => TimeZoneConverterFacade::globalToLocal($model->created_at, 'Y-m-d H:i:s'),
-            'updated_at' => TimeZoneConverterFacade::globalToLocal($model->updated_at, 'Y-m-d H:i:s'),
+            'datetime_added' => $model->datetime_added?->format('Y-m-d H:i:s'),
+            'created_at' => $model->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $model->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

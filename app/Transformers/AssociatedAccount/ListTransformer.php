@@ -2,7 +2,6 @@
 
 namespace App\Transformers\AssociatedAccount;
 
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\Account;
 use League\Fractal\TransformerAbstract;
 
@@ -15,12 +14,12 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'number' => $model->number,
             'plan' => $model->plan->toArray(),
-            'date_registered' => TimeZoneConverterFacade::globalToLocal($model->date_registered),
+            'date_registered' => $model->date_registered?->format('Y-m-d'),
             'subscriptions' => $model->subscriptions->map(function ($subscription) {
                 return [
                     'id' => $subscription->id,
                     'module' => $subscription->module->toArray(),
-                    'date_subscribed' => TimeZoneConverterFacade::globalToLocal($subscription->date_subscribed)
+                    'date_subscribed' => $subscription->date_subscribed?->format('Y-m-d')
                 ];
             })
         ];

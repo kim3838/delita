@@ -23,9 +23,9 @@ class EmploymentProfile extends Model
         'employee_id' => 'int',
         'status' => EmploymentStatus::class,
         'employment_type' => EmploymentType::class,
-        'start_date' => 'datetime',
+        'start_date' => 'date',
         'end_of_service_type' => EndOfServiceType::class,
-        'end_date' => 'datetime',
+        'end_date' => 'date',
     ];
 
     protected $hidden = [

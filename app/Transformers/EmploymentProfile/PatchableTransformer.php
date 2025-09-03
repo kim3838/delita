@@ -2,7 +2,6 @@
 
 namespace App\Transformers\EmploymentProfile;
 
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\EmploymentProfile;
 use League\Fractal\TransformerAbstract;
 
@@ -15,9 +14,9 @@ class PatchableTransformer extends TransformerAbstract
             'employee_id' => $model->employee_id,
             'status' => $model->status?->value,
             'employment_type' => $model->employment_type?->value,
-            'start_date' => TimeZoneConverterFacade::localToGlobal($model->start_date),
+            'start_date' => $model->start_date?->format('Y-m-d'),
             'end_of_service_type' => $model->end_of_service_type?->value,
-            'end_date' => TimeZoneConverterFacade::localToGlobal($model->end_date),
+            'end_date' => $model->end_date?->format('Y-m-d'),
         ];
     }
 }

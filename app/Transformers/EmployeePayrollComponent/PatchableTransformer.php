@@ -2,7 +2,6 @@
 
 namespace App\Transformers\EmployeePayrollComponent;
 
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\EmployeePayrollComponent;
 use League\Fractal\TransformerAbstract;
 
@@ -22,10 +21,10 @@ class PatchableTransformer extends TransformerAbstract
             'pay_frequency_id' => $model->pay_frequency_id,
 
             'amountable_start' => $model->amountable_start?->value,
-            'start_date' => TimeZoneConverterFacade::localToGlobal($model->start_date),
+            'start_date' => $model->start_date?->format('Y-m-d'),
 
             'amountable_end' => $model->amountable_end?->value,
-            'end_date' => TimeZoneConverterFacade::localToGlobal($model->end_date),
+            'end_date' => $model->end_date?->format('Y-m-d'),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Transformers\EmployeePayrollComponent;
 
 use App\Facades\Fractal;
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\EmployeePayrollComponent;
 use App\Transformers\PayFrequency\ItemTransformer as PayFrequencyItemTransformer;
 use League\Fractal\TransformerAbstract;
@@ -32,10 +31,10 @@ class ItemTransformer extends TransformerAbstract
             'pay_frequency' => $payFrequency,
 
             'amountable_start' => $model->amountable_start?->toArray(),
-            'start_date' => TimeZoneConverterFacade::globalToLocal($model->start_date),
+            'start_date' => $model->start_date?->format('Y-m-d'),
 
             'amountable_end' => $model->amountable_end?->toArray(),
-            'end_date' => TimeZoneConverterFacade::globalToLocal($model->end_date),
+            'end_date' => $model->end_date?->format('Y-m-d'),
         ];
     }
 }
