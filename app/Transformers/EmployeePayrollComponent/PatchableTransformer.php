@@ -14,6 +14,7 @@ class PatchableTransformer extends TransformerAbstract
             'employee_id' => $model?->employee_id !== null ? (int) $model->employee_id : null,
             'payroll_componentable_id' => $model?->payroll_componentable_id !== null ? (int) $model->payroll_componentable_id : null,
             'payroll_componentable_type' => $model->payroll_componentable_type,
+            'formulable_type' => $model->formulable_type?->value,
             'amount' => $model->amount,
             'currency' => $model->currency,
             'pay_period' => $model->pay_period?->value,

@@ -9,7 +9,7 @@ use App\Http\Requests\PolymorphicEmployeePayrollComponent\DestroyPolymorphicEmpl
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\StorePolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\UpdatePolymorphicEmployeePayrollComponentRequest;
 use App\Transformers\EmployeePayrollComponent\ItemTransformer;
-use App\Transformers\EmployeePayrollComponent\PatchableTransformer;
+use App\Transformers\EmployeePayrollComponent\ValidatedTransformer;
 use Illuminate\Support\Facades\App;
 
 class EmployeePayrollComponentController extends Controller
@@ -39,7 +39,7 @@ class EmployeePayrollComponentController extends Controller
             return ResponseJson::successfulResponse([
                 'payroll_component' => Fractal::item(
                     App::make(EmployeePayrollComponentRepository::class)->hydrateItem($request->validated()),
-                    ItemTransformer::class
+                    ValidatedTransformer::class
                 )
             ]);
         }
@@ -108,12 +108,9 @@ class EmployeePayrollComponentController extends Controller
     {
         if($request->expectsJson()){
 
-            $hydrated = App::make(EmployeePayrollComponentRepository::class)->hydrateItem($request->validated());
-            $patchable = Fractal::item($hydrated, PatchableTransformer::class);
-
             return ResponseJson::successfulResponse([
                 'payroll_component' => Fractal::item(
-                    App::make(EmployeePayrollComponentRepository::class)->update($employeePayrollComponentId, $patchable),
+                    App::make(EmployeePayrollComponentRepository::class)->update($employeePayrollComponentId, $request->validated()),
                     ItemTransformer::class
                 )
             ]);
