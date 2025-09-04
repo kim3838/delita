@@ -183,9 +183,12 @@ class Development extends Seeder
 
         //Company 1002-A, 1002-B, 1002-C Assign Formula Presets
         foreach ($formulas as $formula) {
-            $company1002A->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
-            $company1002B->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
-            $company1002C->formulas()->syncWithoutDetaching([$formula->id => ['settings' => isset($formula->default_settings->cast) ? json_encode($formula->default_settings->cast) : null]]);
+
+            $settings = empty($formula->default_settings?->cast) ? null : json_encode($formula->default_settings?->cast);
+
+            $company1002A->formulas()->syncWithoutDetaching([$formula->id => ['settings' => $settings]]);
+            $company1002B->formulas()->syncWithoutDetaching([$formula->id => ['settings' => $settings]]);
+            $company1002C->formulas()->syncWithoutDetaching([$formula->id => ['settings' => $settings]]);
         }
 
         // Company 1001-A, 1002-A, 1002-B, 1002-C, and 1002-D Pay Frequencies
@@ -199,9 +202,9 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Compensations
         $compensationsPresets = [
-            ['code' => 'BS', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Salary'],
-            ['code' => 'MA', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Meal'],
-            ['code' => 'OT', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
+            ['code' => 'BASICSALARY', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Basic-Salary'],
+            ['code' => 'MEAL', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Meal'],
+            ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
             ['code' => '13THMONTH', 'name' => '13th Month', 'assignable' => true, 'type' => Compensation::BENEFIT, 'formula' => 'Standard-13th-Month'],
         ];
 
@@ -212,9 +215,11 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Deductions
         $deductionsPresets = [
-            ['code' => 'TRD', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
-            ['code' => 'ABS', 'name' => 'Absent', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
-            ['code' => 'SSE', 'name' => 'SSS-Employed', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
+            ['code' => 'TARDINESS', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
+            ['code' => 'ABSENCE', 'name' => 'Absence', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
+            ['code' => 'SSS', 'name' => 'SSS-Employed', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
+            ['code' => 'PHILHEALTH', 'name' => 'Philhealth', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
+            ['code' => 'PAGIBIG', 'name' => 'Pag-ibig', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-Pagibig-Contribution'],
         ];
 
         foreach ($deductionsPresets as $index => $deductionsPreset) {
@@ -224,7 +229,7 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Income Taxes
         $incomeTaxesPresets = [
-            ['code' => 'CTX', 'name' => 'Compensation Tax', 'assignable' => true, 'type' => IncomeTax::COMPENSATION_TAX, 'formula' => 'Standard-Compensation-Tax'],
+            ['code' => 'INCOMETAX', 'name' => 'Compensation Tax', 'assignable' => true, 'type' => IncomeTax::COMPENSATION_TAX, 'formula' => 'Standard-Compensation-Tax'],
         ];
 
         foreach ($incomeTaxesPresets as $index => $incomeTaxesPreset) {
@@ -386,7 +391,7 @@ class Development extends Seeder
 
         //Company 1002-B Deductions
         $company1002BTardiness = $company1002B->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
-        $company1002BAbsent = $company1002B->deductions->where('name', 'Absent')->where('type', Deduction::DEDUCTION)->first();
+        $company1002BAbsent = $company1002B->deductions->where('name', 'Absence')->where('type', Deduction::DEDUCTION)->first();
         $company1002BSSSEmployed = $company1002B->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
 
         //Company 1002-B Income Taxes
@@ -413,7 +418,7 @@ class Development extends Seeder
 
         //Company 1002-C Deductions
         $company1002CTardiness = $company1002C->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
-        $company1002CAbsent = $company1002C->deductions->where('name', 'Absent')->where('type', Deduction::DEDUCTION)->first();
+        $company1002CAbsent = $company1002C->deductions->where('name', 'Absence')->where('type', Deduction::DEDUCTION)->first();
         $company1002CSSSEmployed = $company1002C->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
 
         //Company 1002-C Income Taxes

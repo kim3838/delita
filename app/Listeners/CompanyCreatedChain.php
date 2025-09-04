@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Enums\CompanyUserAssignmentType;
 use App\Events\Repositories\CompanyCreated;
@@ -36,7 +37,24 @@ class CompanyCreatedChain
             $event->company->payFrequencies()->create($payFrequency);
         }
 
-        //Sync standard formulas
+        /**
+         * Sync basic formulas with default settings
+         * Standard-Basic-Salary
+         * Standard-Overtime
+         * Standard-Taxable-Income
+         * Standard-Nontaxable-Income
+         * Standard-Compensation-Tax
+         * Standard-Net-Income
+         **/
+        $sync = [];
 
+        foreach (App::make(FormulaRepository::class)->defaultPresets() as $formula) {
+
+            $settings = empty($formula->default_settings?->cast) ? null : json_encode($formula->default_settings?->cast);
+
+            $sync[$formula->id] = ['settings' => $settings];
+        }
+
+        $event->company->formulas()->sync($sync);
     }
 }

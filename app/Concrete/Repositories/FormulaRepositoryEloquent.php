@@ -71,4 +71,21 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
 
         return $queryBuilder->first();
     }
+
+    public function defaultPresets()
+    {
+        return $this->model::query()
+            ->whereIn('name', [
+                'Standard-Basic-Salary',
+                'Standard-Overtime',
+                'Standard-Taxable-Income',
+                'Standard-Nontaxable-Income',
+                'Standard-Compensation-Tax',
+                'Standard-Net-Income',
+            ])
+            ->orderBy('formulas.formulable_type', 'ASC')
+            ->orderBy('formulas.component_type', 'ASC')
+            ->orderBy('formulas.name', 'ASC')
+            ->get();
+    }
 }
