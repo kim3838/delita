@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
@@ -116,65 +117,9 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
-        $salaryStatementModules = [
-            [
-                'formulable_type' => Formulable::EARNINGS,
-                'order' => 1,
-                'name' => 'Assigned Compensations',
-                'reference' => 'employee_compensation',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '1',
-                    ]
-                ]
-            ],[
-                'formulable_type' => Formulable::DEDUCTIONS,
-                'order' => 2,
-                'name' => 'Assigned Deductions',
-                'reference' => 'employee_deduction',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '1',
-                    ]
-                ]
-            ],[
-                'formulable_type' => Formulable::TAXABLE_INCOME,
-                'order' => 3,
-                'name' => 'Taxable Income',
-                'reference' => null,
-                'conditions' => null
-            ],[
-                'formulable_type' => Formulable::NONTAXABLE_INCOME,
-                'order' => 4,
-                'name' => 'Non-Taxable Income',
-                'reference' => null,
-                'conditions' => null
-            ],[
-                'formulable_type' => Formulable::INCOME_TAX,
-                'order' => 5,
-                'name' => 'Assigned Income Taxes',
-                'reference' => 'employee_income_tax',
-                'conditions' => [
-                    [
-                        'subject' => 'assignable',
-                        'operator' => '=',
-                        'value' => '1',
-                    ]
-                ]
-            ],[
-                'formulable_type' => Formulable::NET_INCOME,
-                'order' => 6,
-                'name' => 'Net Income',
-                'reference' => null,
-                'conditions' => null
-            ],
-        ];
 
-        foreach ($salaryStatementModules as $salaryStatementModule) {
+        foreach (App::make(SalaryStatementModuleRepository::class)->defaultPresets() as $salaryStatementModule) {
+
             $company1002B->salaryStatementModules()->create($salaryStatementModule);
             $company1002C->salaryStatementModules()->create($salaryStatementModule);
         }

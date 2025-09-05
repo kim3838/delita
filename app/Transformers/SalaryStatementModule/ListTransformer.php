@@ -12,10 +12,12 @@ class ListTransformer extends TransformerAbstract
         return [
             'id' => (int)$model->id,
             'company_id' => (int)$model->company_id,
-            'formulable_type' => $model->formulable_type->toArray(),
             'order' => $model->order,
             'name' => $model->name,
-            'reference' => $model->reference,
+            'formulable_type' => $model->formulable_type->toArray(),
+            'aggregation' => $model->aggregation,
+            'property' => $model->property,
+            'attribute' => $model->attribute,
             'conditions' => $model->conditions,
         ];
     }

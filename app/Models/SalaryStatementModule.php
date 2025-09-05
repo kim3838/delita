@@ -10,18 +10,22 @@ class SalaryStatementModule extends Model
 {
     protected $fillable = [
         'company_id',
-        'formulable_type',
         'order',
         'name',
-        'reference',
+        'formulable_type',
+        'aggregation',
+        'property',
+        'attribute',
         'conditions'
     ];
 
     protected $casts = [
         'company_id' => 'int',
-        'formulable_type' => Formulable::class,
         'order' => 'int',
+        'formulable_type' => Formulable::class,
         'name' => 'string',
+        'aggregation' => 'boolean',
+        'property' => 'string',
         'reference' => 'string',
         'conditions' => 'array'
     ];

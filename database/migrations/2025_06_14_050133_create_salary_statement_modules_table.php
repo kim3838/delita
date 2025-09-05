@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('salary_statement_modules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
-            $table->smallInteger('formulable_type');
             $table->smallInteger('order');
             $table->string('name');
-            $table->string('reference')->nullable();
+            $table->smallInteger('formulable_type');
+            $table->boolean('aggregation');
+            $table->string('property');
+            $table->string('attribute');
             $table->json('conditions')->nullable();
             $table->timestamps();
         });
