@@ -64,7 +64,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
 
-        return $queryBuilder->first();
+        return $queryBuilder->firstOrFail();
     }
 
     public function store($attributes)

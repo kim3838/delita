@@ -43,6 +43,6 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
 
-        return $queryBuilder->first();
+        return $queryBuilder->firstOrFail();
     }
 }

@@ -69,7 +69,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
 
-        return $queryBuilder->first();
+        return $queryBuilder->firstOrFail();
     }
 
     public function autoGenerate($data)

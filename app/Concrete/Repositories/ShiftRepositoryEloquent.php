@@ -42,6 +42,6 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
 
-        return $queryBuilder->first();
+        return $queryBuilder->firstOrFail();
     }
 }

@@ -63,6 +63,6 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
     {
         $queryBuilder = $this->model::where('ulid', $ulid);
 
-        return $queryBuilder->first();
+        return $queryBuilder->firstOrFail();
     }
 }
