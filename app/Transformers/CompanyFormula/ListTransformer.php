@@ -18,7 +18,7 @@ class ListTransformer extends TransformerAbstract
             'company_code' => $model->company_code,
             'company_name' => $model->company_name,
             'formula_name' => $model->formula_name,
-            'formula_is_interpolation' => $model->formula_is_interpolation,
+            'formula_is_aggregation' => $model->formula_is_aggregation,
             'formulable_type' => $model->formulable_type->toArray(),
             'formulable_component_type' => ($model->formulable_component_type)
                 ? $model->formulable_component_type->toArray()

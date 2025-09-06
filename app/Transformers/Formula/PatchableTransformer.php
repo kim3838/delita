@@ -15,7 +15,7 @@ class PatchableTransformer extends TransformerAbstract
             'name' => $model->name,
             'formulable_type' => $model->formulable_type?->value,
             'component_type' => $model->component_type?->value,
-            'interpolation' => $model->interpolation,
+            'aggregation' => $model->aggregation,
             'default_settings' => $model->default_settings?->cast
         ];
     }

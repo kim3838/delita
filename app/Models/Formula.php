@@ -13,7 +13,7 @@ class Formula extends Model
         'name',
         'formulable_type',
         'component_type',
-        'interpolation',
+        'aggregation',
         'default_settings'
     ];
 
@@ -27,7 +27,7 @@ class Formula extends Model
         'name' => 'string',
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
-        'interpolation' => 'boolean',
+        'aggregation' => 'boolean',
         'default_settings' => Parsable::class
     ];
 

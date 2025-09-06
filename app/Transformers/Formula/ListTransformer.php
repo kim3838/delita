@@ -15,7 +15,7 @@ class ListTransformer extends TransformerAbstract
             'name' => $model->name,
             'formulable_type' => $model->formulable_type->toArray(),
             'component_type' => $model->component_type ? $model->component_type->toArray() : null,
-            'interpolation' => $model->interpolation,
+            'aggregation' => $model->aggregation,
             'default_settings' => $model->default_settings?->cast
         ];
     }

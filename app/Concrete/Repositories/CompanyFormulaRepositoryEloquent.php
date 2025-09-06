@@ -39,8 +39,8 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
             ->when($filters->company_ulid ?? false, function ($builder, $value) {
                 $builder->where('companies.ulid', $value);
             })
-            ->when(!empty($filters->interpolations) && is_array($filters->interpolations), function ($builder) use ($filters) {
-                $builder->whereIn('formulas.interpolation', $filters->interpolations);
+            ->when(!empty($filters->aggregations) && is_array($filters->aggregations), function ($builder) use ($filters) {
+                $builder->whereIn('formulas.aggregation', $filters->aggregations);
             })
             ->select([
                 'company_formula.id AS company_formula_id',
@@ -50,7 +50,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
                 'companies.name AS company_name',
                 'formulas.ulid AS formula_ulid',
                 'formulas.name AS formula_name',
-                'formulas.interpolation AS formula_is_interpolation',
+                'formulas.aggregation AS formula_is_aggregation',
                 'formulas.formulable_type AS formulable_type',
                 'formulas.component_type AS formulable_component_type',
                 'formulas.default_settings AS default_settings',

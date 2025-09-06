@@ -17,7 +17,7 @@ class FormulaSetting extends Model
         'company_code' => 'string',
         'company_name' => 'string',
         'formula_name' => 'string',
-        'formula_is_interpolation' => 'bool',
+        'formula_is_aggregation' => 'bool',
         'formulable_type' => Formulable::class,
         'formulable_component_type' => FormulaComponentType::class,
         'default_settings' => Parsable::class,

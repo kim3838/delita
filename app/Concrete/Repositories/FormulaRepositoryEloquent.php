@@ -45,8 +45,8 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
                     });
                 }
             })
-            ->when(!empty($filters->interpolations) && is_array($filters->interpolations), function ($builder) use ($filters) {
-                $builder->whereIn('formulas.interpolation', $filters->interpolations);
+            ->when(!empty($filters->aggregations) && is_array($filters->aggregations), function ($builder) use ($filters) {
+                $builder->whereIn('formulas.aggregation', $filters->aggregations);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){

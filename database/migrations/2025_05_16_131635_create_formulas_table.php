@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->smallInteger('formulable_type');
             $table->smallInteger('component_type')->nullable();
-            $table->boolean('interpolation');
+            $table->boolean('aggregation');
             $table->json('default_settings')->nullable();
             $table->timestamps();
         });

@@ -25,49 +25,49 @@ class FormulaSeeder extends Seeder
         //Formula Presets
         $formulaPresets = [
             //Earnings
-            ['name' => 'Standard-Basic-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'interpolation' => false,
+            ['name' => 'Standard-Basic-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_salary')->first()->path)
             ],
-            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'interpolation' => false,
+            ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_overtime')->first()->path)
             ],
-            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'interpolation' => false,
+            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_meal')->first()->path)
             ],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'interpolation' => false,
+            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],
 
             //Deductions
-            ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
+            ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_tardiness')->first()->path)
             ],
-            ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'interpolation' => false,
+            ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_absence')->first()->path)
             ],
-            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_sss_employed_contribution')->first()->path)
             ],
-            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
             ],
-            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'interpolation' => false,
+            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pagibig_contribution')->first()->path)
             ],
 
             //Taxable Income
-            ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
+            ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
             //Non-taxable Income
-            ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'interpolation' => true],
+            ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
             //Income Tax
-            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'interpolation' => false,
+            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_compensation_tax')->first()->path)
             ],
 
             //Net Income
-            ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'interpolation' => true]
+            ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'aggregation' => true]
         ];
 
         foreach ($formulaPresets as $formula) {

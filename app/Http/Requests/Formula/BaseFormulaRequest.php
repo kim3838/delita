@@ -11,7 +11,7 @@ class BaseFormulaRequest extends FormRequest
         return [
             'formulable_type' => 'required|numeric',
             'component_type' => 'nullable|numeric',
-            'interpolation' => 'required|boolean',
+            'aggregation' => 'required|boolean',
             'default_settings' => 'nullable|array',
         ];
     }
