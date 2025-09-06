@@ -207,6 +207,9 @@ Route::group([
 
     //Salary Statement Modules
     Route::get('salary-statement-modules', [SalaryStatementModuleController::class, 'index']);
+    Route::post('salary-statement-module', [SalaryStatementModuleController::class, 'store']);
+    Route::patch('salary-statement-module/{salaryStatementModuleId}', [SalaryStatementModuleController::class, 'update']);
+    Route::delete('salary-statement-module/{salaryStatementModuleId}', [SalaryStatementModuleController::class, 'destroy']);
     Route::post('re-order/salary-statement-modules', [SalaryStatementModuleController::class, 'reOrder']);
 
     //Employees
