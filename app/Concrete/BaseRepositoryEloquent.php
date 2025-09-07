@@ -180,6 +180,7 @@ abstract class BaseRepositoryEloquent
             ->mergeBindings($builder)
             ->select('*');
     }
+
     /**
      * Trigger static method calls to the model
      *
