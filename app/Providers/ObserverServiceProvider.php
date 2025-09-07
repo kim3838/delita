@@ -35,14 +35,6 @@ class ObserverServiceProvider extends ServiceProvider
         return array(
             array(
                 'observables' => [
-
-                ],
-                'observers' => [
-                    EmployeeObserver::class,
-                ]
-            ),
-            array(
-                'observables' => [
                     Relation::getMorphedModel('compensation'),
                     Relation::getMorphedModel('deduction'),
                     Relation::getMorphedModel('income_tax'),
@@ -56,7 +48,6 @@ class ObserverServiceProvider extends ServiceProvider
                 'observables' => [
                     Relation::getMorphedModel('account'),
                     Relation::getMorphedModel('user'),
-                    Relation::getMorphedModel('employee'),
                     Relation::getMorphedModel('company'),
                     Relation::getMorphedModel('shift'),
                     Relation::getMorphedModel('pay_frequency'),
@@ -64,6 +55,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     HasUlid::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('employee'),
+                ],
+                'observers' => [
+                    EmployeeObserver::class,
                 ]
             ),
         );

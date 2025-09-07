@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CreationType;
 use App\Enums\EmploymentStatus;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
@@ -30,7 +31,8 @@ class Employee extends Model
         'birth_date',
         'gender',
         'marital_status',
-        'date_registered'
+        'date_registered',
+        'creation_type'
     ];
 
     protected $hidden = [
@@ -45,6 +47,7 @@ class Employee extends Model
         'gender' => Gender::class,
         'marital_status' => MaritalStatus::class,
         'birth_date' => 'date',
+        'creation_type' => CreationType::class
     ];
 
     protected $appends = [

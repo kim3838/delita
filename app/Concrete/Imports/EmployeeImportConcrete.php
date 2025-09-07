@@ -4,6 +4,7 @@ namespace App\Concrete\Imports;
 
 use App\Blueprint\Imports\EmployeeImport;
 use App\Concrete\BaseImportConcrete;
+use App\Enums\CreationType;
 use App\Exports\BlankEmployeeTemplateExport;
 use App\Models\Company;
 use App\Models\Employee;
@@ -68,7 +69,8 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
             return [
                 'number' => $row['number'],
                 'family_name' => $row['family_name'],
-                'given_name' => $row['given_name']
+                'given_name' => $row['given_name'],
+                'creation_type' => CreationType::IMPORT,
             ];
         }, $data);
 

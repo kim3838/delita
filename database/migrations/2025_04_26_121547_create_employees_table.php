@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\CreationType;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use Illuminate\Database\Migrations\Migration;
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->smallInteger('gender')->default(Gender::NOT_SPECIFIED);
             $table->smallInteger('marital_status')->default(MaritalStatus::NOT_SPECIFIED);
             $table->date('date_registered')->useCurrent();
+            $table->smallInteger('creation_type')->default(CreationType::DEFAULT);
             $table->timestamps();
 
             $table->unique(['user_id', 'company_id']);
