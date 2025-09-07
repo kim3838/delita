@@ -174,6 +174,12 @@ abstract class BaseRepositoryEloquent
         }
     }
 
+    protected function subQuery($builder, $alias = '_'): Builder
+    {
+        return DB::table(DB::raw("(" . $builder->toSql() . ") as " . $alias))
+            ->mergeBindings($builder)
+            ->select('*');
+    }
     /**
      * Trigger static method calls to the model
      *
