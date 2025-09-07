@@ -43,7 +43,20 @@ use App\Http\Controllers\ShiftScheduleController;
 use App\Http\Controllers\WorldController;
 use App\Http\Controllers\UserCompanyAssignmentController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+
+if(App::environment('local', 'development')) {
+    Route::group([
+        'prefix' => 'utility'
+    ], function(){
+
+        Route::post('debug', [UtilityController::class, 'debug']);
+
+        //Verify X-XSRF-TOKEN on destructive action
+        Route::post('post', [UtilityController::class, 'post']);
+    });
+}
 
 Route::get('timezone-selections', [WorldController::class, 'timezoneSelection']);
 Route::get('country-selections', [WorldController::class, 'countrySelection']);
@@ -66,10 +79,6 @@ Route::group([
 
     //Hit server
     Route::get('hit', [UtilityController::class, 'hit']);
-    Route::post('debug', [UtilityController::class, 'debug']);
-
-    //Verify X-XSRF-TOKEN on destructive action
-    Route::post('post', [UtilityController::class, 'post']);
 });
 
 Route::group([
