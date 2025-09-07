@@ -36,7 +36,7 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
                 $builder->whereBetween("datetime_added", [$filters->datetimeFrom, $filters->datetimeTo]);
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER() AS row_number"),
+                DB::raw("ROW_NUMBER() OVER() AS `row_number`"),
                 'id',
                 'name',
                 'code',

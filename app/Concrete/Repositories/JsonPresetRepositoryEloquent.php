@@ -26,7 +26,7 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
                 });
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER() AS row_number"),
+                DB::raw("ROW_NUMBER() OVER() AS `row_number`"),
                 "json_presets.*"
             ]);
 
