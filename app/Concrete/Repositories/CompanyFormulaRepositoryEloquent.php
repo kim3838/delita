@@ -20,6 +20,7 @@ use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
 use App\Models\IncomeTax;
 use App\Transformers\Formula\ItemTransformer as FormulaItemTransformer;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements CompanyFormulaRepository
 {
@@ -43,6 +44,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
                 $builder->whereIn('formulas.aggregation', $filters->aggregations);
             })
             ->select([
+                DB::raw("ROW_NUMBER() OVER() AS 'row_number'"),
                 'company_formula.id AS company_formula_id',
                 'company_formula.company_id AS company_id',
                 'company_formula.formula_id AS formula_id',

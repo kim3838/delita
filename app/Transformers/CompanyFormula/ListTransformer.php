@@ -11,6 +11,7 @@ class ListTransformer extends TransformerAbstract
     {
         return [
             'id' => $model->company_formula_id,
+            'row_number' => $model->row_number,
             'company_formula_id' => $model->company_formula_id,
             'company_id' => $model->company_id,
             'formula_id' => $model->formula_id,
