@@ -44,7 +44,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
                 $builder->whereIn('formulas.aggregation', $filters->aggregations);
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER() AS 'row_number'"),
+                DB::raw("ROW_NUMBER() OVER() AS row_number"),
                 'company_formula.id AS company_formula_id',
                 'company_formula.company_id AS company_id',
                 'company_formula.formula_id AS formula_id',

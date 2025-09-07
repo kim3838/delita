@@ -45,7 +45,7 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
         return is_numeric($binding) ? $binding : addslashes($binding);
     }, $bindings);
     $fullSql = vsprintf(
-        str_replace('?', "'%s'", $queryBuilder->toSql()),
+        str_replace('?', "`%s`", $queryBuilder->toSql()),
         $escapedBindings
     );
 
