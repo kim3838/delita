@@ -4,9 +4,9 @@ if (!function_exists('_now_timestamp')) {
     /**
      * Get timestamp
      *
-     * @return string
+     * @return false|int
      */
-    function _now_timestamp()
+    function _now_timestamp(): false|int
     {
         return strtotime(date("Y-m-d H:i:s"));
     }
@@ -19,7 +19,8 @@ if (!function_exists('_str_random')) {
      *
      * @return string
      */
-    function _str_random($length) {
+    function _str_random(int $length): string
+    {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $randomString = '';
 
