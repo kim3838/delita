@@ -60,3 +60,19 @@ if(!function_exists('_debug')){
         \Illuminate\Support\Facades\Log::channel('debug')->debug($value);
     }
 }
+
+if (!function_exists('convertEnumValueToArray')) {
+    /**
+     * Convert a numeric enum value to its array representation
+     *
+     * @param string $enumClass The enum class name
+     * @param int|null $numericValue The numeric value to convert
+     * @return array|null The enum's array representation or null if invalid
+     */
+    function convertEnumValueToArray(string $enumClass, ?int $numericValue): ?array
+    {
+        return is_numeric($numericValue)
+            ? $enumClass::tryFrom($numericValue)?->toArray()
+            : null;
+    }
+}
