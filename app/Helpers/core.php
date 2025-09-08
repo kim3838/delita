@@ -38,20 +38,22 @@ if(!function_exists('_is_instance_of_any')){
     }
 }
 
-function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $queryBuilder, $logKey = 'Sql w/ bindings')
+function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $queryBuilder, $name = 'query')
 {
     $bindings = $queryBuilder->getBindings();
-    $escapedBindings = array_map(function ($binding) {
-        return is_numeric($binding) ? $binding : addslashes($binding);
-    }, $bindings);
-    $fullSql = vsprintf(
-        str_replace('?', "`%s`", $queryBuilder->toSql()),
-        $escapedBindings
-    );
 
-    _debug([
-        $logKey => $fullSql,
-    ]);
+    $fullSql = null;
+
+    if(count($bindings)){
+        $fullSql = vsprintf(
+            str_replace('?', "%s", $queryBuilder->toSql()),
+            $bindings
+        );
+    }
+
+    $log = $fullSql ?: $queryBuilder->toSql();
+
+    \Illuminate\Support\Facades\Storage::disk('local')->put("$name.sql", $log);
 }
 
 if(!function_exists('_debug')){
