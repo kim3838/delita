@@ -50,7 +50,7 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
-                    $clause->where('formulas.name', 'LIKE', ('%' . $value . '%'));
+                    $clause->where('formulas.name', 'LIKE', "%$value%");
                 });
             })
             ->select([
