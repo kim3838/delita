@@ -2,13 +2,30 @@
 
 namespace App\Transformers\Employee;
 
+use App\Blueprint\Repositories\EmploymentProfileRepository;
+use App\Facades\Fractal;
 use App\Models\Employee;
+use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
+use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
-    public function transform(Employee $employee)
+    public function transform(Employee $employee): array
     {
+        $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
+            'id' => $employee->employment_profile_id,
+            'employee_id' => $employee->employment_profile_employee_id,
+            'is_active' => $employee->employment_status_active,
+            'status' => $employee->current_employment_status,
+            'employment_type' => $employee->current_employment_type,
+            'start_date' => $employee->current_employment_start_date,
+            'end_of_service_type' => $employee->end_of_service_type,
+            'end_date' => $employee->current_employment_end_date,
+        ]);
+
+        $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
+
         return [
             'id' => $employee->id,
             'ulid' => $employee->ulid,
@@ -20,7 +37,8 @@ class ListTransformer extends TransformerAbstract
             'department' => $employee->department,
             'designation' => $employee->designation,
             'manager' => $employee->manager,
-            'contact' => $employee->contact
+            'contact' => $employee->contact,
+            'current_employment_profile' => $currentEmploymentProfile
         ];
     }
 }
