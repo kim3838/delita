@@ -47,7 +47,7 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
 
     if(count($bindings)){
         $fullSql = vsprintf(
-            str_replace('?', "%s", $queryBuilder->toSql()),
+            str_replace('?', "'%s'", $queryBuilder->toSql()),
             $bindings
         );
     }
