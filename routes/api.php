@@ -24,10 +24,12 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmploymentProfileController;
+use App\Http\Controllers\EmploymentProfileImportTemplateController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
+use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
@@ -64,6 +66,7 @@ Route::get('currency-selections', [WorldController::class, 'currencySelection'])
 
 //Import templates
 Route::get('employee-import-template', [EmployeeImportTemplateController::class, 'index']);
+Route::get('employment-profile-import-template', [EmploymentProfileImportTemplateController::class, 'index']);
 
 Route::group([
     'middleware' => ['guest']
@@ -245,6 +248,9 @@ Route::group([
     Route::post('employment-profile', [EmploymentProfileController::class, 'store']);
     Route::patch('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'update']);
     Route::delete('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'destroy']);
+    Route::post('employment-profile-import-validate', [EmploymentProfileImportController::class, 'read']);
+    Route::post('employment-profile-import-re-validate', [EmploymentProfileImportController::class, 'reValidate']);
+    Route::post('employment-profile-import-save', [EmploymentProfileImportController::class, 'save']);
 
     //Employee Payroll Component
     Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);
