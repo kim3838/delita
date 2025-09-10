@@ -79,3 +79,18 @@ if (!function_exists('convertEnumValueToArray')) {
             : null;
     }
 }
+
+if (!function_exists('isNameInEnum')){
+    /**
+     * Check if the name is one of the cases
+     *
+     * @param $enumClass
+     * @param $name
+     * @return bool
+     */
+    function isNameInEnum($enumClass, $name): bool
+    {
+        return in_array($name, array_map(fn($c) => $c->name, $enumClass::cases()), true);
+    }
+
+}
