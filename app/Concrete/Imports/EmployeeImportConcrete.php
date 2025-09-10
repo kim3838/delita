@@ -27,7 +27,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
             $validationErrors = [];
 
             if (empty($row['number'])) {
-                $validationErrors[] = 'Number is required';
+                $validationErrors[] = 'Number is required.';
             } else {
                 if (in_array($row['number'], $existingNumbers)) {
                     $validationErrors[] = 'Number already exists in the system.';
