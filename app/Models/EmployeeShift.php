@@ -10,11 +10,22 @@ class EmployeeShift extends Pivot
     protected $fillable =[
         'employee_id',
         'shift_id',
+        'start_date',
+        'stated_shift_end_date',
+        'end_date',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
+    ];
+
+    protected $casts = [
+        'employee_id' => 'int',
+        'shift_id' => 'int',
+        'start_date' => 'date',
+        'stated_shift_end_date' => 'boolean',
+        'end_date' => 'date',
     ];
 
     public function employee(): BelongsTo

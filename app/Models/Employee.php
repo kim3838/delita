@@ -120,6 +120,8 @@ class Employee extends Model
     public function shifts(): BelongsToMany
     {
         return $this->belongsToMany(Shift::class)
+            ->using(EmployeeShift::class)
+            ->withPivot(['id', 'start_date', 'stated_shift_end_date', 'end_date'])
             ->withTimestamps();
     }
 
