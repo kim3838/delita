@@ -93,12 +93,22 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             }
         }
 
-        // Validate time ranges based on shift type
         if ($value !== null && !$schedule['is_day_off'] && !$schedule['is_flexible']) {
-            $this->validateTimeRange($value, $fail, $weekDayName);
+            /**
+             * Skip time range validation
+             * $this->validateTimeRange($value, $fail, $weekDayName);
+             * */
         }
     }
 
+    /**
+     * Validate if time range is within specific time as per shift type policy
+     *
+     * @param $time
+     * @param $fail
+     * @param $weekDayName
+     * @return void
+     */
     private function validateTimeRange($time, $fail, $weekDayName): void
     {
         $shiftType = ShiftType::from($this->input('type'));
