@@ -111,13 +111,21 @@ class Employee extends Model
         return $this->belongsTo(Designation::class);
     }
 
-    // Manager of the employee
+    /**
+     * Manager of the employee
+     *
+     * @return BelongsTo
+     * */
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'manager_id');
     }
 
-    // Employees managed by this employee
+    /**
+     * Employees managed by this employee
+     *
+     * @return HasMany
+     */
     public function subordinates(): HasMany
     {
         return $this->hasMany(Employee::class, 'manager_id');
