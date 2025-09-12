@@ -279,6 +279,7 @@ Route::group([
 
     //Shifts
     Route::get('shifts', [ShiftController::class, 'index']);
+    Route::get('shift-selections', [ShiftController::class, 'selection']);
     Route::post('shift', [ShiftController::class, 'store']);
     Route::patch('shift/{shiftId}', [ShiftController::class, 'update']);
     Route::get('shift/{ulid}', [ShiftController::class, 'show']);

@@ -11,6 +11,7 @@ use App\Http\Requests\Shift\StoreShiftRequest;
 use App\Http\Requests\Shift\UpdateShiftRequest;
 use App\Transformers\Shift\ItemTransformer;
 use App\Transformers\Shift\ListTransformer;
+use App\Transformers\Shift\SelectionTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -28,6 +29,23 @@ class ShiftController extends Controller
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class)
             );
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    App::make(ShiftRepository::class)->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);

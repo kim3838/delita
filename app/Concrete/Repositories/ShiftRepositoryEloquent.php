@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\ShiftRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Shift;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRepository
@@ -32,6 +33,30 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
             ->select([
                 'shifts.*',
             ]);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model);
+    }
+
+    public function selection($filters): LengthAwarePaginator
+    {
+        $queryBuilder = $this->model->getQuery()
+            ->when($filters->company_id ?? false, function ($builder, $value) {
+                $builder->where('shifts.company_id', $value);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($query) use ($value) {
+                    $query->where('code', 'like', "%$value%")
+                        ->orWhere('name', 'like', "%$value%");
+                });
+            })
+            ->select([
+                'shifts.id',
+                'shifts.code',
+                'shifts.name',
+            ])
+            ->orderBy('name', 'ASC');
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
