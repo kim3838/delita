@@ -7,19 +7,29 @@ use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\EmploymentStatus;
 use App\Models\Employee;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements EmployeeRepository
 {
+    protected array $defaultOrders = [
+        ['field' => 'employees.family_name', 'direction' => 'ASC'],
+        ['field' => 'employees.given_name', 'direction' => 'ASC'],
+    ];
+
     public function model(): string
     {
         return Employee::class;
     }
 
-    public function list($filters)
+    public function baseQueryBuilder($filters, $orders = null)
     {
-        $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)->currentEmploymentProfileBuilder($filters);
+
+        $orders = $orders ?? $this->defaultOrders;
+
+        $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)
+            ->currentEmploymentProfileBuilder($filters);
 
         $queryBuilder = $this->model::getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
@@ -30,18 +40,30 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
             })
+            ->when(!empty($filters->employee_ids) && is_array($filters->employee_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("employees.id"), $filters->employee_ids);
+            })
             ->when(!empty($filters->employment_status) && is_array($filters->employment_status), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("COALESCE(current_employment_profile.status, " . EmploymentStatus::INACTIVE->value . ")"), $filters->employment_status);
+            })
+            ->when(!empty($filters->employment_type) && is_array($filters->employment_type), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("current_employment_profile.employment_type"), $filters->employment_type);
+            })
+            ->when(!empty($filters->department_ids) && is_array($filters->department_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("employees.department_id"), $filters->department_ids);
+            })
+            ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('employees.number', 'LIKE', "%$value%")
                         ->orWhere('employees.family_name', 'LIKE', "%$value%")
-                    ->orWhere('employees.given_name', 'LIKE', "%$value%");
+                        ->orWhere('employees.given_name', 'LIKE', "%$value%");
                 });
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER(ORDER BY employees.family_name, employees.given_name) AS `row_number`"),
+                DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
                 "employees.*",
                 DB::raw("IF(current_employment_profile.id IS NULL, 0, 1) AS employment_status_active"),
@@ -52,9 +74,16 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 DB::raw("current_employment_profile.start_date AS current_employment_start_date"),
                 DB::raw("current_employment_profile.end_of_service_type AS current_employment_end_of_service_type"),
                 DB::raw("current_employment_profile.end_date AS current_employment_end_date"),
-            ])
-            ->orderBy("employees.family_name", 'ASC')
-            ->orderBy("employees.given_name", 'ASC');
+            ]);
+
+        return $queryBuilder;
+    }
+
+    public function list($filters): LengthAwarePaginator
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        $this->setOrdersOnBuilder($queryBuilder, $this->defaultOrders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
