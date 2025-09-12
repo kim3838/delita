@@ -17,6 +17,10 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
 
     public function list($filters)
     {
+        $orders = [
+            ['field' => 'shifts.code', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("shifts.company_id"), $value);
@@ -31,8 +35,11 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
                 $builder->whereIn('shifts.type', $filters->type);
             })
             ->select([
+                DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 'shifts.*',
             ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
@@ -41,6 +48,10 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
 
     public function selection($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'shifts.code', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where('shifts.company_id', $value);
@@ -55,8 +66,9 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
                 'shifts.id',
                 'shifts.code',
                 'shifts.name',
-            ])
-            ->orderBy('name', 'ASC');
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
