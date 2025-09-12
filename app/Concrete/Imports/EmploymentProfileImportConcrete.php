@@ -21,9 +21,7 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
     public function validateData($data, $companyId): array
     {
         $dataToImport = [];
-        _debug([
-            'validateData' => $data
-        ]);
+
         foreach ($data as $index => $row) {
 
             $validationErrors = [];
