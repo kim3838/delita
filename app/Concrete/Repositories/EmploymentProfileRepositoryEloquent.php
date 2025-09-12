@@ -31,7 +31,7 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
         return $this->model::hydrate($queryBuilder->get()->toArray());
     }
 
-    public function queryBuilder($filters)
+    public function baseQueryBuilder($filters)
     {
         return $this->model->getQuery()
             ->leftJoin('employees', 'employees.id', '=', 'employment_profiles.employee_id')
@@ -51,7 +51,7 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             'company_id' => $filters->company_id ?? false,
         ];
 
-        $innerQueryBuilder = $this->queryBuilder($filters)
+        $innerQueryBuilder = $this->baseQueryBuilder($filters)
             ->select([
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
                 'employment_profiles.*'
