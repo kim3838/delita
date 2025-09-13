@@ -55,6 +55,14 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
             })
+            ->when(!empty($filters->not_assigned_shift_ids) && is_array($filters->not_assigned_shift_ids), function ($builder) use ($filters) {
+                $builder->whereNotExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('employee_shift')
+                        ->whereColumn('employee_shift.employee_id', 'employees.id')
+                        ->whereIn('employee_shift.shift_id', $filters->not_assigned_shift_ids);
+                });
+            })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('employees.number', 'LIKE', "%$value%")
