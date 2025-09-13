@@ -174,6 +174,33 @@ abstract class BaseRepositoryEloquent
         }
     }
 
+    protected function rowNumberOrder($orders): string
+    {
+        if (empty($orders)) {
+            return '';
+        }
+
+        $order = collect($orders)
+            ->map(fn ($o) => "{$o['field']} {$o['direction']}")
+            ->implode(', ');
+
+        return "ORDER BY $order";
+    }
+
+    protected function setOrdersOnBuilder(Builder $builder, $orders = []): void
+    {
+        foreach ($orders as $order) {
+            $builder->orderBy($order['field'], $order['direction']);
+        }
+    }
+
+    protected function setGroupsOnBuilder(Builder $builder, $groups = []): void
+    {
+        foreach ($groups as $group) {
+            $builder->groupBy($group);
+        }
+    }
+
     protected function subQuery($builder, $alias = '_'): Builder
     {
         return DB::table(DB::raw("(" . $builder->toSql() . ") as " . $alias))
