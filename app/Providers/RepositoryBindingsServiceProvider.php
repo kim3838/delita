@@ -18,6 +18,7 @@ use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
+use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
@@ -47,6 +48,7 @@ use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
+use App\Concrete\Repositories\EmployeeShiftRepositoryEloquent;
 use App\Concrete\Repositories\EmploymentProfileRepositoryEloquent;
 use App\Concrete\Repositories\FormulaRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
@@ -83,6 +85,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'employment_profile' => EmploymentProfileRepositoryEloquent::class,
         'employee_contact' => EmployeeContactRepositoryEloquent::class,
         'employee_payroll_component' => EmployeePayrollComponentRepositoryEloquent::class,
+        'employee_shift' => EmployeeShiftRepositoryEloquent::class,
         'company_formula' => CompanyFormulaRepositoryEloquent::class,
         'compensation' => CompensationRepositoryEloquent::class,
         'company_compensation' => CompanyCompensationRepositoryEloquent::class,
@@ -109,6 +112,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         EmploymentProfileRepository::class => EmploymentProfileRepositoryEloquent::class,
         EmployeeContactRepository::class => EmployeeContactRepositoryEloquent::class,
         EmployeePayrollComponentRepository::class => EmployeePayrollComponentRepositoryEloquent::class,
+        EmployeeShiftRepository::class => EmployeeShiftRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
         CompensationRepository::class => CompensationRepositoryEloquent::class,
         CompanyCompensationRepository::class => CompanyCompensationRepositoryEloquent::class,
@@ -146,6 +150,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'employment_profile',
             'employee_contact',
             'employee_payroll_component',
+            'employee_shift',
             'company_formula',
             'compensation',
             'company_compensation',
@@ -175,6 +180,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             EmploymentProfileRepository::class,
             EmployeeContactRepository::class,
             EmployeePayrollComponentRepository::class,
+            EmployeeShiftRepository::class,
             CompanyFormulaRepository::class,
             CompensationRepository::class,
             CompanyCompensationRepository::class,

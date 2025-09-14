@@ -23,6 +23,7 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
+use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
 use App\Http\Controllers\EnumController;
@@ -287,6 +288,14 @@ Route::group([
     Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
 
     Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
+
+    //Shift Assignments
+    Route::get('shift-assignments', [EmployeeShiftController::class, 'index']);
+    Route::patch('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'update']);
+    Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
+    Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
+    Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
+    Route::delete('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'destroy']);
 });
 
 Route::group([
