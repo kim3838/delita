@@ -93,6 +93,11 @@ abstract class BaseRepositoryEloquent
         return $model->delete();
     }
 
+    public function batchDelete($ids)
+    {
+        return $this->model::destroy($ids);
+    }
+
     /**
      * Generate a LengthAwarePaginator class based from the count of Builder class
      *
