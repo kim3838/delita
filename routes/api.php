@@ -295,7 +295,7 @@ Route::group([
     Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
     Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
     Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
-    Route::delete('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'destroy']);
+    Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);
 });
 
 Route::group([

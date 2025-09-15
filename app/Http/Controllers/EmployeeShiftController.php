@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\EmployeeShift\BatchDestroyEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\SyncWithoutDetachingEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\DestroyEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\DetachAssignedShiftsRequest;
@@ -102,6 +103,20 @@ class EmployeeShiftController extends Controller
         if($request->expectsJson()){
 
             $this->repository->delete($employeeShiftId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyEmployeeShiftRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $shiftAssignmentIds = data_get($request->validated(), 'shift_assignment_ids', []);
+
+            $this->repository->batchDelete($shiftAssignmentIds);
 
             return ResponseJson::successfulResponse();
         }
