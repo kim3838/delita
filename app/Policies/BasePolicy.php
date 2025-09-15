@@ -11,12 +11,17 @@ class BasePolicy
 {
     protected function userIsAdminInCompany(User $user, $companyId): bool
     {
+        if(empty($companyId)){
+            return false;
+        }
+
         return Company::findOrFail($companyId)
                 ->users
                 ->findOrfail($user->id)
                 ->pivot
                 ->assignment_type == CompanyUserAssignmentType::ADMIN->value;
     }
+
     protected function userIsAdminInAnyCompany(User $user): bool
     {
         return (bool)CompanyUser::where('user_id', $user->id)
