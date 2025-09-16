@@ -1,0 +1,30 @@
+[
+    {
+        "key": "start_date",
+        "label": "Start Date",
+        "order": 1,
+        "type": "date",
+        "readable": "21 of last month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": "subMonth.1",
+            "day": 21,
+            "time": "startOfDay"
+        }
+    },
+    {
+        "key": "end_date",
+        "label": "End Date",
+        "order": 2,
+        "type": "date",
+        "readable": "20 of current month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": 20,
+            "time": "endOfDay"
+        }
+    }
+]

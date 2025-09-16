@@ -1,0 +1,30 @@
+[
+    {
+        "key": "start_date",
+        "label": "Start Date",
+        "order": 1,
+        "type": "date",
+        "readable": "06 of current month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": null,
+            "day": 6,
+            "time": "startOfDay"
+        }
+    },
+    {
+        "key": "end_date",
+        "label": "End Date",
+        "order": 2,
+        "type": "date",
+        "readable": "05 of next month",
+        "value": {
+            "base": "now",
+            "year": null,
+            "month": "addMonth.1",
+            "day": 5,
+            "time": "endOfDay"
+        }
+    }
+]

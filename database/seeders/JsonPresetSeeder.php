@@ -33,7 +33,10 @@ class JsonPresetSeeder extends Seeder
 
         //Json Presets
         foreach (JsonPreset::allPresets() as $jsonPreset){
-            JsonPreset::create($jsonPreset);
+
+            JsonPreset::query()->firstOrCreate([
+                'key' => $jsonPreset['key'],
+            ], $jsonPreset);
         }
     }
 

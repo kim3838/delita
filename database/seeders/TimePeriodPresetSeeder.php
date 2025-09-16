@@ -35,10 +35,24 @@ class TimePeriodPresetSeeder extends Seeder
             ],
             [
                 'type' => TimePeriodType::PAY_FREQUENCY,
+                'name' => '05th_cut_off',
+                'readable_name' => '05th',
+                'monthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'monthly_period_05th_cut_off')->first()->path),
+                'semimonthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'semimonthly_period_05th_cut_off')->first()->path),
+            ],
+            [
+                'type' => TimePeriodType::PAY_FREQUENCY,
                 'name' => '10th_cut_off',
                 'readable_name' => '10th',
                 'monthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'monthly_period_10th_cut_off')->first()->path),
                 'semimonthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'semimonthly_period_10th_cut_off')->first()->path),
+            ],
+            [
+                'type' => TimePeriodType::PAY_FREQUENCY,
+                'name' => '20th_cut_off',
+                'readable_name' => '20th',
+                'monthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'monthly_period_20th_cut_off')->first()->path),
+                'semimonthly_period' => Storage::disk('presets')->json(JsonPreset::where('key', 'semimonthly_period_20th_cut_off')->first()->path),
             ],
             [
                 'type' => TimePeriodType::PAY_FREQUENCY,
@@ -56,7 +70,10 @@ class TimePeriodPresetSeeder extends Seeder
         ];
 
         foreach ($timePeriodPresets as $timePeriodPreset) {
-            TimePeriodPreset::create($timePeriodPreset);
+
+            TimePeriodPreset::query()->firstOrCreate([
+                'name' => $timePeriodPreset['name'],
+            ], $timePeriodPreset);
         }
     }
 }

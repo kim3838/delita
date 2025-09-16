@@ -43,29 +43,49 @@ class JsonPreset extends Model
                 'file' => '03.semimonthly_period_end_of_month_cut_off.json',
             ],
             [
+                'key' => 'monthly_period_05th_cut_off',
+                'resource_preset_path' => 'presets/json/time_period',
+                'file' => '04.monthly_period_05th_cut_off.json',
+            ],
+            [
+                'key' => 'semimonthly_period_05th_cut_off',
+                'resource_preset_path' => 'presets/json/time_period',
+                'file' => '05.semimonthly_period_05th_cut_off.json',
+            ],
+            [
                 'key' => 'monthly_period_10th_cut_off',
                 'resource_preset_path' => 'presets/json/time_period',
-                'file' => '04.monthly_period_10th_cut_off.json',
+                'file' => '06.monthly_period_10th_cut_off.json',
             ],
             [
                 'key' => 'semimonthly_period_10th_cut_off',
                 'resource_preset_path' => 'presets/json/time_period',
-                'file' => '05.semimonthly_period_10th_cut_off.json',
+                'file' => '07.semimonthly_period_10th_cut_off.json',
+            ],
+            [
+                'key' => 'monthly_period_20th_cut_off',
+                'resource_preset_path' => 'presets/json/time_period',
+                'file' => '08.monthly_period_20th_cut_off.json',
+            ],
+            [
+                'key' => 'semimonthly_period_20th_cut_off',
+                'resource_preset_path' => 'presets/json/time_period',
+                'file' => '09.semimonthly_period_20th_cut_off.json',
             ],
             [
                 'key' => 'monthly_period_25th_cut_off',
                 'resource_preset_path' => 'presets/json/time_period',
-                'file' => '06.monthly_period_25th_cut_off.json',
+                'file' => '10.monthly_period_25th_cut_off.json',
             ],
             [
                 'key' => 'semimonthly_period_25th_cut_off',
                 'resource_preset_path' => 'presets/json/time_period',
-                'file' => '07.semimonthly_period_25th_cut_off.json',
+                'file' => '11.semimonthly_period_25th_cut_off.json',
             ],
             [
                 'key' => 'night_differential_hours',
                 'resource_preset_path' => 'presets/json/time_period',
-                'file' => '08.night_differential_hours.json',
+                'file' => '12.night_differential_hours.json',
             ]
         ];
     }
@@ -121,7 +141,7 @@ class JsonPreset extends Model
             [
                 'key' => 'standard_compensation_tax',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '005.standard.compensation-tax.01.compensation-tax.json',
+                'file' => '003.standard.compensation-tax.01.compensation-tax.json',
             ],
         ];
     }

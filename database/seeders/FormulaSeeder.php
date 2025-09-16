@@ -71,7 +71,10 @@ class FormulaSeeder extends Seeder
         ];
 
         foreach ($formulaPresets as $formula) {
-            Formula::create(['ulid' => Str::ulid(), ...$formula]);
+
+            Formula::query()->firstOrCreate([
+                'name' => $formula['name'],
+            ], ['ulid' => Str::ulid(), ...$formula]);
         }
     }
 }
