@@ -20,6 +20,7 @@ class BaseStoreAndUpdateEmploymentProfileRequest extends FormRequest
                 'sometimes',
                 'required',
                 'date_format:Y-m-d',
+                'after_or_equal:start_date',
             ],
         ];
     }
@@ -30,6 +31,7 @@ class BaseStoreAndUpdateEmploymentProfileRequest extends FormRequest
             'employee_id.required' => 'Employee account is required',
             'start_date.date_format' => 'Start date must match the format Y-m-d (2000-01-01)',
             'end_date.date_format' => 'End date must match the format Y-m-d (2000-01-01)',
+            'end_date.after_or_equal' => 'End date must be equal to or after the start date',
         ];
     }
 }

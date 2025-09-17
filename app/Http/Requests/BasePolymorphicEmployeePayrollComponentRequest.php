@@ -34,6 +34,7 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
                 'sometimes',
                 'required',
                 'date_format:Y-m-d',
+                'after_or_equal:start_date',
             ],
         ];
     }
@@ -51,6 +52,7 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'start_date.date_format' => 'Start date must match the format Y-m-d (2000-01-01)',
             'amountable_end.required' => 'Date end is required',
             'end_date.date_format' => 'End date must match the format Y-m-d (2000-01-01)',
+            'end_date.after_or_equal' => 'End date must be equal to or after the start date',
         ];
     }
 }
