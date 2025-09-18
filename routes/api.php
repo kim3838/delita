@@ -23,6 +23,7 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
+use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -68,6 +69,7 @@ Route::get('currency-selections', [WorldController::class, 'currencySelection'])
 //Import templates
 Route::get('employee-import-template', [EmployeeImportTemplateController::class, 'index']);
 Route::get('employment-profile-import-template', [EmploymentProfileImportTemplateController::class, 'index']);
+Route::get('employee-payroll-component-import-template', [EmployeePayrollComponentImportTemplateController::class, 'index']);
 
 Route::group([
     'middleware' => ['guest']
