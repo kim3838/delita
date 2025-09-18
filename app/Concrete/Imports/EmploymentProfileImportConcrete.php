@@ -36,7 +36,7 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
                     ->first();
 
                 if (empty($employee)) {
-                    $validationErrors[] = 'Employee not found';
+                    $validationErrors[] = 'Employee not found.';
                 }
             }
 
