@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\Compensation as CompensationEnum;
+use App\Enums\Formulable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -36,6 +38,15 @@ class Compensation extends Model
         'type' => CompensationEnum::class,
         'company_formula_id' => 'int',
     ];
+
+    protected $appends = [
+        'formulable_type',
+    ];
+
+    public function formulableType(): Attribute
+    {
+        return new Attribute(get: fn () => Formulable::EARNINGS);
+    }
 
     public function company(): BelongsTo
     {

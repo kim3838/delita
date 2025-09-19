@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\Formulable;
 use App\Enums\IncomeTax as IncomeTaxEnum;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -34,6 +36,15 @@ class IncomeTax extends Model
         'type' => IncomeTaxEnum::class,
         'company_formula_id' => 'int',
     ];
+
+    protected $appends = [
+        'formulable_type',
+    ];
+
+    public function formulableType(): Attribute
+    {
+        return new Attribute(get: fn () => Formulable::INCOME_TAX);
+    }
 
     public function company(): BelongsTo
     {

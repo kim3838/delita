@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\Deduction as DeductionEnum;
+use App\Enums\Formulable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -34,6 +36,15 @@ class Deduction extends Model
         'type' => DeductionEnum::class,
         'company_formula_id' => 'int',
     ];
+
+    protected $appends = [
+        'formulable_type',
+    ];
+
+    public function formulableType(): Attribute
+    {
+        return new Attribute(get: fn () => Formulable::DEDUCTIONS);
+    }
 
     public function company(): BelongsTo
     {
