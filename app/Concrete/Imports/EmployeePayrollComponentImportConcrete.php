@@ -1,0 +1,223 @@
+<?php
+
+namespace App\Concrete\Imports;
+
+use App\Blueprint\Imports\EmployeePayrollComponentImport;
+use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
+use App\Concrete\BaseImportConcrete;
+use App\Enums\Compensation as CompensationEnum;
+use App\Enums\PayFrequency as PayFrequencyEnum;
+use App\Enums\PayPeriod;
+use App\Enums\PayType;
+use App\Exports\BlankEmployeePayrollComponentTemplateExport;
+use App\Http\Requests\BasePolymorphicEmployeePayrollComponentRequest;
+use App\Models\Company;
+use App\Models\Compensation;
+use App\Models\Deduction;
+use App\Models\Employee;
+use App\Models\IncomeTax;
+use App\Models\PayFrequency;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Validator;
+
+class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implements EmployeePayrollComponentImport
+{
+    public function exportTemplate(): string
+    {
+        return BlankEmployeePayrollComponentTemplateExport::class;
+    }
+
+    public function validateData($data, $companyId): array
+    {
+        $dataToImport = [];
+
+        foreach ($data as $index => $row) {
+
+            $validationErrors = [];
+
+            $payrollComponent = null;
+            $payrollComponentIsAmountable = false;
+            $payPeriod = null;
+            $payFrequency = null;
+
+            if (empty($row['employee_number'])) {
+                $validationErrors[] = 'Employee number is required.';
+            } else {
+
+                $employee = Employee::query()
+                    ->where('company_id', $companyId)
+                    ->where('number', $row['employee_number'])
+                    ->first();
+
+                if (empty($employee)) {
+                    $validationErrors[] = 'Employee not found.';
+                }
+            }
+
+            if (empty($row['payroll_component_code'])) {
+                $validationErrors[] = 'Payroll component code is required.';
+            } else {
+
+                $payrollComponent = Compensation::query()
+                    ->where('company_id', $companyId)
+                    ->where('code', $row['payroll_component_code'])
+                    ->first();
+
+                if(empty($payrollComponent)){
+
+                    $payrollComponent = Deduction::query()
+                        ->where('company_id', $companyId)
+                        ->where('code', $row['payroll_component_code'])
+                        ->first();
+                }
+
+                if(empty($payrollComponent)){
+
+                    $payrollComponent = IncomeTax::query()
+                        ->where('company_id', $companyId)
+                        ->where('code', $row['payroll_component_code'])
+                        ->first();
+                }
+
+                if(empty($payrollComponent)){
+                    $validationErrors[] = 'Payroll component not found.';
+                } else {
+
+                    $row['payroll_componentable_id'] = $payrollComponent->id;
+                    $row['payroll_componentable_type'] = Relation::getMorphAlias(get_class($payrollComponent));
+                    $row['formulable_type'] = $payrollComponent->formulable_type;
+                }
+            }
+
+            if(!empty($payrollComponent)){
+
+                $payrollComponentType = $payrollComponent->type;
+
+                $payrollComponentIsAmountable = in_array($payrollComponentType, [
+                    CompensationEnum::BASIC_SALARY,
+                    CompensationEnum::REGULAR_ALLOWANCE
+                ]);
+            }
+
+            $row['payroll_component_is_amountable'] = $payrollComponentIsAmountable;
+
+            if($payrollComponentIsAmountable){
+
+                if (empty($row['amount'])) {
+                    $validationErrors[] = 'Amount is required.';
+                } else {
+
+                    $amountValidation = Validator::make($row,[
+                        'amount' => new BasePolymorphicEmployeePayrollComponentRequest()->rules()['amount'],
+                    ]);
+
+                    if ($amountValidation->fails()) {
+                        $validationErrors[] = $amountValidation->errors()->first();
+                    }
+                }
+
+                if (empty($row['pay_period'])) {
+                    $validationErrors[] = 'Pay period is required.';
+                } else {
+
+                    $payPeriodValid = isNameInEnum(PayPeriod::class, $row['pay_period']);
+
+                    if(!$payPeriodValid){
+                        $validationErrors[] = 'Pay period invalid.';
+                    } else {
+                        $payPeriod = PayPeriod::{$row['pay_period']};
+                    }
+                }
+
+                if (empty($row['pay_type'])) {
+                    $validationErrors[] = 'Pay type is required.';
+                } else {
+
+                    $payTypeValid = isNameInEnum(PayType::class, $row['pay_type']);
+
+                    if(!$payTypeValid){
+                        $validationErrors[] = 'Pay type invalid.';
+                    }
+                }
+
+                if (empty($row['pay_frequency'])) {
+                    $validationErrors[] = 'Pay frequency is required.';
+                } else {
+
+                    $payFrequency = PayFrequency::query()
+                        ->where('company_id', $companyId)
+                        ->where('code', $row['pay_frequency'])
+                        ->first();
+
+                    if (empty($payFrequency)) {
+                        $validationErrors[] = 'Pay frequency not found.';
+                    } else {
+
+                        $row['pay_frequency_id'] = $payFrequency->id;
+                    }
+                }
+
+                if(!empty($payPeriod) && !empty($payFrequency)){
+
+                    $payPeriodIsSemimonthlyOrMonthly = in_array($payPeriod, [
+                        PayPeriod::SEMI_MONTHLY,
+                        PayPeriod::MONTHLY
+                    ]);
+
+                    $payFrequencyIsDailyOrWeekly = in_array($payFrequency->type, [
+                        PayFrequencyEnum::DAILY,
+                        PayFrequencyEnum::WEEKLY
+                    ]);
+
+                    if($payPeriodIsSemimonthlyOrMonthly && $payFrequencyIsDailyOrWeekly){
+                        $validationErrors[] = 'Semi-monthly/Monthly pay period are not allowed for Daily/Weekly frequencies.';
+                    }
+                }
+            } else {
+
+                $row['amount'] = null;
+                $row['pay_period'] = null;
+                $row['pay_type'] = null;
+                $row['pay_frequency'] = null;
+            }
+
+            $row['validation_errors'] = $validationErrors;
+
+            $dataToImport[] = $row;
+        }
+
+        return $dataToImport;
+    }
+
+    public function resolvedData($data, $companyId): array
+    {
+        $company = Company::query()->find($companyId);
+
+        foreach ($data as $index => $row) {
+
+            $employee = Employee::query()
+                ->where('company_id', $companyId)
+                ->where('number', $row['employee_number'])
+                ->first();
+
+            $create = [
+                'employee_id' => $employee->id,
+                'payroll_componentable_id' => $row['payroll_componentable_id'],
+                'payroll_componentable_type' => $row['payroll_componentable_type'],
+                'formulable_type' => $row['formulable_type'],
+                ...($row['payroll_component_is_amountable'] ? [
+                    'amount' => $row['amount'],
+                    'currency' => $company->currency,
+                    'pay_period' => PayPeriod::{$row['pay_period']},
+                    'pay_type' => PayType::{$row['pay_type']},
+                    'pay_frequency_id' => $row['pay_frequency_id'],
+                ] : [])
+            ];
+
+            App::make(EmployeePayrollComponentRepository::class)->model()::create($create);
+        }
+
+        return array_map(function ($row) {return $row['id'];}, $data);
+    }
+}

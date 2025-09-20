@@ -31,6 +31,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
+use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
 use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
@@ -265,6 +266,9 @@ Route::group([
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
     Route::delete('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'destroy']);
+    Route::post('employee-payroll-component-import-validate', [EmployeePayrollComponentImportController::class, 'read']);
+    Route::post('employee-payroll-component-import-re-validate', [EmployeePayrollComponentImportController::class, 'reValidate']);
+    Route::post('employee-payroll-component-import-save', [EmployeePayrollComponentImportController::class, 'save']);
 
     //Designations
     Route::get('designations', [DesignationController::class, 'index']);
