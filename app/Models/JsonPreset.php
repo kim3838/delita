@@ -99,14 +99,14 @@ class JsonPreset extends Model
                 'file' => '001.standard.earnings.01.basic-salary.json'
             ],
             [
-                'key' => 'standard_overtime',
+                'key' => 'standard_allowance',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '001.standard.earnings.02.overtime.json',
+                'file' => '001.standard.earnings.02.regular-allowance.json',
             ],
             [
-                'key' => 'standard_meal',
+                'key' => 'standard_overtime',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '001.standard.earnings.03.meal-allowance.json',
+                'file' => '001.standard.earnings.03.overtime.json',
             ],
             [
                 'key' => 'standard_13th_month',
@@ -119,24 +119,29 @@ class JsonPreset extends Model
                 'file' => '002.standard.deductions.01.tardiness.json',
             ],
             [
+                'key' => 'standard_undertime',
+                'resource_preset_path' => 'presets/json/formula',
+                'file' => '002.standard.deductions.02.undertime.json',
+            ],
+            [
                 'key' => 'standard_absence',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '002.standard.deductions.02.absence.json',
+                'file' => '002.standard.deductions.03.absence.json',
             ],
             [
                 'key' => 'standard_sss_employed_contribution',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '002.standard.deductions.03.sss-employed.json',
+                'file' => '002.standard.deductions.04.sss-employed.json',
             ],
             [
                 'key' => 'standard_philhealth_contribution',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '002.standard.deductions.04.philhealth.json',
+                'file' => '002.standard.deductions.05.philhealth.json',
             ],
             [
                 'key' => 'standard_pagibig_contribution',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '002.standard.deductions.05.pagibig.json',
+                'file' => '002.standard.deductions.06.pagibig.json',
             ],
             [
                 'key' => 'standard_compensation_tax',

@@ -148,7 +148,7 @@ class Development extends Seeder
         //Company 1002-B, 1002-C Pre-create Compensations
         $compensationsPresets = [
             ['code' => 'BASICSALARY', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Basic-Salary'],
-            ['code' => 'MEAL', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Meal'],
+            ['code' => 'MEAL', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Allowance'],
             ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
             ['code' => '13THMONTH', 'name' => '13th Month', 'assignable' => true, 'type' => Compensation::BENEFIT, 'formula' => 'Standard-13th-Month'],
         ];
@@ -161,6 +161,7 @@ class Development extends Seeder
         //Company 1002-B, 1002-C Pre-create Deductions
         $deductionsPresets = [
             ['code' => 'TARDINESS', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
+            ['code' => 'UNDERTIME', 'name' => 'Undertime', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Undertime'],
             ['code' => 'ABSENCE', 'name' => 'Absence', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
             ['code' => 'SSS', 'name' => 'SSS-Employed', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
             ['code' => 'PHILHEALTH', 'name' => 'Philhealth', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
@@ -336,6 +337,7 @@ class Development extends Seeder
 
         //Company 1002-B Deductions
         $company1002BTardiness = $company1002B->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
+        $company1002BUndertime = $company1002B->deductions->where('name', 'Undertime')->where('type', Deduction::DEDUCTION)->first();
         $company1002BAbsent = $company1002B->deductions->where('name', 'Absence')->where('type', Deduction::DEDUCTION)->first();
         $company1002BSSSEmployed = $company1002B->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
 
@@ -348,6 +350,7 @@ class Development extends Seeder
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee B1001
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BUndertime->id, 'payroll_componentable_type' => 'deduction']);
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BAbsent->id, 'payroll_componentable_type' => 'deduction']);
         $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee B1001
@@ -363,6 +366,7 @@ class Development extends Seeder
 
         //Company 1002-C Deductions
         $company1002CTardiness = $company1002C->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
+        $company1002CUndertime = $company1002B->deductions->where('name', 'Undertime')->where('type', Deduction::DEDUCTION)->first();
         $company1002CAbsent = $company1002C->deductions->where('name', 'Absence')->where('type', Deduction::DEDUCTION)->first();
         $company1002CSSSEmployed = $company1002C->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
 
@@ -375,6 +379,7 @@ class Development extends Seeder
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1001
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1001
@@ -386,6 +391,7 @@ class Development extends Seeder
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1002
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1002
@@ -397,6 +403,7 @@ class Development extends Seeder
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
         //Create Deductions for Employee C1003
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1003

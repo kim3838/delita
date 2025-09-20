@@ -4,7 +4,7 @@
         "label": "Description",
         "order": 0,
         "type": "text",
-        "readable": "Meal allowance is a fixed amount given to employees to help cover their food expenses during work hours.",
+        "readable": "A fixed recurring benefit provided to employees on top of their basic salary",
         "value": ""
     }
 ]

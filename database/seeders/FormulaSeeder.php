@@ -28,11 +28,11 @@ class FormulaSeeder extends Seeder
             ['name' => 'Standard-Basic-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_salary')->first()->path)
             ],
+            ['name' => 'Standard-Allowance', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_allowance')->first()->path)
+            ],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_overtime')->first()->path)
-            ],
-            ['name' => 'Standard-Meal', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_meal')->first()->path)
             ],
             ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
@@ -41,6 +41,9 @@ class FormulaSeeder extends Seeder
             //Deductions
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_tardiness')->first()->path)
+            ],
+            ['name' => 'Standard-Undertime', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_undertime')->first()->path)
             ],
             ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_absence')->first()->path)
