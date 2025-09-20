@@ -26,7 +26,6 @@ return new class extends Migration
             $table->time('lunch_break_start')->nullable();
             $table->time('lunch_break_end')->nullable();
             $table->string('total_lunch_break_hours')->nullable();
-            $table->boolean('is_lunch_break_compensable')->default(false);
             $table->timestamps();
 
             $table->unique(['shift_id', 'week_day']);

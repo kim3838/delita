@@ -73,8 +73,7 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
                     'has_lunch_break' => false,
                     'lunch_break_start' => null,
                     'lunch_break_end' => null,
-                    'total_lunch_break_hours' => null,
-                    'is_lunch_break_compensable' => false
+                    'total_lunch_break_hours' => null
                 ];
 
             } else {
@@ -91,8 +90,7 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
                     'has_lunch_break' => true,
                     'lunch_break_start' => '12:00',
                     'lunch_break_end' => '13:00',
-                    'total_lunch_break_hours' => '01:00',
-                    'is_lunch_break_compensable' => false
+                    'total_lunch_break_hours' => '01:00'
                 ];
             }
         }

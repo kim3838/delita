@@ -22,7 +22,6 @@ class ShiftSchedule extends Model
         'lunch_break_start',
         'lunch_break_end',
         'total_lunch_break_hours',
-        'is_lunch_break_compensable',
     ];
 
     protected $hidden = [
@@ -44,7 +43,6 @@ class ShiftSchedule extends Model
         'lunch_break_start' => 'string',
         'lunch_break_end' => 'string',
         'total_lunch_break_hours' => 'string',
-        'is_lunch_break_compensable' => 'boolean',
     ];
 
     public function shift(): BelongsTo
