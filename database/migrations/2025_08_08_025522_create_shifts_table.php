@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('code');
             $table->string('name');
             $table->smallInteger('type');
+            $table->tinyInteger('work_start_grace_time')->default(0);
+            $table->boolean('require_lunch_time_in_and_out')->default(false);
+            $table->tinyInteger('lunch_start_grace_time')->default(0);
             $table->timestamps();
 
             $table->unique(['company_id', 'code']);

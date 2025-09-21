@@ -15,6 +15,9 @@ class Shift extends Model
         'code',
         'name',
         'type',
+        'work_start_grace_time',
+        'require_lunch_time_in_and_out',
+        'lunch_start_grace_time',
     ];
 
     protected $hidden = [
@@ -28,6 +31,9 @@ class Shift extends Model
         'code' => 'string',
         'name' => 'string',
         'type' => ShiftType::class,
+        'work_start_grace_time' => 'int',
+        'require_lunch_time_in_and_out' => 'boolean',
+        'lunch_start_grace_time' => 'int',
     ];
 
     public function company(): BelongsTo

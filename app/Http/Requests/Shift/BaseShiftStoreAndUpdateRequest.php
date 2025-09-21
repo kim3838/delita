@@ -16,6 +16,9 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'integer', Rule::in([ShiftType::REGULAR->value, ShiftType::GRAVEYARD->value])],
+            'work_start_grace_time' => ['required', 'integer', 'between:0,30'],
+            'require_lunch_time_in_and_out' => ['required', 'boolean'],
+            'lunch_start_grace_time' => ['required', 'integer', 'between:0,30'],
 
             'shift_schedules' => ['required', 'array', 'size:7'],
             'shift_schedules.*.week_day' => ['required', 'integer', 'between:0,6'],
@@ -315,6 +318,11 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'name.required' => 'Name is required.',
             'type.required' => 'Type is required.',
             'type.in' => 'Invalid shift type selected.',
+            'work_start_grace_time.required' => 'Work start grace time is required.',
+            'work_start_grace_time.between' => 'Work start grace time must be between 0 and 30 minutes.',
+            'require_lunch_time_in_and_out.required' => 'Require lunch time in and out is required.',
+            'lunch_start_grace_time.required' => 'Lunch start grace time is required.',
+            'lunch_start_grace_time.between' => 'Lunch start grace time must be between 0 and 30 minutes.',
             'shift_schedules.required' => 'Shift schedules are required.',
             'shift_schedules.size' => 'Shift schedules must contain exactly 7 days.',
         ];

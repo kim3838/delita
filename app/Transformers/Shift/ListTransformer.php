@@ -15,6 +15,14 @@ class ListTransformer extends TransformerAbstract
             return $item->week_day->value;
         }, SORT_NUMERIC);
 
+        $workStartGraceTime = $model->work_start_grace_time > 0
+            ? "{$model->work_start_grace_time} Minutes"
+            : "No grace time";
+
+        $lunchStartGraceTime = $model->lunch_start_grace_time > 0
+            ? "{$model->lunch_start_grace_time} Minutes"
+            : "No grace time";
+
         return [
             'id' => $model->id,
             'ulid' => $model->ulid,
@@ -23,6 +31,9 @@ class ListTransformer extends TransformerAbstract
             'code' => $model->code,
             'name' => $model->name,
             'type' => $model->type->toArray(),
+            'work_start_grace_time' => $workStartGraceTime,
+            'require_lunch_time_in_and_out' => $model->require_lunch_time_in_and_out ? 'Yes' : 'No',
+            'lunch_start_grace_time' => $model->require_lunch_time_in_and_out ? $lunchStartGraceTime : '',
             'schedules' => Fractal::collection($schedules, ShiftScheduleListTransformer::class)['data']
         ];
     }
