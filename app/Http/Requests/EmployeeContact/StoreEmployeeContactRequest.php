@@ -4,6 +4,7 @@ namespace App\Http\Requests\EmployeeContact;
 
 use App\Models\EmployeeContact;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\App;
 
 class StoreEmployeeContactRequest extends FormRequest
 {
@@ -21,7 +22,7 @@ class StoreEmployeeContactRequest extends FormRequest
                 'email:rfc',
                 'different:personal_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isEmailTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
                         $fail('Office email has already been taken.');
                     }
                 },
@@ -31,7 +32,7 @@ class StoreEmployeeContactRequest extends FormRequest
                 'email:rfc',
                 'different:office_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isEmailTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
                         $fail('Personal email has already been taken.');
                     }
                 },
@@ -75,7 +76,7 @@ class StoreEmployeeContactRequest extends FormRequest
 
     }
 
-    private function isEmailTaken(string $email): bool
+    public function isEmailTaken(string $email): bool
     {
         $queryBuilder = EmployeeContact::getQuery()->where('office_email', $email)
             ->orWhere('personal_email', $email);
