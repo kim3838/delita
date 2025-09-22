@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\App;
 use Illuminate\Validation\Rule;
 
 class StoreAutogenerateUserRequest extends FormRequest
@@ -22,7 +23,11 @@ class StoreAutogenerateUserRequest extends FormRequest
             'office_email' => [
                 'required',
                 'email:rfc',
-                Rule::unique('users', 'email')
+                ...(App::environment('production') ? [
+                    Rule::unique('users', 'email')
+                ] : [
+
+                ])
             ]
         ];
     }
