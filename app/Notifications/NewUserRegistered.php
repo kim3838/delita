@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewUserRegistered extends Notification
+class NewUserRegistered extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -18,7 +18,9 @@ class NewUserRegistered extends Notification
         protected $username,
         protected $email,
         protected $password
-    ){}
+    ){
+        $this->onQueue('notifications');
+    }
 
     /**
      * Get the notification's delivery channels.
