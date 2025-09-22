@@ -32,6 +32,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->currentEmploymentProfileBuilder($filters);
 
         $queryBuilder = $this->model::getQuery()
+            ->leftJoin('users', 'users.id', '=', 'employees.user_id')
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
             ->leftJoinSub($currentEmploymentProfile, 'current_employment_profile', function ($join) {
                 $join->on('employees.id', '=', 'current_employment_profile.employee_id')
