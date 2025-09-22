@@ -14,7 +14,7 @@ class ItemTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'username' => $model->name,
             'email' => $model->email,
-            'status' => $model->status->toArray(),
+            'status' => $model->status?->toArray(),
             'email_verified_at' => $model->email_verified_at?->format('Y-m-d'),
             'timezone' => $model->timezone,
         ];
