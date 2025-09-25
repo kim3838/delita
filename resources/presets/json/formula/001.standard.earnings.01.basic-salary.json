@@ -15,8 +15,8 @@
         "readable": "Regular Rates",
         "value": [
             {
-                "key": "regular_day",
-                "label": "Regular Day",
+                "key": "regular",
+                "label": "Regular",
                 "order": 1,
                 "type": "number",
                 "readable": "100%",
@@ -88,8 +88,8 @@
         "readable": "Night Differential Rates",
         "value": [
             {
-                "key": "regular_day",
-                "label": "Regular Day",
+                "key": "regular",
+                "label": "Regular",
                 "order": 1,
                 "type": "number",
                 "readable": "110%",
