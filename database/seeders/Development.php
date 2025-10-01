@@ -318,7 +318,7 @@ class Development extends Seeder
         $employeeC1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
 
         //Create Shift for Employee C1001
-        $graveYardNightNoDayOff = Shift::where('code', 'GRAVEYARD-NIGHT-NODOFF')->first();
+        $graveYardNightNoDayOff = Shift::where('code', 'GRAVEYARD-NHT-0DOFF')->first();
         $employeeC1001->shifts()->syncWithoutDetaching([$graveYardNightNoDayOff->id => [
             'start_date' => '2025-01-01',
             'stated_shift_end_date' => false,
