@@ -35,6 +35,21 @@ class Development extends Seeder
 {
     use WithoutModelEvents;
 
+    public array $weekdays = [];
+
+    public function __construct()
+    {
+        $this->weekdays = [
+            CarbonInterface::SUNDAY,
+            CarbonInterface::MONDAY,
+            CarbonInterface::TUESDAY,
+            CarbonInterface::WEDNESDAY,
+            CarbonInterface::THURSDAY,
+            CarbonInterface::FRIDAY,
+            CarbonInterface::SATURDAY,
+        ];
+    }
+
     public function run(): void
     {
 
@@ -73,13 +88,32 @@ class Development extends Seeder
         $user05 = User::factory()->default()->create(['name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
         //Company 1002-C Shifts
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSR2DONF1', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSR1DONF1', 'name' => 'REGULAR 1 DAY OFF[SUN] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DSRNDONF1', 'name' => 'REGULAR NO DAY OFF 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DAYSHIFT-REG-2DOFF', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DAYSHIFT-REG-1DOFF', 'name' => 'REGULAR 1 DAY OFF[SUN] 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'DAYSHIFT-REG-0DOFF', 'name' => 'REGULAR NO DAY OFF 09:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0]);
+        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => 'GRAVEYARD-NHT-0DOFF', 'name' => 'GRAVEYARD NO DAY OFF 21:00 PM to 07:00 AM', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10]);
 
-        $this->createShiftSchedules(Shift::where('code', 'DSR2DONF1')->first(), false, [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
-        $this->createShiftSchedules(Shift::where('code', 'DSR1DONF1')->first(), false, [CarbonInterface::SUNDAY]);
-        $this->createShiftSchedules(Shift::where('code', 'DSRNDONF1')->first());
+        $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-2DOFF')->first(), false, [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-1DOFF')->first(), false, [CarbonInterface::SUNDAY]);
+        $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-NODOFF')->first());
+
+        foreach ($this->weekdays as $weekday) {
+            Shift::where('code', 'GRAVEYARD-NIGHT-NODOFF')->first()->schedules()->create([
+                'week_day' => $weekday,
+                'is_rest_day' => in_array($weekday, [CarbonInterface::SUNDAY,CarbonInterface::SATURDAY]),
+                'is_day_off' => false,
+                'timezone' => 'Asia/Manila',
+                'is_flexible' => false,
+                'work_start' => '21:00',
+                'work_end' => '07:00',
+                'total_work_hours_with_breaks' => '10:00',
+                'has_lunch_break' => true,
+                'lunch_break_start' => '01:00',
+                'lunch_break_end' => '02:00',
+                'total_lunch_break_hours' => '01:00'
+            ]);
+        }
+
         /*
          * Employee: has employee info and default assigned to a company
          * Employee Admin: has employee info and admin assigned to a company
@@ -283,6 +317,13 @@ class Development extends Seeder
         //Create Employment profile for Employee C1001
         $employeeC1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
 
+        //Create Shift for Employee C1001
+        $graveYardNightNoDayOff = Shift::where('code', 'GRAVEYARD-NIGHT-NODOFF')->first();
+        $employeeC1001->shifts()->syncWithoutDetaching([$graveYardNightNoDayOff->id => [
+            'start_date' => '2025-01-01',
+            'stated_shift_end_date' => false,
+        ]]);
+
         //Create Employee Info C1002 to Company 1002-C
         $employeeC1002 = $account1002User02->employees()->create([
             'ulid' => Str::ulid(),
@@ -431,17 +472,7 @@ class Development extends Seeder
             CarbonInterface::SATURDAY,
         ];
 
-        $weekdays = [
-            CarbonInterface::SUNDAY,
-            CarbonInterface::MONDAY,
-            CarbonInterface::TUESDAY,
-            CarbonInterface::WEDNESDAY,
-            CarbonInterface::THURSDAY,
-            CarbonInterface::FRIDAY,
-            CarbonInterface::SATURDAY,
-        ];
-
-        foreach ($weekdays as $weekday) {
+        foreach ($this->weekdays as $weekday) {
 
             $dayOff = in_array($weekday, $dayoffs);
 
