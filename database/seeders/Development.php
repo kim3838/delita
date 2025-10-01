@@ -95,10 +95,10 @@ class Development extends Seeder
 
         $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-2DOFF')->first(), false, [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-1DOFF')->first(), false, [CarbonInterface::SUNDAY]);
-        $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-NODOFF')->first());
+        $this->createShiftSchedules(Shift::where('code', 'DAYSHIFT-REG-0DOFF')->first());
 
         foreach ($this->weekdays as $weekday) {
-            Shift::where('code', 'GRAVEYARD-NIGHT-NODOFF')->first()->schedules()->create([
+            Shift::where('code', 'GRAVEYARD-NHT-0DOFF')->first()->schedules()->create([
                 'week_day' => $weekday,
                 'is_rest_day' => in_array($weekday, [CarbonInterface::SUNDAY,CarbonInterface::SATURDAY]),
                 'is_day_off' => false,
