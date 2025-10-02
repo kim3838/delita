@@ -59,12 +59,22 @@ class Parsable implements CastsAttributes
         $item->readable = $payload->readable ?? null;
 
         $item->value = match($item->type) {
+            'number' => $this->parseNumberValue($payload->value),
             'date' => $this->getDateFromPayload($payload->value ?? null),
             'array' => collect($payload->value ?? [])->map(fn ($p) => $this->parsePayload($p))->all(),
             default => $payload->value ?? null,
         };
 
         return $item;
+    }
+
+    public function parseNumberValue($value): ?float
+    {
+        if(!is_numeric($value)){
+            return null;
+        }
+
+        return (float)$value;
     }
 
     public function getDateFromPayload($payload): string
