@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Utilities\UserSession as UserSessionUtility;
+use App\Concrete\Utilities\UserSession as UserSessionUtility;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
