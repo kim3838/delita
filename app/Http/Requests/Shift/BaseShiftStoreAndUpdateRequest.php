@@ -48,13 +48,13 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'shift_schedules.*.lunch_break_start' => [
                 function ($attribute, $value, $fail) {
                     $this->validateLunchBreakRequired($attribute, $value, $fail);
-                    $this->validateLunchBreak($attribute, $value, $fail);
+                    $this->validateLunchBreakStart($attribute, $value, $fail);
                 }
             ],
             'shift_schedules.*.lunch_break_end' => [
                 function ($attribute, $value, $fail) {
                     $this->validateLunchBreakRequired($attribute, $value, $fail);
-                    $this->validateLunchBreak($attribute, $value, $fail);
+                    $this->validateLunchBreakEnd($attribute, $value, $fail);
                 }
             ],
             'shift_schedules.*.total_lunch_break_hours' => [
@@ -90,8 +90,8 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
                 $fail("{$weekDayName}: Work start time should be 12:00 AM when flexible.");
                 return;
             }
-            if (str_contains($attribute, 'work_end') && $value !== '23:59') {
-                $fail("{$weekDayName}: Work end time should be 11:59 PM when flexible.");
+            if (str_contains($attribute, 'work_end') && $value !== '00:00') {
+                $fail("{$weekDayName}: Work end time should be 12:00 AM when flexible.");
                 return;
             }
         }
@@ -153,7 +153,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
         }
 
         if(!$schedule['is_day_off']){
-            if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $value)) {
+            if (!preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]|24:00$/', $value)) {
                 $fail("{$weekDayName}: Total work hours must be in hour:minute format.");
                 return;
             }
@@ -169,7 +169,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
                 $endTime = Carbon::createFromFormat('H:i', $workEnd);
 
                 // Handle overnight shifts
-                if ($endTime->lt($startTime)) {
+                if ($endTime->lte($startTime)) {
                     $endTime->addDay();
                 }
 
@@ -211,7 +211,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
         }
     }
 
-    private function validateLunchBreak($attribute, $value, $fail): void
+    private function validateLunchBreakStart($attribute, $value, $fail): void
     {
         $index = $this->getScheduleIndex($attribute);
         $schedule = $this->input("shift_schedules.{$index}");
@@ -235,18 +235,64 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             if ($workStart && $workEnd) {
                 $workStartTime = Carbon::createFromFormat('H:i', $workStart);
                 $workEndTime = Carbon::createFromFormat('H:i', $workEnd);
-                $lunchTime = Carbon::createFromFormat('H:i', $value);
+                $lunchStart = Carbon::createFromFormat('H:i', $lunchStart);
 
-                // Handle overnight shifts
-                if ($workEndTime->lt($workStartTime)) {
+                if ($workEndTime->lte($workStartTime)) {
                     $workEndTime->addDay();
-                    if ($lunchTime->lt($workStartTime)) {
-                        $lunchTime->addDay();
-                    }
                 }
 
-                if ($lunchTime->lt($workStartTime) || $lunchTime->gt($workEndTime)) {
-                    $fail("{$weekDayName}: Lunch break time should be between work start and work end times.");
+                if ($lunchStart->lt($workStartTime)) {
+                    $lunchStart->addDay();
+                }
+
+                if ($lunchStart->lt($workStartTime) || $lunchStart->gt($workEndTime)) {
+                    $fail("{$weekDayName}: Lunch break start time should be between work start and work end times.");
+                }
+            }
+        }
+    }
+
+    private function validateLunchBreakEnd($attribute, $value, $fail): void
+    {
+        $index = $this->getScheduleIndex($attribute);
+        $schedule = $this->input("shift_schedules.{$index}");
+        $weekDayName = $schedule['week_day_name'] ?? 'Unknown';
+
+        // Should be null for day off
+        if ($schedule['is_day_off'] && $value !== null) {
+            $fail("{$weekDayName}: Lunch break time should be null when is day off.");
+            return;
+        }
+
+        // If one lunch break time is provided, both should be provided
+        $lunchStart = $schedule['lunch_break_start'];
+        $lunchEnd = $schedule['lunch_break_end'];
+
+        // Validate lunch break is within work hours
+        if ($lunchStart && $lunchEnd && !$schedule['is_day_off']) {
+            $workStart = $schedule['work_start'];
+            $workEnd = $schedule['work_end'];
+
+            if ($workEnd) {
+                $workStartTime = Carbon::createFromFormat('H:i', $workStart);
+                $workEndTime = Carbon::createFromFormat('H:i', $workEnd);
+                $lunchStart = Carbon::createFromFormat('H:i', $lunchStart);
+                $lunchEnd = Carbon::createFromFormat('H:i', $lunchEnd);
+
+                if ($workEndTime->lte($workStartTime)) {
+                    $workEndTime->addDay();
+                }
+
+                if ($lunchStart->lt($workStartTime)) {
+                    $lunchStart->addDay();
+                }
+
+                if ($lunchEnd->lt($lunchStart)) {
+                    $lunchEnd->addDay();
+                }
+
+                if ($lunchEnd->lt($lunchStart) || $lunchEnd->gt($workEndTime)) {
+                    $fail("{$weekDayName}: Lunch break end time should be between lunch start and work end times.");
                 }
             }
         }
@@ -272,7 +318,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
                 return;
             }
 
-            if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $value)) {
+            if (!preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]|24:00$/', $value)) {
                 $fail("{$weekDayName}: Total lunch break hours must be in hour:minute format.");
                 return;
             }
@@ -286,7 +332,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             $startTime = Carbon::createFromFormat('H:i', $lunchStart);
             $endTime = Carbon::createFromFormat('H:i', $lunchEnd);
 
-            if ($endTime->lt($startTime)) {
+            if ($endTime->lte($startTime)) {
                 $endTime->addDay();
             }
 
