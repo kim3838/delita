@@ -28,6 +28,8 @@ return new class extends Migration
             $table->smallInteger('amountable_end')->nullable();
             $table->date('end_date')->nullable();
             $table->timestamps();
+
+            $table->index(['payroll_componentable_type', 'payroll_componentable_id']);
         });
     }
 
