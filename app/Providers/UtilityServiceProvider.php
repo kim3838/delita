@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Blueprint\AttendanceSplitterInterface;
+use App\Concrete\AttendanceSplitter;
 use App\Concrete\Utilities\UserSession as UserSessionUtility;
-use Illuminate\Contracts\Foundation\Application;
+use App\Models\Company;
 use Illuminate\Support\ServiceProvider;
 
 class UtilityServiceProvider extends ServiceProvider
@@ -13,8 +15,19 @@ class UtilityServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singletonIf(UserSessionUtility::class,function(Application $app){
+        $this->app->singletonIf(UserSessionUtility::class, function($app){
             return new UserSessionUtility();
+        });
+
+        $this->app->bind(AttendanceSplitterInterface::class, function ($app, $parameters) {
+
+            $company = $parameters['company'] ?? null;
+
+            if(!$company instanceof Company){
+                throw new \InvalidArgumentException("company must be an instance of App\\Models\\Company");
+            }
+
+            return new AttendanceSplitter($company);
         });
     }
 
