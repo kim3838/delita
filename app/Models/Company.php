@@ -105,4 +105,9 @@ class Company extends Model
     {
         return $this->hasMany(Shift::class);
     }
+
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
 }
