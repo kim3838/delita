@@ -10,6 +10,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\Formula;
+use App\Models\Group;
 use App\Models\IncomeTax;
 use App\Models\JsonPreset;
 use App\Models\PayFrequency;
@@ -45,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
             'pay_frequency' => PayFrequency::class,
             'employee' => Employee::class,
             'department' => Department::class,
+            'group' => Group::class,
             'designation' => Designation::class,
             'compensation' => Compensation::class,
             'deduction' => Deduction::class,
