@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\AmountablePayrollComponentStart;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -29,7 +28,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->timestamps();
 
-            $table->index(['payroll_componentable_type', 'payroll_componentable_id']);
+            $table->index(['payroll_componentable_type', 'payroll_componentable_id'], 'emp_payroll_comp_morph_idx');
         });
     }
 
