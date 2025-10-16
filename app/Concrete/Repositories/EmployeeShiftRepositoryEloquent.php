@@ -94,9 +94,6 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         $queryBuilder = app(Builder::class)->fromSub($employeeQueryBuilder, 'employee_sub')
             ->leftJoin('employee_shift', 'employee_shift.employee_id', '=', 'employee_sub.id')
             ->leftJoin('shifts', 'shifts.id', '=', 'employee_shift.shift_id')
-            ->when(!empty($filters->assigned_shift_ids) && is_array($filters->assigned_shift_ids), function ($builder) use ($filters) {
-                $builder->whereIn('shifts.id', $filters->assigned_shift_ids);
-            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 'employee_sub.id AS employee_id',
