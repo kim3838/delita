@@ -7,6 +7,7 @@ use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\EmploymentStatus;
 use App\Models\Employee;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +56,15 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             })
             ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
+            })
+            ->when(!empty($filters->assigned_employee_group_ids) && is_array($filters->assigned_employee_group_ids), function ($builder) use ($filters) {
+                $builder->whereExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('groupables')
+                        ->where('groupables.groupable_type', Relation::getMorphAlias($this->model()))
+                        ->whereColumn('groupables.groupable_id', 'employees.id')
+                        ->whereIn('groupables.group_id', $filters->assigned_employee_group_ids);
+                });
             })
             ->when(!empty($filters->assigned_shift_ids) && is_array($filters->assigned_shift_ids), function ($builder) use ($filters) {
                 $builder->whereExists(function ($query) use ($filters) {
