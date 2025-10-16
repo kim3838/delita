@@ -30,6 +30,7 @@ use App\Http\Controllers\EmploymentProfileImportTemplateController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
+use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
 use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
@@ -239,6 +240,17 @@ Route::group([
     Route::post('employee-import-validate', [EmployeeImportController::class, 'read']);
     Route::post('employee-import-re-validate', [EmployeeImportController::class, 'reValidate']);
     Route::post('employee-import-save', [EmployeeImportController::class, 'save']);
+
+    //Employee Groups
+    Route::get('employee-groups', [EmployeeGroupController::class, 'index']);
+    Route::get('employee-group-selections', [EmployeeGroupController::class, 'selection']);
+    Route::get('employee-group/{ulid}', [EmployeeGroupController::class, 'show']);
+    Route::post('employee-group', [EmployeeGroupController::class, 'store']);
+    Route::patch('employee-group/{ulid}', [EmployeeGroupController::class, 'update']);
+
+    Route::post('employee-group-assignment-sync-without-detaching', [EmployeeGroupController::class, 'syncWithoutDetaching']);
+    Route::post('employee-group-assignment-detach', [EmployeeGroupController::class, 'detach']);
+    Route::delete('employee-groups', [EmployeeGroupController::class, 'batchDestroy']);
 
     //Employee Contact
     Route::get('employee-contact/{employeeId}', [EmployeeContactController::class, 'show']);
