@@ -16,11 +16,13 @@ use App\Blueprint\Repositories\DeductionRepository;
 use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeContactRepository;
+use App\Blueprint\Repositories\EmployeeGroupRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\FormulaRepository;
+use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
@@ -46,11 +48,13 @@ use App\Concrete\Repositories\DeductionRepositoryEloquent;
 use App\Concrete\Repositories\DepartmentRepositoryEloquent;
 use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
+use App\Concrete\Repositories\EmployeeGroupRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeShiftRepositoryEloquent;
 use App\Concrete\Repositories\EmploymentProfileRepositoryEloquent;
 use App\Concrete\Repositories\FormulaRepositoryEloquent;
+use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
@@ -81,6 +85,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'associated_company' => AssociatedCompanyRepositoryEloquent::class,
         'designation' => DesignationRepositoryEloquent::class,
         'department' => DepartmentRepositoryEloquent::class,
+        'group' => GroupRepositoryEloquent::class,
+        'employee_group' => EmployeeGroupRepositoryEloquent::class,
         'employee' => EmployeeRepositoryEloquent::class,
         'employment_profile' => EmploymentProfileRepositoryEloquent::class,
         'employee_contact' => EmployeeContactRepositoryEloquent::class,
@@ -108,6 +114,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         AssociatedCompanyRepository::class => AssociatedCompanyRepositoryEloquent::class,
         DesignationRepository::class => DesignationRepositoryEloquent::class,
         DepartmentRepository::class => DepartmentRepositoryEloquent::class,
+        GroupRepository::class => GroupRepositoryEloquent::class,
+        EmployeeGroupRepository::class => EmployeeGroupRepositoryEloquent::class,
         EmployeeRepository::class => EmployeeRepositoryEloquent::class,
         EmploymentProfileRepository::class => EmploymentProfileRepositoryEloquent::class,
         EmployeeContactRepository::class => EmployeeContactRepositoryEloquent::class,
@@ -146,6 +154,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'associated_company',
             'designation',
             'department',
+            'group',
+            'employee_group',
             'employee',
             'employment_profile',
             'employee_contact',
@@ -176,6 +186,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             AssociatedCompanyRepository::class,
             DesignationRepository::class,
             DepartmentRepository::class,
+            GroupRepository::class,
+            EmployeeGroupRepository::class,
             EmployeeRepository::class,
             EmploymentProfileRepository::class,
             EmployeeContactRepository::class,
