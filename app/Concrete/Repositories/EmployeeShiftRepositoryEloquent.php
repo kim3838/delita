@@ -24,7 +24,11 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
     public function baseQueryBuilder($filters, $orders = null)
     {
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($filters, []);
+        $employeeRepositoryFilter = clone $filters;
+        unset($employeeRepositoryFilter->assigned_shift_ids);
+        unset($employeeRepositoryFilter->not_assigned_shift_ids);
+
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
 
         $queryBuilder = $this->model::getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
