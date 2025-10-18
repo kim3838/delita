@@ -8,8 +8,10 @@ use App\Enums\EmploymentStatus;
 use App\Enums\EmploymentType;
 use App\Enums\EndOfServiceType;
 use App\Exports\BlankEmploymentProfileTemplateExport;
+use App\Http\Requests\EmploymentProfile\BaseStoreAndUpdateEmploymentProfileRequest;
 use App\Models\Employee;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class EmploymentProfileImportConcrete extends BaseImportConcrete implements EmploymentProfileImport
 {
@@ -79,14 +81,17 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
                     $validationErrors[] = 'End date is required.';
                 } else {
 
-                    try {
+                    $endDateValidation = Validator::make($row, [
+                        'end_date' => new BaseStoreAndUpdateEmploymentProfileRequest()->rules()['end_date'],
+                    ]);
 
-                        $date = Carbon::parse($row['end_date']);
+                    $endDateValidation->setCustomMessages([
+                        'end_date.after_or_equal' => 'End date must be after or equal to start date.',
+                        'end_date.date_format' => 'End date invalid.',
+                    ]);
 
-                        $row['end_date'] = $date->toDateString();
-
-                    } catch (\Exception $e) {
-                        $validationErrors[] = 'End date invalid.';
+                    if($endDateValidation->fails()){
+                        $validationErrors[] = $endDateValidation->errors()->first();
                     }
                 }
             } else {
