@@ -18,7 +18,8 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'type' => ['required', 'integer', Rule::in([ShiftType::REGULAR->value, ShiftType::GRAVEYARD->value])],
             'work_start_grace_time' => ['required', 'integer', 'between:0,30'],
             'require_lunch_time_in_and_out' => ['required', 'boolean'],
-            'lunch_start_grace_time' => ['required', 'integer', 'between:0,30'],
+            'lunch_start_grace_time' => ['sometimes', 'required', 'integer', 'between:0,30'],
+            'max_overtime' => ['required', 'numeric', 'between:0,10'],
 
             'shift_schedules' => ['required', 'array', 'size:7'],
             'shift_schedules.*.week_day' => ['required', 'integer', 'between:0,6'],
@@ -360,6 +361,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
     {
         return [
             'code.required' => 'Code is required.',
+            'code.regex' => 'Code must not contain spaces.',
             'code.unique' => 'Code has already been taken.',
             'name.required' => 'Name is required.',
             'type.required' => 'Type is required.',

@@ -21,6 +21,7 @@ class UpdateShiftRequest extends BaseShiftStoreAndUpdateRequest
             'code' => [
                 'required',
                 'string',
+                'regex:/^\S+$/',//Must not contain any spaces, tabs, or line breaks
                 'max:255',
                 Rule::unique('shifts')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

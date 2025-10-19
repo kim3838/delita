@@ -18,6 +18,7 @@ class Shift extends Model
         'work_start_grace_time',
         'require_lunch_time_in_and_out',
         'lunch_start_grace_time',
+        'max_overtime',
     ];
 
     protected $hidden = [
@@ -34,6 +35,7 @@ class Shift extends Model
         'work_start_grace_time' => 'int',
         'require_lunch_time_in_and_out' => 'boolean',
         'lunch_start_grace_time' => 'int',
+        'max_overtime' => 'decimal:2',
     ];
 
     public function company(): BelongsTo
