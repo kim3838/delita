@@ -24,6 +24,7 @@ class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
             'code' => [
                 'required',
                 'string',
+                'regex:/^\S+$/',
                 'max:255',
                 Rule::unique('compensations')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))
@@ -37,6 +38,7 @@ class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
     {
         return array_merge(parent::messages(), [
             'code.required' => 'Code is required',
+            'code.regex' => 'Code must not contain spaces.',
             'code.unique' => 'Code has already been taken.',
         ]);
     }

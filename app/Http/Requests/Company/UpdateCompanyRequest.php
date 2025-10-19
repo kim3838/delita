@@ -24,6 +24,7 @@ class UpdateCompanyRequest extends FormRequest
             'code' => [
                 'required',
                 'string',
+                'regex:/^\S+$/',
                 'max:255',
                 Rule::unique('companies')->ignore($this->route('companyId'))
             ],
@@ -37,6 +38,7 @@ class UpdateCompanyRequest extends FormRequest
         return [
             'account_id.required' => 'Account number is required',
             'code.required' => 'Company code is required',
+            'code.regex' => 'Code must not contain spaces.',
             'country_id.required' => 'Country is required',
             'currency.required' => 'Currency is required',
             'code.unique' => 'Code has already been taken',

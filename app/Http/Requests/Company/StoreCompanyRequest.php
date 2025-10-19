@@ -18,7 +18,7 @@ class StoreCompanyRequest extends FormRequest
             'account_id' => 'required|numeric',
             'country_id' => 'required|numeric',
             'currency' => 'required|string',
-            'code' => 'required|string|max:255|unique:companies,code',
+            'code' => 'required|string|regex:/^\S+$/|max:255|unique:companies,code',
             'name' => 'required|string|max:255',
             'timezone' => 'required|string',
         ];
@@ -29,6 +29,7 @@ class StoreCompanyRequest extends FormRequest
         return [
             'account_id.required' => 'Account number is required',
             'code.required' => 'Company code is required',
+            'code.regex' => 'Code must not contain spaces.',
             'country_id.required' => 'Country is required',
             'currency.required' => 'Currency is required',
             'code.unique' => 'Code has already been taken',

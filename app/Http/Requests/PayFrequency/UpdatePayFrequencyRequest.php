@@ -20,6 +20,7 @@ class UpdatePayFrequencyRequest extends BasePayFrequencyRequest
             'code' => [
                 'required',
                 'string',
+                'regex:/^\S+$/',
                 'max:255',
                 Rule::unique('pay_frequencies')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))
@@ -33,6 +34,7 @@ class UpdatePayFrequencyRequest extends BasePayFrequencyRequest
     {
         return array_merge(parent::messages(), [
             'code.required' => 'Code is required',
+            'code.regex' => 'Code must not contain spaces.',
             'code.unique' => 'Code has already been taken.',
         ]);
     }
