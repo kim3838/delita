@@ -10,13 +10,17 @@ class AttendanceDetailsTests
 {
     public static $caseGroup = [
         'regular_no_lunch_out_in',
+        'regular_no_lunch_out_in_with_ot',
         'regular_with_lunch_out_in',
+        'regular_with_lunch_out_in_with_ot',
         'regular_flexible_no_lunch_out_in',
         'regular_flexible_with_lunch_out_in',
         'night_midnight_start_no_lunch_out_in',
         'night_midnight_start_with_lunch_out_in',
         'night_no_lunch_out_in',
+        'night_no_lunch_out_in_with_ot',
         'night_with_lunch_out_in',
+        'night_with_lunch_out_in_with_ot',
         'night_lunch_double_split_no_lunch_out_in',
         'night_lunch_double_split_with_lunch_out_in',
         'night_lunch_triple_split_no_lunch_out_in',
@@ -24,26 +28,34 @@ class AttendanceDetailsTests
     ];
 
     private $validateAllRegularNoLunchOutIn = false;
+    private $validateAllRegularNoLunchOutInWithOt = false;
     private $validateAllRegularWithLunchOutIn = false;
+    private $validateAllRegularWithLunchOutInWithOt = false;
     private $validateAllRegularFlexibleNoLunchOutIn = false;
     private $validateAllRegularFlexibleWithLunchOutIn = false;
     private $validateAllNightMidnightStartNoLunchOutIn = false;
     private $validateAllNightMidnightStartWithLunchOutIn = false;
     private $validateAllNightNoLunchOutIn = false;
+    private $validateAllNightNoLunchOutInWithOt = false;
     private $validateAllNightWithLunchOutIn = false;
+    private $validateAllNightWithLunchOutInWithOt = false;
     private $validateAllNightLunchDoubleSplitNoLunchOutIn = false;
     private $validateAllNightLunchDoubleSplitWithLunchOutIn = false;
     private $validateAllNightLunchTripleSplitNoLunchOutIn = false;
     private $validateAllNightLunchTripleSplitWithLunchOutIn = false;
 
     private ?Shift $regularNoLunchOutIn = null;
+    private ?Shift $regularNoLunchOutInWithOt = null;
     private ?Shift $regularWithLunchOutIn = null;
+    private ?Shift $regularWithLunchOutInWithOt = null;
     private ?Shift $regularFlexibleNoLunchOutIn = null;
     private ?Shift $regularFlexibleWithLunchOutIn = null;
     private ?Shift $nightMidnightStartNoLunchOutIn = null;
     private ?Shift $nightMidnightStartWithLunchOutIn = null;
     private ?Shift $nightNoLunchOutIn = null;
+    private ?Shift $nightNoLunchOutInWithOt = null;
     private ?Shift $nightWithLunchOutIn = null;
+    private ?Shift $nightWithLunchOutInWithOt = null;
     private ?Shift $nightLunchDoubleSplitNoLunchOutIn = null;
     private ?Shift $nightLunchDoubleSplitWithLunchOutIn = null;
     private ?Shift $nightLunchTripleSplitNoLunchOutIn = null;
@@ -58,8 +70,14 @@ class AttendanceDetailsTests
 
         $this->regularNoLunchOutIn = (clone $companyShift)->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first();
         $this->validateAllRegularNoLunchOutIn = $all || in_array('regular_no_lunch_out_in', $testCaseGroup);
+        $this->regularNoLunchOutInWithOt = (clone $companyShift)->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first();
+        $this->validateAllRegularNoLunchOutInWithOt = $all || in_array('regular_no_lunch_out_in_with_ot', $testCaseGroup);
+
         $this->regularWithLunchOutIn = (clone $companyShift)->where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first();
         $this->validateAllRegularWithLunchOutIn = $all || in_array('regular_with_lunch_out_in', $testCaseGroup);
+        $this->regularWithLunchOutInWithOt = (clone $companyShift)->where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT')->first();
+        $this->validateAllRegularWithLunchOutInWithOt = $all || in_array('regular_with_lunch_out_in_with_ot', $testCaseGroup);
+
         $this->regularFlexibleNoLunchOutIn = (clone $companyShift)->where('code', '003-DAYSHIFT-FLEX-2DOFF-NL0/I')->first();
         $this->validateAllRegularFlexibleNoLunchOutIn = $all || in_array('regular_flexible_no_lunch_out_in', $testCaseGroup);
         $this->regularFlexibleWithLunchOutIn = (clone $companyShift)->where('code', '004-DAYSHIFT-FLEX-2DOFF-WL0/I')->first();
@@ -72,8 +90,12 @@ class AttendanceDetailsTests
 
         $this->nightNoLunchOutIn = (clone $companyShift)->where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first();
         $this->validateAllNightNoLunchOutIn = $all || in_array('night_no_lunch_out_in', $testCaseGroup);
+        $this->nightNoLunchOutInWithOt = (clone $companyShift)->where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT')->first();
+        $this->validateAllNightNoLunchOutInWithOt = $all || in_array('night_no_lunch_out_in_with_ot', $testCaseGroup);
         $this->nightWithLunchOutIn = (clone $companyShift)->where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I')->first();
         $this->validateAllNightWithLunchOutIn = $all || in_array('night_with_lunch_out_in', $testCaseGroup);
+        $this->nightWithLunchOutInWithOt = (clone $companyShift)->where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT')->first();
+        $this->validateAllNightWithLunchOutInWithOt = $all || in_array('night_with_lunch_out_in_with_ot', $testCaseGroup);
 
         $this->nightLunchDoubleSplitNoLunchOutIn = (clone $companyShift)->where('code', '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT')->first();
         $this->validateAllNightLunchDoubleSplitNoLunchOutIn = $all || in_array('night_lunch_double_split_no_lunch_out_in', $testCaseGroup);
@@ -1572,6 +1594,114 @@ class AttendanceDetailsTests
                         'actual_irregularity_duration' => NULL,
                         'late' => 0,
                         'undertime' => 240,
+                        'flexible_undertime' => 0,
+                    ]
+                ]
+            ],
+
+            //Regular no lunch out/in with ot
+            [
+                'test_case' => 'TESTCASE-RNLO-WMOT-06:30-0001',
+                'scenario'  => 'REGULAR NO LUNCH OUT IN WITH OT: ON TIME FULL OT + 00:30 EXCESS',
+                'validate'  => true || $this->validateAllRegularNoLunchOutInWithOt,
+                'shift_id'  => $this->regularNoLunchOutInWithOt->id,
+                'date'      => '2025-09-29',
+                'first_in'  => '2025-09-29 09:00',
+                'lunch_out' => '2025-09-29 12:00',
+                'lunch_in'  => '2025-09-29 13:00',
+                'last_out'  => '2025-09-29 24:00',
+                'expected'  => [
+                    [
+                        'date' => '2025-09-29',
+                        'split_type' => 'Work',
+                        'split_start' => '09:00',
+                        'split_end' => '12:00',
+                        'split_duration' => 180,
+                        '#split_duration_readable' => '03:00',
+                        'work_hour_type' => 'Regular',
+                        'hourly_rate_type' => 'Regular',
+                        'hourly_rate_multiplier' => 1.0,
+                        'base_rate_multiplier' => 1.0,
+                        'order' => 1,
+                        'actual_start' => '2025-09-29 09:00',
+                        'actual_end' => '2025-09-29 12:00',
+                        'grace_before_start_applied' => NULL,
+                        'grace_after_start_applied' => NULL,
+                        'first_in' => true,
+                        'lunch_out' => false,
+                        'lunch_in' => false,
+                        'last_out' => false,
+                        'actual_present_start' => '2025-09-29 09:00',
+                        'actual_present_end' => '2025-09-29 12:00',
+                        'actual_present' => 180,
+                        '#actual_present_readable' => '03:00',
+                        'actual_irregularity_duration_start' => NULL,
+                        'actual_irregularity_duration_end' => NULL,
+                        'actual_irregularity_duration' => NULL,
+                        'late' => 0,
+                        'undertime' => 0,
+                        'flexible_undertime' => 0,
+                    ],
+                    [
+                        'date' => '2025-09-29',
+                        'split_type' => 'Lunch',
+                        'split_start' => '12:00',
+                        'split_end' => '13:00',
+                        'split_duration' => 60,
+                        '#split_duration_readable' => '01:00',
+                        'work_hour_type' => 'Regular',
+                        'hourly_rate_type' => 'Regular',
+                        'hourly_rate_multiplier' => 1.0,
+                        'base_rate_multiplier' => 1.0,
+                        'order' => 2,
+                        'actual_start' => '2025-09-29 12:00',
+                        'actual_end' => '2025-09-29 13:00',
+                        'grace_before_start_applied' => NULL,
+                        'grace_after_start_applied' => NULL,
+                        'first_in' => false,
+                        'lunch_out' => false,
+                        'lunch_in' => false,
+                        'last_out' => false,
+                        'actual_present_start' => '2025-09-29 12:00',
+                        'actual_present_end' => '2025-09-29 13:00',
+                        'actual_present' => 60,
+                        '#actual_present_readable' => '01:00',
+                        'actual_irregularity_duration_start' => NULL,
+                        'actual_irregularity_duration_end' => NULL,
+                        'actual_irregularity_duration' => NULL,
+                        'late' => 0,
+                        'undertime' => 0,
+                        'flexible_undertime' => 0,
+                    ],
+                    [
+                        'date' => '2025-09-29',
+                        'split_type' => 'Work',
+                        'split_start' => '13:00',
+                        'split_end' => '17:00',
+                        'split_duration' => 240,
+                        '#split_duration_readable' => '04:00',
+                        'work_hour_type' => 'Regular',
+                        'hourly_rate_type' => 'Regular',
+                        'hourly_rate_multiplier' => 1.0,
+                        'base_rate_multiplier' => 1.0,
+                        'order' => 3,
+                        'actual_start' => '2025-09-29 13:00',
+                        'actual_end' => '2025-09-29 17:00',
+                        'grace_before_start_applied' => NULL,
+                        'grace_after_start_applied' => NULL,
+                        'first_in' => false,
+                        'lunch_out' => false,
+                        'lunch_in' => false,
+                        'last_out' => true,
+                        'actual_present_start' => '2025-09-29 13:00',
+                        'actual_present_end' => '2025-09-29 17:00',
+                        'actual_present' => 240,
+                        '#actual_present_readable' => '04:00',
+                        'actual_irregularity_duration_start' => NULL,
+                        'actual_irregularity_duration_end' => NULL,
+                        'actual_irregularity_duration' => NULL,
+                        'late' => 0,
+                        'undertime' => 0,
                         'flexible_undertime' => 0,
                     ]
                 ]
