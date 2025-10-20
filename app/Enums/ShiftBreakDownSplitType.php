@@ -6,12 +6,14 @@ enum ShiftBreakDownSplitType: int implements BaseEnum
 {
     case WORK = 0;
     case LUNCH = 1;
+    case OVERTIME = 2;
 
     public function label(): string
     {
         return match ($this) {
             self::WORK => 'Work',
             self::LUNCH => 'Lunch',
+            self::OVERTIME => 'Overtime',
         };
     }
 
