@@ -29,6 +29,8 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     protected bool $shiftRequireLunchOutAndIn = false;
     //Set on generate: shift lunch_start_grace_time
     protected int $shiftLunchStartGraceTime = 0;
+    //Set on generate: shift max_overtime
+    protected float $shiftOvertimeLimit = 0;
     //Set on generate: shift schedules rest days
     protected array $restDays = [];
     //Set on generate: shift schedules
@@ -59,6 +61,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ]
         ];
 
+        //Set company formula settings
+        $this->resolveCompanyFormulaSettings();
+
         //Set company night hours
         $this->resolveCompanyNightHoursFromBasicSalaryFormulaSettings();
     }
@@ -71,7 +76,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
      */
     public function generate(array $attendance, $test = false, $debug = false): bool | array
     {
-        //Set attendance shift
+        /**
+         * Set attendance shift
+         **/
         $this->setShift($attendance['shift_id']);
 
         $testCase = null;
@@ -85,7 +92,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             $attendanceBreakdownExpected = $attendance['expected'] ?? null;
         }
 
-        //Attendance date
+        /**
+         * Attendance date
+         **/
         $date = Carbon::parse($attendance['date']);
 
         /**
@@ -102,7 +111,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             return [];
         }
 
-        // Parse schedule times
+        /**
+         * Parse schedule times
+         **/
         $schedule = $this->parseSchedule($schedule, $date);
 
         if(!$test && $debug){
@@ -112,6 +123,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                 'lunch_start' => $schedule['lunch_start']?->format('Y-m-d H:i'),
                 'lunch_end' => $schedule['lunch_end']?->format('Y-m-d H:i'),
                 'work_end' => $schedule['work_end']->format('Y-m-d H:i'),
+                ...(isset($schedule['overtime_end']) ? ['overtime_end' => $schedule['overtime_end']->format('Y-m-d H:i')] : [])
             ];
 
             _debug([
@@ -119,7 +131,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ]);
         }
 
-        // Parse attendance times
+        /**
+         * Parse attendance times
+         **/
         $attendance = $this->parseAttendance($attendance);
 
         if(!$test && $debug){
@@ -137,7 +151,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
         }
 
-        // Calculate work periods
+        /**
+         * Calculate work periods
+         **/
         $workPeriods = $this->calculateWorkPeriods($schedule);
 
         if(!$test && $debug){
@@ -156,19 +172,20 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ]);
         }
 
-        // Breakdown work periods by type with holiday and rest day info
+        /**
+         * Breakdown work periods by shift breakdown split type with holiday and rest day info,
+         * Separates schedule and overtime by $breakdown->schedule and $breakdown->overtime
+         **/
         $breakdown = $this->breakdownWorkPeriods($workPeriods);
 
-        //Apply order
-        foreach ($breakdown as $key => &$split) {
-            $split['order'] = $key + 1;
-        }
-        unset($split);
+        /**
+         * Apply attendance on a broken down shift schedule
+         **/
+        $attendance = $this->breakdownAttendance($breakdown->schedule, $attendance);
 
-        //Apply attendance on the shift breakdown
-        $attendance = $this->breakdownAttendance($breakdown, $attendance);
-
-        //Apply irregularities: late and under time on attendance
+        /**
+         * Apply irregularities on a broken down shift schedule: late and under time
+         **/
         $attendance = $this->breakdownIrregularities($attendance);
 
         if($test){
@@ -227,11 +244,17 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             $workEnd->addDay();
         }
 
+        //Overtime end
+        $overtimeEnd = (!$this->attendanceScheduleIsFlexible && $this->shiftOvertimeLimit > 0)
+            ? $workEnd->copy()->addHours($this->shiftOvertimeLimit)
+            : null;
+
         return [
             'work_start' => $workStart,
             'lunch_start' => $lunchStart,
             'lunch_end' => $lunchEnd,
             'work_end' => $workEnd,
+            ...(!empty($overtimeEnd) ? ['overtime_end' => $overtimeEnd] : [])
         ];
     }
 
@@ -264,6 +287,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         // First work period: work_start to lunch_start (or work_end if no lunch)
         $firstPeriodStart = $schedule['work_start'];
         $firstPeriodEnd = $schedule['lunch_start'] ?? $schedule['work_end'];
+        $overtimeEnd = $schedule['overtime_end'] ?? null;
 
         if ($firstPeriodStart && $firstPeriodEnd) {
             $periods[] = [
@@ -291,24 +315,47 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ];
         }
 
+        //Overtime
+        if($schedule['work_end'] && $overtimeEnd){
+            $periods[] = [
+                'split_type' => ShiftBreakDownSplitType::OVERTIME,
+                'split_start' => $schedule['work_end'],
+                'split_end' => $overtimeEnd
+            ];
+        }
+
         return $periods;
     }
 
-    protected function breakdownWorkPeriods(array $periods): array
+    protected function breakdownWorkPeriods(array $periods): object
     {
-        $breakdown = [];
+        $breakdownSequence = 1;
+        $schedule = [];
+        $overtime = [];
 
         foreach ($periods as $period) {
 
             // Split work periods into hourly segments and categorize
-            $workBreakdown = $this->categorizeWorkPeriod($period['split_start'], $period['split_end'], $period['split_type']);
-            $breakdown = array_merge($breakdown, $workBreakdown);
+            $categorizedSplit = $this->categorizeWorkPeriod($period['split_start'], $period['split_end'], $period['split_type'], $breakdownSequence);
+
+            if(in_array($period['split_type'], [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH]) && !empty($categorizedSplit)){
+
+                $schedule = array_merge($schedule, $categorizedSplit);
+            }
+
+            if($period['split_type'] == ShiftBreakDownSplitType::OVERTIME && !empty($categorizedSplit)){
+
+                $overtime = array_merge($overtime, $categorizedSplit);
+            }
         }
 
-        return $breakdown;
+        return (object)[
+            'schedule' => $schedule,
+            'overtime' => $overtime,
+        ];
     }
 
-    protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType): array
+    protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence): array
     {
         $breakdown = [];
         $current = $startTime->copy();
@@ -324,9 +371,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             $workHourType = $this->getWorkHourType($current);
 
             // Determine rate type
-            $hourlyRateType = $this->getDayHourlyRate($current, $workHourType);
+            $hourlyRateType = $this->getHourlyRate($current, $workHourType, $splitType);
 
-            $hourlyRateMultiplier = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType);
+            $hourlyRateMultiplier = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
 
             $breakdown[] = [
                 'date' => $current->format('Y-m-d'),
@@ -339,6 +386,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                 'hourly_rate_type' => $hourlyRateType,
                 'hourly_rate_multiplier' => $hourlyRateMultiplier,
                 'base_rate_multiplier' => 1.0,
+                'order' => $breakdownSequence++,
             ];
 
             $current = $nextBoundary->copy();
@@ -414,7 +462,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         return WorkHourType::REGULAR;
     }
 
-    protected function getDayHourlyRate(Carbon $date, ?WorkHourType $workHourType): HourlyRateType
+    protected function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType): HourlyRateType
     {
         $dateString = $date->format('Y-m-d');
         $holidays = collect($this->holidays);
@@ -424,7 +472,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
         $restDay = in_array($date->dayOfWeek, $this->restDays);
 
-        $rateMapping = [
+        $workRates = [
             WorkHourType::NIGHT->value => [
                 'rest' => [
                     HolidayType::SPECIAL->value => HourlyRateType::NIGHT_REST_SPECIAL_HOLIDAY,
@@ -455,22 +503,86 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ],
         ];
 
+        $overtimeRates = [
+            WorkHourType::NIGHT->value => [
+                'rest' => [
+                    HolidayType::SPECIAL->value => HourlyRateType::OVERTIME_NIGHT_REST_SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL->value => HourlyRateType::OVERTIME_NIGHT_REST_LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE->value => HourlyRateType::OVERTIME_NIGHT_REST_DOUBLE_HOLIDAY,
+                    'default' => HourlyRateType::OVERTIME_NIGHT_REST,
+                ],
+                'work' => [
+                    HolidayType::SPECIAL->value => HourlyRateType::OVERTIME_NIGHT_SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL->value => HourlyRateType::OVERTIME_NIGHT_LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE->value => HourlyRateType::OVERTIME_NIGHT_DOUBLE_HOLIDAY,
+                    'default' => HourlyRateType::OVERTIME_NIGHT_REGULAR,
+                ],
+            ],
+            WorkHourType::REGULAR->value => [
+                'rest' => [
+                    HolidayType::SPECIAL->value => HourlyRateType::OVERTIME_REST_SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL->value => HourlyRateType::OVERTIME_REST_LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE->value => HourlyRateType::OVERTIME_REST_DOUBLE_HOLIDAY,
+                    'default' => HourlyRateType::OVERTIME_REST,
+                ],
+                'work' => [
+                    HolidayType::SPECIAL->value => HourlyRateType::OVERTIME_SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL->value => HourlyRateType::OVERTIME_LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE->value => HourlyRateType::OVERTIME_DOUBLE_HOLIDAY,
+                    'default' => HourlyRateType::OVERTIME_REGULAR,
+                ],
+            ],
+        ];
+
+        $rateMapping = [
+            ShiftBreakDownSplitType::WORK->value => $workRates,
+            ShiftBreakDownSplitType::LUNCH->value => $workRates,
+            ShiftBreakDownSplitType::OVERTIME->value => $overtimeRates,
+        ];
+
         $dayType = $restDay ? 'rest' : 'work';
         $workHourKey = $workHourType->value;
         $holidayKey = $holidayType?->value ?? 'default';
 
-        return $rateMapping[$workHourKey][$dayType][$holidayKey]
-            ?? $rateMapping[$workHourKey][$dayType]['default'];
+        return $rateMapping[$splitType->value][$workHourKey][$dayType][$holidayKey]
+            ?? $rateMapping[$splitType->value][$workHourKey][$dayType]['default'];
     }
 
-    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType)
+    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType)
     {
         $multiplier = 1;
 
         if($workHourType == WorkHourType::REGULAR){
-            $multiplier = $this->getBasicSalaryRegularRates()->where('hourly_rate_type', $hourlyRateType)->first()->value;
+
+            if(
+                in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
+                && !empty($this->basicSalaryRegularRates)
+            ){
+                $multiplier = $this->basicSalaryRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+            }
+
+            if(
+                $splitType == ShiftBreakDownSplitType::OVERTIME
+                && !empty($this->overtimeRegularRates)
+            ){
+                $multiplier = $this->overtimeRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+            }
+
         } else if($workHourType == WorkHourType::NIGHT){
-            $multiplier = $this->getBasicSalaryNightDifferentialRates()->where('hourly_rate_type', $hourlyRateType)->first()->value;
+
+            if(
+                in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
+                && !empty($this->basicSalaryNightDifferentialRates)
+            ){
+                $multiplier = $this->basicSalaryNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+            }
+
+            if(
+                $splitType == ShiftBreakDownSplitType::OVERTIME
+                && !empty($this->overtimeNightDifferentialRates)
+            ){
+                $multiplier = $this->overtimeNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+            }
         }
 
         return $multiplier;
@@ -534,7 +646,6 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         $firstInGraceApplied = null;
         $firstLunchOrderSequence = null;
         $firstInLunchOrderSequence = null;
-        $lastLunchOrderSequence = null;
         $lunchOutLogged = false;
         $lunchOut = $attendance['lunch_out'];
         $lunchInLogged = false;
