@@ -4,14 +4,14 @@ namespace App\Enums;
 
 enum EndOfServiceType: int implements BaseEnum
 {
-    case END_OF_CONTRACT = 0;
-    case RESIGNED = 1;
-    case TERMINATED = 2;
-    case RETIRED = 3;
-    case DEATH = 4;
-    case MEDICAL_SEPARATION = 5;
-    case DISABILITY = 6;
-    case NOT_SPECIFIED = 7;
+    case NOT_SPECIFIED = 0;
+    case END_OF_CONTRACT = 100;
+    case RESIGNED = 200;
+    case TERMINATED = 300;
+    case RETIRED = 400;
+    case DEATH = 500;
+    case MEDICAL_SEPARATION = 600;
+    case DISABILITY = 700;
 
     public function label(): string
     {

@@ -5,11 +5,11 @@ namespace App\Enums;
 enum MaritalStatus: int implements BaseEnum
 {
     case NOT_SPECIFIED = 0;
-    case SINGLE = 1;
-    case MARRIED = 2;
-    case WIDOWED = 3;
-    case DIVORCED = 4;
-    case SEPARATED = 5;
+    case SINGLE = 100;
+    case MARRIED = 200;
+    case WIDOWED = 201;
+    case DIVORCED = 202;
+    case SEPARATED = 203;
 
     public function label(): string
     {

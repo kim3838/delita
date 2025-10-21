@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum PayFrequency: int implements BaseEnum
 {
-    case DAILY = 0;
-    case WEEKLY = 1;
-    case SEMI_MONTHLY = 2;
-    case MONTHLY = 3;
+    case DAILY = 100;
+    case WEEKLY = 200;
+    case SEMI_MONTHLY = 300;
+    case MONTHLY = 400;
 
     public function label(): string
     {

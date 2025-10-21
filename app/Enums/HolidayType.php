@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum HolidayType: int implements BaseEnum
 {
-    case SPECIAL = 0;
-    case LEGAL = 1;
-    case DOUBLE = 2;
+    case SPECIAL = 100;
+    case LEGAL = 200;
+    case DOUBLE = 300;
 
     public function label(): string
     {

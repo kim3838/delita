@@ -5,8 +5,8 @@ namespace App\Enums;
 enum AmountablePayrollComponentStart: int implements BaseEnum
 {
     case NOT_SPECIFIED = 0;
-    case EMPLOYMENT_START_DATE = 1;
-    case CUSTOM_DATE = 2;
+    case EMPLOYMENT_START_DATE = 100;
+    case CUSTOM_DATE = 200;
 
     public function label(): string
     {

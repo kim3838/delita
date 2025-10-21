@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum AccountSubscriptionModules: int implements BaseEnum
 {
-    case PAYROLL = 0;
+    case PAYROLL = 100;
 
     public function label(): string
     {

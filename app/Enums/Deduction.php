@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum Deduction: int implements BaseEnum
 {
-    case DEDUCTION = 0;
-    case CONTRIBUTION = 1;
+    case DEDUCTION = 100;
+    case CONTRIBUTION = 200;
 
     public function label(): string
     {

@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum WorkHourType: int implements BaseEnum
 {
-    case REGULAR = 0;
-    case NIGHT = 1;
+    case REGULAR = 100;
+    case NIGHT = 200;
 
     public function label(): string
     {

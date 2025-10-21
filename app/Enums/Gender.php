@@ -5,8 +5,8 @@ namespace App\Enums;
 enum Gender: int implements BaseEnum
 {
     case NOT_SPECIFIED = 0;
-    case MALE = 1;
-    case FEMALE = 2;
+    case MALE = 100;
+    case FEMALE = 200;
 
     public function label(): string
     {

@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum EmploymentStatus: int implements BaseEnum
 {
-    case ACTIVE = 0;
-    case INACTIVE = 1;
+    case ACTIVE = 100;
+    case INACTIVE = 200;
 
     public function label(): string
     {

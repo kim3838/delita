@@ -5,7 +5,7 @@ namespace App\Enums;
 enum CompanyUserAssignmentType: int implements BaseEnum
 {
     case DEFAULT = 0;
-    case ADMIN = 1;
+    case ADMIN = 100;
 
     public function label(): string
     {

@@ -4,12 +4,12 @@ namespace App\Enums;
 
 enum Formulable: int implements BaseEnum
 {
-    case EARNINGS = 0;
-    case DEDUCTIONS = 1;
-    case TAXABLE_INCOME = 2;
-    case NONTAXABLE_INCOME = 3;
-    case INCOME_TAX = 4;
-    case NET_INCOME = 5;
+    case EARNINGS = 100;
+    case DEDUCTIONS = 200;
+    case TAXABLE_INCOME = 300;
+    case NONTAXABLE_INCOME = 400;
+    case INCOME_TAX = 500;
+    case NET_INCOME = 600;
 
     public function label(): string
     {

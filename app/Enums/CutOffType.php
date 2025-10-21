@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum CutOffType: int implements BaseEnum
 {
-    case WEEKDAY = 0;
+    case WEEKDAY = 100;
 
     public function label(): string
     {

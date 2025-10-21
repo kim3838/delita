@@ -5,7 +5,7 @@ namespace App\Enums;
 enum CreationType: int implements BaseEnum
 {
     case DEFAULT = 0;
-    case IMPORT = 1;
+    case IMPORT = 100;
 
     public function label(): string
     {

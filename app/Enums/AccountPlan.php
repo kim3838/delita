@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum AccountPlan: int implements BaseEnum
 {
-    case STANDARD = 0;
-    case BUSINESS = 1;
+    case STANDARD = 100;
+    case BUSINESS = 500;
 
     public function label(): string
     {

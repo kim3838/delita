@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum GroupType: int implements BaseEnum
 {
-    case EMPLOYEE = 0;
+    case EMPLOYEE = 100;
 
     public function label(): string
     {

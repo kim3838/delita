@@ -4,16 +4,18 @@ namespace App\Enums;
 
 enum AttendanceStatus: int implements BaseEnum
 {
-    case PRESENT = 0;
-    case ABSENT = 1;
-    case INCOMPLETE = 2;
+    case NOT_SPECIFIED = 0;
+    case FULL_PRESENT = 100;
+    case PRESENT_WITH_IRREGULARITIES = 103;
+    case ABSENT = 200;
 
     public function label(): string
     {
         return match ($this) {
-            self::PRESENT => 'Present',
+            self::NOT_SPECIFIED => 'Not specified',
+            self::FULL_PRESENT => 'Full present',
+            self::PRESENT_WITH_IRREGULARITIES => 'Present with irregularities',
             self::ABSENT => 'Absent',
-            self::INCOMPLETE => 'Incomplete',
         };
     }
 

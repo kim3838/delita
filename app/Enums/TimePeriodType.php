@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum TimePeriodType: int implements BaseEnum
 {
-    case PAY_FREQUENCY = 0;
-    case THIRTEENTH_MONTH = 1;
-    case NIGHT_DIFFERENTIAL_HOURS = 2;
+    case PAY_FREQUENCY = 100;
+    case THIRTEENTH_MONTH = 200;
+    case NIGHT_DIFFERENTIAL_HOURS = 300;
 
     public function label(): string
     {

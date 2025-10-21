@@ -4,13 +4,13 @@ namespace App\Enums;
 
 enum EmploymentType: int implements BaseEnum
 {
-    case OJT = 0;
-    case INTERN = 1;
-    case PROBATIONARY = 2;
-    case FULL_TIME = 3;
-    case PART_TIME = 4;
-    case CONTRACT = 5;
-    case NOT_SPECIFIED = 6;
+    case NOT_SPECIFIED = 0;
+    case OJT = 100;
+    case INTERN = 101;
+    case PROBATIONARY = 200;
+    case FULL_TIME = 201;
+    case PART_TIME = 300;
+    case CONTRACT = 400;
 
     public function label(): string
     {

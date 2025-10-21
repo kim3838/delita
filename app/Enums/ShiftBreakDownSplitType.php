@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum ShiftBreakDownSplitType: int implements BaseEnum
 {
-    case WORK = 0;
-    case LUNCH = 1;
-    case OVERTIME = 2;
+    case WORK = 100;
+    case LUNCH = 200;
+    case OVERTIME = 300;
 
     public function label(): string
     {

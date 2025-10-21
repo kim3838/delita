@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum PayType: int implements BaseEnum
 {
-    case BY_ATTENDANCE = 0;
-    case FIXED = 1;
+    case BY_ATTENDANCE = 100;
+    case FIXED = 200;
 
     public function label(): string
     {

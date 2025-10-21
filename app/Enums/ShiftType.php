@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum ShiftType: int implements BaseEnum
 {
-    case REGULAR = 0;
-    case GRAVEYARD = 1;
+    case REGULAR = 100;
+    case GRAVEYARD = 200;
 
     public function label(): string
     {

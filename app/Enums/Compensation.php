@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum Compensation: int implements BaseEnum
 {
-    case BASIC_SALARY = 0;
-    case OVERTIME = 1;
-    case REGULAR_ALLOWANCE = 2;
-    case BENEFIT = 3;
+    case BASIC_SALARY = 100;
+    case REGULAR_ALLOWANCE = 101;
+    case OVERTIME = 200;
+    case BENEFIT = 300;
 
     public function label(): string
     {

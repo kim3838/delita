@@ -5,8 +5,8 @@ namespace App\Enums;
 enum UserType: int implements BaseEnum
 {
     case DEFAULT = 0;
-    case ADMIN = 1;
-    case SUPER_ADMIN = 2;
+    case ADMIN = 100;
+    case SUPER_ADMIN = 200;
 
     public function label(): string
     {

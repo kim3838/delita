@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum IncomeTax: int implements BaseEnum
 {
-    case COMPENSATION_TAX = 0;
+    case COMPENSATION_TAX = 100;
 
     public function label(): string
     {
