@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-            $table->ulid('ulid')->unique()->index();
+            $table->ulid()->unique()->index();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('code');
             $table->string('name');

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->ulid('ulid')->unique()->index();
+            $table->ulid()->unique()->index();
             $table->string('number')->unique();
             $table->smallInteger('plan')->default(AccountPlan::STANDARD);
             $table->dateTime('date_registered')->nullable();

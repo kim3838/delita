@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->ulid('ulid')->unique()->index();
+            $table->ulid()->unique()->index();
             $table->string('name');
 
             if(App::environment('development')){

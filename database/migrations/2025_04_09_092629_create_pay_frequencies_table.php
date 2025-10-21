@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pay_frequencies', function (Blueprint $table) {
             $table->id();
-            $table->ulid('ulid')->unique()->index();
+            $table->ulid()->unique()->index();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('code');
             $table->smallInteger('order');
