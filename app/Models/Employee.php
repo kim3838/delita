@@ -173,4 +173,9 @@ class Employee extends Model
     {
         return $this->morphToMany(Group::class, 'groupable');
     }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
