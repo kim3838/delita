@@ -3,17 +3,18 @@
 namespace App\Concrete;
 
 use App\Blueprint\AttendanceSplitterInterface;
+use App\Enums\AttendanceStatus;
 use App\Enums\HolidayType;
 use App\Enums\HourlyRateType;
 use App\Enums\ShiftBreakDownSplitType;
 use App\Enums\WorkHourType;
 use App\Exceptions\NotFoundException;
 use App\Helpers\TimeHelper;
+use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
 
 class AttendanceSplitter implements AttendanceSplitterInterface
 {
@@ -51,7 +52,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     use WorkPeriod;
 
     public function __construct(
-        protected readonly ?Company $company,
+        protected readonly ?Company $company
     ){
         //Set company holidays
         $this->holidays = [
@@ -69,33 +70,45 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     }
 
     /**
-     * Split attendance by night hours, midnight and lunch
-     * Calculate late and undertime
      *
      * @throws NotFoundException
      */
-    public function generate(array $attendance, $test = false, $debug = false): bool | array
+    public function generate(Attendance $attendance, $test = false, $debug = false): bool | array
     {
+        $attendanceArray = $attendance->toArray();
+
         /**
          * Set attendance shift
          **/
-        $this->setShift($attendance['shift_id']);
+        $this->setShift($attendanceArray['shift_id']);
 
         $testCase = null;
         $testScenario = null;
+        $attendanceStatusExpected = null;
         $attendanceBreakdownExpected = null;
+        $overtime = null;
 
         if($test){
-            $testCase = $attendance['test_case'] ?? null;
-            $testScenario = $attendance['scenario'] ?? null;
+            $testCase = $attendanceArray['test_case'] ?? null;
+            $testScenario = $attendanceArray['scenario'] ?? null;
 
-            $attendanceBreakdownExpected = $attendance['expected'] ?? null;
+            $attendanceStatusExpected = $attendanceArray['expected']['status'] ?? AttendanceStatus::NOT_SPECIFIED;
+            $attendanceBreakdownExpected = $attendanceArray['expected']['details'] ?? null;
+            $overtime = $attendanceArray['overtime'] ?? null;
+        } else {
+
+            $overtime = $attendance->overtime?->toArray();
         }
+
+        /**
+         * Clear attendance details
+         **/
+        $attendance->details()->delete();
 
         /**
          * Attendance date
          **/
-        $date = Carbon::parse($attendance['date']);
+        $date = Carbon::parse($attendanceArray['date']);
 
         /**
          * Set a schedule of the same week day as the attendance date
@@ -134,19 +147,19 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Parse attendance times
          **/
-        $attendance = $this->parseAttendance($attendance);
+        $parsedAttendance = $this->parseAttendance($attendanceArray);
 
         if(!$test && $debug){
 
-            $mappedAttendance = [
-                'first_in' => $attendance['first_in']?->format('Y-m-d H:i'),
-                'lunch_out' => $attendance['lunch_out']?->format('Y-m-d H:i'),
-                'lunch_in' => $attendance['lunch_in']?->format('Y-m-d H:i'),
-                'last_out' => $attendance['last_out']?->format('Y-m-d H:i'),
+            $mappedParsedAttendance = [
+                'first_in' => $parsedAttendance['first_in']?->format('Y-m-d H:i'),
+                'lunch_out' => $parsedAttendance['lunch_out']?->format('Y-m-d H:i'),
+                'lunch_in' => $parsedAttendance['lunch_in']?->format('Y-m-d H:i'),
+                'last_out' => $parsedAttendance['last_out']?->format('Y-m-d H:i'),
             ];
 
             _debug([
-                '$attendance' => $mappedAttendance
+                '$mappedParsedAttendance' => $mappedParsedAttendance
             ]);
 
         }
@@ -181,37 +194,74 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Apply attendance on a broken down shift schedule
          **/
-        $attendance = $this->breakdownAttendance($breakdown->schedule, $attendance);
+        $attendanceDetails = $this->breakdownAttendance($breakdown->schedule, $parsedAttendance);
 
         /**
          * Apply irregularities on a broken down shift schedule: late and under time
          **/
-        $attendance = $this->breakdownIrregularities($attendance);
+        $attendanceDetails = $this->breakdownIrregularities($attendanceDetails);
 
+        /**
+         * Apply overtime
+         **/
+        $attendanceDetails = $overtime
+            ? array_merge($attendanceDetails, $this->breakdownOvertime($breakdown->overtime, $overtime))
+            : $attendanceDetails;
+
+        /**
+         * Set attendance status:
+         * Full present: total shift duration == total actual present && 0 total late && 0 total undertime
+         * Present with irregularities: total actual present > 0 && total actual present < total shift duration
+         * Absent: total actual present <= 0
+         **/
+        $this->setAttendanceStatus($attendance, $attendanceDetails);
+
+        /**
+         * Return a test result on test run,
+         * If debug mode, log a test result as well as mapped attendance details,
+         * Save attendance changes and create details otherwise
+         **/
         if($test){
 
-            $mappedAttendanceIrregularities = array_map(function ($item) {
+            $mappedAttendance = [
+                'shift_work_duration' => $attendance['shift_work_duration'],
+                'total_actual_work_present' => $attendance['total_actual_work_present'],
+                'total_late' => $attendance['total_late'],
+                'total_undertime' => $attendance['total_undertime'],
+                'status' => $attendance['status']->label(),
+            ];
+
+            $mappedAttendanceDetails = array_map(function ($item) {
                 return [
                     ...$item,
                     'split_type' => $item['split_type']?->label(),
                     'work_hour_type' => $item['work_hour_type']?->label(),
                     'hourly_rate_type' => $item['hourly_rate_type']?->label(),
                 ];
-            }, $attendance);
+            }, $attendanceDetails);
 
-            $testResult = $mappedAttendanceIrregularities == $attendanceBreakdownExpected;
+            $detailsTestResult = $mappedAttendanceDetails == $attendanceBreakdownExpected;
+            $statusTestResult = $attendance['status'] == $attendanceStatusExpected;
 
             if($debug){
 
                 _debug([
-                    $testScenario . ' (' . ($testResult ? 'PASSED' : 'FAILED') . ')'  => $mappedAttendanceIrregularities,
+                    $testCase => [
+                        'STATUS (' . ($statusTestResult ? 'PASSED' : 'FAILED') . ')' => $mappedAttendance,
+                        'DETAILS (' . ($detailsTestResult ? 'PASSED' : 'FAILED') . ')' => $mappedAttendanceDetails
+                    ]
                 ]);
             }
 
-            return $testResult;
+            return $detailsTestResult && $statusTestResult;
+
+        } else {
+
+            $attendance->save();
+            $attendance->details()->createMany($attendanceDetails);
         }
 
-        return $attendance;
+        return $attendanceDetails;
     }
 
     protected function parseSchedule(array $schedule, Carbon $date): array
@@ -637,9 +687,28 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         return $this->shiftLunchStartGraceTime;
     }
 
+    protected function applyPreBreakdownValues($breakdown): array
+    {
+        return array_map(function ($split) {
+            return [
+                ...$split,
+                'actual_start' => null,
+                'actual_end' => null,
+                'grace_before_start_applied' => null,
+                'grace_after_start_applied' => null,
+                'first_in' => false,
+                'lunch_out' => false,
+                'lunch_in' => false,
+                'last_out' => false,
+            ];
+        }, $breakdown);
+    }
+
     protected function breakdownAttendance(array $breakdown, array $attendance): object
     {
         $debug = false;
+
+        $breakdown = $this->applyPreBreakdownValues($breakdown);
 
         $firstInLogged = false;
         $firstIn = $attendance['first_in'];
@@ -654,20 +723,6 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         $lastOut = $attendance['last_out'];
         $lunchInIsTheNewFirstIn = false;
         $allTimeOutOfShift = false;
-
-        $breakdown = array_map(function ($split) {
-            return [
-                ...$split,
-                'actual_start' => null,
-                'actual_end' => null,
-                'grace_before_start_applied' => null,
-                'grace_after_start_applied' => null,
-                'first_in' => false,
-                'lunch_out' => false,
-                'lunch_in' => false,
-                'last_out' => false,
-            ];
-        }, $breakdown);
 
         /**
          * Get first lunch
@@ -1422,5 +1477,241 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         }
 
         return $attendanceBreakdown;
+    }
+
+    protected function breakdownOvertime(array $breakdown, array $overtime)
+    {
+        $breakdown = $this->applyPreBreakdownValues($breakdown);
+
+        $breakdown = array_map(function ($split) {
+            return [
+                ...$split,
+                'overtime_start' => false,
+                'overtime_end' => false,
+                'actual_present_start' => null,
+                'actual_present_end' => null,
+                'actual_present' => null,
+                '#actual_present_readable' => null,
+            ];
+        }, $breakdown);
+
+        $overtime = [
+            'start' => Carbon::parse($overtime['start']),
+            'end' => Carbon::parse($overtime['end']),
+        ];
+
+        $startLogged = false;
+        $start = $overtime['start'];
+        $endLogged = false;
+        $end = $overtime['end'];
+        $allTimeOutOfOvertimeSchedule = false;
+
+        $breakdown = collect($breakdown);
+        $lastOvertimeSplit = $breakdown->last();
+        $lastOvertimeSplitEnd = Carbon::parse($lastOvertimeSplit['date'] . ' ' . $lastOvertimeSplit['split_end']);
+
+        /**
+         * If overtime start is over last split end,
+         * flag as all time out of overtime schedule
+         **/
+        if($start->gte($lastOvertimeSplitEnd)){
+            $allTimeOutOfOvertimeSchedule = true;
+        }
+
+        if(!$allTimeOutOfOvertimeSchedule){
+
+            $breakdown = $breakdown->sortBy('order');
+            $breakdown = $breakdown->values()->toArray();
+            foreach ($breakdown as &$split) {
+                if($startLogged) continue;
+
+                $splitEnd = Carbon::parse($split['date'] . ' ' . $split['split_end']);
+
+                if(
+                    $start->lt($splitEnd)
+                ){
+                    $split['actual_start'] = $start->format('Y-m-d H:i');
+                    $split['overtime_start'] = true;
+                    $startLogged = true;
+                } else {
+
+                    $split['actual_start'] = $split['date'] . ' ' . '00:00';
+                    $split['actual_end'] = $split['date'] . ' ' . '00:00';
+                }
+            }
+            unset($split);
+
+            $breakdown = collect($breakdown);
+            $breakdown = $breakdown->sortByDesc('order');
+            $breakdown = $breakdown->values()->toArray();
+            foreach ($breakdown as &$split) {
+                if($endLogged) continue;
+
+                $splitStart = Carbon::parse($split['date'] . ' ' . $split['split_start']);
+
+                if(
+                    $end->gte($splitStart)
+                ){
+                    $split['actual_end'] = $end->format('Y-m-d H:i');
+                    $split['overtime_end'] = true;
+                    $endLogged = true;
+                } else {
+
+                    $split['actual_start'] = $split['date'] . ' ' . '00:00';
+                    $split['actual_end'] = $split['date'] . ' ' . '00:00';
+                }
+            }
+            unset($split);
+        }
+
+        /**
+         * Justify the middle part
+         **/
+        $breakdown = collect($breakdown);
+        $breakdown = $breakdown->sortBy('order');
+        $breakdown = $breakdown->values()->toArray();
+        foreach ($breakdown as &$split){
+
+            if($allTimeOutOfOvertimeSchedule){
+
+                if (
+                    $split['actual_start'] == null &&
+                    $split['actual_end'] == null
+                ){
+                    $split['actual_start'] = $split['date'] . ' ' . '00:00';
+                    $split['actual_end'] = $split['date'] . ' ' . '00:00';
+                }
+
+            } else {
+                $splitStart = Carbon::parse($split['date'] . ' ' . $split['split_start']);
+                $splitEnd = Carbon::parse($split['date'] . ' ' . $split['split_end']);
+
+                if(
+                    $startLogged && $start->lt($splitEnd) &&
+                    $endLogged && $end->gte($splitStart)
+                ){
+                    $this->justifySplitActualStartAndEnd($split);
+                }
+            }
+
+        }
+        unset($split);
+
+        $startOrderSequence = null;
+        $lastOrderSequence = collect($breakdown)->max('order');
+
+        /**
+         * Search for overtime start order sequence
+         **/
+        foreach ($breakdown as $split) {
+            if(!is_numeric($startOrderSequence) && $split['overtime_start']){
+                $startOrderSequence = $split['order'];
+            }
+        }
+
+        /**
+         * Actual Overtime Present Hours
+         **/
+        foreach ($breakdown as &$split){
+
+            if(!empty($split['actual_start']) && !empty($split['actual_end'])){
+
+                //Parse split and actual times
+                $splitStart = Carbon::parse($split['date'] . ' ' . $split['split_start']);
+                $splitEnd = Carbon::parse($split['date'] . ' ' . $split['split_end']);
+
+                $splitActualStart = Carbon::parse($split['actual_start']);
+                $splitActualEnd = Carbon::parse($split['actual_end']);
+
+                if(
+                    $split['order'] == $startOrderSequence &&
+                    $splitActualStart->lt($splitStart)
+                ){
+
+                    //Only apply split start time when same day, else copy whole split start
+                    if($splitActualStart->isSameDay($splitStart)){
+                        $splitActualStart->setTimeFromTimeString($split['split_start']);
+                    } else {
+                        $splitActualStart = $splitStart;
+                    }
+                }
+
+                if(
+                    $split['order'] == $lastOrderSequence &&
+                    $splitActualEnd->gt($splitEnd)
+                ){
+                    //Only apply split end time when same day, else copy whole split end
+                    if($splitActualEnd->isSameDay($splitEnd)){
+                        $splitActualEnd->setTimeFromTimeString($split['split_end']);
+                    } else {
+                        $splitActualEnd = $splitEnd;
+                    }
+                }
+
+                //After split first and last boundary have been justified, set actual duration times
+                $split['actual_present_start'] = $splitActualStart->format('Y-m-d H:i');
+                $split['actual_present_end'] = $splitActualEnd->format('Y-m-d H:i');
+
+                $actualPresent = intval($splitActualStart->diffInMinutes($splitActualEnd, true));
+
+                $split['actual_present'] = $actualPresent;
+                $split['#actual_present_readable'] = TimeHelper::minutesToTime($actualPresent);
+            }
+        }
+
+        return collect($breakdown)->sortBy('order')->values()->toArray();
+    }
+
+    protected function setAttendanceStatus(Attendance &$attendance, $attendanceDetails): void
+    {
+        $attendanceDetails = collect($attendanceDetails);
+
+        $totalShiftWorkDuration = $this->attendanceScheduleIsFlexible
+            ? $this->attendanceScheduleTotalWorkHoursWithBreaks
+            : $attendanceDetails
+                ->where('split_type', ShiftBreakDownSplitType::WORK)
+                ->sum('split_duration');
+
+        $totalActualWorkPresent = $attendanceDetails
+            ->where('split_type', ShiftBreakDownSplitType::WORK)
+            ->sum('actual_present');
+
+        $totalLate = $attendanceDetails
+            ->where('split_type', ShiftBreakDownSplitType::WORK)
+            ->sum('late');
+
+        $totalUndertime = $this->attendanceScheduleIsFlexible
+            ? $attendanceDetails
+                ->where('split_type', ShiftBreakDownSplitType::WORK)
+                ->sum('flexible_undertime')
+            : $attendanceDetails
+                ->where('split_type', ShiftBreakDownSplitType::WORK)
+                ->sum('undertime');
+
+        $attendance['shift_work_duration'] = $totalShiftWorkDuration;
+        $attendance['total_actual_work_present'] = $totalActualWorkPresent;
+        $attendance['total_late'] = $totalLate;
+        $attendance['total_undertime'] = $totalUndertime;
+
+        if(
+            $totalActualWorkPresent >= $totalShiftWorkDuration &&
+            $totalLate == 0 &&
+            $totalUndertime == 0
+        ){
+            $attendance['status'] = AttendanceStatus::FULL_PRESENT;
+        }
+
+        if(
+            $totalActualWorkPresent > 0 &&
+            $totalActualWorkPresent < $totalShiftWorkDuration
+        ){
+            $attendance['status'] = AttendanceStatus::PRESENT_WITH_IRREGULARITIES;
+        }
+
+        if(
+            $totalActualWorkPresent <= 0
+        ){
+            $attendance['status'] = AttendanceStatus::ABSENT;
+        }
     }
 }
