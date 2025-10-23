@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Account;
+use App\Models\Attendance;
+use App\Models\AttendanceDetail;
 use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\Deduction;
@@ -13,6 +15,7 @@ use App\Models\Formula;
 use App\Models\Group;
 use App\Models\IncomeTax;
 use App\Models\JsonPreset;
+use App\Models\Overtime;
 use App\Models\PayFrequency;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
@@ -54,7 +57,10 @@ class AppServiceProvider extends ServiceProvider
             'time_period_preset' => TimePeriodPreset::class,
             'salary_statement_module' => SalaryStatementModule::class,
             'shift' => Shift::class,
-            'shift_schedule' => ShiftSchedule::class
+            'shift_schedule' => ShiftSchedule::class,
+            'attendance' => Attendance::class,
+            'attendance_detail' => AttendanceDetail::class,
+            'overtime' => Overtime::class,
         ]);
     }
 }

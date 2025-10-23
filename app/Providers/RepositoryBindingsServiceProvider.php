@@ -6,6 +6,8 @@ use App\Blueprint\Repositories\AccountRepository;
 use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Blueprint\Repositories\AssociatedUserRepository;
+use App\Blueprint\Repositories\AttendanceDetailRepository;
+use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\CompanyCompensationRepository;
 use App\Blueprint\Repositories\CompanyDeductionRepository;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
@@ -26,6 +28,7 @@ use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
+use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
@@ -38,6 +41,8 @@ use App\Concrete\Repositories\AccountRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedAccountRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedCompanyRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedUserRepositoryEloquent;
+use App\Concrete\Repositories\AttendanceDetailRepositoryEloquent;
+use App\Concrete\Repositories\AttendanceRepositoryEloquent;
 use App\Concrete\Repositories\CompanyCompensationRepositoryEloquent;
 use App\Concrete\Repositories\CompanyDeductionRepositoryEloquent;
 use App\Concrete\Repositories\CompanyFormulaRepositoryEloquent;
@@ -58,6 +63,7 @@ use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
+use App\Concrete\Repositories\OvertimeRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
@@ -104,6 +110,9 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'shift' => ShiftRepositoryEloquent::class,
         'shift_schedule' => ShiftScheduleRepositoryEloquent::class,
         'pay_frequency' => PayFrequencyRepositoryEloquent::class,
+        'attendance' => AttendanceRepositoryEloquent::class,
+        'attendance_detail' => AttendanceDetailRepositoryEloquent::class,
+        'overtime' => OvertimeRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -136,6 +145,9 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         ShiftRepository::class => ShiftRepositoryEloquent::class,
         ShiftScheduleRepository::class => ShiftScheduleRepositoryEloquent::class,
         PayFrequencyRepository::class => PayFrequencyRepositoryEloquent::class,
+        AttendanceRepository::class => AttendanceRepositoryEloquent::class,
+        AttendanceDetailRepository::class => AttendanceDetailRepositoryEloquent::class,
+        OvertimeRepository::class => OvertimeRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -173,6 +185,9 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'shift',
             'shift_schedule',
             'pay_frequency',
+            'attendance',
+            'attendance_detail',
+            'overtime',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -205,6 +220,9 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             ShiftRepository::class,
             ShiftScheduleRepository::class,
             PayFrequencyRepository::class,
+            AttendanceRepository::class,
+            AttendanceDetailRepository::class,
+            OvertimeRepository::class,
         ];
     }
 }
