@@ -214,7 +214,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Present with irregularities: total actual present > 0 && total actual present < total shift duration
          * Absent: total actual present <= 0
          **/
-        $this->setAttendanceStatus($attendance, $attendanceDetails);
+        $this->setAttendanceStatus($attendance, $attendanceDetails, $test);
 
         /**
          * Return a test result on test run,
@@ -224,11 +224,11 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         if($test){
 
             $mappedAttendance = [
-                'shift_work_duration' => $attendance['shift_work_duration'],
-                'total_actual_work_present' => $attendance['total_actual_work_present'],
-                'total_late' => $attendance['total_late'],
-                'total_undertime' => $attendance['total_undertime'],
-                'status' => $attendance['status']->label(),
+                'shift_work_duration' => $attendance->shift_work_duration,
+                'total_actual_work_present' => $attendance->total_actual_work_present,
+                'total_late' => $attendance->total_late,
+                'total_undertime' => $attendance->total_undertime,
+                'status' => $attendance->status->label(),
             ];
 
             $mappedAttendanceDetails = array_map(function ($item) {
@@ -1662,7 +1662,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         return collect($breakdown)->sortBy('order')->values()->toArray();
     }
 
-    protected function setAttendanceStatus(Attendance &$attendance, $attendanceDetails): void
+    protected function setAttendanceStatus(Attendance $attendance, $attendanceDetails, $test): void
     {
         $attendanceDetails = collect($attendanceDetails);
 
@@ -1688,30 +1688,35 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                 ->where('split_type', ShiftBreakDownSplitType::WORK)
                 ->sum('undertime');
 
-        $attendance['shift_work_duration'] = $totalShiftWorkDuration;
-        $attendance['total_actual_work_present'] = $totalActualWorkPresent;
-        $attendance['total_late'] = $totalLate;
-        $attendance['total_undertime'] = $totalUndertime;
+        if($test){
+
+            $attendance->shift_work_duration = $totalShiftWorkDuration;
+            $attendance->total_actual_work_present = $totalActualWorkPresent;
+            $attendance->total_late = $totalLate;
+            $attendance->total_undertime = $totalUndertime;
+        }
+
+        $attendance->status = AttendanceStatus::NOT_SPECIFIED;
 
         if(
             $totalActualWorkPresent >= $totalShiftWorkDuration &&
             $totalLate == 0 &&
             $totalUndertime == 0
         ){
-            $attendance['status'] = AttendanceStatus::FULL_PRESENT;
+            $attendance->status = AttendanceStatus::FULL_PRESENT;
         }
 
         if(
             $totalActualWorkPresent > 0 &&
             $totalActualWorkPresent < $totalShiftWorkDuration
         ){
-            $attendance['status'] = AttendanceStatus::PRESENT_WITH_IRREGULARITIES;
+            $attendance->status = AttendanceStatus::PRESENT_WITH_IRREGULARITIES;
         }
 
         if(
             $totalActualWorkPresent <= 0
         ){
-            $attendance['status'] = AttendanceStatus::ABSENT;
+            $attendance->status = AttendanceStatus::ABSENT;
         }
     }
 }
