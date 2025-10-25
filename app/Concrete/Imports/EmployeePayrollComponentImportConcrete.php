@@ -52,6 +52,9 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
 
                 if (empty($employee)) {
                     $validationErrors[] = 'Employee not found.';
+
+                    $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                    continue;
                 }
             }
 
@@ -82,6 +85,9 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
 
                 if(empty($payrollComponent)){
                     $validationErrors[] = 'Payroll component not found.';
+
+                    $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                    continue;
                 } else {
 
                     $row['payroll_componentable_id'] = $payrollComponent->id;
@@ -182,9 +188,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                 $row['pay_frequency'] = null;
             }
 
-            $row['validation_errors'] = $validationErrors;
-
-            $dataToImport[] = $row;
+            $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
         }
 
         return $dataToImport;

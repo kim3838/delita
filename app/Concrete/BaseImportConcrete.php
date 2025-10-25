@@ -96,6 +96,13 @@ abstract class BaseImportConcrete implements ImportInterface
         ];
     }
 
+    protected function resolveValidatedRow(&$row, $validationErrors, &$dataToImport): void
+    {
+        $row['validation_errors'] = $validationErrors;
+
+        $dataToImport[] = $row;
+    }
+
     public function save(Request $request): array
     {
         $request->validate($this->afterReadValidationRules(), $this->validationMessages());
