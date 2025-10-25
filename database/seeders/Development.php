@@ -364,9 +364,9 @@ class Development extends Seeder
         $employeeC1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
 
         //Create Shift for Employee C1001
-        $graveYardNight2DayOffNoLunchOutIn = Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first();
+        $graveYardNight2DayOffNoLunchOutIn = Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first();
         $employeeC1001->shifts()->syncWithoutDetaching([$graveYardNight2DayOffNoLunchOutIn->id => [
-            'start_date' => '2025-01-01',
+            'start_date' => '2025-01-10',
             'stated_shift_end_date' => false,
         ]]);
 
