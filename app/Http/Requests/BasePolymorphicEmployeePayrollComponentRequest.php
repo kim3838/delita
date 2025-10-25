@@ -49,9 +49,9 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'pay_type.required' => 'Pay type is required',
             'pay_frequency_id.required' => 'Pay frequency is required',
             'amountable_start.required' => 'Date start is required',
-            'start_date.date_format' => 'Start date must match the format Y-m-d (2000-01-01)',
+            'start_date.date_format' => 'Start date must match the format Y-m-d e.g.(2000-12-31)',
             'amountable_end.required' => 'Date end is required',
-            'end_date.date_format' => 'End date must match the format Y-m-d (2000-01-01)',
+            'end_date.date_format' => 'End date must match the format Y-m-d e.g.(2000-12-31)',
             'end_date.after_or_equal' => 'End date must be equal to or after the start date',
         ];
     }

@@ -29,8 +29,8 @@ class BaseEmployeeShiftRequest extends FormRequest
             'stated_shift_end_date.required' => 'Stated shift end date is required',
             'employees.array' => 'Employees must be an array',
             'shifts.array' => 'Shifts must be an array',
-            'start_date.date_format' => 'Start date must match the format Y-m-d (2000-01-01)',
-            'end_date.date_format' => 'End date must match the format Y-m-d (2000-01-01)',
+            'start_date.date_format' => 'Start date must match the format Y-m-d e.g.(2000-12-31)',
+            'end_date.date_format' => 'End date must match the format Y-m-d e.g.(2000-12-31)',
             'stated_shift_end_date.boolean' => 'Stated shift end date must be a boolean',
             'end_date.after_or_equal' => 'End date must be equal to or after the start date',
         ];
