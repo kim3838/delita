@@ -497,7 +497,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                             $split['actual_end'] == null &&
                             $lunchIn->gt($splitEnd)
                         ){
-                            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+                            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
                         }
 
                         $autofillEnd = $splitEnd;
@@ -576,7 +576,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                             $split['last_out'] = true;
                             $lastOutLogged = true;
 
-                            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+                            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
                         }
                     } else {
 
@@ -634,7 +634,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                         }
 
                         if($split['actual_end'] == null){
-                            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+                            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
                         }
                     }
 
@@ -646,7 +646,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
                         if($split['last_out']){
 
-                            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+                            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
 
                         } else if ($split['actual_end'] == null){
 
@@ -675,7 +675,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                             $split['actual_start'] = $split['date'] . ' ' . $split['split_start'];
                         }
                         if($split['actual_end'] == null){
-                            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+                            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
                         }
                     }
                 }
@@ -796,7 +796,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         }
 
         if($split['actual_end'] == null){
-            $split['actual_end'] = $split['date'] . ' ' . $split['split_end'];
+            $split['actual_end'] = Carbon::parse($split['date'] . ' ' . $split['split_end'])->format('Y-m-d H:i');
         }
     }
 
