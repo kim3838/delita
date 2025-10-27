@@ -18,6 +18,10 @@ use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
 use App\Models\Account;
+use App\Models\Company;
+use App\Models\Department;
+use App\Models\Designation;
+use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\Prototype;
 use App\Models\Shift;
@@ -89,75 +93,75 @@ class Development extends Seeder
 
         //Company 1002-C Shifts
         //Regular no lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC1 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular no lunch out/in 4.5 hours ot
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
+        $shiftC2 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
         $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC3 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in 4.5 hours ot
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
+        $shiftC4 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
         $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible no lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC5 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '003-DAYSHIFT-FLEX-2DOFF-NL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible with lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC6 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '004-DAYSHIFT-FLEX-2DOFF-WL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
 
 
         //Night midnight start no lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC7 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night midnight start with lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC8 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC9 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 3 hours ot
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
+        $shiftC10 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 10 hours ot quadruple split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $shiftC11 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC12 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 3 hours ot
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
+        $shiftC13 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
         $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 10 hours ot quadruple split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $shiftC14 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch double split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC15 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch double split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC16 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch triple split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shiftC17 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch triple split
-        $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shiftC18 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         /*
@@ -304,114 +308,80 @@ class Development extends Seeder
         $company1002C->designations()->create(['name' => 'Accounting Staff']);
 
         /**************************************************************************************************************************************************************************************************************/
+        //Create Employee A1001 Info, Contact and Employment Profile to Company 1002-A
+        $employeeA1001 = $this->createEmployee(
+            $company1002A,
+            $account1002User01,
+            null,
+            null,
+            null,
+            'A1001',
+            'Employee 01',
+            'A',
+            '1002');
+        $this->createEmployeeContact($employeeA1001, 'a1001.01@officemail.com', 'a1001.01@personalmail.com', '+639123456789', '+639123456789');
+        $this->createEmploymentProfile($employeeA1001);
+        /**************************************************************************************************************************************************************************************************************/
+        //Create Employee B1001 Info, Contact and Employment Profile
+        $employeeB1001 = $this->createEmployee(
+            $company1002B,
+            $account1002User02,
+            null,
+            null,
+            null,
+            'B1001',
+            'Employee 01',
+            'B',
+            '1002');
+        $this->createEmployeeContact($employeeB1001, 'b1001.01@officemail.com');
+        $this->createEmploymentProfile($employeeB1001);
+        /**************************************************************************************************************************************************************************************************************/
+        //Create Employee C1001 Info, Contact, Employment Profile and Shift
+        $employeeC1001 = $this->createEmployee(
+            $company1002C,
+            $account1002User01,
+            $company1002C->departments()->where('name', 'HR')->first(),
+            $company1002C->designations()->where('name', 'HR Manager')->first(),
+            null,
+            'C1001', 'Employee 01', 'C', '1002');
+        $this->createEmployeeContact($employeeC1001, 'c1001.01@officemail.com', 'c1001.01@personalmail.com');
+        $this->createEmploymentProfile($employeeC1001);
+        $employeeC1001->shifts()->syncWithoutDetaching([$shiftC1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        /**************************************************************************************************************************************************************************************************************/
+        //Create Employee C1002 Info, Contact, Employment Profile and Shift
+        $employeeC1002 = $this->createEmployee(
+            $company1002C,
+            $account1002User02,
+            $company1002C->departments()->where('name', 'Accounts Payable')->first(),
+            $company1002C->designations()->where('name', 'Accounting Staff')->first(),
+            null,
+            'C1002', 'Employee 02', 'C', '1002');
+        $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
+        $this->createEmploymentProfile($employeeC1002);
+        $employeeC1002->shifts()->syncWithoutDetaching([$shiftC2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        /**************************************************************************************************************************************************************************************************************/
+        //Create Employee C1003 Info, Contact, Employment Profile and Shift
+        $employeeC1003 = $this->createEmployee(
+            $company1002C,
+            $account1002User03,
+            $company1002C->departments()->where('name', 'Accounts Payable')->first(),
+            $company1002C->designations()->where('name', 'Accounting Staff')->first(),
+            $employeeC1001,
+            'C1003', 'Employee 03', 'C', '1002');
+        $this->createEmployeeContact($employeeC1003, 'c1003.01@officemail.com', '', '', '+639122111789');
+        $this->createEmploymentProfile($employeeC1003);
+        $employeeC1003->shifts()->syncWithoutDetaching([$shiftC3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
 
-        //Create Employee Info A1001 to Company 1002-A
-        $employeeA1001 = $account1002User01->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002A->id,
-            'number' => 'A1001',
-            'given_name' => 'Employee 01',
-            'middle_name' => 'A',
-            'family_name' => '1002',
-            'gender' => Gender::FEMALE,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
+        //Create Employee C1004 to C1018 Info, Contact, Employment Profile and Shift
+        for ($i = 4; $i <= 18; $i++) {
 
-        //Create Contact info for Employee A1001
-        $employeeA1001->contact()->create(['office_email' => 'a1001.01@officemail.com', 'personal_email' => 'a1001.01@personalmail.com', 'office_phone' => '+639123456789', 'personal_phone' => '+639123456789']);
-
-        //Create Employment profile for Employee A1001
-        $employeeA1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
-
-        //Create Employee Info B1001 to Company 1002-B
-        $employeeB1001 = $account1002User02->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002B->id,
-            'department_id' => $company1002B->departments()->where('name', 'Accounts Payable')->first()->id,
-            'designation_id' => $company1002B->designations()->where('name', 'Accounting Staff')->first()->id,
-            'number' => 'B1001',
-            'given_name' => 'Employee 01',
-            'middle_name' => 'B',
-            'family_name' => '1002',
-            'gender' => Gender::FEMALE,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
-
-        //Create Contact info for Employee B1001
-        $employeeB1001->contact()->create(['office_email' => 'b1001.01@officemail.com']);
-
-        //Create Employment profile for Employee B1001
-        $employeeB1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
-
-        //Create Employee Info C1001 to Company 1002-C
-        $employeeC1001 = $account1002User01->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002C->id,
-            'department_id' => $company1002C->departments()->where('name', 'HR')->first()->id,
-            'designation_id' => $company1002C->designations()->where('name', 'HR Manager')->first()->id,
-            'number' => 'C1001',
-            'given_name' => 'Employee 01',
-            'middle_name' => 'C',
-            'family_name' => '1002',
-            'gender' => Gender::FEMALE,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
-
-        //Create Contact info for Employee C1001
-        $employeeC1001->contact()->create(['office_email' => 'c1001.01@officemail.com', 'personal_email' => 'c1001.01@personalmail.com']);
-
-        //Create Employment profile for Employee C1001
-        $employeeC1001->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
-
-        //Create Shift for Employee C1001
-        $graveYardNight2DayOffNoLunchOutIn = Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first();
-        $employeeC1001->shifts()->syncWithoutDetaching([$graveYardNight2DayOffNoLunchOutIn->id => [
-            'start_date' => '2025-01-10',
-            'stated_shift_end_date' => false,
-        ]]);
-
-        //Create Employee Info C1002 to Company 1002-C
-        $employeeC1002 = $account1002User02->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002C->id,
-            'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
-            'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
-            'manager_id' => $employeeC1001->id,
-            'number' => 'C1002',
-            'given_name' => 'Employee 02',
-            'middle_name' => 'C',
-            'family_name' => '1002',
-            'gender' => Gender::FEMALE,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
-
-        //Create Contact info for Employee C1002
-        $employeeC1002->contact()->create(['office_email' => 'c1002.01@officemail.com', 'personal_email' => 'c1002.01@personalmail.com', 'office_phone' => '+639122256789']);
-
-        //Create Employment profile for Employee C1002
-        $employeeC1002->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
-
-        //Create Employee Info C1003 to Company 1002-C
-        $employeeC1003 = $account1002User03->employees()->create([
-            'ulid' => Str::ulid(),
-            'company_id' => $company1002C->id,
-            'department_id' => $company1002C->departments()->where('name', 'Accounts Payable')->first()->id,
-            'designation_id' => $company1002C->designations()->where('name', 'Accounting Staff')->first()->id,
-            'manager_id' => $employeeC1001->id,
-            'number' => 'C1003',
-            'given_name' => 'Employee 03',
-            'middle_name' => 'C',
-            'family_name' => '1002',
-            'gender' => Gender::NOT_SPECIFIED,
-            'marital_status' => MaritalStatus::SINGLE,
-        ]);
-
-        //Create Contact info for Employee C1003
-        $employeeC1003->contact()->create(['office_email' => 'c1003.01@officemail.com', 'personal_phone' => '+639122111789']);
-
-        //Create Employment profile for Employee C1003
-        $employeeC1003->employmentProfiles()->create(['status' => EmploymentStatus::ACTIVE, 'employment_type' => EmploymentType::NOT_SPECIFIED, 'start_date' => Carbon::now()->toDateString()]);
-
+            ${"employee$i"} = $this->createEmployee(
+                $company1002C, null, null,null,null,
+                "C10" . sprintf('%02d', $i), "Employee " . sprintf('%02d', $i), 'C', '1002');
+            $this->createEmployeeContact(${"employee$i"}, "c100$i.01@officemail.com");
+            $this->createEmploymentProfile(${"employee$i"});
+            ${"employee$i"}->shifts()->syncWithoutDetaching([${"shiftC$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        }
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B Monthly Pay Frequency
@@ -557,5 +527,50 @@ class Development extends Seeder
                 ]);
             }
         }
+    }
+
+    public function createEmployee(
+        Company $company,
+        ?User $user = null,
+        ?Department $department = null,
+        ?Designation $designation = null,
+        ?Employee $manager = null,
+        $number = null,
+        $givenName = null,
+        $middleName = null,
+        $familyName = null,
+    ){
+        $baseModel = empty($user) ? $company : $user;
+
+        return $baseModel->employees()->create([
+            'ulid' => Str::ulid(),
+            'company_id' => $company->id,
+            'department_id' => $department?->id,
+            'designation_id' => $designation?->id,
+            'manager_id' => $manager?->id,
+            'number' => $number,
+            'given_name' => $givenName,
+            'middle_name' => $middleName,
+            'family_name' => $familyName,
+        ]);
+    }
+
+    public function createEmployeeContact(Employee $employee, $officeEmail = '', $personalEmail = '', $officePhone = '', $personalPhone = '')
+    {
+        return $employee->contact()->create([
+            'office_email' => $officeEmail,
+            'personal_email' => $personalEmail,
+            'office_phone' => $officePhone,
+            'personal_phone' => $personalPhone
+        ]);
+    }
+
+    public function createEmploymentProfile(Employee $employee, EmploymentType $employmentType = EmploymentType::NOT_SPECIFIED)
+    {
+        return $employee->employmentProfiles()->create([
+            'status' => EmploymentStatus::ACTIVE,
+            'employment_type' => $employmentType,
+            'start_date' => Carbon::now()->toDateString()
+        ]);
     }
 }
