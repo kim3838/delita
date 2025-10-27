@@ -9510,7 +9510,7 @@ class AttendanceDetailsTests
                 ]
             ],
 
-            //Graveyard no lunch out/in with ot triple split
+            //Graveyard no lunch out/in with ot quadruple split
             [
                 'test_case' => 'TESTCASE-GNLO-WMOTQUADSPLIT-10:00-0001',
                 'scenario'  => 'GRAVEYARD NO LUNCH OUT IN OT QUAD SPLIT: ON TIME FULL OT + 00:30 EXCESS',
@@ -17085,7 +17085,7 @@ class AttendanceDetailsTests
                 ]
             ],
 
-            //Graveyard with lunch out/in with ot triple split
+            //Graveyard with lunch out/in with ot quadruple split
             [
                 'test_case' => 'TESTCASE-GWLO-WMOTQUADSPLIT-10:00-0001',
                 'scenario'  => 'GRAVEYARD WITH LUNCH OUT IN OT QUAD SPLIT: ON TIME FULL OT + 00:30 EXCESS',
