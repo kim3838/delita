@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\AssociatedUserController;
+use App\Http\Controllers\AttendanceImportTemplateController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
+use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
 use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
@@ -72,6 +74,7 @@ Route::get('currency-selections', [WorldController::class, 'currencySelection'])
 Route::get('employee-import-template', [EmployeeImportTemplateController::class, 'index']);
 Route::get('employment-profile-import-template', [EmploymentProfileImportTemplateController::class, 'index']);
 Route::get('employee-payroll-component-import-template', [EmployeePayrollComponentImportTemplateController::class, 'index']);
+Route::get('attendance-import-template', [AttendanceImportTemplateController::class, 'index']);
 
 Route::group([
     'middleware' => ['guest']
@@ -314,6 +317,11 @@ Route::group([
     Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
     Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
     Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);
+
+    //Attendance
+    Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);
+    Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
+    Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
 });
 
 Route::group([
