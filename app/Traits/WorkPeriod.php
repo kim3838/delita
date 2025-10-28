@@ -302,7 +302,7 @@ trait WorkPeriod
             ->first();
 
         if(empty($this->attendanceSchedule)){
-            throw new NotFoundException("Attendance schedule not found: scaffolder @ set attendance schedule [" . __LINE__ . "]");
+            throw new NotFoundException("Attendance schedule not found: T.WorkPeriod@setAttendanceSchedule [" . __LINE__ . "]");
         }
 
         $this->attendanceScheduleHasLunchBreak = boolval($this->attendanceSchedule['has_lunch_break']);
