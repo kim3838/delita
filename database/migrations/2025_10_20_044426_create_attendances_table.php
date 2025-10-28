@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->ulid()->unique()->index();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->foreignId('shift_id')->constrained('shifts')->onDelete('cascade');
+            $table->foreignId('shift_id')->nullable()->constrained('shifts')->onDelete('set null');
             $table->date('date');
             $table->dateTime('first_in');
             $table->dateTime('lunch_out')->nullable();
