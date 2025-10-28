@@ -8,11 +8,14 @@ use App\Blueprint\Repositories\AttendanceRepository;
 use App\Concrete\BaseImportConcrete;
 use App\Exceptions\NotFoundException;
 use App\Exports\BlankAttendanceTemplateExport;
+use App\Facades\Fractal;
 use App\Http\Requests\Attendance\BaseAttendanceRequest;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
+use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
+use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
@@ -229,6 +232,9 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
         return $dataToImport;
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function resolvedData($data, $companyId): array
     {
         $repository = App::make(AttendanceRepository::class);
@@ -246,6 +252,21 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 'last_out' => $row['last_out'],
             ];
 
+            $this->setShift($row['shift_id']);
+            $this->setAttendanceSchedule(Carbon::parse($row['date']));
+
+            $shiftAssignment = Employee::query()->find($row['employee_id'])->shifts->where('id', $this->shift->id)->first()?->pivot;
+
+            if(empty($shiftAssignment)){
+                throw new NotFoundException("Attendance shift assignment not found: C.AttendanceImportConcrete@resolvedData [" . __LINE__ . "]");
+            }
+
+            $shiftDetail = [
+                ...Fractal::item($shiftAssignment, EmployeeShiftPatchableTransformer::class),
+                ...Fractal::item($this->shift, ShiftPatchableTransformer::class),
+                ...$this->attendanceSchedule
+            ];
+
             $existing = $repository->model()::query()
                 ->where('employee_id', $row['employee_id'])
                 ->where('shift_id', $row['shift_id'])
@@ -257,6 +278,10 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 : $repository->model()::create($save);
 
             $attendanceSplitter->generate($attendance);
+
+            $attendance->shiftDetail()->delete();
+
+            $attendance->shiftDetail()->create($shiftDetail);
         }
 
         return array_map(function ($row) {return $row['id'];}, $data);

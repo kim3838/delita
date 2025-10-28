@@ -42,9 +42,9 @@ class Attendance extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public function shift(): BelongsTo
+    public function shiftDetail(): HasOne
     {
-        return $this->belongsTo(Shift::class);
+        return $this->hasOne(AttendanceShiftDetail::class);
     }
 
     public function details(): HasMany
