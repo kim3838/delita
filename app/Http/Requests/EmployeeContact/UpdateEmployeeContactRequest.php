@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\EmployeeContact;
 
+use App\Models\Employee;
 use App\Models\EmployeeContact;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -9,14 +10,15 @@ class UpdateEmployeeContactRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $employeeContact = EmployeeContact::where('employee_id', $this->route('employeeId'))->firstOrFail();
+        $employee = Employee::findOrfail($this->route('employeeId'));
 
-        return $this->user()->can('update', $employeeContact);
+        return $this->user()->can('update', $employee);
     }
 
     public function rules(): array
     {
         return [
+            'company_id' => 'required|numeric|integer',
             'employee_id' => 'required|numeric|integer',
             'office_email' => [
                 'nullable',
@@ -67,6 +69,7 @@ class UpdateEmployeeContactRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'company_id.required' => 'Company is required',
             'employee_id.required' => 'Employee account is required',
             'office_email.email' => 'The office email must be a valid email address.',
             'office_email.different' => 'The office email and personal email must be different.',

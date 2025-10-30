@@ -2,18 +2,16 @@
 
 namespace App\Policies;
 
-use App\Models\EmployeeContact;
 use App\Models\User;
 
-class EmployeeContactPolicy extends BasePolicy
+class EmployeeContactPolicy
 {
+    public function __construct(
+        protected EmployeePolicy $employeePolicy
+    ){}
+
     public function create(User $user): bool
     {
-        return true;
-    }
-
-    public function update(User $user, EmployeeContact $employeeContact): bool
-    {
-        return true;
+        return $this->employeePolicy->create($user);
     }
 }

@@ -16,6 +16,7 @@ class StoreEmployeeContactRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company_id' => 'required|numeric|integer',
             'employee_id' => 'sometimes|required|numeric|integer',
             'office_email' => [
                 'nullable',
@@ -65,6 +66,7 @@ class StoreEmployeeContactRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'company_id.required' => 'Company is required',
             'employee_id.required' => 'Employee account is required',
             'office_email.email' => 'The office email must be a valid email address.',
             'office_email.different' => 'The office email and personal email must be different.',
