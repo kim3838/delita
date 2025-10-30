@@ -34,6 +34,14 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
 
             $validationErrors = [];
 
+            if(!$this->isActionAuthorized('create', $this->model)){
+
+                $validationErrors[] = 'Unauthorized create.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
+            }
+
             if (empty($row['employee_number'])) {
                 $validationErrors[] = 'Employee number is required.';
             } else {

@@ -124,9 +124,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
 
             if($existing){
 
-                $updateAllowed = $this->isActionAuthorized('update', $existing);
-
-                if(!$updateAllowed){
+                if(!$this->isActionAuthorized('update', $existing)){
 
                     $validationErrors[] = 'Unauthorized update.';
 
@@ -136,9 +134,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
 
             } else {
 
-                $createAllowed = $this->isActionAuthorized('create', $this->model);
-
-                if(!$createAllowed){
+                if(!$this->isActionAuthorized('create', $this->model)){
 
                     $validationErrors[] = 'Unauthorized create.';
 

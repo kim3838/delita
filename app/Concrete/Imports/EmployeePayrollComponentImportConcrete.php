@@ -112,6 +112,14 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                 ]);
             }
 
+            if(!$this->isActionAuthorized('create', $this->model)){
+
+                $validationErrors[] = 'Unauthorized create.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
+            }
+
             $row['payroll_component_is_amountable'] = $payrollComponentIsAmountable;
 
             if($payrollComponentIsAmountable){
