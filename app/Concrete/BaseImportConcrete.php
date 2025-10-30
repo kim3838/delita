@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 abstract class BaseImportConcrete implements ImportInterface
 {
     protected Application $app;
-    protected $model;
+    protected Model $model;
     protected string $modelAlias;
     protected string $inputFileKey = 'file';
     protected int $sheetIndex = 0;
