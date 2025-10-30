@@ -15,6 +15,7 @@ use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\Deduction;
 use App\Models\Employee;
+use App\Models\EmployeePayrollComponent;
 use App\Models\IncomeTax;
 use App\Models\PayFrequency;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -23,6 +24,11 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implements EmployeePayrollComponentImport
 {
+    public function model(): string
+    {
+        return EmployeePayrollComponent::class;
+    }
+
     public function exportTemplate(): string
     {
         return BlankEmployeePayrollComponentTemplateExport::class;

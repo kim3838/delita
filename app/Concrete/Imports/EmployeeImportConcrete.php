@@ -16,6 +16,11 @@ use Illuminate\Validation\Rule;
 
 class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImport
 {
+    public function model(): string
+    {
+        return Employee::class;
+    }
+
     public function exportTemplate(): string
     {
         return BlankEmployeeTemplateExport::class;

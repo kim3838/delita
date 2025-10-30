@@ -10,11 +10,17 @@ use App\Enums\EndOfServiceType;
 use App\Exports\BlankEmploymentProfileTemplateExport;
 use App\Http\Requests\EmploymentProfile\BaseStoreAndUpdateEmploymentProfileRequest;
 use App\Models\Employee;
+use App\Models\EmploymentProfile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class EmploymentProfileImportConcrete extends BaseImportConcrete implements EmploymentProfileImport
 {
+    public function model(): string
+    {
+        return EmploymentProfile::class;
+    }
+
     public function exportTemplate(): string
     {
         return BlankEmploymentProfileTemplateExport::class;
