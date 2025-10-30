@@ -41,7 +41,7 @@ class ListTransformer extends TransformerAbstract
 
         $attendanceShiftAssignment = Fractal::item($shiftAssignmentHydrated, EmployeeShiftItemTransformer::class);
 
-        $shiftScheduleHydrted = App::make(ShiftScheduleRepository::class)->hydrateItem([
+        $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem([
             'week_day' => $attendance->shift_schedule_week_day,
             'is_rest_day' => $attendance->shift_schedule_is_rest_day,
             'is_day_off' => $attendance->shift_schedule_is_day_off,
@@ -56,7 +56,7 @@ class ListTransformer extends TransformerAbstract
             'total_lunch_break_hours' => $attendance->shift_schedule_total_lunch_break_hours,
         ]);
 
-        $shiftSchedule = Fractal::item($shiftScheduleHydrted, ShiftScheduleListTransformer::class);
+        $shiftSchedule = Fractal::item($shiftScheduleHydrated, ShiftScheduleListTransformer::class);
 
         return [
             'row_number' => $attendance->row_number,
