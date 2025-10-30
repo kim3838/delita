@@ -5,17 +5,20 @@ namespace App\Concrete\Imports;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Imports\AttendanceImport;
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Concrete\BaseImportConcrete;
 use App\Exceptions\NotFoundException;
 use App\Exports\BlankAttendanceTemplateExport;
 use App\Facades\Fractal;
 use App\Http\Requests\Attendance\BaseAttendanceRequest;
+use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
+use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +26,11 @@ use Illuminate\Support\Facades\Validator;
 class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceImport
 {
     use WorkPeriod;
+
+    public function model(): string
+    {
+        return Attendance::class;
+    }
 
     public function exportTemplate(): string
     {
@@ -104,6 +112,39 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 $date = Carbon::parse($row['date']);
 
                 $row['date'] = $date->toDateString();
+            }
+
+            /**
+             * Validate authorization on create if not exists and update if exists
+             **/
+            $existing = $this->model::where('employee_id', $row['employee_id'])
+                ->where('shift_id', $row['shift_id'])
+                ->where('date', $row['date'])
+                ->first();
+
+            if($existing){
+
+                $updateAllowed = $this->isActionAuthorized('update', $existing);
+
+                if(!$updateAllowed){
+
+                    $validationErrors[] = 'Unauthorized update.';
+
+                    $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                    continue;
+                }
+
+            } else {
+
+                $createAllowed = $this->isActionAuthorized('create', $this->model);
+
+                if(!$createAllowed){
+
+                    $validationErrors[] = 'Unauthorized create.';
+
+                    $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                    continue;
+                }
             }
 
             /**
@@ -243,6 +284,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
         foreach ($data as $index => $row) {
 
             $save = [
+                'company_id' => $companyId,
                 'employee_id' => $row['employee_id'],
                 'shift_id' => $row['shift_id'],
                 'date' => $row['date'],
@@ -261,10 +303,12 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 throw new NotFoundException("Attendance shift assignment not found: C.AttendanceImportConcrete@resolvedData [" . __LINE__ . "]");
             }
 
+            $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($this->attendanceSchedule);
+
             $shiftDetail = [
                 ...Fractal::item($shiftAssignment, EmployeeShiftPatchableTransformer::class),
                 ...Fractal::item($this->shift, ShiftPatchableTransformer::class),
-                ...$this->attendanceSchedule
+                ...Fractal::item($shiftScheduleHydrated, ShiftSchedulePatchableTransformer::class)
             ];
 
             $existing = $repository->model()::query()
@@ -273,12 +317,18 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 ->where('date', $row['date'])
                 ->first();
 
-            $attendance = $existing
-                ? $repository->update($existing->id, $save)
-                : $repository->model()::create($save);
+            $attendance = $existing ?: $repository->model()::create($save);
 
-            $attendanceSplitter->generate($attendance);
+            if($existing){
+                //Attendance splitter is also called on attendance repository update
+                $repository->update($existing->ulid, $save);
 
+            } else {
+                //Generate attendance splitter on newly created attendance
+                $attendanceSplitter->generate($attendance);
+            }
+
+            //Update attendance shift details every created or modified
             $attendance->shiftDetail()->delete();
 
             $attendance->shiftDetail()->create($shiftDetail);
