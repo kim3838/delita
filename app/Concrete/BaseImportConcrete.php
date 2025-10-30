@@ -3,7 +3,13 @@
 namespace App\Concrete;
 
 use App\Blueprint\ImportInterface;
+use App\Exceptions\RepositoryException;
+use Illuminate\Container\Container as Application;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
@@ -11,18 +17,57 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 abstract class BaseImportConcrete implements ImportInterface
 {
+    protected Application $app;
+    protected $model;
+    protected string $modelAlias;
     protected string $inputFileKey = 'file';
     protected int $sheetIndex = 0;
     protected int $headingRowIndex = 0;
     protected string $exportTemplate;
 
+    abstract public function model(): string;
     abstract public function exportTemplate(): string;
     abstract public function validateData($data, $companyId): array;
     abstract public function resolvedData($data, $companyId): array;
 
-    public function __construct()
+    /**
+     * @throws BindingResolutionException
+     * @throws RepositoryException
+     */
+    public function __construct(Application $app)
     {
+        $this->app = $app;
         $this->exportTemplate = $this->exportTemplate();
+        $this->makeModel();
+        $this->makeModelAlias();
+        $this->canCreate = Gate::allows('create', $this->model());
+    }
+
+    /**
+     * @throws RepositoryException
+     * @throws BindingResolutionException
+     */
+    public function makeModel()
+    {
+        $model = $this->app->make($this->model());
+
+        if(!$model instanceof Model){
+            throw new RepositoryException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
+        }
+
+        return $this->model = $model;
+    }
+
+    public function makeModelAlias(): false|int|string
+    {
+        $morphMap = Relation::morphMap();
+
+        return $this->modelAlias = array_search($this->model(), $morphMap, true);
+    }
+
+    protected function isActionAuthorized($action, $model): bool
+    {
+        return Gate::allows($action, $model);
     }
 
     protected function readValidationRules(): array
