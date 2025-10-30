@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\AssociatedUserController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceImportTemplateController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmedTwoFactorAuthenticationController;
@@ -319,6 +320,9 @@ Route::group([
     Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);
 
     //Attendance
+    Route::get('attendances', [AttendanceController::class, 'index']);
+    Route::patch('attendance/{attendanceUlid}', [AttendanceController::class, 'update']);
+    Route::delete('attendances', [AttendanceController::class, 'batchDestroy']);
     Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);
     Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
     Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
