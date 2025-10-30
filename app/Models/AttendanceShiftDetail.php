@@ -11,11 +11,16 @@ class AttendanceShiftDetail extends Model
 {
     protected $fillable = [
         'attendance_id',
-
+        /**
+         * Shift Assignment
+         **/
         'start_date',
         'stated_shift_end_date',
         'end_date',
 
+        /**
+         * Shift
+         **/
         'code',
         'name',
         'type',
@@ -24,6 +29,9 @@ class AttendanceShiftDetail extends Model
         'lunch_start_grace_time',
         'max_overtime',
 
+        /**
+         * Shift Schedule
+         **/
         'week_day',
         'is_rest_day',
         'is_day_off',
