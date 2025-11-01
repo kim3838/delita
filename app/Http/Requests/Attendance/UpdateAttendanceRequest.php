@@ -29,8 +29,19 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
     {
         return array_merge(parent::rules(), [
             'company_id' => 'required|numeric|integer',
-            'employee_id' => 'required|numeric|integer',
-            'date' => 'required|date_format:Y-m-d',
+            'employee_id' => [
+                'required',
+                'numeric',
+                'integer',
+                function ($attribute, $value, $fail) {
+
+                    $employee = Employee::query()->find($value);
+
+                    if (!$employee) {
+                        $fail('Employee not found');
+                    }
+                }
+            ],
             'shift_id' => [
                 'required',
                 'numeric',
@@ -38,12 +49,6 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                 function ($attribute, $value, $fail) {
 
                     $date = Carbon::parse($this->input('date'));
-
-                    $employee = Employee::query()->find($this->input('employee_id'));
-
-                    if (!$employee) {
-                        $fail('Employee not found');
-                    }
 
                     $shift = Shift::query()->find($value);
 
@@ -58,7 +63,14 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                     } else {
 
                         $this->setShift($shift);
+
+                        /**
+                         * After setting up shift,
+                         * Get the shift work day by attendance date
+                         * Get the schedule for the attendance date
+                         **/
                         $this->setAttendanceSchedule($date);
+                        $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
 
                         /**
                          * Validate attendance shift details if still match the current shift and schedule settings
@@ -84,10 +96,28 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                             $fail('Shift settings have changed. Please re-import attendance');
                         } else if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
                             $fail('Shift schedule settings have changed. Please re-import attendance');
+                        } else {
+
+                            $firstIn = Carbon::parse($this->input('first_in'));
+                            $lunchOut = empty($this->input('lunch_out'))? null : Carbon::parse($this->input('lunch_out'));
+                            $lunchIn = empty($this->input('lunch_in'))? null : Carbon::parse($this->input('lunch_in'));
+                            $lastOut = Carbon::parse($this->input('last_out'));
+
+                            $importAttendance = new ImportAttendance();
+                            $attendanceValidationErrors = $importAttendance->validateAttendance(
+                                $firstIn, $lunchOut, $lunchIn, $lastOut,
+                                $schedule,
+                                !$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak
+                            );
+
+                            foreach($attendanceValidationErrors as $error){
+                                $fail($error);
+                            }
                         }
                     }
                 }
-            ]
+            ],
+            'date' => 'required|date_format:Y-m-d',
         ]);
     }
 

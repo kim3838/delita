@@ -10,7 +10,7 @@ use App\Concrete\BaseImportConcrete;
 use App\Exceptions\NotFoundException;
 use App\Exports\BlankAttendanceTemplateExport;
 use App\Facades\Fractal;
-use App\Http\Requests\Attendance\BaseAttendanceRequest;
+use App\Http\Requests\Attendance\ImportAttendance;
 use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Employee;
@@ -149,6 +149,11 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $this->setAttendanceSchedule($date);
 
             /**
+             * Get the schedule for the attendance date
+             **/
+            $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
+
+            /**
              * Validate if the shift is assigned to the employee within its shift assignment date
              **/
             $employeeShiftAssignment = $employee->shifts->where('id', $shift->id)->first()?->pivot;
@@ -199,25 +204,25 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 continue;
             }
 
-            $baseAttendanceRequest = new BaseAttendanceRequest();
-            $baseRules = $baseAttendanceRequest->rules();
-            $ruleMessages = $baseAttendanceRequest->messages();
+            $importAttendance = new ImportAttendance();
+            $importAttendanceRules = $importAttendance->rules();
+            $importAttendanceRulesMessages = $importAttendance->messages();
 
-            if($this->attendanceScheduleIsFlexible || !$this->shiftRequireLunchOutAndIn){
+            if($this->attendanceScheduleIsFlexible || !$this->shiftRequireLunchOutAndIn || !$this->attendanceScheduleHasLunchBreak){
                 $row['lunch_out'] = null;
                 $row['lunch_in'] = null;
             }
 
             $timeValidation = Validator::make($row,[
-                'first_in' => $baseRules['first_in'],
-                ...(!$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn ? [
-                    'lunch_out' => $baseRules['lunch_out'],
-                    'lunch_in' => $baseRules['lunch_in']
+                'first_in' => $importAttendanceRules['first_in'],
+                ...(!$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak ? [
+                    'lunch_out' => $importAttendanceRules['lunch_out'],
+                    'lunch_in' => $importAttendanceRules['lunch_in']
                 ] : []),
-                'last_out' => $baseRules['last_out'],
+                'last_out' => $importAttendanceRules['last_out'],
             ]);
 
-            $timeValidation->setCustomMessages($ruleMessages);
+            $timeValidation->setCustomMessages($importAttendanceRulesMessages);
 
             if($timeValidation->fails()){
 
@@ -234,33 +239,14 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 $lastOut = Carbon::parse($row['last_out']);
             }
 
-            /**
-             * Get schedule for the attendance date
-             * $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
-             **/
+            $attendanceValidationErrors = $importAttendance->validateAttendance(
+                $firstIn, $lunchOut, $lunchIn, $lastOut,
+                $schedule,
+                !$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak
+            );
 
-            /**
-             * ?First in should be lesser than the shift work end
-             * ?Last out should be greater than the shift work start
-             **/
-
-            /**
-             * If Shift requires lunch out and in
-             *
-             * Lunch out should be between First in and Last out
-             * Lunch in should be between Lunch out and Last out
-             *
-             **/
-            if(!$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && !empty($lunchOut) && !empty($lunchIn)){
-
-                if(!$lunchOut->between($firstIn, $lastOut)){
-                    $validationErrors[] = 'Lunch out should be between of First in and Last out.';
-                }
-
-                if(!$lunchIn->between($lunchOut, $lastOut)){
-                    $validationErrors[] = 'Lunch in should be between of Lunch out and Last out.';
-                }
-
+            foreach($attendanceValidationErrors as $error){
+                $validationErrors[] = $error;
             }
 
             $this->resolveValidatedRow($row, $validationErrors, $dataToImport);

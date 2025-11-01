@@ -9,10 +9,24 @@ class BaseAttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_in' => 'required|date_format:Y-m-d H:i',
-            'lunch_out' => 'sometimes|required|date_format:Y-m-d H:i',
-            'lunch_in' => 'sometimes|required|date_format:Y-m-d H:i',
-            'last_out' => 'required|date_format:Y-m-d H:i',
+            'first_in' => [
+                'required',
+                'date_format:Y-m-d H:i',
+            ],
+            'lunch_out' => [
+                'sometimes',
+                'required',
+                'date_format:Y-m-d H:i',
+            ],
+            'lunch_in' => [
+                'sometimes',
+                'required',
+                'date_format:Y-m-d H:i',
+            ],
+            'last_out' => [
+                'required',
+                'date_format:Y-m-d H:i',
+            ],
         ];
     }
 
