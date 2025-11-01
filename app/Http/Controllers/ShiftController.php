@@ -99,8 +99,10 @@ class ShiftController extends Controller
             $shiftSchedules = [];
 
             if($shift){
-                $shiftScheduleFilters = new \stdClass();
-                $shiftScheduleFilters->shift_id = $shift->id;
+
+                $shiftScheduleFilters = (object)[
+                    'shift_id' => $shift->id
+                ];
 
                 $shiftSchedules = App::make(ShiftScheduleRepository::class)->list($shiftScheduleFilters);
 
