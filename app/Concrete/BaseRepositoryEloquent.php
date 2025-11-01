@@ -147,7 +147,7 @@ abstract class BaseRepositoryEloquent
         return $paginator->setCollection($class::hydrate($items));
     }
 
-    public function hydrateItem(array $attributes = [])
+    public function hydrateItem(array|object $attributes = [])
     {
         return $this->model::hydrate([$attributes])->first();
     }
