@@ -941,6 +941,13 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
                 $actualPresent = intval($splitActualStart->diffInMinutes($splitActualEnd, true));
 
+                //If Schedule is flexible, actual present should not exceed the required schedule total work hours
+                if($this->attendanceScheduleIsFlexible){
+                    $actualPresent = $actualPresent > $this->attendanceScheduleTotalWorkHoursWithBreaks
+                        ? $this->attendanceScheduleTotalWorkHoursWithBreaks
+                        : $actualPresent;
+                }
+
                 /**
                  * If first in, lunch out, lunch in and last out are in the same split
                  * and shift requires lunch out and in
