@@ -46,23 +46,15 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 $join->on('employee_sub.id', '=', 'attendances.employee_id');
             })
             ->join('attendance_shift_details', 'attendance_shift_details.attendance_id', '=', 'attendances.id')
+            ->when($filters->attendance_ulid ?? false, function ($builder, $value) {
+                $builder->where('attendances.ulid', $value);
+            })
             ->when((
                 (isset($filters->date_from) && Carbon::createFromFormat('Y-m-d', $filters->date_from)) &&
                 (isset($filters->date_to) && Carbon::createFromFormat('Y-m-d', $filters->date_to))
             ),function($builder) use ($filters){
                 $builder->whereBetween('attendances.date', [$filters->date_from, $filters->date_to]);
-            });
-
-        return $queryBuilder;
-    }
-
-    public function list($filters): LengthAwarePaginator
-    {
-        $orders = [
-            ['field' => 'attendances.date', 'direction' => 'ASC'],
-        ];
-
-        $queryBuilder = $this->baseQueryBuilder($filters)
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "attendances.*",
@@ -101,6 +93,30 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendance_shift_details.lunch_break_end AS shift_schedule_lunch_break_end",
                 "attendance_shift_details.total_lunch_break_hours AS shift_schedule_total_lunch_break_hours",
             ]);
+
+        return $queryBuilder;
+    }
+
+    public function show($id): Attendance
+    {
+        $filters = (object)[
+            'attendance_ulid' => $id,
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        $attendance = $queryBuilder->firstOrFail();
+
+        return $this->hydrateItem($attendance);
+    }
+
+    public function list($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'attendances.date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
