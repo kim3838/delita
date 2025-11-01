@@ -46,8 +46,8 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 $join->on('employee_sub.id', '=', 'attendances.employee_id');
             })
             ->join('attendance_shift_details', 'attendance_shift_details.attendance_id', '=', 'attendances.id')
-            ->when($filters->attendance_ulid ?? false, function ($builder, $value) {
-                $builder->where('attendances.ulid', $value);
+            ->when(!empty($filters->attendance_ulids) && is_array($filters->attendance_ulids), function ($builder) use ($filters) {
+                $builder->whereIn('attendances.ulid', $filters->attendance_ulids);
             })
             ->when((
                 (isset($filters->date_from) && Carbon::createFromFormat('Y-m-d', $filters->date_from)) &&
@@ -100,7 +100,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
     public function show($id): Attendance
     {
         $filters = (object)[
-            'attendance_ulid' => $id,
+            'attendance_ulids' => [$id],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters);
