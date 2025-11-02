@@ -113,6 +113,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
     public function list($filters): LengthAwarePaginator
     {
         $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
             ['field' => 'attendances.date', 'direction' => 'ASC'],
         ];
 
