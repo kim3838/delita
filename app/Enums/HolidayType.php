@@ -11,9 +11,9 @@ enum HolidayType: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            self::SPECIAL => 'Special',
-            self::LEGAL => 'Legal',
-            self::DOUBLE => 'Double',
+            self::SPECIAL => 'Special Holiday',
+            self::LEGAL => 'Legal Holiday',
+            self::DOUBLE => 'Double Holiday',
         };
     }
 
