@@ -13,6 +13,7 @@ use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\Formula;
 use App\Models\Group;
+use App\Models\Holiday;
 use App\Models\IncomeTax;
 use App\Models\JsonPreset;
 use App\Models\Overtime;
@@ -61,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
             'attendance' => Attendance::class,
             'attendance_detail' => AttendanceDetail::class,
             'overtime' => Overtime::class,
+            'holiday' => Holiday::class,
         ]);
     }
 }

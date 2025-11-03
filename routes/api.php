@@ -33,6 +33,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
@@ -328,6 +329,12 @@ Route::group([
     Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);
     Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
     Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
+
+    //Holiday
+    Route::get('holidays', [HolidayController::class, 'index']);
+    Route::post('holiday', [HolidayController::class, 'store']);
+    Route::patch('holiday/{holidayUlid}', [HolidayController::class, 'update']);
+    Route::delete('holidays', [HolidayController::class, 'batchDestroy']);
 });
 
 Route::group([

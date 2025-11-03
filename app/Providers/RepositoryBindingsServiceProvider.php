@@ -25,6 +25,7 @@ use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\GroupRepository;
+use App\Blueprint\Repositories\HolidayRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
@@ -60,6 +61,7 @@ use App\Concrete\Repositories\EmployeeShiftRepositoryEloquent;
 use App\Concrete\Repositories\EmploymentProfileRepositoryEloquent;
 use App\Concrete\Repositories\FormulaRepositoryEloquent;
 use App\Concrete\Repositories\GroupRepositoryEloquent;
+use App\Concrete\Repositories\HolidayRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
@@ -113,6 +115,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'attendance' => AttendanceRepositoryEloquent::class,
         'attendance_detail' => AttendanceDetailRepositoryEloquent::class,
         'overtime' => OvertimeRepositoryEloquent::class,
+        'holiday' => HolidayRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -148,6 +151,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         AttendanceRepository::class => AttendanceRepositoryEloquent::class,
         AttendanceDetailRepository::class => AttendanceDetailRepositoryEloquent::class,
         OvertimeRepository::class => OvertimeRepositoryEloquent::class,
+        HolidayRepository::class => HolidayRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -188,6 +192,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'attendance',
             'attendance_detail',
             'overtime',
+            'holiday',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -223,6 +228,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             AttendanceRepository::class,
             AttendanceDetailRepository::class,
             OvertimeRepository::class,
+            HolidayRepository::class,
         ];
     }
 }
