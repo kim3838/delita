@@ -22,6 +22,8 @@ return new class extends Migration
             $table->boolean('active');
             $table->date('effective_date');
             $table->timestamps();
+
+            $table->unique(['company_id', 'date']);
         });
     }
 
