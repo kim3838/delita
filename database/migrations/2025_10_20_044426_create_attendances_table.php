@@ -24,6 +24,8 @@ return new class extends Migration
             $table->dateTime('last_out');
             $table->smallInteger('status')->default(AttendanceStatus::NOT_SPECIFIED);
             $table->timestamps();
+
+            $table->unique(['employee_id', 'shift_id', 'date']);
         });
     }
 
