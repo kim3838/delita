@@ -18,13 +18,17 @@ use Illuminate\Support\Facades\App;
 
 class ShiftController extends Controller
 {
+    public function __construct(
+        protected readonly ShiftRepository $repository
+    ){}
+
     public function index(Request $request)
     {
         if($request->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
 
-            $data = App::make(ShiftRepository::class)->list($filters);
+            $data = $this->repository->list($filters);
 
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class)
@@ -42,7 +46,7 @@ class ShiftController extends Controller
 
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
-                    App::make(ShiftRepository::class)->selection($filters),
+                    $this->repository->selection($filters),
                     SelectionTransformer::class
                 )
             ]);
@@ -55,7 +59,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            $shift = App::make(ShiftRepository::class)->store($request->validated());
+            $shift = $this->repository->store($request->validated());
 
             $schedules = collect($request->get('shift_schedules'))->sortBy('week_day');
 
@@ -73,7 +77,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            $shift = App::make(ShiftRepository::class)->update($shiftId, $request->validated());
+            $shift = $this->repository->update($shiftId, $request->validated());
 
             $schedules = collect($request->get('shift_schedules'))->sortBy('week_day');
 
@@ -94,7 +98,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            $shift = App::make(ShiftRepository::class)->show($ulid);
+            $shift = $this->repository->show($ulid);
 
             $shiftSchedules = [];
 
@@ -124,7 +128,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            $shift = App::make(ShiftRepository::class)->check($ulid);
+            $shift = $this->repository->check($ulid);
 
             return ResponseJson::successfulResponse(['shift' => $shift]);
         }
@@ -136,7 +140,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            App::make(ShiftRepository::class)->delete($shiftId);
+            $this->repository->delete($shiftId);
 
             return ResponseJson::successfulResponse();
         }
