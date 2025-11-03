@@ -46,6 +46,7 @@ class AttendanceController extends Controller
 
         abort(404);
     }
+
     public function show(Request $request, $ulid)
     {
         if($request->expectsJson()){
