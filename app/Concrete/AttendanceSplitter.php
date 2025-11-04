@@ -159,12 +159,12 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Breakdown work periods by shift breakdown split type with holiday and rest day info,
          * Separates schedule and overtime by $breakdown->schedule and $breakdown->overtime
          **/
-        $breakdown = $this->breakdownWorkPeriods($workPeriods);
+        list($scheduleBreakdown, $overtimeBreakdown) = $this->breakdownWorkPeriods($workPeriods);
 
         /**
          * Apply attendance on a broken down shift schedule
          **/
-        $attendanceDetails = $this->breakdownAttendance($breakdown->schedule, $parsedAttendance);
+        $attendanceDetails = $this->breakdownAttendance($scheduleBreakdown, $parsedAttendance);
 
         /**
          * Apply irregularities on a broken down shift schedule: late and under time
@@ -175,7 +175,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Apply overtime
          **/
         $attendanceDetails = $overtime
-            ? array_merge($attendanceDetails, $this->breakdownOvertime($breakdown->overtime, $overtime))
+            ? array_merge($attendanceDetails, $this->breakdownOvertime($overtimeBreakdown, $overtime))
             : $attendanceDetails;
 
         /**

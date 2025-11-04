@@ -458,7 +458,7 @@ trait WorkPeriod
         return $periods;
     }
 
-    protected function breakdownWorkPeriods(array $periods): object
+    protected function breakdownWorkPeriods(array $periods): array
     {
         $breakdownSequence = 1;
         $schedule = [];
@@ -480,9 +480,9 @@ trait WorkPeriod
             }
         }
 
-        return (object)[
-            'schedule' => $schedule,
-            'overtime' => $overtime,
+        return [
+            $schedule,
+            $overtime
         ];
     }
 
