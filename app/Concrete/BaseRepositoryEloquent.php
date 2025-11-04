@@ -2,9 +2,10 @@
 
 namespace App\Concrete;
 
-use App\Exceptions\RepositoryException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use Illuminate\Container\Container as Application;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
@@ -16,11 +17,11 @@ use Illuminate\Support\Str;
 
 abstract class BaseRepositoryEloquent
 {
-    protected $app;
+    protected Application $app;
 
-    protected $model;
+    protected Model $model;
 
-    protected $modelAlias;
+    protected string $modelAlias;
 
     /**
      * Specify Model class name
@@ -30,27 +31,35 @@ abstract class BaseRepositoryEloquent
     abstract public function model(): string;
 
     /**
-     * @throws RepositoryException
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
-        $this->makeModel();
-        $this->makeModelAlias();
+        try {
+
+            $this->app = $app;
+            $this->makeModel();
+            $this->makeModelAlias();
+        } catch (UnexpectedException|BindingResolutionException $e) {
+
+        }
     }
 
+    /**
+     * @throws UnexpectedException
+     * @throws BindingResolutionException
+     */
     public function makeModel()
     {
         $model = $this->app->make($this->model());
 
         if(!$model instanceof Model){
-            throw new RepositoryException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
+            throw new UnexpectedException("Class {$this->model()} must be an instance of Illuminate\\Database\\Eloquent\\Model");
         }
 
         return $this->model = $model;
     }
 
-    public function makeModelAlias()
+    public function makeModelAlias(): false|int|string
     {
         $morphMap = Relation::morphMap();
 
