@@ -6,7 +6,7 @@ use App\Blueprint\AttendanceSplitterInterface;
 use App\Enums\AttendanceStatus;
 use App\Enums\HolidayType;
 use App\Enums\ShiftBreakDownSplitType;
-use App\Exceptions\NotFoundException;
+use App\Exceptions\UnexpectedException;
 use App\Helpers\TimeHelper;
 use App\Models\Attendance;
 use App\Models\Company;
@@ -37,7 +37,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
     /**
      *
-     * @throws NotFoundException
+     * @throws UnexpectedException
      */
     public function generate(Attendance $attendance, $test = false, $debug = false): bool | array
     {
@@ -801,7 +801,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     }
 
     /**
-     * @throws NotFoundException
+     * @throws UnexpectedException
      */
     protected function breakdownIrregularities(object $attendance): array
     {
@@ -859,7 +859,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         }
 
         if(!is_numeric($firstInOrderSequence) && !$allTimeOutOfShift){
-            throw new NotFoundException("First in order sequence not found: breakdown @ breakdown irregularities [" . __LINE__ . "]");
+            throw new UnexpectedException("First in order sequence not found: breakdown @ breakdown irregularities [" . __LINE__ . "]");
         }
 
         /**

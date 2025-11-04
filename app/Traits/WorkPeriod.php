@@ -9,7 +9,7 @@ use App\Enums\HolidayType;
 use App\Enums\HourlyRateType;
 use App\Enums\ShiftBreakDownSplitType;
 use App\Enums\WorkHourType;
-use App\Exceptions\NotFoundException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
 use App\Models\Shift;
@@ -259,7 +259,7 @@ trait WorkPeriod
     }
 
     /**
-     * @throws NotFoundException
+     * @throws UnexpectedException
      */
     function setShift(int|Shift $shift): void
     {
@@ -271,7 +271,7 @@ trait WorkPeriod
             : Shift::query()->find($shift);
 
         if(empty($this->shift)){
-            throw new NotFoundException('Shift not found');
+            throw new UnexpectedException('Shift not found');
         }
 
         $shift = clone $this->shift;
@@ -291,9 +291,9 @@ trait WorkPeriod
     }
 
     /**
-     * @throws NotFoundException
+     * @throws UnexpectedException
      */
-    function setAttendanceSchedule(Carbon $attendanceDate): void
+    protected function setAttendanceSchedule(Carbon $attendanceDate): void
     {
         $attendanceDayOfWeek = $attendanceDate->dayOfWeek;
 
@@ -302,7 +302,7 @@ trait WorkPeriod
             ->first();
 
         if(empty($this->attendanceSchedule)){
-            throw new NotFoundException("Attendance schedule not found: T.WorkPeriod@setAttendanceSchedule [" . __LINE__ . "]");
+            throw new UnexpectedException("Attendance schedule not found: T.WorkPeriod@setAttendanceSchedule [" . __LINE__ . "]");
         }
 
         $this->attendanceScheduleHasLunchBreak = boolval($this->attendanceSchedule['has_lunch_break']);

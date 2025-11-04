@@ -7,6 +7,7 @@ use App\Blueprint\PrototypeInterface;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\PrototypeConcrete;
 use App\Concrete\Utilities\UserSession as UserSessionUtility;
+use App\Exceptions\UnexpectedException;
 use App\Models\Company;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,10 +28,10 @@ class UtilityServiceProvider extends ServiceProvider
 
         $this->app->bind(AttendanceSplitterInterface::class, function ($app, $parameters) {
 
-            $company = $parameters['company'] ?? null;
+            list($company) = $parameters;
 
             if(!$company instanceof Company){
-                throw new \InvalidArgumentException("company must be an instance of App\\Models\\Company");
+                throw new UnexpectedException("Company must be an instance of App\\Models\\Company C.UtilityServiceProvider [" . __LINE__ . "]");
             }
 
             return new AttendanceSplitter($company);
