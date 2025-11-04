@@ -5,7 +5,9 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
+use App\Concrete\AttendanceSplitter;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Exceptions\UnexpectedException;
 use App\Models\Attendance;
 use App\Models\Company;
 use Carbon\Carbon;
@@ -20,11 +22,16 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         return Attendance::class;
     }
 
-    public function update($id, $attributes)
+    /**
+     *
+     * @throws UnexpectedException
+     */
+    public function update($id, $attributes, ?AttendanceSplitter $splitterInterface = null)
     {
-        $attendance = $this->model::where('ulid', $id)->firstOrFail();
+        $attendanceSplitter = $splitterInterface
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $attendanceSplitter = app(AttendanceSplitterInterface::class, ['company' => Company::query()->find($attributes['company_id'])]);
+        $attendance = $this->model::where('ulid', $id)->firstOrFail();
 
         $update = collect($attributes)->except(['company_id', 'employee_id', 'shift_id'])->toArray();
 
