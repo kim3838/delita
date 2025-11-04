@@ -29,6 +29,9 @@ abstract class BaseRepositoryEloquent
      */
     abstract public function model(): string;
 
+    /**
+     * @throws RepositoryException
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
