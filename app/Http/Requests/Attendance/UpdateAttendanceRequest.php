@@ -67,10 +67,8 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                         /**
                          * After setting up shift,
                          * Get the shift work day by attendance date
-                         * Get the schedule for the attendance date
                          **/
                         $this->setAttendanceSchedule($date);
-                        $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
 
                         /**
                          * Validate attendance shift details if still match the current shift and schedule settings
@@ -97,6 +95,11 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                         } else if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
                             $fail('Shift schedule settings have changed. Please re-import attendance');
                         } else {
+
+                            /**
+                             * Get the schedule for the attendance date
+                             **/
+                            $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
 
                             $firstIn = Carbon::parse($this->input('first_in'));
                             $lunchOut = empty($this->input('lunch_out'))? null : Carbon::parse($this->input('lunch_out'));
