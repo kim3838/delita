@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Blueprint\Repositories\AttendanceDetailRepository;
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Attendance\BatchDestroyAttendanceRequest;
@@ -76,6 +77,9 @@ class AttendanceController extends Controller
         abort(404);
     }
 
+    /**
+     * @throws UnexpectedException
+     */
     public function update(UpdateAttendanceRequest $request, $ulid)
     {
         if($request->expectsJson()){
