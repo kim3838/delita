@@ -38,7 +38,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
     }
 
     /**
-     * @throws NotFoundException
+     *
+     * @throws UnexpectedException
      */
     public function validateData($data, $companyId): array
     {
@@ -256,7 +257,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
     }
 
     /**
-     * @throws NotFoundException
+     *
+     * @throws UnexpectedException
      */
     public function resolvedData($data, $companyId): array
     {
@@ -282,7 +284,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $shiftAssignment = Employee::query()->find($row['employee_id'])->shifts->where('id', $this->shift->id)->first()?->pivot;
 
             if(empty($shiftAssignment)){
-                throw new NotFoundException("Attendance shift assignment not found: C.AttendanceImportConcrete@resolvedData [" . __LINE__ . "]");
+                throw new UnexpectedException("Attendance shift assignment not found: C.AttendanceImportConcrete [" . __LINE__ . "]");
             }
 
             $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($this->attendanceSchedule);
