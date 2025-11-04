@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Attendance;
 use App\Models\AttendanceDetail;
 use App\Models\Company;
+use App\Models\CompanyFormula;
 use App\Models\Compensation;
 use App\Models\Deduction;
 use App\Models\Department;
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
             'formula' => Formula::class,
             'json_preset' => JsonPreset::class,
             'company' => Company::class,
+            'company_formula' => CompanyFormula::class,
             'pay_frequency' => PayFrequency::class,
             'employee' => Employee::class,
             'department' => Department::class,
