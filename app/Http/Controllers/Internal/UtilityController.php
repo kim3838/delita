@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Internal;
 
+use App\Blueprint\PrototypeInterface;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Models\Prototype;
@@ -24,6 +25,29 @@ class UtilityController extends Controller
     public function debug(Request $request)
     {
         return $this->debugTimezones($request);
+    }
+
+    public function debugSingletonBindings()
+    {
+        $instance = app(PrototypeInterface::class);
+        $instance->setKey(4);
+        $instance->showKey();
+
+        $anotherInstance = app(PrototypeInterface::class);
+        $anotherInstance->showKey();
+
+        $loops = [1,2];
+
+        foreach ($loops as $value) {
+            $loopInstance = app(PrototypeInterface::class);
+            $loopInstance->setKey($value);
+            $loopInstance->showKey();
+        }
+
+        $anotherInstance = app(PrototypeInterface::class);
+        $anotherInstance->showKey();
+
+        return ResponseJson::successfulResponse();
     }
 
     public function debugCalendarAssets()

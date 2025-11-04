@@ -3,13 +3,19 @@
 namespace App\Providers;
 
 use App\Blueprint\AttendanceSplitterInterface;
+use App\Blueprint\PrototypeInterface;
 use App\Concrete\AttendanceSplitter;
+use App\Concrete\PrototypeConcrete;
 use App\Concrete\Utilities\UserSession as UserSessionUtility;
 use App\Models\Company;
 use Illuminate\Support\ServiceProvider;
 
 class UtilityServiceProvider extends ServiceProvider
 {
+    public $singletons = [
+        PrototypeInterface::class => PrototypeConcrete::class,
+    ];
+
     /**
      * Register services.
      */
