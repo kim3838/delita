@@ -7,7 +7,8 @@ use App\Blueprint\Imports\AttendanceImport;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Concrete\BaseImportConcrete;
-use App\Exceptions\NotFoundException;
+use App\Enums\ShiftHolidayPolicy;
+use App\Exceptions\UnexpectedException;
 use App\Exports\BlankAttendanceTemplateExport;
 use App\Facades\Fractal;
 use App\Http\Requests\Attendance\ImportAttendance;
@@ -150,6 +151,16 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $this->setAttendanceSchedule($date);
 
             /**
+             * Attendance date should not be a day off
+             **/
+            if($this->attendanceScheduleIsDayOff){
+                $validationErrors[] = 'Attendance date is a day off.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
+            }
+
+            /**
              * Get the schedule for the attendance date
              **/
             $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
@@ -196,10 +207,18 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             }
 
             /**
-             * Attendance date should not be a day off
+             * Check if the attendance's date is a holiday
+             * And shift holiday policy if its day off
              **/
-            if($this->attendanceScheduleIsDayOff){
-                $validationErrors[] = 'Attendance date is a day off.';
+            $isAttendanceDateIsHoliday = !empty($this->getCompanyHolidayByDate($date->toDateString(), $companyId));
+            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+
+            /**
+             * If the attendance's date is a holiday, and shift holiday policy is a day off, attendance is not needed
+             **/
+            if($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff){
+
+                $validationErrors[] = 'Shift does not required attendance on holiday.';
 
                 $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
                 continue;
@@ -263,7 +282,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
     public function resolvedData($data, $companyId): array
     {
         $repository = App::make(AttendanceRepository::class);
-        $attendanceSplitter = app(AttendanceSplitterInterface::class, ['company' => Company::query()->find($companyId)]);
+        $attendanceSplitter = App::make(AttendanceSplitterInterface::class, [Company::query()->find($companyId)]);
+        $shiftSchedule = App::make(ShiftScheduleRepository::class);
 
         foreach ($data as $index => $row) {
 
@@ -287,7 +307,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 throw new UnexpectedException("Attendance shift assignment not found: C.AttendanceImportConcrete [" . __LINE__ . "]");
             }
 
-            $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($this->attendanceSchedule);
+            $shiftScheduleHydrated = $shiftSchedule->hydrateItem($this->attendanceSchedule);
 
             $shiftDetail = [
                 ...Fractal::item($shiftAssignment, EmployeeShiftPatchableTransformer::class),
@@ -305,7 +325,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
 
             if($existing){
                 //Attendance splitter is also called on attendance repository update
-                $repository->update($existing->ulid, $save);
+                $repository->update($existing->ulid, $save, $attendanceSplitter);
 
             } else {
                 //Generate attendance splitter on newly created attendance

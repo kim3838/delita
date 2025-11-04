@@ -8,10 +8,12 @@ use App\Enums\Formulable;
 use App\Enums\HolidayType;
 use App\Enums\HourlyRateType;
 use App\Enums\ShiftBreakDownSplitType;
+use App\Enums\ShiftHolidayPolicy;
 use App\Enums\WorkHourType;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
+use App\Models\Holiday;
 use App\Models\Shift;
 use App\Transformers\ShiftSchedule\PatchableTransformer;
 use Carbon\Carbon;
@@ -27,6 +29,8 @@ trait WorkPeriod
     protected ?Shift $shift = null;
     //Set on generate: shift work_start_grace_time
     protected int $shiftWorkStartGraceTime = 0;
+    //Set on generate: shift holiday_policy
+    protected ?ShiftHolidayPolicy $shiftHolidayPolicy = null;
     //Set on generate: shift require_lunch_time_in_and_out
     protected bool $shiftRequireLunchOutAndIn = false;
     //Set on generate: shift lunch_start_grace_time
@@ -47,8 +51,6 @@ trait WorkPeriod
     protected ?bool $attendanceScheduleIsFlexible = false;
     //Set on generate: Total work hours with breaks from attendance schedule
     protected ?int $attendanceScheduleTotalWorkHoursWithBreaks = 0;
-    //Set on construct: holidays
-    protected array $holidays = [];
     protected ?Collection $companyBasicSalaryFormulaSettings = null;
     protected ?Collection $companyOvertimeFormulaSettings = null;
     protected ?Collection $basicSalaryRegularRates = null;
@@ -284,6 +286,7 @@ trait WorkPeriod
             ->values()
             ->all();
 
+        $this->shiftHolidayPolicy = $this->shift->holiday_policy;
         $this->shiftWorkStartGraceTime = $this->shift->work_start_grace_time;
         $this->shiftRequireLunchOutAndIn = $this->shift->require_lunch_time_in_and_out;
         $this->shiftLunchStartGraceTime = $this->shift->lunch_start_grace_time;
@@ -593,10 +596,8 @@ trait WorkPeriod
     protected function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType): HourlyRateType
     {
         $dateString = $date->format('Y-m-d');
-        $holidays = collect($this->holidays);
-        $holidayDate = $holidays->where('date', $dateString)->first();
 
-        $holidayType = !empty($holidayDate) ? $holidayDate['type'] : null;
+        $holidayType = $this->getDateHolidayType($dateString);
 
         $restDay = in_array($date->dayOfWeek, $this->restDays);
 
@@ -714,5 +715,41 @@ trait WorkPeriod
         }
 
         return $multiplier;
+    }
+
+    protected function getDateHolidayType($date): ?HolidayType
+    {
+        $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+
+        return !empty($holiday) ? $holiday->type : null;
+    }
+
+    protected function getCompanyHolidayByDate(string $date, $companyId = null): ?Holiday
+    {
+        if(empty($companyId)){
+            return null;
+        }
+
+        // Convert date to Carbon instance for easier manipulation
+        $searchDate = Carbon::parse($date);
+
+        return Holiday::query()
+            ->where('active', true)
+            ->where('company_id', $companyId)
+            ->where('effective_date', '<=', $searchDate->format('Y-m-d'))
+            ->where(function ($query) use ($searchDate) {
+                // For recurring holidays: match month and day
+                $query->where(function ($subQuery) use ($searchDate) {
+                    $subQuery->where('recurring', true)
+                        ->whereRaw('MONTH(date) = ?', [$searchDate->month])
+                        ->whereRaw('DAY(date) = ?', [$searchDate->day]);
+                })
+                // For non-recurring holidays: exact date match
+                ->orWhere(function ($subQuery) use ($searchDate) {
+                    $subQuery->where('recurring', false)
+                        ->where('date', $searchDate->format('Y-m-d'));
+                });
+            })
+            ->first();
     }
 }

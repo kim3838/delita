@@ -4,8 +4,8 @@ namespace App\Concrete;
 
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Enums\AttendanceStatus;
-use App\Enums\HolidayType;
 use App\Enums\ShiftBreakDownSplitType;
+use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
 use App\Helpers\TimeHelper;
 use App\Models\Attendance;
@@ -20,14 +20,6 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     public function __construct(
         protected readonly ?Company $company
     ){
-        //Set company holidays
-        $this->holidays = [
-            [
-                'date' => '2025-08-02',
-                'type' => HolidayType::SPECIAL
-            ]
-        ];
-
         //Set company formula settings
         $this->resolveCompanyFormulaSettings();
 
@@ -84,15 +76,27 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          **/
         $this->setAttendanceSchedule($date);
 
-        $schedule = $this->attendanceSchedule;
-
+        /**
+         * If the attendance date is a day off, return
+         **/
         if($this->attendanceScheduleIsDayOff){
+            return [];
+        }
+
+        $isAttendanceDateIsHoliday = !empty($this->getDateHolidayType($date->toDateString()));
+        $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+
+        /**
+         * If the attendance date is a holiday and shift holiday policy is a day off, return
+         **/
+        if($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff){
             return [];
         }
 
         /**
          * Parse schedule times
          **/
+        $schedule = $this->attendanceSchedule;
         $schedule = $this->parseSchedule($schedule, $date);
 
         if(!$test && $debug){
