@@ -110,17 +110,17 @@ trait WorkPeriod
             ->sortBy('order');
     }
 
-    function companyBasicSalaryFormulaSettings(): ?Collection
+    protected function companyBasicSalaryFormulaSettings(): ?Collection
     {
         return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::BASIC_SALARY->value);
     }
 
-    function companyOvertimeFormulaSettings(): ?Collection
+    protected function companyOvertimeFormulaSettings(): ?Collection
     {
         return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::OVERTIME->value);
     }
 
-    function getBasicSalaryRegularRates(): ?Collection
+    protected function getBasicSalaryRegularRates(): ?Collection
     {
         if(empty($this->companyBasicSalaryFormulaSettings)){
             return null;
@@ -155,7 +155,7 @@ trait WorkPeriod
         });
     }
 
-    function getBasicSalaryNightDifferentialRates(): ?Collection
+    protected function getBasicSalaryNightDifferentialRates(): ?Collection
     {
         if(empty($this->companyBasicSalaryFormulaSettings)){
             return null;
@@ -190,7 +190,7 @@ trait WorkPeriod
         });
     }
 
-    function getOvertimeRegularRates(): ?Collection
+    protected function getOvertimeRegularRates(): ?Collection
     {
         if(empty($this->companyOvertimeFormulaSettings)){
             return null;
@@ -225,7 +225,7 @@ trait WorkPeriod
         });
     }
 
-    function getOvertimeNightDifferentialRates(): ?Collection
+    protected function getOvertimeNightDifferentialRates(): ?Collection
     {
         if(empty($this->companyOvertimeFormulaSettings)){
             return null;
@@ -314,7 +314,7 @@ trait WorkPeriod
         $this->attendanceScheduleTotalWorkHoursWithBreaks = TimeHelper::timeToMinutes($this->attendanceSchedule['total_work_hours_with_breaks']);
     }
 
-    function resetShift(): void
+    protected function resetShift(): void
     {
         $this->shift = null;
         $this->shiftWorkStartGraceTime = 0;
