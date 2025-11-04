@@ -65,6 +65,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendance_shift_details.code AS shift_code",
                 "attendance_shift_details.name AS shift_name",
                 "attendance_shift_details.type AS shift_type",
+                "attendance_shift_details.holiday_policy AS shift_holiday_policy",
                 "attendance_shift_details.work_start_grace_time AS shift_work_start_grace_time",
                 "attendance_shift_details.require_lunch_time_in_and_out AS shift_require_lunch_time_in_and_out",
                 "attendance_shift_details.lunch_start_grace_time AS shift_lunch_start_grace_time",
