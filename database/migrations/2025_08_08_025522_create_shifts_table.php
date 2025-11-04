@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ShiftHolidayPolicy;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->string('code');
             $table->string('name');
             $table->smallInteger('type');
+            $table->smallInteger('holiday_policy')->default(ShiftHolidayPolicy::DAY_OFF);
             $table->tinyInteger('work_start_grace_time')->default(0);
             $table->boolean('require_lunch_time_in_and_out')->default(false);
             $table->tinyInteger('lunch_start_grace_time')->default(0);

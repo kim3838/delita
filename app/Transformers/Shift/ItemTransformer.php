@@ -17,6 +17,7 @@ class ItemTransformer extends TransformerAbstract
             'code' => $model->code,
             'name' => $model->name,
             'type' => $model->type->toArray(),
+            'holiday_policy' => $model->holiday_policy->toArray(),
             'work_start_grace_time' => $model->work_start_grace_time,
             'work_start_grace_time_readable' => $model->work_start_grace_time > 0
                 ? $model->work_start_grace_time . ($model->work_start_grace_time > 1 ? ' Minutes' : ' Minute')

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ShiftHolidayPolicy;
 use App\Enums\ShiftType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Shift extends Model
         'code',
         'name',
         'type',
+        'holiday_policy',
         'work_start_grace_time',
         'require_lunch_time_in_and_out',
         'lunch_start_grace_time',
@@ -32,6 +34,7 @@ class Shift extends Model
         'code' => 'string',
         'name' => 'string',
         'type' => ShiftType::class,
+        'holiday_policy' => ShiftHolidayPolicy::class,
         'work_start_grace_time' => 'int',
         'require_lunch_time_in_and_out' => 'boolean',
         'lunch_start_grace_time' => 'int',

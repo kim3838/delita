@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ShiftHolidayPolicy;
 use App\Enums\ShiftType;
 use App\Enums\WeekDay;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ class AttendanceShiftDetail extends Model
         'code',
         'name',
         'type',
+        'holiday_policy',
         'work_start_grace_time',
         'require_lunch_time_in_and_out',
         'lunch_start_grace_time',
@@ -67,6 +69,7 @@ class AttendanceShiftDetail extends Model
         'code' => 'string',
         'name' => 'string',
         'type' => ShiftType::class,
+        'holiday_policy' => ShiftHolidayPolicy::class,
         'work_start_grace_time' => 'int',
         'require_lunch_time_in_and_out' => 'boolean',
         'lunch_start_grace_time' => 'int',

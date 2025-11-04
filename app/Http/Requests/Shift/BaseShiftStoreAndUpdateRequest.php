@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Shift;
 
+use App\Enums\ShiftHolidayPolicy;
 use App\Enums\ShiftType;
 use App\Helpers\TimeHelper;
 use Carbon\Carbon;
@@ -16,6 +17,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'company_id' => ['required', 'integer', 'exists:companies,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'integer', Rule::in([ShiftType::REGULAR->value, ShiftType::GRAVEYARD->value])],
+            'holiday_policy' => ['required', 'integer', Rule::in([ShiftHolidayPolicy::DAY_OFF, ShiftHolidayPolicy::ATTENDANCE_REQUIRED])],
             'work_start_grace_time' => ['required', 'integer', 'between:0,30'],
             'require_lunch_time_in_and_out' => ['required', 'boolean'],
             'lunch_start_grace_time' => ['sometimes', 'required', 'integer', 'between:0,30'],

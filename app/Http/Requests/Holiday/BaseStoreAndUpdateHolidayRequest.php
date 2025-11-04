@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Holiday;
 
+use App\Models\Holiday;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BaseStoreAndUpdateHolidayRequest extends FormRequest
@@ -10,13 +12,42 @@ class BaseStoreAndUpdateHolidayRequest extends FormRequest
     {
         return [
             'company_id' => 'required|numeric|integer',
-            'date' => 'required|date_format:Y-m-d',
             'active' => 'required|boolean',
             'name' => 'required|string|max:255',
             'type' => 'required|numeric|integer',
-            'recurring' => 'required|boolean',
+            'recurring' => [
+                'required',
+                'boolean',
+                function ($attribute, $value, $fail) {
+                    $this->validateReccuring($attribute, $value, $fail, $this->route('holidayUlid'));
+                }
+            ],
             'effective_date' => 'required|date_format:Y-m-d',
         ];
+    }
+
+    public function validateReccuring($attribute, $value, $fail, $ulid = null): void
+    {
+        $date = Carbon::parse($this->input('date'));
+        $companyId = $this->input('company_id');
+
+        /**
+         * If holiday is recurring
+         * Check if there's already a holiday with the same month and day
+         **/
+        $existingHoliday = Holiday::query()
+            ->where('company_id', $companyId)
+            ->when($ulid, function ($query, $ulid) {
+                $query->where('ulid', '!=', $ulid);
+            })
+            ->where('recurring', true)
+            ->whereMonth('date', $date->month)
+            ->whereDay('date', $date->day)
+            ->first();
+
+        if ($existingHoliday) {
+            $fail('A recurring holiday already exists for ' . $date->format('F jS'));
+        }
     }
 
     public function messages(): array

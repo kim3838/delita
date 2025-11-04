@@ -25,6 +25,7 @@ class ListTransformer extends TransformerAbstract
             'code' => $attendance->shift_code,
             'name' => $attendance->shift_name,
             'type' => $attendance->shift_type,
+            'holiday_policy' => $attendance->shift_holiday_policy,
             'work_start_grace_time' => $attendance->shift_work_start_grace_time,
             'require_lunch_time_in_and_out' => $attendance->shift_require_lunch_time_in_and_out,
             'lunch_start_grace_time' => $attendance->shift_lunch_start_grace_time,
