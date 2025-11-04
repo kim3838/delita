@@ -38511,7 +38511,7 @@ class AttendanceDetailsTests
 
     public function run($debug = false): string
     {
-        $attendanceSplitter = app(AttendanceSplitterInterface::class, ['company' => $this->company]);
+        $attendanceSplitter = app(AttendanceSplitterInterface::class, [$this->company]);
         $attendanceRepository = app(AttendanceRepository::class);
 
         $passed = 0;
