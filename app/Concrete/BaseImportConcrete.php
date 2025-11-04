@@ -4,12 +4,12 @@ namespace App\Concrete;
 
 use App\Blueprint\ImportInterface;
 use App\Exceptions\RepositoryException;
+use App\Traits\HasPolicy;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
@@ -29,6 +29,8 @@ abstract class BaseImportConcrete implements ImportInterface
     abstract public function exportTemplate(): string;
     abstract public function validateData($data, $companyId): array;
     abstract public function resolvedData($data, $companyId): array;
+
+    use HasPolicy;
 
     /**
      * @throws BindingResolutionException
@@ -62,11 +64,6 @@ abstract class BaseImportConcrete implements ImportInterface
         $morphMap = Relation::morphMap();
 
         return $this->modelAlias = array_search($this->model(), $morphMap, true);
-    }
-
-    protected function isActionAuthorized($action, $model): bool
-    {
-        return Gate::allows($action, $model);
     }
 
     protected function readValidationRules(): array
