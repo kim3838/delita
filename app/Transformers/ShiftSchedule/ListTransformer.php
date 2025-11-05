@@ -3,11 +3,14 @@
 namespace App\Transformers\ShiftSchedule;
 
 use App\Models\ShiftSchedule;
+use App\Traits\HasTime;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
+    use HasTime;
+
     public function transform(ShiftSchedule $model): array
     {
         return [
@@ -19,7 +22,7 @@ class ListTransformer extends TransformerAbstract
             'is_flexible' => $model->is_flexible,
             'timezone' => $model->timezone,
             'work_start' => $model->work_start ? Carbon::parse($model->work_start)->format('H:i') : $model->work_start,
-            'work_end' => $model->work_end ? Carbon::parse($model->work_end)->format('H:i') : $model->work_end,
+            'work_end' => $model->work_end ? $this->formatEndTime(Carbon::parse($model->work_end)) : $model->work_end,
             'total_work_hours_with_breaks' => $model->total_work_hours_with_breaks,
             'has_lunch_break' => (int)$model->has_lunch_break,
             'lunch_break_start' => $model->lunch_break_start ? Carbon::parse($model->lunch_break_start)->format('H:i') : $model->lunch_break_start,
