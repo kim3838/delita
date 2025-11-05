@@ -31,7 +31,7 @@
                 "value": "1.69"
             },
             {
-                "key": "special_holiday_overtime",
+                "key": "special_holiday",
                 "label": "Special Holiday",
                 "order": 3,
                 "type": "number",
@@ -39,7 +39,7 @@
                 "value": "1.69"
             },
             {
-                "key": "special_holiday_and_rest_day_overtime",
+                "key": "special_holiday_and_rest_day",
                 "label": "Special Holiday & Rest Day",
                 "order": 4,
                 "type": "number",
@@ -47,7 +47,7 @@
                 "value": "1.95"
             },
             {
-                "key": "legal_holiday_overtime",
+                "key": "legal_holiday",
                 "label": "Legal Holiday",
                 "order": 5,
                 "type": "number",
@@ -55,7 +55,7 @@
                 "value": "2.6"
             },
             {
-                "key": "legal_holiday_and_rest_day_overtime",
+                "key": "legal_holiday_and_rest_day",
                 "label": "Legal Holiday & Rest Day",
                 "order": 6,
                 "type": "number",
@@ -63,7 +63,7 @@
                 "value": "3.38"
             },
             {
-                "key": "double_holiday_overtime",
+                "key": "double_holiday",
                 "label": "Double Holiday",
                 "order": 7,
                 "type": "number",
@@ -71,7 +71,7 @@
                 "value": "3.9"
             },
             {
-                "key": "double_holiday_and_rest_day_overtime",
+                "key": "double_holiday_and_rest_day",
                 "label": "Double Holiday & Rest Day",
                 "order": 8,
                 "type": "number",
