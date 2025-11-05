@@ -164,17 +164,32 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Apply attendance on a broken down shift schedule
          **/
-        $attendanceDetails = $this->breakdownAttendance($scheduleBreakdown, $parsedAttendance);
+        list(
+            $attendanceBreakdown,
+            $firstIn,
+            $lunchOut,
+            $lunchIn,
+            $lastOut,
+            $allTimeOutOfShift
+        ) = $this->breakdownAttendance($scheduleBreakdown, $parsedAttendance);
 
         /**
          * Apply irregularities on a broken down shift schedule: late and under time
          **/
-        $attendanceDetails = $this->breakdownIrregularities($attendanceDetails);
+        $attendanceDetails = $this->breakdownIrregularities(
+            $attendanceBreakdown,
+            $firstIn,
+            $lunchOut,
+            $lunchIn,
+            $lastOut,
+            $allTimeOutOfShift
+        );
 
         /**
-         * Apply overtime
+         * Apply overtime if attendance has overtime
+         * and schedule is not flexible
          **/
-        $attendanceDetails = $overtime
+        $attendanceDetails = (!empty($overtime) && !$this->attendanceScheduleIsFlexible)
             ? array_merge($attendanceDetails, $this->breakdownOvertime($overtimeBreakdown, $overtime))
             : $attendanceDetails;
 
@@ -251,7 +266,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         }, $breakdown);
     }
 
-    protected function breakdownAttendance(array $breakdown, array $attendance): object
+    protected function breakdownAttendance(array $breakdown, array $attendance): array
     {
         $debug = false;
 
@@ -783,13 +798,13 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ]);
         }
 
-        return (object)[
-            'breakdown' => collect($breakdown)->sortBy('order')->values()->toArray(),
-            'first_in' => $firstIn,
-            'lunch_out' => $lunchOut,
-            'lunch_in' => $lunchIn,
-            'last_out' => $lastOut,
-            'all_time_out_of_shift' => $allTimeOutOfShift
+        return [
+            collect($breakdown)->sortBy('order')->values()->toArray(),
+            $firstIn,
+            $lunchOut,
+            $lunchIn,
+            $lastOut,
+            $allTimeOutOfShift
         ];
     }
 
@@ -807,8 +822,14 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     /**
      * @throws UnexpectedException
      */
-    protected function breakdownIrregularities(object $attendance): array
-    {
+    protected function breakdownIrregularities(
+        array $attendanceBreakdown,
+        Carbon $firstIn,
+        ?Carbon $lunchOut,
+        ?Carbon$lunchIn,
+        Carbon $lastOut,
+        bool $allTimeOutOfShift
+    ): array {
         $attendanceBreakdown = array_map(function ($split) {
             return [
                 ...$split,
@@ -823,9 +844,8 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                 'undertime' => 0,
                 'flexible_undertime' => 0,
             ];
-        }, $attendance->breakdown);
+        }, $attendanceBreakdown);
 
-        $allTimeOutOfShift = $attendance->all_time_out_of_shift;
         $firstInOrderSequence = null;
         $lastOrderSequence = collect($attendanceBreakdown)->max('order');
 
@@ -958,10 +978,10 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                  * Deduct actual duration of total duration of lunch out and lunch in
                  * */
                 if($split['first_in'] && $split['lunch_out'] && $split['lunch_in']&& $split['last_out'] && $this->shiftRequireLunchOutAndIn()){
-                    $split['actual_irregularity_duration_start'] = $attendance->lunch_out->format('Y-m-d H:i');
-                    $split['actual_irregularity_duration_end'] = $attendance->lunch_in->format('Y-m-d H:i');
+                    $split['actual_irregularity_duration_start'] = $lunchOut->format('Y-m-d H:i');
+                    $split['actual_irregularity_duration_end'] = $lunchIn->format('Y-m-d H:i');
 
-                    $irregularityDuration = intval($attendance->lunch_out->diffInMinutes($attendance->lunch_in, true));
+                    $irregularityDuration = intval($lunchOut->diffInMinutes($lunchIn, true));
                     $split['actual_irregularity_duration'] = $irregularityDuration;
                 }
 
