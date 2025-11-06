@@ -51,13 +51,12 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'shift_schedules.*.lunch_break_start' => [
                 function ($attribute, $value, $fail) {
                     $this->validateLunchBreakRequired($attribute, $value, $fail);
-                    $this->validateLunchBreakStart($attribute, $value, $fail);
+                    $this->validateLunchBreak($attribute, $value, $fail);
                 }
             ],
             'shift_schedules.*.lunch_break_end' => [
                 function ($attribute, $value, $fail) {
                     $this->validateLunchBreakRequired($attribute, $value, $fail);
-                    $this->validateLunchBreakEnd($attribute, $value, $fail);
                 }
             ],
             'shift_schedules.*.total_lunch_break_hours' => [
@@ -214,7 +213,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
         }
     }
 
-    private function validateLunchBreakStart($attribute, $value, $fail): void
+    private function validateLunchBreak($attribute, $value, $fail): void
     {
         $index = $this->getScheduleIndex($attribute);
         $schedule = $this->input("shift_schedules.{$index}");
@@ -239,47 +238,6 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
                 $workStartTime = Carbon::createFromFormat('H:i', $workStart);
                 $workEndTime = Carbon::createFromFormat('H:i', $workEnd);
                 $lunchStart = Carbon::createFromFormat('H:i', $lunchStart);
-
-                if ($workEndTime->lte($workStartTime)) {
-                    $workEndTime->addDay();
-                }
-
-                if ($lunchStart->lt($workStartTime)) {
-                    $lunchStart->addDay();
-                }
-
-                if ($lunchStart->lt($workStartTime) || $lunchStart->gt($workEndTime)) {
-                    $fail("{$weekDayName}: Lunch break start time should be between work start and work end times.");
-                }
-            }
-        }
-    }
-
-    private function validateLunchBreakEnd($attribute, $value, $fail): void
-    {
-        $index = $this->getScheduleIndex($attribute);
-        $schedule = $this->input("shift_schedules.{$index}");
-        $weekDayName = $schedule['week_day_name'] ?? 'Unknown';
-
-        // Should be null for day off
-        if ($schedule['is_day_off'] && $value !== null) {
-            $fail("{$weekDayName}: Lunch break time should be null when is day off.");
-            return;
-        }
-
-        // If one lunch break time is provided, both should be provided
-        $lunchStart = $schedule['lunch_break_start'];
-        $lunchEnd = $schedule['lunch_break_end'];
-
-        // Validate lunch break is within work hours
-        if ($lunchStart && $lunchEnd && !$schedule['is_day_off']) {
-            $workStart = $schedule['work_start'];
-            $workEnd = $schedule['work_end'];
-
-            if ($workEnd) {
-                $workStartTime = Carbon::createFromFormat('H:i', $workStart);
-                $workEndTime = Carbon::createFromFormat('H:i', $workEnd);
-                $lunchStart = Carbon::createFromFormat('H:i', $lunchStart);
                 $lunchEnd = Carbon::createFromFormat('H:i', $lunchEnd);
 
                 if ($workEndTime->lte($workStartTime)) {
@@ -290,12 +248,24 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
                     $lunchStart->addDay();
                 }
 
-                if ($lunchEnd->lt($lunchStart)) {
-                    $lunchEnd->addDay();
-                }
+                /**
+                 * Validate lunch start
+                 **/
+                if ($lunchStart->lt($workStartTime) || $lunchStart->gte($workEndTime)) {
+                    $fail("{$weekDayName}: Lunch break start time should be between work start and work end times.");
+                } else {
 
-                if ($lunchEnd->lt($lunchStart) || $lunchEnd->gt($workEndTime)) {
-                    $fail("{$weekDayName}: Lunch break end time should be between lunch start and work end times.");
+                    /**
+                     * Validate lunch end
+                     **/
+
+                    if ($lunchEnd->lt($lunchStart)) {
+                        $lunchEnd->addDay();
+                    }
+
+                    if ($lunchEnd->lte($lunchStart) || $lunchEnd->gt($workEndTime)) {
+                        $fail("{$weekDayName}: Lunch break end time should be between lunch start and work end times.");
+                    }
                 }
             }
         }
