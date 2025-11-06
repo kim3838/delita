@@ -26,7 +26,7 @@ class ListTransformer extends TransformerAbstract
             'total_work_hours_with_breaks' => $model->total_work_hours_with_breaks,
             'has_lunch_break' => (int)$model->has_lunch_break,
             'lunch_break_start' => $model->lunch_break_start ? Carbon::parse($model->lunch_break_start)->format('H:i') : $model->lunch_break_start,
-            'lunch_break_end' => $model->lunch_break_end ? Carbon::parse($model->lunch_break_end)->format('H:i') : $model->lunch_break_end,
+            'lunch_break_end' => $model->lunch_break_end ? $this->formatEndTime(Carbon::parse($model->lunch_break_end)) : $model->lunch_break_end,
             'total_lunch_break_hours' => $model->total_lunch_break_hours,
         ];
     }
