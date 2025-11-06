@@ -11,9 +11,8 @@ use App\Enums\Deduction;
 use App\Enums\EmploymentStatus;
 use App\Enums\EmploymentType;
 use App\Enums\Formulable;
-use App\Enums\Gender;
+use App\Enums\HolidayType;
 use App\Enums\IncomeTax;
-use App\Enums\MaritalStatus;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
@@ -465,6 +464,28 @@ class Development extends Seeder
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1003
         $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+
+        /**************************************************************************************************************************************************************************************************************/
+
+        //Company 1002-C Holidays
+        $company1002C->holidays()->create([
+            'ulid' => Str::ulid(),
+            'name' => 'Legal Recurring Jan 11th',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-01-11',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-01-11',
+        ]);
+        $company1002C->holidays()->create([
+            'ulid' => Str::ulid(),
+            'name' => 'Special Recurring Jan 13th',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-01-13',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-01-11',
+        ]);
     }
 
     public function createPayrollComponent(Model $company, $index, $formulableType, $component, $attributes): void
