@@ -110,4 +110,9 @@ class Company extends Model
     {
         return $this->hasMany(Group::class);
     }
+
+    public function holidays(): HasMany
+    {
+        return $this->hasMany(Holiday::class);
+    }
 }
