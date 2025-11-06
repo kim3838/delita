@@ -2,6 +2,7 @@
 
 namespace App\Transformers\AttendanceDetail;
 
+use App\Enums\ShiftBreakDownSplitType;
 use App\Helpers\TimeHelper;
 use App\Models\AttendanceDetail;
 use Carbon\Carbon;
@@ -17,9 +18,16 @@ class ListTransformer extends TransformerAbstract
             'split_start' => $attendanceDetail->split_start,
             'split_end' => $attendanceDetail->split_end,
             'split_duration' => TimeHelper::minutesToTime($attendanceDetail->split_duration),
-            'work_hour_type' => $attendanceDetail->work_hour_type->toArray(),
-            'hourly_rate_type' => $attendanceDetail->hourly_rate_type->toArray(),
-            'hourly_rate_multiplier' => $attendanceDetail->hourly_rate_multiplier,
+
+            'work_hour_type' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? $attendanceDetail->work_hour_type->toArray()
+                : null,
+            'hourly_rate_type' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? $attendanceDetail->hourly_rate_type->toArray()
+                : null,
+            'hourly_rate_multiplier' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? $attendanceDetail->hourly_rate_multiplier
+                : null,
             'base_rate_multiplier' => $attendanceDetail->base_rate_multiplier,
             'order' => $attendanceDetail->order,
             'actual_start' => empty($attendanceDetail->actual_start)
@@ -36,22 +44,24 @@ class ListTransformer extends TransformerAbstract
             'last_out' => $attendanceDetail->last_out,
             'overtime_start' => $attendanceDetail->overtime_start,
             'overtime_end' => $attendanceDetail->overtime_end,
-            'actual_present_start' => empty($attendanceDetail->actual_present_start)
-                ? null
-                : Carbon::parse($attendanceDetail->actual_present_start)->format('Y-m-d H:i'),
-            'actual_present_end' => empty($attendanceDetail->actual_present_end)
-                ? null
-                : Carbon::parse($attendanceDetail->actual_present_end)->format('Y-m-d H:i'),
-            'actual_present' => TimeHelper::minutesToTime($attendanceDetail->actual_present),
-            'actual_irregularity_duration_start' => empty($attendanceDetail->actual_irregularity_duration_start)
-                ? null
-                : Carbon::parse($attendanceDetail->actual_irregularity_duration_start)->format('Y-m-d H:i'),
-            'actual_irregularity_duration_end' => empty($attendanceDetail->actual_irregularity_duration_end)
-                ? null
-                : Carbon::parse($attendanceDetail->actual_irregularity_duration_end)->format('Y-m-d H:i'),
+            'actual_present_start' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? $attendanceDetail->actual_present_start?->format('Y-m-d H:i')
+                : null,
+            'actual_present_end' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? $attendanceDetail->actual_present_end?->format('Y-m-d H:i')
+                : null,
+            'actual_present' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
+                ? TimeHelper::minutesToTime($attendanceDetail->actual_present)
+                : null,
+            'actual_irregularity_duration_start' => $attendanceDetail->actual_irregularity_duration_start?->format('Y-m-d H:i'),
+            'actual_irregularity_duration_end' => $attendanceDetail->actual_irregularity_duration_end?->format('Y-m-d H:i'),
             'actual_irregularity_duration' => TimeHelper::minutesToTime($attendanceDetail->actual_irregularity_duration),
-            'late' => TimeHelper::minutesToTime($attendanceDetail->late),
-            'undertime' => TimeHelper::minutesToTime($attendanceDetail->undertime),
+            'late' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK])
+                ? TimeHelper::minutesToTime($attendanceDetail->late)
+                : null,
+            'undertime' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK])
+                ? TimeHelper::minutesToTime($attendanceDetail->undertime)
+                : null,
             'flexible_undertime' => TimeHelper::minutesToTime($attendanceDetail->flexible_undertime),
         ];
     }
