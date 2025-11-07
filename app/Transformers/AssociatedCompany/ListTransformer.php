@@ -14,6 +14,7 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->company_ulid,
             'account_number' => $model->account_number,
             'code' => $model->company_code,
+            'short_name' => $model->company_short_name,
             'name' => $model->company_name,
             'country' => $model->country_name,
             'currency' => $model->company_currency,

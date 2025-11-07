@@ -28,6 +28,7 @@ class UpdateCompanyRequest extends FormRequest
                 'max:255',
                 Rule::unique('companies')->ignore($this->route('companyId'))
             ],
+            'short_name' => 'required|string|max:25',
             'name' => 'required|string|max:255',
             'timezone' => 'required|string',
         ];
@@ -43,6 +44,8 @@ class UpdateCompanyRequest extends FormRequest
             'currency.required' => 'Currency is required',
             'code.unique' => 'Code has already been taken',
             'code.max' => 'Code must not be greater than 255 characters',
+            'short_name.required' => 'Company short name is required',
+            'short_name.max' => 'Company short name must not be greater than 25 characters',
             'name.required' => 'Company name is required',
             'name.max' => 'Company name must not be greater than 255 characters',
             'timezone.required' => 'Company timezone is required',

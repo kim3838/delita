@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('country_id');
             $table->string('currency');
             $table->string('code')->nullable();
+            $table->string('short_name');
             $table->string('name');
             $table->string('timezone')->default('UTC');
             $table->timestamps();

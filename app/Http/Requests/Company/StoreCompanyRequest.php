@@ -20,6 +20,7 @@ class StoreCompanyRequest extends FormRequest
             'currency' => 'required|string',
             'code' => 'required|string|regex:/^\S+$/|max:255|unique:companies,code',
             'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:25',
             'timezone' => 'required|string',
         ];
     }
@@ -34,6 +35,8 @@ class StoreCompanyRequest extends FormRequest
             'currency.required' => 'Currency is required',
             'code.unique' => 'Code has already been taken',
             'code.max' => 'Code must not be greater than 255 characters',
+            'short_name.required' => 'Company short name is required',
+            'short_name.max' => 'Company short name must not be greater than 25 characters',
             'name.required' => 'Company name is required',
             'name.max' => 'Company name must not be greater than 255 characters',
             'timezone.required' => 'Company timezone is required',

@@ -33,6 +33,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('companies.name', 'LIKE', ('%' . $value . '%'))
+                        ->orWhere('companies.short_name', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('accounts.number', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('companies.code', 'LIKE', ('%' . $value . '%'));
                 });
@@ -42,6 +43,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'companies.ulid as company_ulid',
                 'accounts.number as account_number',
                 'companies.code as company_code',
+                'companies.short_name as company_short_name',
                 'companies.name as company_name',
                 'countries.name as country_name',
                 'companies.currency as company_currency',
@@ -66,6 +68,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             })
             ->select([
                 'companies.id as company_id',
+                'companies.short_name as company_short_name',
                 'companies.name as company_name',
                 'companies.currency as company_currency',
                 'companies.timezone as company_timezone',
@@ -87,6 +90,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'companies.ulid as company_ulid',
                 'accounts.id as account_id',
                 'companies.code as company_code',
+                'companies.short_name as company_short_name',
                 'companies.name as company_name',
                 'countries.id as country_id',
                 'companies.currency as company_currency',

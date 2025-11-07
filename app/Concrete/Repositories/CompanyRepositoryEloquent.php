@@ -26,6 +26,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('companies.name', 'LIKE', ('%' . $value . '%'))
+                        ->orWhere('companies.short_name', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('accounts.number', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('companies.code', 'LIKE', ('%' . $value . '%'));
                 });
@@ -35,6 +36,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
                 'companies.ulid as company_ulid',
                 'accounts.number as account_number',
                 'companies.code as company_code',
+                'companies.short_name as company_short_name',
                 'companies.name as company_name',
                 'countries.name as country_name',
                 'companies.currency as company_currency',
@@ -52,6 +54,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
             ->select([
                 'companies.id as id',
                 'companies.code as code',
+                'companies.short_name as short_name',
                 'companies.name as name',
                 'companies.currency as currency',
                 'companies.timezone as timezone',

@@ -15,6 +15,7 @@ class ItemTransformer extends TransformerAbstract
             'account_id' => $model->account_id,
             'country_id' => $model->country_id,
             'code' => $model->company_code,
+            'short_name' => $model->company_short_name,
             'name' => $model->company_name,
             'currency' => $model->company_currency,
             'timezone' => $model->company_timezone,

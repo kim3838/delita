@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Nnjeim\World\Models\Country;
 
 class Company extends Model
@@ -17,6 +16,7 @@ class Company extends Model
         'account_id',
         'country_id',
         'code',
+        'short_name',
         'name',
         'currency',
         'timezone',
@@ -28,6 +28,7 @@ class Company extends Model
         'account_id' => 'int',
         'country_id' => 'int',
         'code' => 'string',
+        'short_name' => 'string',
         'name' => 'string',
         'currency' => 'string',
         'timezone' => 'string',

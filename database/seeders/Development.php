@@ -72,16 +72,16 @@ class Development extends Seeder
         $philippines = Country::where('iso2', 'PH')->first();
 
         //Account 1001 Companies
-        $company1001A = $account1001->companies()->create(['name' => 'Company 1001-A', 'code' => '1001-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1001A = $account1001->companies()->create(['short_name' => '1001A', 'name' => 'Company 1001-A', 'code' => '1001-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002 Companies
-        $company1002A = $account1002->companies()->create(['name' => 'Company 1002-A', 'code' => '1002-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002B = $account1002->companies()->create(['name' => 'Company 1002-B', 'code' => '1002-B', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002C = $account1002->companies()->create(['name' => 'Company 1002-C', 'code' => '1002-C', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002D = $account1002->companies()->create(['name' => 'Company 1002-D', 'code' => '1002-D', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002A = $account1002->companies()->create(['short_name' => '1002A', 'name' => 'Company 1002-A', 'code' => '1002-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002B = $account1002->companies()->create(['short_name' => '1002B', 'name' => 'Company 1002-B', 'code' => '1002-B', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002C = $account1002->companies()->create(['short_name' => '1002C', 'name' => 'Company 1002-C', 'code' => '1002-C', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002D = $account1002->companies()->create(['short_name' => '1002D', 'name' => 'Company 1002-D', 'code' => '1002-D', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1001 Companies
-        $company1003A = $account1003->companies()->create(['name' => 'Company 1003-A', 'code' => '1003-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1003A = $account1003->companies()->create(['short_name' => '1003A', 'name' => 'Company 1003-A', 'code' => '1003-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002User01
         $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);

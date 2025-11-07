@@ -11,7 +11,7 @@ class SelectionTransformer extends TransformerAbstract
     {
         return [
             'value' => $model->id,
-            'text' => $model->name,
+            'text' => $model->short_name,
             'payload' => [
                 'currency' => $model->currency,
                 'timezone' => $model->timezone,
