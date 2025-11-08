@@ -48,8 +48,8 @@ class BaseStoreAndUpdateHolidayRequest extends FormRequest
                 $query->where('ulid', '!=', $ulid);
             });
 
-        $existingHoliday
-            ->when($recurring, function ($query) use ($date) {
+        $existingHoliday->where(function ($query) use ($date, $recurring) {
+            $query->when($recurring, function ($query) use ($date) {
                 $query->where(function ($query) use ($date) {
                     $query->where('recurring', 0)
                         ->where(DB::raw("`date`"), ">=", $date->format('Y-m-d'))
@@ -71,8 +71,8 @@ class BaseStoreAndUpdateHolidayRequest extends FormRequest
                         ->whereMonth('date', $date->month)
                         ->whereDay('date', $date->day);
                 });
-
             });
+        });
 
         $existingHoliday = !empty($existingHoliday->first())
             ? Holiday::hydrate([$existingHoliday->first()])->first()
