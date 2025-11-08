@@ -52,12 +52,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
     {
         $queryBuilder = $this->model::getQuery()
             ->select([
-                'companies.id as id',
-                'companies.code as code',
-                'companies.short_name as short_name',
-                'companies.name as name',
-                'companies.currency as currency',
-                'companies.timezone as timezone',
+                "companies.*",
             ]);
 
         return $this->model::hydrate($queryBuilder->get()->toArray());
