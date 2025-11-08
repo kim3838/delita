@@ -71,25 +71,20 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 }
             }
 
-            if (empty($row['shift_code'])) {
-                $validationErrors[] = 'Employee number is required.';
+            $shift = Shift::query()
+                ->where('company_id', $companyId)
+                ->where('code', $row['shift_code'])
+                ->first();
+
+            if (empty($shift)) {
+                $validationErrors[] = 'Shift not found.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
             } else {
 
-                $shift = Shift::query()
-                    ->where('company_id', $companyId)
-                    ->where('code', $row['shift_code'])
-                    ->first();
-
-                if (empty($shift)) {
-                    $validationErrors[] = 'Shift not found.';
-
-                    $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
-                    continue;
-                } else {
-
-                    $row['shift_id'] = $shift->id;
-                    $this->setShift($shift);
-                }
+                $row['shift_id'] = $shift->id;
+                $this->setShift($shift);
             }
 
             /**
