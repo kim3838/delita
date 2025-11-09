@@ -25,9 +25,7 @@ class StoreAutogenerateUserRequest extends FormRequest
                 'email:rfc',
                 ...(App::environment('production') ? [
                     Rule::unique('users', 'email')
-                ] : [
-
-                ])
+                ] : [])
             ]
         ];
     }
