@@ -13,7 +13,7 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'name' => $model->name,
-            'type' => $model->type->toArray(),
+            'type' => $model->type?->toArray(),
             'date' => $model->date->toDateString(),
             'recurring' => $model->recurring,
             'active' => $model->active,

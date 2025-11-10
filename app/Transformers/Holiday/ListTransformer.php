@@ -14,7 +14,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'name' => $model->name,
-            'type' => $model->type->toArray(),
+            'type' => $model->type?->toArray(),
             'date' => $model->date->toDateString(),
             'recurring' => intval($model->recurring),
             'active' => intval($model->active),

@@ -14,7 +14,7 @@ class ListTransformer extends TransformerAbstract
             'company_id' => (int)$model->company_id,
             'order' => $model->order,
             'name' => $model->name,
-            'formulable_type' => $model->formulable_type->toArray(),
+            'formulable_type' => $model->formulable_type?->toArray(),
             'aggregation' => $model->aggregation,
             'property' => $model->property,
             'attribute' => $model->attribute,

@@ -26,8 +26,8 @@ class ItemTransformer extends TransformerAbstract
             'middle_name' => $employee->middle_name,
             'family_name' => $employee->family_name,
             'birth_date' => Carbon::parse($employee->birth_date)->toDateString(),
-            'gender' => $employee->gender->toArray(),
-            'marital_status' => $employee->marital_status->toArray(),
+            'gender' => $employee->gender?->toArray(),
+            'marital_status' => $employee->marital_status?->toArray(),
             'contact' => $employee->contact,
             'employment_profiles' => Fractal::collection($employee->employmentProfiles, EmploymentProfileListTransformer::class)['data']
         ];

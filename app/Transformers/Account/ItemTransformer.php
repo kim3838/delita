@@ -13,7 +13,7 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'number' => $model->number,
-            'plan' => $model->plan->toArray(),
+            'plan' => $model->plan?->toArray(),
             'date_registered' => $model->date_registered?->format('Y-m-d'),
         ];
     }

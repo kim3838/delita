@@ -13,12 +13,12 @@ class ListTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'number' => $model->number,
-            'plan' => $model->plan->toArray(),
+            'plan' => $model->plan?->toArray(),
             'date_registered' => $model->date_registered?->format('Y-m-d'),
             'subscriptions' => $model->subscriptions->map(function ($subscription) {
                 return [
                     'id' => $subscription->id,
-                    'module' => $subscription->module->toArray(),
+                    'module' => $subscription->module?->toArray(),
                     'date_subscribed' => $subscription->date_subscribed?->format('Y-m-d')
                 ];
             })

@@ -13,8 +13,8 @@ class ItemTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'name' => $model->name,
-            'formulable_type' => $model->formulable_type->toArray(),
-            'component_type' => $model->component_type ? $model->component_type->toArray() : null,
+            'formulable_type' => $model->formulable_type?->toArray(),
+            'component_type' => $model->component_type ? $model->component_type?->toArray() : null,
             'aggregation' => $model->aggregation,
             'default_settings' => $model->default_settings?->cast
         ];

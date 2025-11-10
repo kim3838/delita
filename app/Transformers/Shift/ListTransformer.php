@@ -23,8 +23,8 @@ class ListTransformer extends TransformerAbstract
             'company_id' => $model->company_id,
             'code' => $model->code,
             'name' => $model->name,
-            'type' => $model->type->toArray(),
-            'holiday_policy' => $model->holiday_policy->toArray(),
+            'type' => $model->type?->toArray(),
+            'holiday_policy' => $model->holiday_policy?->toArray(),
             'work_start_grace_time' => $model->work_start_grace_time > 0
                 ? $model->work_start_grace_time . ($model->work_start_grace_time > 1 ? ' Minutes' : ' Minute')
                 : 'No Grace',

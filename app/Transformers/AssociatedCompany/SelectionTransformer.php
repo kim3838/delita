@@ -22,7 +22,7 @@ class SelectionTransformer extends TransformerAbstract
                 'ulid' => $model->company_ulid,
                 'currency' => $model->company_currency,
                 'timezone' => $model->company_timezone,
-                'assignment_type' => $model->assignment_type->toArray(),
+                'assignment_type' => $model->assignment_type?->toArray(),
                 'account' => $account,
             ]
         ];

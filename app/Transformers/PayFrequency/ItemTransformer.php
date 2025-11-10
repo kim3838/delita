@@ -15,11 +15,11 @@ class ItemTransformer extends TransformerAbstract
             'company_id' => $model->company_id,
             'code' => $model->code,
             'order' => $model->order,
-            'type' => $model->type->toArray(),
+            'type' => $model->type?->toArray(),
             'period_preset_readable_name' => $model->timePeriodPreset ? $model->timePeriodPreset?->readable_name : null,
             'period' => $model->period?->cast,
-            'cutoff_type' => $model->cutoff_type ? $model->cutoff_type->toArray() : null,
-            'cut_off_value' => $model->cut_off_value ? $model->cut_off_value->toArray() : null,
+            'cutoff_type' => $model->cutoff_type ? $model->cutoff_type?->toArray() : null,
+            'cut_off_value' => $model->cut_off_value ? $model->cut_off_value?->toArray() : null,
             'days_span' => $model->days_span,
         ];
     }

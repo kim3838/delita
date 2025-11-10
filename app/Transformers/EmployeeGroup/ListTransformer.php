@@ -14,7 +14,7 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'name' => $model->name,
             'groupables_count' => $model->groupables_count,
-            'employee_ids' => $model->employees->pluck('id')->values()->toArray()
+            'employee_ids' => $model->employees->pluck('id')->values()?->toArray()
         ];
     }
 }

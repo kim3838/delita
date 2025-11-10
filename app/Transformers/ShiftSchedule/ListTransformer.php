@@ -15,7 +15,7 @@ class ListTransformer extends TransformerAbstract
     {
         return [
             'shift_id' => $model->shift_id,
-            'week_day' => $model->week_day->toArray(),
+            'week_day' => $model->week_day?->toArray(),
             'week_day_name' => $model->week_day->label(),
             'is_rest_day' => $model->is_rest_day,
             'is_day_off' => $model->is_day_off,

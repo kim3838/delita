@@ -12,7 +12,7 @@ class SelectionTransformer extends TransformerAbstract
         return [
             'value' => $model->id,
             'text' => $model->code . ' - ' . $model->name,
-            'type' => $model->type->toArray(),
+            'type' => $model->type?->toArray(),
             'assignable' => $model->assignable,
         ];
     }

@@ -69,7 +69,7 @@ class ListTransformer extends TransformerAbstract
             'lunch_out' => $attendance->lunch_out?->format('Y-m-d H:i'),
             'lunch_in' => $attendance->lunch_in?->format('Y-m-d H:i'),
             'last_out' => $attendance->last_out->format('Y-m-d H:i'),
-            'status' => $attendance->status->toArray(),
+            'status' => $attendance->status?->toArray(),
             'employee' => [
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,

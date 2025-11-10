@@ -14,16 +14,16 @@ class ListTransformer extends TransformerAbstract
     {
         return [
             'date' => $attendanceDetail->date->toDateString(),
-            'split_type' => $attendanceDetail->split_type->toArray(),
+            'split_type' => $attendanceDetail->split_type?->toArray(),
             'split_start' => $attendanceDetail->split_start,
             'split_end' => $attendanceDetail->split_end,
             'split_duration' => TimeHelper::minutesToTime($attendanceDetail->split_duration),
 
             'work_hour_type' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
-                ? $attendanceDetail->work_hour_type->toArray()
+                ? $attendanceDetail->work_hour_type?->toArray()
                 : null,
             'hourly_rate_type' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
-                ? $attendanceDetail->hourly_rate_type->toArray()
+                ? $attendanceDetail->hourly_rate_type?->toArray()
                 : null,
             'hourly_rate_multiplier' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
                 ? $attendanceDetail->hourly_rate_multiplier

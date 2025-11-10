@@ -33,7 +33,7 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->user_ulid,
             'username' => $model->user_username,
             'email' => $model->user_email,
-            'status' => $model->user_status->toArray(),
+            'status' => $model->user_status?->toArray(),
             'email_verified_at' => $model->user_email_verified_at,
             'timezone' => $model->user_timezone,
             'associated_companies' => $associatedCompanies

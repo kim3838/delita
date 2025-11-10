@@ -13,7 +13,7 @@ class BasicTransformer extends TransformerAbstract
             'id' => $model->id,
             'ulid' => $model->ulid,
             'subscriptions' => $model->subscriptions->map(function ($subscription) {
-                return $subscription->module->toArray();
+                return $subscription->module?->toArray();
             })
         ];
     }

@@ -18,7 +18,7 @@ class ItemTransformer extends TransformerAbstract
             'employee_id' => $model->employee_id ? (int)$model->employee_id : null,
             'payroll_componentable_type' => $model->payroll_componentable_type,
             'payroll_componentable_id' => (int)$model->payroll_componentable_id,
-            'formulable_type' => $model->formulable_type->toArray(),
+            'formulable_type' => $model->formulable_type?->toArray(),
             'payroll_componentable' => [
                 'name' => $model->payrollComponentable->name,
                 'type' => $model->payrollComponentable->type?->toArray(),

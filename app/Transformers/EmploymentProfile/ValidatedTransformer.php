@@ -12,8 +12,8 @@ class ValidatedTransformer extends TransformerAbstract
         return [
             'id' => $model->id,
             'employee_id' => $model->employee_id,
-            'status' => $model->status->toArray(),
-            'employment_type' => $model->employment_type->toArray(),
+            'status' => $model->status?->toArray(),
+            'employment_type' => $model->employment_type?->toArray(),
             'start_date' => $model->start_date?->toDateString(),
             'end_of_service_type' => $model->end_of_service_type?->toArray(),
             'end_date' => $model->end_date?->toDateString(),
