@@ -21,7 +21,6 @@ class ListTransformer extends TransformerAbstract
         $employee = Employee::query()->find($attendance->employee_id);
 
         $shiftHydrated = App::make(ShiftRepository::class)->hydrateItem([
-            'id' => $attendance->shift_id,
             'code' => $attendance->shift_code,
             'name' => $attendance->shift_name,
             'type' => $attendance->shift_type,
