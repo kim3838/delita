@@ -11,6 +11,7 @@ class Overtime extends Model
         'attendance_id',
         'start',
         'end',
+        'duration',
     ];
 
     protected $hidden = [
@@ -19,9 +20,12 @@ class Overtime extends Model
     ];
 
     protected $casts = [
+        'id' => 'int',
+        'ulid' => 'string',
         'attendance_id' => 'int',
         'start' => 'datetime',
         'end' => 'datetime',
+        'duration' => 'int',
     ];
 
     public function attendance(): BelongsTo

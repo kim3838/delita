@@ -44,6 +44,7 @@ use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
+use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
@@ -329,6 +330,9 @@ Route::group([
     Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);
     Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
     Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
+
+    //Overtime
+    Route::get('overtimes', [OvertimeController::class, 'index']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
