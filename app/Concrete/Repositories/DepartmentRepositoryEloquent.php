@@ -20,6 +20,11 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("departments.company_id"), $value);
             })
+            ->when($filters->search ?? false, function($builder, $value){
+                $builder->where(function($clause) use($value){
+                    $clause->where('departments.name', 'LIKE', ('%' . $value . '%'));
+                });
+            })
             ->when(isset($filters->is_parent), function ($builder) use($filters){
 
                 if($filters->is_parent){
@@ -27,6 +32,17 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
                 } else {
                     $builder->whereNotNull("departments.parent_id");
                 }
+            })
+            ->when($filters->search ?? false, function($builder, $value) use($filters) {
+                $builder->orWhere(function($builder) use($value, $filters){
+                    $builder->whereIn('departments.id', function($query) use($value, $filters){
+                        $query->select('parent_id')
+                            ->from('departments')
+                            ->where(DB::raw("departments.company_id"), $filters->company_id)
+                            ->whereNotNull(DB::raw("departments.parent_id"))
+                            ->where(DB::raw("departments.name"), 'LIKE', ('%' . $value . '%'));
+                    });
+                });
             })
             ->select([
                 'departments.*'
