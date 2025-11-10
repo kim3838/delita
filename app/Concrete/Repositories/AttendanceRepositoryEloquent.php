@@ -64,7 +64,17 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
-                "attendances.*",
+                "employee_sub.number AS employee_number",
+
+                "attendances.id AS id",
+                "attendances.ulid AS ulid",
+                "attendances.employee_id AS employee_id",
+                "attendances.date AS date",
+                "attendances.first_in AS first_in",
+                "attendances.lunch_out AS lunch_out",
+                "attendances.lunch_in AS lunch_in",
+                "attendances.last_out AS last_out",
+                "attendances.status AS status",
 
                 /**
                  * Shift
@@ -83,7 +93,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                  **/
                 "attendance_shift_details.start_date AS shift_assignment_start_date",
                 "attendance_shift_details.stated_shift_end_date AS shift_assignment_stated_shift_end_date",
-                "attendance_shift_details.end_date AS shift_assignment_stated_shift_end_date",
+                "attendance_shift_details.end_date AS shift_assignment_end_date",
 
                 /**
                  * Shift Schedule
