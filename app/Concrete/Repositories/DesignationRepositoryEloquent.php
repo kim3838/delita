@@ -20,6 +20,11 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("designations.company_id"), $value);
             })
+            ->when($filters->search ?? false, function($builder, $value){
+                $builder->where(function($clause) use($value){
+                    $clause->where('designations.name', 'LIKE', ('%' . $value . '%'));
+                });
+            })
             ->select([
                 'designations.id AS id',
                 'designations.company_id AS company_id',
