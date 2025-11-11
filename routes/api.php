@@ -333,6 +333,7 @@ Route::group([
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
+    Route::patch('overtime/{overtimeUlid}', [OvertimeController::class, 'update']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);

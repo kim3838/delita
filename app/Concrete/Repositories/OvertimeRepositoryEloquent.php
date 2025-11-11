@@ -2,10 +2,15 @@
 
 namespace App\Concrete\Repositories;
 
+use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Concrete\AttendanceSplitter;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Exceptions\UnexpectedException;
+use App\Models\Company;
 use App\Models\Overtime;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -75,5 +80,27 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, new $this->model());
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function update($id, $attributes, ?AttendanceSplitter $splitterInterface = null)
+    {
+        $attendanceSplitter = $splitterInterface
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
+
+        $overtime = $this->model::where('ulid', $id)->firstOrFail();
+
+        $update = collect($attributes)->except(['id', 'ulid', 'company_id', 'employee_id'])->toArray();
+
+        $overtime->update([
+            ...$update,
+            'duration' => abs(Carbon::parse($attributes['end'])->diffInMinutes(Carbon::parse($attributes['start'])))
+        ]);
+
+        $attendanceSplitter->generate($overtime->attendance);
+
+        return $overtime;
     }
 }
