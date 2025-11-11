@@ -2,17 +2,11 @@
 
 namespace App\Http\Requests\Attendance;
 
-use App\Blueprint\Repositories\ShiftRepository;
-use App\Blueprint\Repositories\ShiftScheduleRepository;
-use App\Facades\Fractal;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
-use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
-use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
 
 class UpdateAttendanceRequest extends BaseAttendanceRequest
 {
@@ -73,22 +67,15 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                         /**
                          * Validate attendance shift details if still match the current shift and schedule settings
                          * */
-                        $currentShift = Fractal::item($this->shift, ShiftPatchableTransformer::class);
-
-                        $currentShiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($this->attendanceSchedule);
-                        $currentShiftSchedule = Fractal::item($currentShiftScheduleHydrated, ShiftSchedulePatchableTransformer::class);
-
-                        $attendanceShiftHydrated = App::make(ShiftRepository::class)->hydrateItem($attendance->shiftDetail->toArray());
-                        $attendanceShift = Fractal::item($attendanceShiftHydrated, ShiftPatchableTransformer::class);
-
-                        $attendanceShiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($attendance->shiftDetail->toArray());
-                        $attendanceShiftSchedule = Fractal::item($attendanceShiftScheduleHydrated, ShiftSchedulePatchableTransformer::class);
-
-                        $currentShiftAndAttendanceShiftStillTheSame = collect($currentShift)->except(['id', 'ulid', 'company_id', 'code', 'name'])->toArray()
-                            == collect($attendanceShift)->except(['id', 'ulid', 'company_id', 'code', 'name'])->toArray();
-
-                        $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame = collect($currentShiftSchedule)->except(['id', 'shift_id', 'week_day_name'])->toArray()
-                            == collect($attendanceShiftSchedule)->except(['id', 'shift_id', 'week_day_name'])->toArray();
+                        list(
+                            $currentShiftAndAttendanceShiftStillTheSame,
+                            $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
+                        ) = $this->validateAttendanceShiftDetails(
+                            $this->shift,
+                            $this->attendanceSchedule,
+                            $attendance->shiftDetail->toArray(),
+                            $attendance->shiftDetail->toArray()
+                        );
 
                         if(!$currentShiftAndAttendanceShiftStillTheSame){
                             $fail('Shift settings have changed. Please re-import attendance');

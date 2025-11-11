@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use App\Blueprint\Repositories\CompanyFormulaRepository;
+use App\Blueprint\Repositories\ShiftRepository;
+use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Enums\HolidayType;
@@ -15,9 +17,12 @@ use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
 use App\Models\Holiday;
 use App\Models\Shift;
+use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer;
+use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 
 trait WorkPeriod
 {
@@ -751,5 +756,38 @@ trait WorkPeriod
                 });
             })
             ->first();
+    }
+
+    /**
+     * Validate attendance shift details if still match the current shift and schedule settings
+     * */
+    protected function validateAttendanceShiftDetails(
+        $shift,
+        $shiftSchedule,
+        $attendanceShift,
+        $attendanceShiftSchedule,
+    ): array {
+
+        $currentShift = Fractal::item($shift, ShiftPatchableTransformer::class);
+
+        $currentShiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($shiftSchedule);
+        $currentShiftSchedule = Fractal::item($currentShiftScheduleHydrated, ShiftSchedulePatchableTransformer::class);
+
+        $attendanceShiftHydrated = App::make(ShiftRepository::class)->hydrateItem($attendanceShift);
+        $attendanceShift = Fractal::item($attendanceShiftHydrated, ShiftPatchableTransformer::class);
+
+        $attendanceShiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($attendanceShiftSchedule);
+        $attendanceShiftSchedule = Fractal::item($attendanceShiftScheduleHydrated, ShiftSchedulePatchableTransformer::class);
+
+        $currentShiftAndAttendanceShiftStillTheSame = collect($currentShift)->except(['id', 'ulid', 'company_id', 'code', 'name'])->toArray()
+            == collect($attendanceShift)->except(['id', 'ulid', 'company_id', 'code', 'name'])->toArray();
+
+        $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame = collect($currentShiftSchedule)->except(['id', 'shift_id', 'week_day_name'])->toArray()
+            == collect($attendanceShiftSchedule)->except(['id', 'shift_id', 'week_day_name'])->toArray();
+
+        return [
+            $currentShiftAndAttendanceShiftStillTheSame,
+            $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
+        ];
     }
 }
