@@ -69,6 +69,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendances.id AS id",
                 "attendances.ulid AS ulid",
                 "attendances.employee_id AS employee_id",
+                "attendances.shift_id AS shift_id",
                 "attendances.date AS date",
                 "attendances.first_in AS first_in",
                 "attendances.lunch_out AS lunch_out",
