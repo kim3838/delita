@@ -34,6 +34,7 @@ class ListTransformer extends TransformerAbstract
 
         $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem([
             'week_day' => $overtime->attendance_shift_schedule_week_day,
+            'timezone' => $overtime->attendance_shift_schedule_timezone,
             'work_start' => $overtime->attendance_shift_schedule_work_start,
             'work_end' => $overtime->attendance_shift_schedule_work_end,
         ]);
@@ -62,6 +63,7 @@ class ListTransformer extends TransformerAbstract
             ],
             'shift_schedule' => [
                 'week_day_name' => $shiftSchedule['week_day_name'],
+                'timezone' => $shiftSchedule['timezone'],
                 'work_start' => $shiftSchedule['work_start'],
                 'work_end' => $shiftSchedule['work_end'],
             ]

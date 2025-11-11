@@ -51,6 +51,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
                  * Shift Schedule
                  **/
                 "attendance_sub.shift_schedule_week_day AS attendance_shift_schedule_week_day",
+                "attendance_sub.shift_schedule_timezone AS attendance_shift_schedule_timezone",
                 "attendance_sub.shift_schedule_work_start AS attendance_shift_schedule_work_start",
                 "attendance_sub.shift_schedule_work_end AS attendance_shift_schedule_work_end",
             ]);
