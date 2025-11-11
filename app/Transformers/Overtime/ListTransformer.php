@@ -51,6 +51,7 @@ class ListTransformer extends TransformerAbstract
             'duration' => $overtime->duration,
             'duration_readable' => $overtime->duration > 0 ? TimeHelper::minutesToTime($overtime->duration): '',
             'employee' => [
+                'id' => $employee->id,
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,
                 'department' => $employee->department,
