@@ -56,6 +56,9 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
             ->when(!empty($filters->attendance_ulids) && is_array($filters->attendance_ulids), function ($builder) use ($filters) {
                 $builder->whereIn('attendances.ulid', $filters->attendance_ulids);
             })
+            ->when(!empty($filters->attendance_shift_ids) && is_array($filters->attendance_shift_ids), function ($builder) use ($filters) {
+                $builder->whereIn('attendances.shift_id', $filters->attendance_shift_ids);
+            })
             ->when((
                 (isset($filters->date_from) && Carbon::createFromFormat('Y-m-d', $filters->date_from)) &&
                 (isset($filters->date_to) && Carbon::createFromFormat('Y-m-d', $filters->date_to))
