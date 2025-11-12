@@ -82,6 +82,41 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return $this->hydratePaginationItems($paginator, new ShiftAssignment());
     }
 
+    public function selection($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'shifts.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->model->getQuery()
+            ->join('shifts', 'shifts.id', '=', 'employee_shift.shift_id')
+            ->when($filters->employee_id ?? false, function ($builder, $value) {
+                $builder->where('employee_shift.employee_id', $value);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($query) use ($value) {
+                    $query->where('shifts.code', 'like', "%$value%")
+                        ->orWhere('shifts.name', 'like', "%$value%");
+                });
+            })
+            ->select([
+                'shifts.id AS shift_id',
+                'shifts.ulid AS shift_ulid',
+                'shifts.code AS shift_code',
+                'shifts.name AS shift_name',
+
+                'employee_shift.start_date AS shift_start_date',
+                'employee_shift.stated_shift_end_date AS shift_stated_shift_end_date',
+                'employee_shift.end_date AS shift_end_date',
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, new ShiftAssignment());
+    }
+
     public function shiftsByEmployees($filters): LengthAwarePaginator
     {
         $orders = [

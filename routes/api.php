@@ -315,6 +315,7 @@ Route::group([
 
     //Shift Assignments
     Route::get('shift-assignments', [EmployeeShiftController::class, 'index']);
+    Route::get('shift-assignment-selections', [EmployeeShiftController::class, 'selection']);
     Route::patch('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'update']);
     Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
     Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);

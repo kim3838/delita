@@ -12,6 +12,7 @@ use App\Http\Requests\EmployeeShift\DetachAssignedShiftsRequest;
 use App\Http\Requests\EmployeeShift\UpdateEmployeeShiftRequest;
 use App\Transformers\ShiftAssignment\ListTransformer;
 use App\Transformers\ShiftAssignment\PatchableTransformer;
+use App\Transformers\ShiftAssignment\SelectionTransformer;
 use App\Transformers\ShiftAssignment\ShiftsByEmployeesTransformer;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,23 @@ class EmployeeShiftController extends Controller
                 $this->repository->list($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);
