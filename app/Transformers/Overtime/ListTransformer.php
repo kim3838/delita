@@ -27,6 +27,7 @@ class ListTransformer extends TransformerAbstract
         );
 
         $shiftHydrated = App::make(ShiftRepository::class)->hydrateItem([
+            'id' => $overtime->attendance_shift_id,
             'max_overtime' => $overtime->attendance_shift_max_overtime,
         ]);
 
@@ -59,6 +60,7 @@ class ListTransformer extends TransformerAbstract
             ],
             'attendance' => $attendance,
             'shift' => [
+                'id' => $attendanceShift['id'],
                 'max_overtime' => $attendanceShift['max_overtime'],
                 'max_overtime_readable' => $attendanceShift['max_overtime_readable'],
             ],

@@ -46,6 +46,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
                  **/
                 "attendance_sub.ulid AS attendance_ulid",
                 "attendance_sub.employee_id AS attendance_employee_id",
+                "attendance_sub.shift_id AS attendance_shift_id",
 
                 /**
                  * Shift
