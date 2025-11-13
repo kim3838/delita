@@ -31,14 +31,14 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $attendance = $this->model::where('ulid', $id)->firstOrFail();
+        $deleteAttendanceOvertime = clone $this->model;
+        //Delete existing overtime
+        $deleteAttendanceOvertime::query()->where('ulid', $id)->firstOrFail()->overtime?->delete();
 
+        $attendance = clone $this->model::query()->where('ulid', $id)->firstOrFail();
         $update = collect($attributes)->except(['company_id', 'employee_id', 'shift_id'])->toArray();
 
         $attendance->update($update);
-
-        //Delete existing overtime
-        $attendance->overtime?->delete();
 
         $attendanceSplitter->generate($attendance);
 

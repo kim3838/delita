@@ -319,9 +319,6 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $attendance = $existing ?: $repository->model()::create($save);
 
             if($existing){
-                //Delete existing overtime
-                $attendance->overtime?->delete();
-
                 //Attendance splitter is also called on attendance repository update
                 $repository->update($existing->ulid, $save, $attendanceSplitter);
 
