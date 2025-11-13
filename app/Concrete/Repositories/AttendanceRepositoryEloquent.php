@@ -37,6 +37,9 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
 
         $attendance->update($update);
 
+        //Delete existing overtime
+        $attendance->overtime?->delete();
+
         $attendanceSplitter->generate($attendance);
 
         return $attendance;
