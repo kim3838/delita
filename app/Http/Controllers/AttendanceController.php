@@ -12,6 +12,7 @@ use App\Http\Requests\Attendance\UpdateAttendanceRequest;
 use App\Transformers\Attendance\ItemTransformer;
 use App\Transformers\Attendance\ListTransformer;
 use App\Transformers\AttendanceDetail\ListTransformer as AttendanceDetailListTransformer;
+use App\Transformers\Overtime\BasicTransformer as OvertimeBasicTransformer;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
@@ -61,7 +62,7 @@ class AttendanceController extends Controller
 
                 $attendanceDetailFilters = (object)[
                     'attendance_ulid' => $ulid,
-                    'shift_breakdown_splits' => $filters->shift_breakdown_splits
+                    'shift_breakdown_splits' => $filters?->shift_breakdown_splits
                 ];
 
                 $attendanceDetails = $this->detailRepository->list($attendanceDetailFilters);
@@ -69,11 +70,13 @@ class AttendanceController extends Controller
                 $attendanceDetails = Fractal::collection($attendanceDetails, AttendanceDetailListTransformer::class)['data'];
             }
 
+            $overtime = $attendance->overtime ? Fractal::item($attendance->overtime, OvertimeBasicTransformer::class) : $attendance->overtime;
             $attendance = $attendance ? Fractal::item($attendance, ItemTransformer::class) : $attendance;
 
             return ResponseJson::successfulResponse([
                 'attendance' => $attendance,
                 'details' => $attendanceDetails,
+                'overtime' => $overtime
             ]);
         }
 
