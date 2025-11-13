@@ -8,7 +8,7 @@ use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 
-class UpdateAttendanceRequest extends BaseAttendanceRequest
+class UpdateAttendanceRequest extends ImportAttendance
 {
     use WorkPeriod;
 
@@ -93,8 +93,7 @@ class UpdateAttendanceRequest extends BaseAttendanceRequest
                             $lunchIn = empty($this->input('lunch_in'))? null : Carbon::parse($this->input('lunch_in'));
                             $lastOut = Carbon::parse($this->input('last_out'));
 
-                            $importAttendance = new ImportAttendance();
-                            $attendanceValidationErrors = $importAttendance->validateAttendance(
+                            $attendanceValidationErrors = $this->validateAttendance(
                                 $firstIn, $lunchOut, $lunchIn, $lastOut,
                                 $schedule,
                                 !$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak
