@@ -7,15 +7,13 @@ use App\Models\Overtime;
 use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 
-class UpdateOvertimeRequest extends ImportOvertime
+class StoreOvertimeRequest extends ImportOvertime
 {
     use WorkPeriod;
 
     public function authorize(): bool
     {
-        $overtime = Overtime::query()->where('ulid', $this->route('overtimeUlid'))->firstOrFail();
-
-        return $this->user()->can('update', $overtime);
+        return $this->user()->can('create', Overtime::class);
     }
 
     public function rules(): array
