@@ -35,9 +35,11 @@ class ListTransformer extends TransformerAbstract
 
         $shiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem([
             'week_day' => $overtime->attendance_shift_schedule_week_day,
+            'is_flexible' => $overtime->attendance_shift_schedule_is_flexible,
             'timezone' => $overtime->attendance_shift_schedule_timezone,
             'work_start' => $overtime->attendance_shift_schedule_work_start,
             'work_end' => $overtime->attendance_shift_schedule_work_end,
+            'total_work_hours_with_breaks' => $overtime->attendance_shift_schedule_total_work_hours_with_breaks,
         ]);
 
         $shiftSchedule = Fractal::item($shiftScheduleHydrated, ShiftScheduleListTransformer::class);
@@ -66,9 +68,11 @@ class ListTransformer extends TransformerAbstract
             ],
             'shift_schedule' => [
                 'week_day_name' => $shiftSchedule['week_day_name'],
+                'is_flexible' => $shiftSchedule['is_flexible'],
                 'timezone' => $shiftSchedule['timezone'],
                 'work_start' => $shiftSchedule['work_start'],
                 'work_end' => $shiftSchedule['work_end'],
+                'total_work_hours_with_breaks' => $shiftSchedule['total_work_hours_with_breaks'],
             ]
         ];
     }

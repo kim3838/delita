@@ -57,9 +57,11 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
                  * Shift Schedule
                  **/
                 "attendance_sub.shift_schedule_week_day AS attendance_shift_schedule_week_day",
+                "attendance_sub.shift_schedule_is_flexible AS attendance_shift_schedule_is_flexible",
                 "attendance_sub.shift_schedule_timezone AS attendance_shift_schedule_timezone",
                 "attendance_sub.shift_schedule_work_start AS attendance_shift_schedule_work_start",
                 "attendance_sub.shift_schedule_work_end AS attendance_shift_schedule_work_end",
+                "attendance_sub.shift_schedule_total_work_hours_with_breaks AS attendance_shift_schedule_total_work_hours_with_breaks",
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
@@ -86,14 +88,32 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
     /**
      * @throws UnexpectedException
      */
+    public function store($attributes, ?AttendanceSplitter $splitterInterface = null)
+    {
+        $attendanceSplitter = $splitterInterface
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
+
+        $overtime =  $this->model::create([
+            ...$attributes,
+            'duration' => abs(Carbon::parse($attributes['end'])->diffInMinutes(Carbon::parse($attributes['start'])))
+        ]);
+
+        $attendanceSplitter->generate($overtime->attendance);
+
+        return $overtime;
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
     public function update($id, $attributes, ?AttendanceSplitter $splitterInterface = null)
     {
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $overtime = $this->model::where('ulid', $id)->firstOrFail();
+        $overtime = $this->model::query()->where('ulid', $id)->firstOrFail();
 
-        $update = collect($attributes)->except(['id', 'ulid', 'company_id', 'employee_id'])->toArray();
+        $update = collect($attributes)->except(['id', 'ulid', 'company_id', 'date', 'attendance_id'])->toArray();
 
         $overtime->update([
             ...$update,
