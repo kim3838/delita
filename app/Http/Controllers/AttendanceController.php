@@ -52,13 +52,16 @@ class AttendanceController extends Controller
     {
         if($request->expectsJson()){
 
+            $filters = json_decode($request->get('filters'));
+
             $attendance = $this->repository->show($ulid);
             $attendanceDetails = [];
 
             if($attendance){
 
                 $attendanceDetailFilters = (object)[
-                    'attendance_ulid' => $ulid
+                    'attendance_ulid' => $ulid,
+                    'shift_breakdown_splits' => $filters->shift_breakdown_splits
                 ];
 
                 $attendanceDetails = $this->detailRepository->list($attendanceDetailFilters);

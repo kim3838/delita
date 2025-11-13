@@ -25,6 +25,9 @@ class AttendanceDetailRepositoryEloquent extends BaseRepositoryEloquent implemen
             ->when($filters->attendance_ulid ?? false, function ($builder, $value) {
                 $builder->where('attendances.ulid', $value);
             })
+            ->when(!empty($filters->shift_breakdown_splits) && is_array($filters->shift_breakdown_splits), function ($builder) use ($filters) {
+                $builder->whereIn('attendance_details.split_type', $filters->shift_breakdown_splits);
+            })
             ->select([
                 "attendance_details.*",
             ]);
