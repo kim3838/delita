@@ -134,7 +134,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 $builder->whereNotIn('employees.id', $filters->except_id);
             })
             ->when($filters->search ?? false, function($builder, $value){
-                $builder->whereRaw("CONCAT_WS(' ', family_name, middle_name, given_name) LIKE ?", ["%{$value}%"]);
+                $builder->whereRaw("CONCAT_WS(' ', family_name, middle_name, given_name) LIKE ?", ["%{$value}%"])
+                    ->orWhere('employees.number', 'LIKE', "%$value%");
             })
             ->select([
                 "employees.*"
