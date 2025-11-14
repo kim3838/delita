@@ -336,6 +336,7 @@ Route::group([
     Route::get('overtimes', [OvertimeController::class, 'index']);
     Route::patch('overtime/{overtimeUlid}', [OvertimeController::class, 'update']);
     Route::post('overtime', [OvertimeController::class, 'store']);
+    Route::delete('overtimes', [OvertimeController::class, 'batchDestroy']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);

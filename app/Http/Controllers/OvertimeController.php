@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\OvertimeRepository;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Overtime\BatchDestroyOvertimeRequest;
 use App\Http\Requests\Overtime\StoreOvertimeRequest;
 use App\Http\Requests\Overtime\UpdateOvertimeRequest;
 use App\Transformers\Overtime\ListTransformer;
@@ -55,6 +56,23 @@ class OvertimeController extends Controller
         if($request->expectsJson()){
 
             $this->repository->store($request->validated());
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function batchDestroy(BatchDestroyOvertimeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $overtimeIds = data_get($request->validated(), 'overtime_ids', []);
+
+            $this->repository->batchDelete($overtimeIds);
 
             return ResponseJson::successfulResponse();
         }

@@ -124,4 +124,29 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
 
         return $overtime;
     }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function batchDelete($ids, ?AttendanceSplitter $splitterInterface = null): void
+    {
+        $attendanceSplitter = $splitterInterface
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find(request()->input('company_id'))]);
+
+        foreach ($ids as $id) {
+
+            $overtime = $this->model::query()->findOrFail($id);
+            $attendance = clone $overtime->attendance;
+
+            /**
+             * Delete overtime
+             **/
+            $overtime->delete();
+
+            /**
+             * Rebuild attendance details
+             **/
+            $attendanceSplitter->generate($attendance);
+        }
+    }
 }
