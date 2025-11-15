@@ -42,6 +42,36 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
         return $this->hydratePaginationItems($paginator, new $this->model());
     }
 
+    public function selection($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'holidays.name', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->model->getQuery()
+            ->when(!empty($filters->id) && is_array($filters->id), function ($builder) use ($filters) {
+                $builder->whereIn('holidays.id', $filters->id);
+            })
+            ->when($filters->company_id ?? false, function ($builder, $value) {
+                $builder->where('holidays.company_id', $value);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($query) use ($value) {
+                    $query->where('name', 'like', "%$value%");
+                });
+            })
+            ->select([
+                'holidays.id',
+                'holidays.name'
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model);
+    }
+
     public function update($id, $attributes)
     {
         $holiday = $this->model::where('ulid', $id)->firstOrFail();

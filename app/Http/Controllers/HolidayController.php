@@ -10,6 +10,7 @@ use App\Http\Requests\Holiday\StoreHolidayRequest;
 use App\Http\Requests\Holiday\UpdateHolidayRequest;
 use App\Transformers\Holiday\ItemTransformer;
 use App\Transformers\Holiday\ListTransformer;
+use App\Transformers\Holiday\SelectionTransformer;
 use Illuminate\Http\Request;
 
 class HolidayController extends Controller
@@ -28,6 +29,23 @@ class HolidayController extends Controller
                 $this->repository->list($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);

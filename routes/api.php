@@ -346,6 +346,7 @@ Route::group([
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
+    Route::get('holiday-selections', [HolidayController::class, 'selection']);
     Route::post('holiday', [HolidayController::class, 'store']);
     Route::patch('holiday/{holidayUlid}', [HolidayController::class, 'update']);
     Route::delete('holidays', [HolidayController::class, 'batchDestroy']);
