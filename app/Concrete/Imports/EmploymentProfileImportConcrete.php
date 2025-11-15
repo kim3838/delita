@@ -44,6 +44,8 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
 
             if (empty($row['employee_number'])) {
                 $validationErrors[] = 'Employee number is required.';
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
             } else {
 
                 $employee = Employee::query()
