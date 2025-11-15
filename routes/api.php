@@ -38,6 +38,7 @@ use App\Http\Controllers\Imports\AttendanceController as AttendanceImportControl
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
 use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
 use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
+use App\Http\Controllers\Imports\OvertimeController as OvertimeImportController;
 use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
@@ -45,6 +46,7 @@ use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\OvertimeImportTemplateController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
@@ -78,6 +80,7 @@ Route::get('employee-import-template', [EmployeeImportTemplateController::class,
 Route::get('employment-profile-import-template', [EmploymentProfileImportTemplateController::class, 'index']);
 Route::get('employee-payroll-component-import-template', [EmployeePayrollComponentImportTemplateController::class, 'index']);
 Route::get('attendance-import-template', [AttendanceImportTemplateController::class, 'index']);
+Route::get('overtime-import-template', [OvertimeImportTemplateController::class, 'index']);
 
 Route::group([
     'middleware' => ['guest']
@@ -337,6 +340,9 @@ Route::group([
     Route::patch('overtime/{overtimeUlid}', [OvertimeController::class, 'update']);
     Route::post('overtime', [OvertimeController::class, 'store']);
     Route::delete('overtimes', [OvertimeController::class, 'batchDestroy']);
+    Route::post('overtime-import-validate', [OvertimeImportController::class, 'read']);
+    Route::post('overtime-import-re-validate', [OvertimeImportController::class, 'reValidate']);
+    Route::post('overtime-import-save', [OvertimeImportController::class, 'save']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
