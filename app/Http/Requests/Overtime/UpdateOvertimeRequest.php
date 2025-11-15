@@ -48,7 +48,7 @@ class UpdateOvertimeRequest extends ImportOvertime
                         list(
                             $currentShiftAndAttendanceShiftStillTheSame,
                             $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                            ) = $this->validateAttendanceShiftDetails(
+                        ) = $this->validateAttendanceShiftDetails(
                             $this->shift,
                             $this->attendanceSchedule,
                             $attendance->shiftDetail->toArray(),
