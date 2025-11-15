@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->smallInteger('type');
             $table->smallInteger('holiday_policy')->default(ShiftHolidayPolicy::DAY_OFF);
+            $table->json('except_holidays')->nullable();
             $table->tinyInteger('work_start_grace_time')->default(0);
             $table->boolean('require_lunch_time_in_and_out')->default(false);
             $table->tinyInteger('lunch_start_grace_time')->default(0);

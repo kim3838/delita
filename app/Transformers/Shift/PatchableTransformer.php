@@ -15,6 +15,7 @@ class PatchableTransformer extends TransformerAbstract
             'name' => $model->name,
             'type' => $model->type->value,
             'holiday_policy' => $model->holiday_policy->value,
+            'except_holidays' => is_array($model->except_holidays) ? $model->except_holidays : [],
             'work_start_grace_time' => $model->work_start_grace_time,
             'require_lunch_time_in_and_out' => intval($model->require_lunch_time_in_and_out),
             'lunch_start_grace_time' => $model->lunch_start_grace_time,

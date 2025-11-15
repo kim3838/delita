@@ -36,6 +36,8 @@ trait WorkPeriod
     protected int $shiftWorkStartGraceTime = 0;
     //Set on generate: shift holiday_policy
     protected ?ShiftHolidayPolicy $shiftHolidayPolicy = null;
+    //Set on generate: shift except_holidays
+    protected array $shiftExceptHolidays = [];
     //Set on generate: shift require_lunch_time_in_and_out
     protected bool $shiftRequireLunchOutAndIn = false;
     //Set on generate: shift lunch_start_grace_time
@@ -292,6 +294,7 @@ trait WorkPeriod
             ->all();
 
         $this->shiftHolidayPolicy = $this->shift->holiday_policy;
+        $this->shiftExceptHolidays = is_array($this->shift->except_holidays) ? $this->shift->except_holidays : [];
         $this->shiftWorkStartGraceTime = $this->shift->work_start_grace_time;
         $this->shiftRequireLunchOutAndIn = $this->shift->require_lunch_time_in_and_out;
         $this->shiftLunchStartGraceTime = $this->shift->lunch_start_grace_time;
@@ -738,7 +741,12 @@ trait WorkPeriod
         // Convert date to Carbon instance for easier manipulation
         $searchDate = Carbon::parse($date);
 
-        return Holiday::query()
+        $exceptHolidays = $this->shiftExceptHolidays;
+
+        $queryBuilder = Holiday::query()
+            ->when(!empty($exceptHolidays), function ($builder) use ($exceptHolidays) {
+                $builder->whereNotIn('id', $exceptHolidays);
+            })
             ->where('active', true)
             ->where('company_id', $companyId)
             ->where('effective_date', '<=', $searchDate->format('Y-m-d'))
@@ -754,8 +762,9 @@ trait WorkPeriod
                     $subQuery->where('recurring', false)
                         ->where('date', $searchDate->format('Y-m-d'));
                 });
-            })
-            ->first();
+            });
+
+        return $queryBuilder->first();
     }
 
     /**
@@ -772,6 +781,12 @@ trait WorkPeriod
 
         $currentShiftScheduleHydrated = App::make(ShiftScheduleRepository::class)->hydrateItem($shiftSchedule);
         $currentShiftSchedule = Fractal::item($currentShiftScheduleHydrated, ShiftSchedulePatchableTransformer::class);
+
+        //Transform except holidays into raw value, not the array form
+        $attendanceShift = [
+            ...$attendanceShift,
+            'except_holidays' => is_array($attendanceShift['except_holidays']) ? json_encode($attendanceShift['except_holidays']) : null,
+        ];
 
         $attendanceShiftHydrated = App::make(ShiftRepository::class)->hydrateItem($attendanceShift);
         $attendanceShift = Fractal::item($attendanceShiftHydrated, ShiftPatchableTransformer::class);
