@@ -50,19 +50,4 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
 
         return $model;
     }
-
-    public function compensations($employeeUlid)
-    {
-        return Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->compensations;
-    }
-
-    public function deductions($employeeUlid)
-    {
-        return Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->deductions;
-    }
-
-    public function incomeTaxes($employeeUlid)
-    {
-        return Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->incomeTaxes;
-    }
 }

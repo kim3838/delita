@@ -26,6 +26,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
+use App\Http\Controllers\EmployeePayrollInfoController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -278,11 +279,7 @@ Route::group([
     Route::post('employment-profile-import-save', [EmploymentProfileImportController::class, 'save']);
 
     //Employee Payroll Component
-    Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollComponentController::class, 'compensations']);
-    Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollComponentController::class, 'deductions']);
-    Route::get('employee-payroll-info/{employeeUlid}/income-taxes', [EmployeePayrollComponentController::class, 'incomeTaxes']);
-
-    Route::get('employee-payroll-components/{employeeUlid}', [EmployeePayrollComponentController::class, 'index']);
+    Route::get('employee-payroll-components', [EmployeePayrollComponentController::class, 'index']);
     Route::post('employee-payroll-component-validate', [EmployeePayrollComponentController::class, 'validate']);
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
@@ -290,6 +287,10 @@ Route::group([
     Route::post('employee-payroll-component-import-validate', [EmployeePayrollComponentImportController::class, 'read']);
     Route::post('employee-payroll-component-import-re-validate', [EmployeePayrollComponentImportController::class, 'reValidate']);
     Route::post('employee-payroll-component-import-save', [EmployeePayrollComponentImportController::class, 'save']);
+
+    Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollInfoController::class, 'compensations']);
+    Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollInfoController::class, 'deductions']);
+    Route::get('employee-payroll-info/{employeeUlid}/income-taxes', [EmployeePayrollInfoController::class, 'incomeTaxes']);
 
     //Designations
     Route::get('designations', [DesignationController::class, 'index']);
