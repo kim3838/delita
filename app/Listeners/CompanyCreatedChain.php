@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Enums\CompanyUserAssignmentType;
 use App\Events\Repositories\CompanyCreated;
 use Illuminate\Support\Facades\App;
@@ -46,15 +47,23 @@ class CompanyCreatedChain
          * Standard-Compensation-Tax
          * Standard-Net-Income
          **/
-        $sync = [];
+        $formulas = [];
 
         foreach (App::make(FormulaRepository::class)->defaultPresets() as $formula) {
 
             $settings = empty($formula->default_settings?->cast) ? null : json_encode($formula->default_settings?->cast);
 
-            $sync[$formula->id] = ['settings' => $settings];
+            $formulas[$formula->id] = ['settings' => $settings];
         }
 
-        $event->company->formulas()->sync($sync);
+        /**
+         * Create salary statement modules
+         **/
+        foreach (App::make(SalaryStatementModuleRepository::class)->defaultPresets() as $salaryStatementModule) {
+
+            $event->company->salaryStatementModules()->create($salaryStatementModule);
+        }
+
+        $event->company->formulas()->sync($formulas);
     }
 }
