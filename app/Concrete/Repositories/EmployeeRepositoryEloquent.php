@@ -26,7 +26,6 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
     public function baseQueryBuilder($filters, $orders = null)
     {
-
         $orders = $orders ?? $this->defaultOrders;
 
         $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)
