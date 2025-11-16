@@ -218,6 +218,11 @@ abstract class BaseRepositoryEloquent
         }
     }
 
+    protected function queryAsSub(Builder $builder, $as)
+    {
+        return app(Builder::class)->fromSub($builder, $as);
+    }
+
     protected function subQuery($builder, $alias = '_'): Builder
     {
         return DB::table(DB::raw("(" . $builder->toSql() . ") as " . $alias))
