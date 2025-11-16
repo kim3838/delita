@@ -5,6 +5,7 @@ namespace App\Http\Requests\EmployeeContact;
 use App\Models\Employee;
 use App\Models\EmployeeContact;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\App;
 
 class UpdateEmployeeContactRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'email:rfc',
                 'different:personal_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isEmailTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
                         $fail('Office email has already been taken.');
                     }
                 },
@@ -35,7 +36,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'email:rfc',
                 'different:office_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isEmailTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
                         $fail('Personal email has already been taken.');
                     }
                 },
@@ -47,7 +48,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'max:255',
                 'different:personal_phone',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isPhoneTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isPhoneTaken($value))) {
                         $fail('Office phone has already been taken.');
                     }
                 },
@@ -58,7 +59,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'max:255',
                 'different:office_phone',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isPhoneTaken($value)) {
+                    if ($value && (App::environment('production') && $this->isPhoneTaken($value))) {
                         $fail('Personal phone has already been taken.');
                     }
                 },
