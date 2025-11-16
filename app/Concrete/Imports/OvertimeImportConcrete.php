@@ -146,6 +146,33 @@ class OvertimeImportConcrete extends BaseImportConcrete implements OvertimeImpor
              **/
             $this->setAttendanceSchedule($date);
 
+            /**
+             * Validate attendance shift details if still match the current shift and schedule settings
+             * */
+            list(
+                $currentShiftAndAttendanceShiftStillTheSame,
+                $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
+                ) = $this->validateAttendanceShiftDetails(
+                $this->shift,
+                $this->attendanceSchedule,
+                $attendance->shiftDetail->toArray(),
+                $attendance->shiftDetail->toArray()
+            );
+
+            if(!$currentShiftAndAttendanceShiftStillTheSame){
+                $validationErrors[] = 'Shift settings have changed. Please re-import attendance';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
+            }
+
+            if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
+                $validationErrors[] = 'Shift schedule settings have changed. Please re-import attendance';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
+            }
+
             if($this->attendanceScheduleIsFlexible){
 
                 $validationErrors[] = 'Overtime cannot be applied to flexible shift schedule.';
