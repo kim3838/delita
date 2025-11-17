@@ -424,7 +424,7 @@ class Development extends Seeder
 
         //Company 1002-C Deductions
         $company1002CTardiness = $company1002C->deductions->where('name', 'Tardiness')->where('type', Deduction::DEDUCTION)->first();
-        $company1002CUndertime = $company1002B->deductions->where('name', 'Undertime')->where('type', Deduction::DEDUCTION)->first();
+        $company1002CUndertime = $company1002C->deductions->where('name', 'Undertime')->where('type', Deduction::DEDUCTION)->first();
         $company1002CAbsent = $company1002C->deductions->where('name', 'Absence')->where('type', Deduction::DEDUCTION)->first();
         $company1002CSSSEmployed = $company1002C->deductions->where('name', 'SSS-Employed')->where('type', Deduction::CONTRIBUTION)->first();
 
