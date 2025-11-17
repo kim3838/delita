@@ -9,9 +9,11 @@ use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
 {
-    public function transform(EmployeePayrollComponent $model)
+    public function transform(EmployeePayrollComponent $model): array
     {
-        $payFrequency = $model->payFrequency ? Fractal::item($model->payFrequency, PayFrequencyItemTransformer::class) : null;
+        $payFrequency = $model->payFrequency
+            ? Fractal::item($model->payFrequency, PayFrequencyItemTransformer::class)
+            : null;
 
         return [
             'id' => $model->id ? (int)$model->id : null,
@@ -28,7 +30,7 @@ class ItemTransformer extends TransformerAbstract
             'pay_period' => $model->pay_period?->toArray(),
             'pay_type' => $model->pay_type?->toArray(),
             'pay_frequency_id' => $model->pay_frequency_id,
-            'pay_frequency' => $payFrequency,
+            'pay_frequency' => $payFrequency ? ['type' => $payFrequency['type']] : null,
 
             'amountable_start' => $model->amountable_start?->toArray(),
             'start_date' => $model->start_date?->format('Y-m-d'),
