@@ -280,6 +280,8 @@ Route::group([
 
     //Employee Payroll Component
     Route::get('employee-payroll-components', [EmployeePayrollComponentController::class, 'index']);
+    Route::get('employee-payroll-component-name-selections', [EmployeePayrollComponentController::class, 'payrollComponentName']);
+    Route::get('employee-payroll-component-type-selections', [EmployeePayrollComponentController::class, 'payrollComponentType']);
     Route::post('employee-payroll-component-validate', [EmployeePayrollComponentController::class, 'validate']);
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
