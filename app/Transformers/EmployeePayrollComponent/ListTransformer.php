@@ -43,6 +43,7 @@ class ListTransformer extends TransformerAbstract
             'end_date' => $model->end_date?->format('Y-m-d'),
 
             'employee' => [
+                'ulid' => $employee->ulid,
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,
                 'department' => $employee->department,
