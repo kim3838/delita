@@ -45,7 +45,6 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
                 $builder->whereIn('employee_payroll_components.payroll_componentable_type', $filters->payroll_componentable_type);
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "employee_sub.number AS employee_number",
                 DB::raw("CONCAT(employee_payroll_components.payroll_componentable_id, '.', employee_payroll_components.payroll_componentable_type) AS payroll_componentable_morph"),
                 DB::raw("
@@ -58,27 +57,32 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
                 "employee_payroll_components.*",
             ]);
 
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'payroll_component_sub')
+            ->when(!empty($filters->payroll_componentable_morph_to_type) && is_array($filters->payroll_componentable_morph_to_type), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_component_sub.payroll_componentable_morph_to_type', $filters->payroll_componentable_morph_to_type);
+            })
+            ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_component_sub.payroll_componentable_morph', $filters->payroll_componentable_morph);
+            })
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                "payroll_component_sub.*",
+            ]);
+
         return $queryBuilder;
     }
 
     public function list($filters): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_payroll_components.payroll_componentable_type', 'direction' => 'ASC'],
+            ['field' => 'payroll_component_sub.employee_number', 'direction' => 'ASC'],
+            ['field' => 'payroll_component_sub.formulable_type', 'direction' => 'ASC'],
+            ['field' => 'payroll_component_sub.payroll_componentable_morph_to_type', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
-
-        $queryBuilder = $this->queryAsSub($queryBuilder, 'base')
-            ->when(!empty($filters->payroll_componentable_morph_to_type) && is_array($filters->payroll_componentable_morph_to_type), function ($builder) use ($filters) {
-                $builder->whereIn('base.payroll_componentable_morph_to_type', $filters->payroll_componentable_morph_to_type);
-            })
-            ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
-                $builder->whereIn('base.payroll_componentable_morph', $filters->payroll_componentable_morph);
-            });
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
