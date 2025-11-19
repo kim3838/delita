@@ -286,6 +286,7 @@ Route::group([
     Route::post('employee-payroll-component', [EmployeePayrollComponentController::class, 'store']);
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
     Route::delete('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'destroy']);
+    Route::delete('employee-payroll-components', [EmployeePayrollComponentController::class, 'batchDestroy']);
     Route::post('employee-payroll-component-import-validate', [EmployeePayrollComponentImportController::class, 'read']);
     Route::post('employee-payroll-component-import-re-validate', [EmployeePayrollComponentImportController::class, 'reValidate']);
     Route::post('employee-payroll-component-import-save', [EmployeePayrollComponentImportController::class, 'save']);

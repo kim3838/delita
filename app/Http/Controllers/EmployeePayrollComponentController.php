@@ -9,6 +9,7 @@ use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\PolymorphicEmployeePayrollComponent\BatchDestroyPolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\DestroyPolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\StorePolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\UpdatePolymorphicEmployeePayrollComponentRequest;
@@ -94,6 +95,20 @@ class EmployeePayrollComponentController extends Controller
         if($request->expectsJson()){
 
             $this->repository->delete($employeePayrollComponentId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyPolymorphicEmployeePayrollComponentRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $payrollComponentIds = data_get($request->validated(), 'payroll_component_ids', []);
+
+            $this->repository->batchDelete($payrollComponentIds);
 
             return ResponseJson::successfulResponse();
         }
