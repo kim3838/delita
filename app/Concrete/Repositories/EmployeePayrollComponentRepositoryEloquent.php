@@ -64,6 +64,9 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
             ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
                 $builder->whereIn('payroll_component_sub.payroll_componentable_morph', $filters->payroll_componentable_morph);
             })
+            ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_component_sub.formulable_type', $filters->formulable_types);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "payroll_component_sub.*",
@@ -83,6 +86,8 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        _log_query_builder_with_bindings($queryBuilder);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
