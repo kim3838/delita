@@ -91,17 +91,19 @@ class UtilityController extends Controller
 
     public function interferePersistCompany(Request $request)
     {
-        //Set `persist_company` @ bootstrap/app.php $middleware->encryptCookies
-        $persistCompany = $request->cookie('persist_company');
+        //Set `pc`,`pas` @ bootstrap/app.php $middleware->encryptCookies
+        $persistCompany = $request->cookie('pc');
+        $persistAccountSubscription = $request->cookie('pas');
 
         $persistCompany = (int)$persistCompany;
         $persistCompany++;
 
         //Cookie::queue(Cookie::make('persist_company', $persistCompany, 60, '/', '.server.local', 'false', 'false'));
-        header('Set-Cookie: persist_company='.$persistCompany.'; Path=/; Domain=.server.local; Max-Age=3600; SameSite=Lax');
+        header('Set-Cookie: pc='.$persistCompany.'; Path=/; Domain=.server.local; Max-Age=3600; SameSite=Lax');
 
         return ResponseJson::successfulResponse([
-            'persist_company' => $persistCompany
+            'persist_company' => $persistCompany,
+            'persist_account_subscription' => $persistAccountSubscription,
         ]);
     }
 }

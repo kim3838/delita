@@ -41,7 +41,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         //Disable encryption for a subset of custom-generated cookies
         $middleware->encryptCookies([
-            'persist_company'
+            'pc',//Persist company
+            'pas'//Persist account subscription
         ]);
 
         $middleware->append([
