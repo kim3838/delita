@@ -15,10 +15,15 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
         return CompanyAssignment::class;
     }
 
-    public function list($ulid, $filters)
+    public function list($filters)
     {
         $queryBuilder = User::getQuery()
-            ->where('users.ulid', $ulid)
+            ->when($filters->user_id ?? false, function ($builder, $value) {
+                $builder->where(DB::raw("users.id"), $value);
+            })
+            ->when($filters->user_ulid ?? false, function ($builder, $value) {
+                $builder->where(DB::raw("users.ulid"), $value);
+            })
             ->crossJoin('companies')
             ->when(!empty($filters->associated_companies) && is_array($filters->associated_companies), function ($builder) use ($filters) {
                 $builder->whereIn('companies.id', $filters->associated_companies);

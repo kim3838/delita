@@ -147,8 +147,8 @@ Route::group([
     Route::delete('formula/{formulaId}', [FormulaController::class, 'destroy']);
 
     //User-Company Assignment
-    Route::get('user-company-assignment/{userUlid}', [UserCompanyAssignmentController::class, 'index']);
-    Route::post('user-company-assignment/{userId}', [UserCompanyAssignmentController::class, 'sync']);
+    Route::get('user-company-assignment', [UserCompanyAssignmentController::class, 'index']);
+    Route::post('user-company-assignment-sync/{userId}', [UserCompanyAssignmentController::class, 'sync']);
 
     //Company
     Route::get('companies', [CompanyController::class, 'index']);
