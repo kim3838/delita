@@ -2,6 +2,8 @@
 
 namespace App\Transformers\EmployeePayrollComponent;
 
+use App\Enums\AmountablePayrollComponentEnd;
+use App\Enums\AmountablePayrollComponentStart;
 use App\Models\EmployeePayrollComponent;
 use League\Fractal\TransformerAbstract;
 
@@ -20,10 +22,14 @@ class PatchableTransformer extends TransformerAbstract
             'pay_type' => $model->pay_type?->value,
             'pay_frequency_id' => $model->pay_frequency_id,
 
-            'amountable_start' => $model->amountable_start?->value,
+            'amountable_start' => $model->amountable_start
+                ? $model->amountable_start->value
+                : AmountablePayrollComponentStart::NOT_SPECIFIED,
             'start_date' => $model->start_date?->format('Y-m-d'),
 
-            'amountable_end' => $model->amountable_end?->value,
+            'amountable_end' => $model->amountable_end
+                ? $model->amountable_end->value :
+                AmountablePayrollComponentEnd::NOT_SPECIFIED,
             'end_date' => $model->end_date?->format('Y-m-d'),
         ];
     }
