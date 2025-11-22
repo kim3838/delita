@@ -26,7 +26,7 @@ class AccountController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AccountRepository::class)->list($filters),
+                    App::make(AccountRepository::class)->paginate($filters),
                     ListTransformer::class
                 )
             );

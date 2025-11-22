@@ -22,7 +22,7 @@ class EmployeeController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(EmployeeRepository::class)->list($filters),
+                App::make(EmployeeRepository::class)->paginate($filters),
                 ListTransformer::class,
             ));
         }

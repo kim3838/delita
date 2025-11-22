@@ -7,6 +7,8 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\Hydrations\AssociatedCompany;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedCompanyRepository
 {
@@ -15,9 +17,9 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
         return AssociatedCompany::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = CompanyUser::getQuery()
+        $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
@@ -53,12 +55,12 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = CompanyUser::getQuery()
+        $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
@@ -75,16 +77,16 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'company_user.assignment_type as assignment_type',
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = CompanyUser::getQuery()
+        $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
-            ->where('companies.ulid', $ulid)
+            ->where('companies.ulid', $identifier)
             ->select([
                 'companies.id as company_id',
                 'companies.ulid as company_ulid',
@@ -98,12 +100,12 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'company_user.assignment_type as assignment_type',
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray())->first();
+        return $this->hydrateItem($queryBuilder->firstOrFail());
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = Company::findOrfail($id);
+        $model = Company::query()->findOrfail($identifier);
 
         $model->update($attributes);
 

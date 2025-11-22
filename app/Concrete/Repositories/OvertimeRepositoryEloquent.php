@@ -11,6 +11,7 @@ use App\Exceptions\UnexpectedException;
 use App\Models\Company;
 use App\Models\Overtime;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -27,7 +28,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
 
         $attendanceQueryBuilder = App::make(AttendanceRepository::class)->baseQueryBuilder($attendanceRepositoryFilter, []);
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($attendanceQueryBuilder, 'attendance_sub', function ($join) {
                 $join->on('attendance_sub.id', '=', 'overtimes.attendance_id');
             })
@@ -69,7 +70,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         return $queryBuilder;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'attendance_sub.employee_number', 'direction' => 'ASC'],
@@ -82,7 +83,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model());
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
     /**
@@ -93,7 +94,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $overtime =  $this->model::create([
+        $overtime =  $this->model::query()->create([
             ...$attributes,
             'duration' => abs(Carbon::parse($attributes['end'])->diffInMinutes(Carbon::parse($attributes['start'])))
         ]);
@@ -106,12 +107,12 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
     /**
      * @throws UnexpectedException
      */
-    public function update($id, $attributes, ?AttendanceSplitter $splitterInterface = null)
+    public function update($identifier, $attributes, ?AttendanceSplitter $splitterInterface = null)
     {
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $overtime = $this->model::query()->where('ulid', $id)->firstOrFail();
+        $overtime = $this->model::query()->where('ulid', $identifier)->firstOrFail();
 
         $update = collect($attributes)->except(['id', 'ulid', 'company_id', 'date', 'attendance_id'])->toArray();
 
@@ -128,7 +129,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
     /**
      * @throws UnexpectedException
      */
-    public function batchDelete($ids, ?AttendanceSplitter $splitterInterface = null): void
+    public function batchDelete($ids, ?AttendanceSplitter $splitterInterface = null): int
     {
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find(request()->input('company_id'))]);
@@ -148,5 +149,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
              **/
             $attendanceSplitter->generate($attendance);
         }
+
+        return true;
     }
 }

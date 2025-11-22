@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Account;
 use App\Models\CompanyUser;
+use Illuminate\Support\Collection;
 
 class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedAccountRepository
 {
@@ -14,9 +15,9 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
         return Account::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = CompanyUser::getQuery()
+        $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {
@@ -37,12 +38,12 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ])
             ->groupBy('accounts.id');
 
-        return $this->hydrateCollection($queryBuilder->get(), $this->model);
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = CompanyUser::getQuery()
+        $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {
@@ -57,6 +58,6 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ])
             ->groupBy('accounts.id');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

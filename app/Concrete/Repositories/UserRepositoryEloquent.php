@@ -10,6 +10,7 @@ use App\Helpers\SafeExecutor;
 use App\Models\Company;
 use App\Models\User;
 use App\Notifications\NewUserRegistered;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -20,9 +21,9 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
         return User::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
             ->whereNot('users.type', UserType::SUPER_ADMIN)
             ->when(!empty($filters->companies) && is_array($filters->companies), function ($builder) use ($filters) {
@@ -50,12 +51,12 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
     public function store($attributes)
     {
-        $user = $this->model::create($attributes);
+        $user = $this->model::query()->create($attributes);
 
         SafeExecutor::try(function () use ($user, $attributes) {
 
@@ -65,9 +66,9 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
         return $user;
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('ulid', $ulid);
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->firstOrFail();
     }

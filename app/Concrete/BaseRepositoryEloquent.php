@@ -68,12 +68,12 @@ abstract class BaseRepositoryEloquent
 
     public function store($attributes)
     {
-        return $this->model::create($attributes);
+        return $this->model::query()->create($attributes);
     }
 
-    public function show($id)
+    public function show($identifier)
     {
-        return $this->model::findOrfail($id);
+        return $this->model::query()->findOrfail($identifier);
     }
 
     //Minimal version of show
@@ -89,23 +89,23 @@ abstract class BaseRepositoryEloquent
         return $model ? Fractal::item($model, $transformer) : $model;
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         $model->update($attributes);
 
         return $model;
     }
 
-    public function delete($id)
+    public function delete($identifier): ?bool
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         return $model->delete();
     }
 
-    public function batchDelete($ids)
+    public function batchDelete($ids): int
     {
         return $this->model::destroy($ids);
     }
@@ -146,7 +146,7 @@ abstract class BaseRepositoryEloquent
      * @param Model $class
      * @return LengthAwarePaginator
      */
-    protected function hydratePaginationItems(LengthAwarePaginator $paginator, Model $class): LengthAwarePaginator
+    protected function hydratePaginationItems(LengthAwarePaginator $paginator, Model|string $fullyQualifiedClassName): LengthAwarePaginator
     {
         $items = [];
 
@@ -156,12 +156,12 @@ abstract class BaseRepositoryEloquent
                 : $item->toArray();
         }
 
-        return $paginator->setCollection($class::hydrate($items));
+        return $paginator->setCollection($fullyQualifiedClassName::query()->hydrate($items));
     }
 
     public function hydrateItem(array|object $attributes = [])
     {
-        return $this->model::hydrate([$attributes])->first();
+        return $this->model::query()->hydrate([$attributes])->first();
     }
 
     /**
@@ -171,7 +171,7 @@ abstract class BaseRepositoryEloquent
      * @param Model $class
      * @return Collection
      */
-    protected function hydrateCollection(Collection $collection, Model $class): Collection
+    protected function hydrateCollection(Collection $collection, Model|string $fullyQualifiedClassName): Collection
     {
         $items = [];
 
@@ -181,7 +181,7 @@ abstract class BaseRepositoryEloquent
                 : $item->toArray();
         }
 
-        return $class::hydrate($items);
+        return $fullyQualifiedClassName::query()->hydrate($items);
     }
 
     public function reOrder($orderables): void

@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\NonEmployeeUser;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implements NonEmployeeUserRepository
@@ -15,9 +16,9 @@ class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implement
         return NonEmployeeUser::class;
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = User::getQuery()
+        $queryBuilder = User::query()->getQuery()
             ->join('company_user', 'company_user.user_id', '=', 'users.id')
             ->leftJoin('employees', function($join){
                 $join->on(DB::raw("employees.user_id"), '=', DB::raw("users.id"))
@@ -36,6 +37,6 @@ class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implement
                 'users.email'
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

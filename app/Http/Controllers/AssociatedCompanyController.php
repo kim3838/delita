@@ -9,7 +9,6 @@ use App\Http\Requests\Company\UpdateCompanyRequest;
 use App\Transformers\AssociatedCompany\ItemTransformer;
 use App\Transformers\AssociatedCompany\ListTransformer;
 use App\Transformers\AssociatedCompany\SelectionTransformer;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Request;
 
 class AssociatedCompanyController extends Controller
@@ -26,7 +25,7 @@ class AssociatedCompanyController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    $this->repository->list($filters),
+                    $this->repository->paginate($filters),
                     ListTransformer::class
                 )
             );
@@ -43,7 +42,7 @@ class AssociatedCompanyController extends Controller
 
             $selection = $this->repository->selection($filters);
 
-            $selected = Arr::first($selection);
+            $selected = $selection->first();
 
             return ResponseJson::successfulResponse([
                 ...Fractal::collection($selection, SelectionTransformer::class, 'selection'),

@@ -13,16 +13,16 @@ class EmployeeContactRepositoryEloquent extends BaseRepositoryEloquent implement
         return EmployeeContact::class;
     }
 
-    public function show($employeeId)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('employee_id', $employeeId);
+        $queryBuilder = $this->model::query()->where('employee_id', $identifier);
 
         return $queryBuilder->first();
     }
 
-    public function update($employeeId, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->show($employeeId);
+        $model = $this->show($identifier);
 
         $model->update($attributes);
 

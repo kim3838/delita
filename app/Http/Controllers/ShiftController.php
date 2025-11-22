@@ -28,7 +28,7 @@ class ShiftController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
-            $data = $this->repository->list($filters);
+            $data = $this->repository->paginate($filters);
 
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class)

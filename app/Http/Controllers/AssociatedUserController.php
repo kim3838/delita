@@ -19,7 +19,7 @@ class AssociatedUserController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(AssociatedUserRepository::class)->list($filters),
+                    App::make(AssociatedUserRepository::class)->paginate($filters),
                     ListTransformer::class
                 )
             );

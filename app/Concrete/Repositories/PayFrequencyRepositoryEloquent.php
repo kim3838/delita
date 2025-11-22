@@ -9,6 +9,7 @@ use App\Enums\CutOffType;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\WeekDay;
 use App\Models\PayFrequency;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -64,9 +65,9 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
         ];
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("pay_frequencies.company_id"), $value);
             })
@@ -75,12 +76,12 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
             ])
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("pay_frequencies.company_id"), $value);
             })
@@ -91,6 +92,6 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
             ])
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

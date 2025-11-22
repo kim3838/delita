@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\FormulaRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Formulable;
 use App\Models\Formula;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements FormulaRepository
 {
@@ -14,9 +15,9 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
         return Formula::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
 
                 $filteredFormulableTypes = array_filter($filters->formulable_types, function($formulableType) {
@@ -62,12 +63,12 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('ulid', $ulid);
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->first();
     }

@@ -25,7 +25,7 @@ class EmployeePayrollInfoController extends Controller
             $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->staticList($filters),
+                $this->repository->list($filters),
                 ItemTransformer::class,
                 'compensations'
             ));
@@ -44,7 +44,7 @@ class EmployeePayrollInfoController extends Controller
             $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->staticList($filters),
+                $this->repository->list($filters),
                 ItemTransformer::class,
                 'deductions'
             ));
@@ -63,7 +63,7 @@ class EmployeePayrollInfoController extends Controller
             $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->staticList($filters),
+                $this->repository->list($filters),
                 ItemTransformer::class,
                 'income_taxes'
             ));

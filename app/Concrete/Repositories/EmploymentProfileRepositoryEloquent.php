@@ -8,6 +8,7 @@ use App\Enums\EmploymentStatus;
 use App\Facades\Fractal;
 use App\Models\EmploymentProfile;
 use App\Transformers\EmploymentProfile\PatchableTransformer;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent implements EmploymentProfileRepository
@@ -17,9 +18,9 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
         return EmploymentProfile::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->employee_id) && is_array($filters->employee_id), function ($builder) use ($filters) {
                 $builder->whereIn('employment_profiles.employee_id', $filters->employee_id);
             })
@@ -28,12 +29,12 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             ])
             ->orderBy('employment_profiles.start_date', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function baseQueryBuilder($filters)
     {
-        return $this->model->getQuery()
+        return $this->model::query()->getQuery()
             ->leftJoin('employees', 'employees.id', '=', 'employment_profiles.employee_id')
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
             ->when($filters->company_id ?? false, function ($builder, $value) {
@@ -77,12 +78,12 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
 
         $patchable = Fractal::item($hydrated, PatchableTransformer::class);
 
-        return $this->model::create($patchable);
+        return $this->model::query()->create($patchable);
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         $hydrated = $this->hydrateItem($attributes);
 

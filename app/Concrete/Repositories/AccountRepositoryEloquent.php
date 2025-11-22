@@ -5,6 +5,8 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\AccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Account;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class AccountRepositoryEloquent extends BaseRepositoryEloquent implements AccountRepository
 {
@@ -13,9 +15,9 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
         return Account::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->account_plan) && is_array($filters->account_plan), function ($builder) use ($filters) {
                 $builder->whereIn('accounts.plan', $filters->account_plan);
             })
@@ -29,19 +31,19 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()->select(['accounts.*']);
+        $queryBuilder = $this->model::query()->getQuery()->select(['accounts.*']);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('ulid', $ulid);
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->firstOrFail();
     }

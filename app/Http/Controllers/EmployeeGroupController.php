@@ -31,7 +31,7 @@ class EmployeeGroupController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    $this->repository->list($filters),
+                    $this->repository->paginate($filters),
                     ListTransformer::class
                 )
             );

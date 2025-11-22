@@ -7,6 +7,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Company;
 use App\Models\ShiftSchedule;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements ShiftScheduleRepository
@@ -16,7 +17,7 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
         return ShiftSchedule::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
         $queryBuilder = $this->model::getQuery()
             ->when($filters->shift_id ?? false, function ($builder, $value) {
@@ -27,12 +28,12 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
                 'shift_schedules.*',
             ]);
 
-        return $this->hydrateCollection($queryBuilder->get(), $this->model);
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function preset($companyId)
     {
-        $companyTimezone = Company::find($companyId)->timezone;
+        $companyTimezone = Company::query()->find($companyId)->timezone;
 
         $preset = [];
 
@@ -95,6 +96,6 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
             }
         }
 
-        return $this->model::hydrate($preset);
+        return $this->model::query()->hydrate($preset);
     }
 }

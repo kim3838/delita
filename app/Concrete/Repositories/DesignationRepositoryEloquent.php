@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\DesignationRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Designation;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements DesignationRepository
@@ -14,9 +15,9 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
         return Designation::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("designations.company_id"), $value);
             })
@@ -32,12 +33,12 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
             ])
             ->orderBy('name', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("designations.company_id"), $value);
             })
@@ -47,6 +48,6 @@ class DesignationRepositoryEloquent extends BaseRepositoryEloquent implements De
             ])
             ->orderBy('name', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

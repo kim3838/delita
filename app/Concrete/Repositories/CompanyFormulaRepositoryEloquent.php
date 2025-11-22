@@ -19,6 +19,7 @@ use App\Models\Hydrations\CompanyFormula\FormulaSetting;
 use App\Models\Hydrations\CompanyFormula\Selection as FormulaSelection;
 use App\Models\IncomeTax;
 use App\Transformers\Formula\ItemTransformer as FormulaItemTransformer;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -29,9 +30,9 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
         return CompanyFormula::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')
             ->when($filters->company_id ?? false, function ($builder, $value) {
@@ -61,12 +62,12 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
             ->orderBy('formulas.formulable_type', 'ASC')
             ->orderBy('formulas.component_type', 'ASC');
 
-        return FormulaSetting::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), FormulaSetting::class);
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')
             ->when($filters->company_id ?? false, function ($builder, $value) {
@@ -86,12 +87,12 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
                 'formulas.name AS name'
             ]);
 
-        return FormulaSelection::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), FormulaSelection::class);
     }
 
-    public function sync($companyId, $formulas)
+    public function sync($companyId, $formulas): array
     {
-        $companyFormulaPivotTemp = CompanyFormula::where('company_id', $companyId)
+        $companyFormulaPivotTemp = CompanyFormula::query()->where('company_id', $companyId)
             ->get()
             ->map(function($item){
 
@@ -109,14 +110,14 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
         }, $formulas);
 
-        $syncResult = Company::findOrFail($companyId)->formulas()->sync($sync);
+        $syncResult = Company::query()->findOrFail($companyId)->formulas()->sync($sync);
 
         foreach ($companyFormulaPivotTemp->whereIn('formula_id', $syncResult['detached']) as $companyFormulaPivot){
-            $formula = Formula::find($companyFormulaPivot->formula_id);
+            $formula = Formula::query()->find($companyFormulaPivot->formula_id);
 
             if($formula->formulable_type->value == Formulable::EARNINGS->value){
 
-                $compensations = Compensation::where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $compensations = Compensation::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
 
                 foreach ($compensations as $compensation) {
 
@@ -125,7 +126,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
             } else if($formula->formulable_type->value == Formulable::DEDUCTIONS->value){
 
-                $deductions = Deduction::where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $deductions = Deduction::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
 
                 foreach ($deductions as $deduction) {
 
@@ -134,7 +135,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
             } else if($formula->formulable_type->value == Formulable::INCOME_TAX->value){
 
-                $incomeTaxes = IncomeTax::where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $incomeTaxes = IncomeTax::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
 
                 foreach ($incomeTaxes as $incomeTax) {
 
@@ -147,7 +148,7 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
         return $syncResult;
     }
 
-    public function syncWithoutDetaching($companyId, $formulaUlids)
+    public function syncWithoutDetaching($companyId, $formulaUlids): array
     {
         $sync = [];
 
@@ -160,6 +161,6 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
             $sync[$formula['id']] = ['settings' => $settings];
         }
 
-        return Company::findOrFail($companyId)->formulas()->syncWithoutDetaching($sync);
+        return Company::query()->findOrFail($companyId)->formulas()->syncWithoutDetaching($sync);
     }
 }

@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Formulable;
 use App\Models\SalaryStatementModule;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent implements SalaryStatementModuleRepository
@@ -15,15 +16,15 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
         return SalaryStatementModule::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("company_id"), $value);
             })
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public static function defaultPresets(): array

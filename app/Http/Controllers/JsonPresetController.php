@@ -13,7 +13,6 @@ use App\Http\Requests\JsonPreset\ViewJsonPresetRequest;
 use App\Transformers\JsonPreset\BasicTransformer;
 use App\Transformers\JsonPreset\ItemTransformer;
 use App\Transformers\JsonPreset\ListTransformer;
-use App\Transformers\JsonPreset\SelectionTransformer;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -31,7 +30,7 @@ class JsonPresetController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    $this->repository->list($filters),
+                    $this->repository->paginate($filters),
                     ListTransformer::class
                 )
             );

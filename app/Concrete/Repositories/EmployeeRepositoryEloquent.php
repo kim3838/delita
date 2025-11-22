@@ -31,7 +31,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)
             ->currentEmploymentProfileBuilder($filters);
 
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('users', 'users.id', '=', 'employees.user_id')
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
             ->leftJoinSub($currentEmploymentProfile, 'current_employment_profile', function ($join) {
@@ -112,7 +112,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return $queryBuilder;
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $queryBuilder = $this->baseQueryBuilder($filters);
 
@@ -120,12 +120,12 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
             })
@@ -148,12 +148,12 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('ulid', $ulid);
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->firstOrFail();
     }

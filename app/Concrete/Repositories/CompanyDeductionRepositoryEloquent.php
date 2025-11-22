@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompanyDeductionRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Deduction;
 use App\Models\Hydrations\CompanyDeduction;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implements CompanyDeductionRepository
@@ -15,9 +16,9 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
         return CompanyDeduction::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = Deduction::getQuery()
+        $queryBuilder = Deduction::query()->getQuery()
             ->leftJoin('company_formula', function ($join) {
                 $join->on(DB::raw("company_formula.id"), '=', DB::raw("deductions.company_formula_id"))
                     ->where(DB::raw("company_formula.company_id"), '=', DB::raw("deductions.company_id"));
@@ -40,6 +41,6 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
             ])
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

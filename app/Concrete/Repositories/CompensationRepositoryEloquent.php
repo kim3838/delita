@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompensationRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Compensation;
 use App\Traits\PayrollComponentChain;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements CompensationRepository
@@ -17,9 +18,9 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
         return Compensation::class;
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("compensations.company_id"), $value);
             })
@@ -35,12 +36,12 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
             ])
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function delete($id)
+    public function delete($identifier): ?bool
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         $this->deleteEmployeeAssignedComponentable('compensation', $model->id);
 

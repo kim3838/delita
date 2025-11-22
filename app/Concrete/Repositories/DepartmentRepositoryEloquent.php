@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\DepartmentRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Department;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements DepartmentRepository
@@ -14,9 +15,9 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
         return Department::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("departments.company_id"), $value);
             })
@@ -49,12 +50,12 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
             ])
             ->orderBy('name', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("departments.company_id"), $value);
             })
@@ -75,18 +76,18 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
             ])
             ->orderBy('name', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         $model->update($attributes);
 
         if(!empty($model->parent_id)){
 
-            $this->model::where('parent_id', $model->id)->update(['parent_id' => null]);
+            $this->model::query()->where('parent_id', $model->id)->update(['parent_id' => null]);
         }
 
         return $model;

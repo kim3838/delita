@@ -26,7 +26,7 @@ class HolidayController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->list($filters),
+                $this->repository->paginate($filters),
                 ListTransformer::class
             ));
         }

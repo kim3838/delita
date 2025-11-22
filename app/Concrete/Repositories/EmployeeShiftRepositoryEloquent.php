@@ -30,7 +30,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
 
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'employee_shift.employee_id');
             })
@@ -45,7 +45,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return $queryBuilder;
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
@@ -79,7 +79,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new ShiftAssignment());
+        return $this->hydratePaginationItems($paginator, ShiftAssignment::class);
     }
 
     public function selection($filters): LengthAwarePaginator
@@ -88,7 +88,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
             ['field' => 'shifts.code', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->join('shifts', 'shifts.id', '=', 'employee_shift.shift_id')
             ->when($filters->employee_id ?? false, function ($builder, $value) {
                 $builder->where('employee_shift.employee_id', $value);
@@ -114,7 +114,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new ShiftAssignment());
+        return $this->hydratePaginationItems($paginator, ShiftAssignment::class);
     }
 
     public function shiftsByEmployees($filters): LengthAwarePaginator
@@ -148,7 +148,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new ShiftsByEmployees());
+        return $this->hydratePaginationItems($paginator, ShiftsByEmployees::class);
     }
 
     public function syncWithoutDetaching($employeeIds, $shiftIds, $pivotData): void

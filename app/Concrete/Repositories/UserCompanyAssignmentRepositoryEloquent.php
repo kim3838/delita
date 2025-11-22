@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\User\CompanyAssignment;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent implements UserCompanyAssignmentRepository
@@ -15,9 +16,9 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
         return CompanyAssignment::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = User::getQuery()
+        $queryBuilder = User::query()->getQuery()
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("users.id"), $value);
             })
@@ -49,11 +50,11 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
                 'employees.given_name AS employee_given_name',
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function sync($userId, $companyAssignments)
+    public function sync($userId, $companyAssignments): array
     {
-        return User::findOrFail($userId)->companies()->sync($companyAssignments);
+        return User::query()->findOrFail($userId)->companies()->sync($companyAssignments);
     }
 }

@@ -15,13 +15,13 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
         return Shift::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'shifts.code', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("shifts.company_id"), $value);
             })
@@ -43,7 +43,7 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
     public function selection($filters): LengthAwarePaginator
@@ -52,7 +52,7 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
             ['field' => 'shifts.code', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where('shifts.company_id', $value);
             })
@@ -72,12 +72,12 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function show($ulid)
+    public function show($identifier)
     {
-        $queryBuilder = $this->model::where('ulid', $ulid);
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->firstOrFail();
     }

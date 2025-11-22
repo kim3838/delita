@@ -29,7 +29,7 @@ class FormulaController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    $this->repository->list($filters),
+                    $this->repository->paginate($filters),
                     ListTransformer::class
                 )
             );
@@ -86,7 +86,7 @@ class FormulaController extends Controller
 
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
-                    $this->repository->list($filters),
+                    $this->repository->paginate($filters),
                     SelectionTransformer::class
                 )
             ]);

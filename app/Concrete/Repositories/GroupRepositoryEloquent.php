@@ -15,7 +15,7 @@ class GroupRepositoryEloquent extends BaseRepositoryEloquent implements GroupRep
         return Group::class;
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'groups.name', 'direction' => 'ASC'],
@@ -25,7 +25,7 @@ class GroupRepositoryEloquent extends BaseRepositoryEloquent implements GroupRep
             'groups.id'
         ];
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('groupables', 'groupables.group_id', '=', 'groups.id')
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("groups.company_id"), $value);
@@ -48,12 +48,12 @@ class GroupRepositoryEloquent extends BaseRepositoryEloquent implements GroupRep
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model());
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->model::query()->where('ulid', $id)->firstOrFail();
+        $model = $this->model::query()->where('ulid', $identifier)->firstOrFail();
 
         $model->update($attributes);
 

@@ -26,7 +26,7 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
 
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'employee_payroll_components.employee_id');
             })
@@ -76,7 +76,7 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
         return $queryBuilder;
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'payroll_component_sub.employee_number', 'direction' => 'ASC'],
@@ -90,10 +90,10 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model());
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function staticList($filters): Collection
+    public function list($filters): Collection
     {
         $orders = [
             ['field' => 'payroll_component_sub.payroll_componentable_morph_to_type', 'direction' => 'ASC'],
@@ -103,7 +103,7 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
-        return $this->hydrateCollection($queryBuilder->get(), $this->model);
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function store($attributes)
@@ -111,12 +111,12 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
         $hydrated = $this->hydrateItem($attributes);
         $patchable = Fractal::item($hydrated, PatchableTransformer::class);
 
-        return $this->model::create($patchable);
+        return $this->model::query()->create($patchable);
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $model = $this->model::findOrfail($id);
+        $model = $this->model::query()->findOrfail($identifier);
 
         $hydrated = $this->hydrateItem($attributes);
         $patchable = Fractal::item($hydrated, PatchableTransformer::class);

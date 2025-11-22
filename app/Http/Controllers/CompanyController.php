@@ -24,7 +24,7 @@ class CompanyController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(CompanyRepository::class)->list($filters),
+                    App::make(CompanyRepository::class)->paginate($filters),
                     ListTransformer::class
                 )
             );

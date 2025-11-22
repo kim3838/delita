@@ -8,6 +8,7 @@ use App\Models\JsonPreset;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements JsonPresetRepository
 {
@@ -16,9 +17,9 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
         return JsonPreset::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('json_presets.path', 'LIKE', ('%' . $value . '%'))
@@ -32,7 +33,7 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
     public function store($attributes)
@@ -47,12 +48,12 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
         Storage::disk($jsonPreset['disk'])->put($jsonPreset['path'], $json->get());
 
-        return $this->model::create($jsonPreset);
+        return $this->model::query()->create($jsonPreset);
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $jsonPreset = $this->model::findOrfail($id);
+        $jsonPreset = $this->model::query()->findOrfail($identifier);
         $jsonPreset->key = $attributes['key'];
         $jsonPreset->path = $attributes['path'];
 
@@ -81,7 +82,7 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
     public function selection($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('json_presets.path', 'LIKE', ('%' . $value . '%'));
@@ -90,21 +91,21 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function delete($id)
+    public function delete($identifier): ?bool
     {
-        $jsonPreset = $this->model::findOrfail($id);
+        $jsonPreset = $this->model::query()->findOrfail($identifier);
 
         Storage::disk($jsonPreset->disk)->delete($jsonPreset->path);
 
         return $jsonPreset->delete();
     }
 
-    public function download($id)
+    public function download($id): StreamedResponse
     {
-        $jsonPreset = $this->model::findOrfail($id);
+        $jsonPreset = $this->model::query()->findOrfail($id);
 
         return Storage::disk($jsonPreset->disk)->download($jsonPreset->path);
     }

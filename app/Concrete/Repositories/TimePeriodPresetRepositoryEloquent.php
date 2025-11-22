@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\TimePeriodType;
 use App\Models\TimePeriodPreset;
+use Illuminate\Support\Collection;
 
 class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implements TimePeriodPresetRepository
 {
@@ -16,14 +17,15 @@ class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implemen
 
     public function endOfMonthPeriod()
     {
-        return $this->model::where('type', TimePeriodType::PAY_FREQUENCY)
+        return $this->model::query()
+            ->where('type', TimePeriodType::PAY_FREQUENCY)
             ->where('name', 'end_of_month_cut_off')
             ->firstOrFail();
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->name ?? false, function ($builder, $value) {
                 $builder->where('name', $value);
             })
@@ -43,6 +45,6 @@ class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'semimonthly_period',
             ]);
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

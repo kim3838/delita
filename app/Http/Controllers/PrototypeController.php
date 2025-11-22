@@ -27,7 +27,7 @@ class PrototypeController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
-                Fractal::collection($this->prototypeRepository->list($filters), DataTableTransformer::class)
+                Fractal::collection($this->prototypeRepository->paginate($filters), DataTableTransformer::class)
             );
         }
 

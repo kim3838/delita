@@ -7,8 +7,8 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\Prototype\DataTable as PrototypeDataTable;
 use App\Models\Prototype;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements PrototypeRepository
 {
@@ -17,11 +17,11 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
         return Prototype::class;
     }
 
-    public function list($filters)
+    public function paginate($filters): LengthAwarePaginator
     {
         $tableName = $this->model->getTable();
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->search ?? false, function($builder, $value) use ($tableName){
                 $builder->where(function($clause) use($tableName, $value){
                     $clause->where(DB::raw("$tableName.name"), 'LIKE', ('%' . $value . '%'))
@@ -51,12 +51,12 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new PrototypeDataTable);
+        return $this->hydratePaginationItems($paginator, PrototypeDataTable::class);
     }
 
-    public function selection($filters)
+    public function selection($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->orderBy('name', 'ASC')
             ->when($filters->id ?? false, function ($builder, $value) {
                 if(is_array($value)){
@@ -73,6 +73,6 @@ class PrototypeRepositoryEloquent extends BaseRepositoryEloquent implements Prot
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 }

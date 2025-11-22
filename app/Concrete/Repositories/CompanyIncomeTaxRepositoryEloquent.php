@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\CompanyIncomeTax;
 use App\Models\IncomeTax;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements CompanyIncomeTaxRepository
@@ -15,9 +16,9 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
         return CompanyIncomeTax::class;
     }
 
-    public function list($filters)
+    public function list($filters): Collection
     {
-        $queryBuilder = IncomeTax::getQuery()
+        $queryBuilder = IncomeTax::query()->getQuery()
             ->leftJoin('company_formula', function ($join) {
                 $join->on(DB::raw("company_formula.id"), '=', DB::raw("income_taxes.company_formula_id"))
                     ->where(DB::raw("company_formula.company_id"), '=', DB::raw("income_taxes.company_id"));
@@ -40,6 +41,6 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
             ])
             ->orderBy('order', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }

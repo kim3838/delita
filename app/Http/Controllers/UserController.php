@@ -65,7 +65,7 @@ class UserController extends Controller
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
-                    App::make(UserRepository::class)->list($filters),
+                    App::make(UserRepository::class)->paginate($filters),
                     ListTransformer::class
                 )
             );

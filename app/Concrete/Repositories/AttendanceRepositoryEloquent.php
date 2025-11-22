@@ -23,19 +23,18 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
     }
 
     /**
-     *
      * @throws UnexpectedException
      */
-    public function update($id, $attributes, ?AttendanceSplitter $splitterInterface = null)
+    public function update($identifier, $attributes, ?AttendanceSplitter $splitterInterface = null)
     {
         $attendanceSplitter = $splitterInterface
             ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
         $deleteAttendanceOvertime = clone $this->model;
         //Delete existing overtime
-        $deleteAttendanceOvertime::query()->where('ulid', $id)->firstOrFail()->overtime?->delete();
+        $deleteAttendanceOvertime::query()->where('ulid', $identifier)->firstOrFail()->overtime?->delete();
 
-        $attendance = clone $this->model::query()->where('ulid', $id)->firstOrFail();
+        $attendance = clone $this->model::query()->where('ulid', $identifier)->firstOrFail();
         $update = collect($attributes)->except(['company_id', 'employee_id', 'shift_id'])->toArray();
 
         $attendance->update($update);
@@ -51,7 +50,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
 
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'attendances.employee_id');
             })
@@ -122,20 +121,18 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         return $queryBuilder;
     }
 
-    public function show($id): Attendance
+    public function show($identifier): Attendance
     {
         $filters = (object)[
-            'attendance_ulids' => [$id],
+            'attendance_ulids' => [$identifier],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters);
 
-        $attendance = $queryBuilder->firstOrFail();
-
-        return $this->hydrateItem($attendance);
+        return $this->hydrateItem($queryBuilder->firstOrFail());
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
@@ -148,6 +145,6 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model());
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 }

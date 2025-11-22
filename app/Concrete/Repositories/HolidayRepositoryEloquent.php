@@ -15,13 +15,13 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
         return Holiday::class;
     }
 
-    public function list($filters): LengthAwarePaginator
+    public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'date', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where('company_id', $value);
             })
@@ -39,7 +39,7 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, new $this->model());
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
     public function selection($filters): LengthAwarePaginator
@@ -48,7 +48,7 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
             ['field' => 'holidays.name', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->id) && is_array($filters->id), function ($builder) use ($filters) {
                 $builder->whereIn('holidays.id', $filters->id);
             })
@@ -69,12 +69,12 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
-        return $this->hydratePaginationItems($paginator, $this->model);
+        return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function update($id, $attributes)
+    public function update($identifier, $attributes)
     {
-        $holiday = $this->model::where('ulid', $id)->firstOrFail();
+        $holiday = $this->model::query()->where('ulid', $identifier)->firstOrFail();
 
         $holiday->update($attributes);
 

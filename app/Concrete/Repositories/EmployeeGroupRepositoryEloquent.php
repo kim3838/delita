@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\EmployeeGroupRepository;
 use App\Enums\GroupType;
 use App\Models\Group;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeGroupRepositoryEloquent extends GroupRepositoryEloquent implements EmployeeGroupRepository
@@ -33,9 +34,9 @@ class EmployeeGroupRepositoryEloquent extends GroupRepositoryEloquent implements
         }
     }
 
-    public function selection($filters)
+    public function selection($filters): Collection
     {
-        $queryBuilder = $this->model->getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("groups.company_id"), $value);
             })
@@ -51,6 +52,6 @@ class EmployeeGroupRepositoryEloquent extends GroupRepositoryEloquent implements
             ])
             ->orderBy('name', 'ASC');
 
-        return $this->model::hydrate($queryBuilder->get()->toArray());
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }
