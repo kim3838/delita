@@ -9,6 +9,7 @@ use App\Facades\Fractal;
 use App\Models\EmployeePayrollComponent;
 use App\Transformers\EmployeePayrollComponent\PatchableTransformer;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -90,6 +91,19 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, new $this->model());
+    }
+
+    public function staticList($filters): Collection
+    {
+        $orders = [
+            ['field' => 'payroll_component_sub.payroll_componentable_morph_to_type', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model);
     }
 
     public function store($attributes)

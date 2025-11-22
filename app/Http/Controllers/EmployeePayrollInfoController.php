@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
+use App\Enums\Formulable;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Models\Employee;
 use App\Transformers\EmployeePayrollComponent\ItemTransformer;
+use Illuminate\Http\Request;
 
 class EmployeePayrollInfoController extends Controller
 {
-    public function compensations($employeeUlid)
-    {
-        if(request()->expectsJson()){
+    public function __construct(
+        protected EmployeePayrollComponentRepository $repository,
+    ){}
 
-            $compensations = Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->compensations;
+    public function compensations(Request $request, $employeeUlid)
+    {
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            $filters->formulable_types = [Formulable::EARNINGS];
+            $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $compensations,
+                $this->repository->staticList($filters),
                 ItemTransformer::class,
                 'compensations'
             ));
@@ -25,14 +34,17 @@ class EmployeePayrollInfoController extends Controller
         abort(404);
     }
 
-    public function deductions($employeeUlid)
+    public function deductions(Request $request, $employeeUlid)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
-            $deductions = Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->deductions;
+            $filters = json_decode($request->get('filters'));
+
+            $filters->formulable_types = [Formulable::DEDUCTIONS];
+            $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $deductions,
+                $this->repository->staticList($filters),
                 ItemTransformer::class,
                 'deductions'
             ));
@@ -41,14 +53,17 @@ class EmployeePayrollInfoController extends Controller
         abort(404);
     }
 
-    public function incomeTaxes($employeeUlid)
+    public function incomeTaxes(Request $request, $employeeUlid)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
-            $incomeTaxes = Employee::query()->where('ulid', $employeeUlid)->firstOrFail()->incomeTaxes;
+            $filters = json_decode($request->get('filters'));
+
+            $filters->formulable_types = [Formulable::INCOME_TAX];
+            $filters->employee_ulids = [$employeeUlid];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $incomeTaxes,
+                $this->repository->staticList($filters),
                 ItemTransformer::class,
                 'income_taxes'
             ));
