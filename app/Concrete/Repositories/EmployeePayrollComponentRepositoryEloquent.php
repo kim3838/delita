@@ -87,8 +87,6 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, new $this->model());
