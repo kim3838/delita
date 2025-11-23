@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Http\Requests\StorePrototypeRequest;
-use App\Http\Requests\UpdatePrototypeRequest;
 use App\Models\Prototype;
 use App\Transformers\Prototype\DataTableTransformer;
 use Illuminate\Http\Request;
@@ -46,7 +44,7 @@ class PrototypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePrototypeRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -70,7 +68,7 @@ class PrototypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePrototypeRequest $request, Prototype $prototype)
+    public function update(Request $request, Prototype $prototype)
     {
         //
     }
