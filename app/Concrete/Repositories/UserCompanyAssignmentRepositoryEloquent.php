@@ -38,6 +38,7 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
                     ->where(DB::raw("employees.company_id"), '=', DB::raw("companies.id"));
             })
             ->select([
+                'company_user.id AS company_user_id',
                 'users.id AS user_id',
                 'companies.id AS company_id',
                 'companies.code AS company_code',

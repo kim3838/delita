@@ -7,9 +7,10 @@ use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
-    public function transform(CompanyAssignment $model)
+    public function transform(CompanyAssignment $model): array
     {
         return [
+            'id' => $model->company_user_id ?? '',
             'user_id' => $model->user_id,
             'company_id' => $model->company_id,
             'company_code' => $model->company_code,

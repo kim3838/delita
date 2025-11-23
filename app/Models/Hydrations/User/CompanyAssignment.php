@@ -5,9 +5,11 @@ namespace App\Models\Hydrations\User;
 use App\Enums\CompanyUserAssignmentType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+
 class CompanyAssignment extends Model
 {
     protected $casts = [
+        'id' => 'int',
         'user_id' => 'int',
         'user_ulid' => 'string',
         'company_id' => 'int',
