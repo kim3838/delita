@@ -65,10 +65,14 @@ class Development extends Seeder
         //Account 1003
         $account1003 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
 
+        $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+
+        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::INVENTORY, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::FINANCE_ACCOUNTING, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+
         $account1003->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
 
         $philippines = Country::where('iso2', 'PH')->first();
