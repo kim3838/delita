@@ -15,7 +15,8 @@ class ListTransformer extends TransformerAbstract
         $associatedCompanies = User::find($model->user_id)
             ->companies->map(function($assignedCompany){
 
-                $employee = Employee::where('user_id', $assignedCompany->pivot->user_id)
+                $employee = Employee::query()
+                    ->where('user_id', $assignedCompany->pivot->user_id)
                     ->where('company_id', $assignedCompany->id)
                     ->first();
 
