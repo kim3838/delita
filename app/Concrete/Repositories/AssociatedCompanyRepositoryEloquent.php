@@ -69,7 +69,9 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
             ->select([
+                'company_user.user_id as user_id',
                 'companies.id as company_id',
+                'companies.ulid as company_ulid',
                 'companies.short_name as company_short_name',
                 'companies.name as company_name',
                 'companies.currency as company_currency',

@@ -14,7 +14,7 @@ class BasicTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'subscriptions' => $model->subscriptions->map(function ($subscription) {
                 return $subscription->module?->toArray();
-            })
+            })->sortBy('value')->values()->toArray()
         ];
     }
 }

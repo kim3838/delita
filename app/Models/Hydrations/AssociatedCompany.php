@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AssociatedCompany extends Model
 {
     protected $casts = [
+        'user_id' => 'int',
         'company_id' => 'int',
         'company_ulid' => 'string',
         'account_id' => 'int',
