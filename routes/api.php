@@ -159,7 +159,7 @@ Route::group([
     Route::patch('company/{companyId}', [CompanyController::class, 'update']);
 
     //User relation
-    Route::get('is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
+    Route::get('user-is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
 
     Route::get('associated-users', [AssociatedUserController::class, 'index']);
 

@@ -213,7 +213,8 @@ class AuthenticatedSessionController extends Controller
     public function isAdminInAnyCompany(Request $request): JsonResponse
     {
         return ResponseJson::successfulResponse([
-            'is_admin_in_any_company' => (bool)CompanyUser::where('user_id', $request->user()->id)
+            'user_is_admin_in_any_company' => (bool)CompanyUser::query()
+                ->where('user_id', $request->user()->id)
                 ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
                 ->count()
         ]);
