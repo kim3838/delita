@@ -21,7 +21,7 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * The authentication factory implementation.
      *
-     * @var \Illuminate\Contracts\Auth\Factory
+     * @var AuthFactory
      */
     protected $auth;
 
@@ -35,7 +35,7 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param AuthFactory $auth
      * @return void
      */
     public function __construct(AuthFactory $auth)
@@ -46,11 +46,12 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param \Closure $next
      * @return mixed
+     * @throws AuthenticationException
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         if ($this->delay) {
             sleep(2);
@@ -136,7 +137,6 @@ class AuthenticateSession implements AuthenticatesSessions
             $this->logout($request);
         }
 
-        //Todo: logout user if status is Inactive
         if ($request->user() && $request->user()->status !== UserStatus::ACTIVE) {
             if ($this->logger) {
                 Log::channel('auth')->info([
@@ -180,10 +180,10 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Store the user's current password hash in the session.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return void
      */
-    protected function storePasswordHashInSession($request)
+    protected function storePasswordHashInSession($request): void
     {
         if (! $request->user()) {
             return;
@@ -221,10 +221,10 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Log the user out of the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return void
      *
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
     protected function logout($request, $message = 'Unauthenticated.')
     {
@@ -254,9 +254,9 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Get the guard instance that should be used by the middleware.
      *
-     * @return \Illuminate\Contracts\Auth\Factory|\Illuminate\Contracts\Auth\Guard
+     * @return AuthFactory
      */
-    protected function guard()
+    protected function guard(): AuthFactory
     {
         return $this->auth;
     }
@@ -264,10 +264,10 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Get the path the user should be redirected to when their session is not authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return string|null
      */
-    protected function redirectTo(Request $request)
+    protected function redirectTo(Request $request): ?string
     {
         if (static::$redirectToCallback) {
             return call_user_func(static::$redirectToCallback, $request);
@@ -280,7 +280,7 @@ class AuthenticateSession implements AuthenticatesSessions
      * @param  callable  $redirectToCallback
      * @return void
      */
-    public static function redirectUsing(callable $redirectToCallback)
+    public static function redirectUsing(callable $redirectToCallback): void
     {
         static::$redirectToCallback = $redirectToCallback;
     }
