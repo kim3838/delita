@@ -20,7 +20,6 @@ class EmailVerificationNotificationController extends Controller
 
         $emailForVerification = $request->user()->getEmailForVerification();
 
-        //Todo: Refactor limiter for email verification and password reset link request
         //Limit 1 request in 1 minute
         if(RateLimiter::tooManyAttempts($emailForVerification, 1)){
 

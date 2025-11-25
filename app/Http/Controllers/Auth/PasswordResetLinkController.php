@@ -23,7 +23,6 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        ////Todo: Refactor limiter for email verification and password reset link request
         //Limit 1 request in 1 minute
         if(RateLimiter::tooManyAttempts($request->email, 1)){
 
