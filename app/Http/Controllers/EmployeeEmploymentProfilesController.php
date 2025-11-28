@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\EmploymentProfile\ListTransformer;
+use App\Transformers\EmployeeEmploymentProfile\ListTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use stdClass;
