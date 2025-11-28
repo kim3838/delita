@@ -25,10 +25,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return Employee::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = null, $relations = [])
+    public function baseQueryBuilder($filters, $orders = [], $relations = [])
     {
-        $orders = $orders ?? $this->defaultOrders;
-
         $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)
             ->currentEmploymentProfileBuilder($filters);
 
@@ -89,8 +87,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                         ->whereIn('employee_shift.shift_id', $filters->not_assigned_shift_ids);
                 });
             })
-            ->when($filters->search ?? false, function($builder, $value){
-                $builder->where(function($clause) use($value){
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
                     $clause->where('employees.number', 'LIKE', "%$value%")
                         ->orWhere('employees.family_name', 'LIKE', "%$value%")
                         ->orWhere('employees.given_name', 'LIKE', "%$value%");
@@ -125,7 +123,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
     public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->baseQueryBuilder($filters, [], ['user', 'current_employment_profile']);
+        $queryBuilder = $this->baseQueryBuilder($filters, $this->defaultOrders, ['user', 'current_employment_profile']);
 
         $this->setOrdersOnBuilder($queryBuilder, $this->defaultOrders);
 
