@@ -22,7 +22,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         return Overtime::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = null)
+    public function baseQueryBuilder($filters, $orders = [])
     {
         $attendanceRepositoryFilter = clone $filters;
 

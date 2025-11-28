@@ -20,7 +20,7 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
         return EmployeePayrollComponent::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = null)
+    public function baseQueryBuilder($filters, $orders = [])
     {
         $employeeRepositoryFilter = clone $filters;
 

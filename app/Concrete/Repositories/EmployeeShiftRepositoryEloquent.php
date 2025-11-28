@@ -22,7 +22,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return EmployeeShift::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = null)
+    public function baseQueryBuilder($filters, $orders = [])
     {
         $employeeRepositoryFilter = clone $filters;
         unset($employeeRepositoryFilter->assigned_shift_ids);
@@ -48,6 +48,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
             ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
             ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
             ['field' => 'shifts.code', 'direction' => 'ASC'],
@@ -120,6 +121,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
     public function shiftsByEmployees($filters): LengthAwarePaginator
     {
         $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
             ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
             ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
         ];

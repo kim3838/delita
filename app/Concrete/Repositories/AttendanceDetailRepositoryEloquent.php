@@ -14,7 +14,7 @@ class AttendanceDetailRepositoryEloquent extends BaseRepositoryEloquent implemen
         return AttendanceDetail::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = null)
+    public function baseQueryBuilder($filters, $orders = [])
     {
         $orders = [
             ...(!empty($orders) ? $orders : []),
