@@ -28,7 +28,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         unset($employeeRepositoryFilter->assigned_shift_ids);
         unset($employeeRepositoryFilter->not_assigned_shift_ids);
 
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], ['current_employment_profile']);
 
         $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
@@ -128,7 +128,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
             'employee_sub.id'
         ];
 
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($filters, []);
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($filters, [], ['current_employment_profile']);
 
         $queryBuilder = app(Builder::class)->fromSub($employeeQueryBuilder, 'employee_sub')
             ->leftJoin('employee_shift', 'employee_shift.employee_id', '=', 'employee_sub.id')
