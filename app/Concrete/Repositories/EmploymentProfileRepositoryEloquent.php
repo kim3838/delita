@@ -45,7 +45,19 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
 
     public function paginate($filters): LengthAwarePaginator
     {
-        $queryBuilder = $this->baseQueryBuilder($filters);
+        $orders = [
+            ['field' => 'base_employment_profile_sub.employee_number', 'direction' => 'ASC'],
+            ['field' => 'base_employment_profile_sub.start_date', 'direction' => 'ASC'],
+            ['field' => 'base_employment_profile_sub.created_at', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->queryAsSub($this->baseQueryBuilder($filters, $orders), 'base_employment_profile_sub')
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                'base_employment_profile_sub.*'
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
