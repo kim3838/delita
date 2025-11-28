@@ -8,6 +8,7 @@ use App\Enums\EmploymentStatus;
 use App\Facades\Fractal;
 use App\Models\EmploymentProfile;
 use App\Transformers\EmploymentProfile\PatchableTransformer;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -16,20 +17,6 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
     public function model(): string
     {
         return EmploymentProfile::class;
-    }
-
-    public function list($filters): Collection
-    {
-        $queryBuilder = $this->model::query()->getQuery()
-            ->when(!empty($filters->employee_id) && is_array($filters->employee_id), function ($builder) use ($filters) {
-                $builder->whereIn('employment_profiles.employee_id', $filters->employee_id);
-            })
-            ->select([
-                'employment_profiles.*',
-            ])
-            ->orderBy('employment_profiles.start_date', 'ASC');
-
-        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function baseQueryBuilder($filters)
@@ -43,6 +30,31 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('employment_profiles.status', $filters->status);
             });
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $queryBuilder = $this->model::query()->getQuery()
+            ->when(!empty($filters->employee_ids) && is_array($filters->employee_ids), function ($builder) use ($filters) {
+                $builder->whereIn('employment_profiles.employee_id', $filters->employee_ids);
+            })
+            ->select([
+                'employment_profiles.*',
+            ])
+            ->orderBy('employment_profiles.start_date', 'ASC');
+
+        _log_query_builder_with_bindings($queryBuilder);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function currentEmploymentProfileBuilder($filters)

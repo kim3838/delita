@@ -23,6 +23,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
@@ -267,6 +268,9 @@ Route::group([
     Route::post('employee-contact-validate', [EmployeeContactController::class, 'validate']);
     Route::post('employee-contact', [EmployeeContactController::class, 'store']);
     Route::patch('employee-contact/{employeeId}', [EmployeeContactController::class, 'update']);
+
+    //Employee Employment Profiles
+    Route::get('employee-employment-profiles/{employeeId}', [EmployeeEmploymentProfilesController::class, 'index']);
 
     //Employment Profile
     Route::get('employment-profiles', [EmploymentProfileController::class, 'index']);
