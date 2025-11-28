@@ -52,8 +52,6 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             ])
             ->orderBy('employment_profiles.start_date', 'ASC');
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
