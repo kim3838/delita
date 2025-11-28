@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements EmployeeRepository
 {
     protected array $defaultOrders = [
+        ['field' => 'employees.number', 'direction' => 'ASC'],
         ['field' => 'employees.family_name', 'direction' => 'ASC'],
         ['field' => 'employees.given_name', 'direction' => 'ASC'],
     ];
