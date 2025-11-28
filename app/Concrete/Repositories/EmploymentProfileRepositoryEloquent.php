@@ -2,6 +2,7 @@
 
 namespace App\Concrete\Repositories;
 
+use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\EmploymentStatus;
@@ -10,6 +11,7 @@ use App\Models\EmploymentProfile;
 use App\Transformers\EmploymentProfile\PatchableTransformer;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent implements EmploymentProfileRepository
@@ -19,17 +21,26 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
         return EmploymentProfile::class;
     }
 
-    public function baseQueryBuilder($filters)
+    public function baseQueryBuilder($filters, $orders = [], $relations = [])
     {
+        $employeeRepositoryFilter = clone $filters;
+        unset($employeeRepositoryFilter->employment_profile_status);
+
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
+
         return $this->model::query()->getQuery()
-            ->leftJoin('employees', 'employees.id', '=', 'employment_profiles.employee_id')
-            ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("employees.company_id"), $value);
+            ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
+                $join->on('employee_sub.id', '=', 'employment_profiles.employee_id');
             })
-            ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
-                $builder->whereIn('employment_profiles.status', $filters->status);
-            });
+            ->when(!empty($filters->employment_profile_status) && is_array($filters->employment_profile_status), function ($builder) use ($filters) {
+                $builder->whereIn('employment_profiles.status', $filters->employment_profile_status);
+            })
+            ->select([
+                'employee_sub.company_timezone AS company_timezone',
+                'employee_sub.local_date AS local_date',
+                'employee_sub.number AS employee_number',
+                "employment_profiles.*",
+            ]);
     }
 
     public function paginate($filters): LengthAwarePaginator
@@ -62,10 +73,19 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             'company_id' => $filters->company_id ?? false,
         ];
 
-        $innerQueryBuilder = $this->baseQueryBuilder($filters)
+        $innerQueryBuilder = $this->queryAsSub($this->baseQueryBuilder($filters), 'base_employment_profile_sub')
             ->select([
-                DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
-                'employment_profiles.*'
+                'base_employment_profile_sub.local_date AS local_date',
+
+                'base_employment_profile_sub.id AS id',
+                'base_employment_profile_sub.employee_id AS employee_id',
+                'base_employment_profile_sub.status AS status',
+                'base_employment_profile_sub.employment_type AS employment_type',
+                'base_employment_profile_sub.start_date AS start_date',
+                'base_employment_profile_sub.end_of_service_type AS end_of_service_type',
+                'base_employment_profile_sub.end_date AS end_date',
+                'base_employment_profile_sub.created_at AS created_at',
+                'base_employment_profile_sub.updated_at AS updated_at'
             ]);
 
         $queryBuilder = $this->subQuery($innerQueryBuilder, 'employment_profiles_subquery')

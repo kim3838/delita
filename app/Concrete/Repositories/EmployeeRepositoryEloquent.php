@@ -97,6 +97,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->select([
                 DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
+                "companies.timezone AS company_timezone",
                 "employees.*",
 
                 ...(in_array('user', $relations) ? [
