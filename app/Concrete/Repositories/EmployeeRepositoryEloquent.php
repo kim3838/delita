@@ -27,15 +27,15 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
     public function baseQueryBuilder($filters, $orders = [], $relations = [])
     {
-        $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)
-            ->currentEmploymentProfileBuilder($filters);
-
         $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
             ->when(in_array('user', $relations), function ($builder) {
                 $builder->leftJoin('users', 'users.id', '=', 'employees.user_id');
             })
-            ->when(in_array('current_employment_profile', $relations), function ($builder) use($currentEmploymentProfile) {
+            ->when(in_array('current_employment_profile', $relations), function ($builder) use($filters) {
+
+                $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)->currentEmploymentProfileBuilder($filters);
+
                 $builder->leftJoinSub($currentEmploymentProfile, 'current_employment_profile', function ($join) {
                     $join->on('employees.id', '=', 'current_employment_profile.employee_id')
                         ->where('current_employment_profile.row_number', 1);
