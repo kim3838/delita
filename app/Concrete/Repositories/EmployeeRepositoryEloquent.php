@@ -108,7 +108,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 ] : []),
 
                 ...(in_array('current_employment_profile', $relations) ? [
-                    DB::raw("IF(current_employment_profile.id IS NULL, 0, 1) AS employment_status_active"),
+                    DB::raw("CASE WHEN current_employment_profile.id IS NULL OR COALESCE(current_employment_profile.status, 200) = 200 THEN 0 ELSE 1 END AS employment_status_active"),
                     DB::raw("current_employment_profile.id AS employment_profile_id"),
                     DB::raw("current_employment_profile.employee_id AS employment_profile_employee_id"),
                     DB::raw("COALESCE(current_employment_profile.status, " . EmploymentStatus::INACTIVE->value . ") AS current_employment_status"),
@@ -135,6 +135,12 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
     public function selection($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'employees.number', 'direction' => 'ASC'],
+            ['field' => 'employees.family_name', 'direction' => 'ASC'],
+            ['field' => 'employees.given_name', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
@@ -151,10 +157,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             })
             ->select([
                 "employees.*"
-            ])
-            ->orderBy("employees.family_name", 'ASC')
-            ->orderBy("employees.middle_name", 'ASC')
-            ->orderBy("employees.given_name", 'ASC');
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
