@@ -21,6 +21,7 @@ class ListTransformer extends TransformerAbstract
             'start_date' => $model->start_date?->format('Y-m-d'),
             'end_of_service_type' => $model->end_of_service_type?->toArray(),
             'end_date' => $model->end_date?->format('Y-m-d'),
+            'created_at' => $model->created_at?->format('Y-m-d'),
             'employee' => [
                 'ulid' => $employee->ulid,
                 'number' => $employee->number,
