@@ -278,6 +278,7 @@ Route::group([
     Route::post('employment-profile', [EmploymentProfileController::class, 'store']);
     Route::patch('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'update']);
     Route::delete('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'destroy']);
+    Route::delete('employment-profiles', [EmploymentProfileController::class, 'batchDestroy']);
     Route::post('employment-profile-import-validate', [EmploymentProfileImportController::class, 'read']);
     Route::post('employment-profile-import-re-validate', [EmploymentProfileImportController::class, 'reValidate']);
     Route::post('employment-profile-import-save', [EmploymentProfileImportController::class, 'save']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\EmploymentProfile\BatchDestroyEmploymentProfileRequest;
 use App\Http\Requests\EmploymentProfile\StoreEmploymentProfileRequest;
 use App\Http\Requests\EmploymentProfile\UpdateEmploymentProfileRequest;
 use App\Transformers\EmploymentProfile\ItemTransformer;
@@ -85,6 +86,20 @@ class EmploymentProfileController extends Controller
         if($request->expectsJson()){
 
             $this->repository->delete($employmentProfileId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyEmploymentProfileRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $employmentProfileIds = data_get($request->validated(), 'employment_profile_ids', []);
+
+            $this->repository->batchDelete($employmentProfileIds);
 
             return ResponseJson::successfulResponse();
         }

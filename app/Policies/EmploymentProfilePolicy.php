@@ -24,4 +24,13 @@ class EmploymentProfilePolicy extends BasePolicy
 
         return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
+
+    public function batchDelete(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return false;
+    }
 }
