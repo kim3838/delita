@@ -178,4 +178,12 @@ class Employee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function leaveTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(LeaveType::class)
+            ->using(EmployeeLeaveType::class)
+            ->withPivot(['id', 'balance_upon_eligibility'])
+            ->withTimestamps();
+    }
 }

@@ -116,4 +116,9 @@ class Company extends Model
     {
         return $this->hasMany(Holiday::class);
     }
+
+    public function leaveTypes(): HasMany
+    {
+        return $this->hasMany(LeaveType::class);
+    }
 }

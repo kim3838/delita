@@ -8,6 +8,8 @@ use App\Enums\LeavePeriodType;
 use App\Enums\LeaveType as LeaveTypeEnum;
 use App\Enums\LeaveUsageSpanType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeaveType extends Model
 {
@@ -78,8 +80,14 @@ class LeaveType extends Model
         'updated_at',
     ];
 
-    public function balancePerPeriod()
+    public function balancePerPeriod(): HasMany
     {
         return $this->hasMany(LeaveTypeBalancePerPeriod::class);
+    }
+
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class)
+            ->withTimestamps();
     }
 }
