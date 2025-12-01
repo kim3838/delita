@@ -13,6 +13,11 @@ use App\Enums\EmploymentType;
 use App\Enums\Formulable;
 use App\Enums\HolidayType;
 use App\Enums\IncomeTax;
+use App\Enums\LeaveCarryOverType;
+use App\Enums\LeaveIntervalSpanType;
+use App\Enums\LeavePeriodType;
+use App\Enums\LeaveType as LeaveTypeEnum;
+use App\Enums\LeaveUsageSpanType;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
@@ -98,76 +103,156 @@ class Development extends Seeder
 
         //Company 1002-C Shifts
         //Regular no lunch out/in
-        $shiftC1 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C1 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular no lunch out/in 4.5 hours ot
-        $shiftC2 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
+        $shift1002C2 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
         $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in
-        $shiftC3 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C3 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in 4.5 hours ot
-        $shiftC4 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
+        $shift1002C4 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
         $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible no lunch out/in
-        $shiftC5 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C5 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '003-DAYSHIFT-FLEX-2DOFF-NL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible with lunch out/in
-        $shiftC6 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C6 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '004-DAYSHIFT-FLEX-2DOFF-WL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
-
-
         //Night midnight start no lunch out/in
-        $shiftC7 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C7 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night midnight start with lunch out/in
-        $shiftC8 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C8 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in
-        $shiftC9 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C9 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 3 hours ot
-        $shiftC10 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
+        $shift1002C10 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 10 hours ot quadruple split
-        $shiftC11 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $shift1002C11 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in
-        $shiftC12 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C12 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 3 hours ot
-        $shiftC13 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
+        $shift1002C13 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
         $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 10 hours ot quadruple split
-        $shiftC14 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $shift1002C14 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
         $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch double split
-        $shiftC15 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C15 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch double split
-        $shiftC16 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C16 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch triple split
-        $shiftC17 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $shift1002C17 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch triple split
-        $shiftC18 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $shift1002C18 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::where('code', '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+
+
+        //Company 1002-C Leave types
+        $leave1002C1 = $company1002C->leaveTypes()->create([
+            'ulid' => Str::ulid(),
+            'code' => 'PVL',
+            'name' => 'Vacation leave w/ pay',
+            'type' => LeaveTypeEnum::VACATION,
+            'is_paid' => true,
+            'monetizable' => false,
+
+            'limit_usage' => true,
+            'limit_usage_span_type' => LeaveUsageSpanType::MONTH,
+            'limit_usage_span_value' => 1,
+            'limit_usage_value' => 5,
+
+            'eligibility_employment_types' => [EmploymentType::NOT_SPECIFIED, EmploymentType::FULL_TIME],
+
+            'period_type' => LeavePeriodType::CALENDAR_YEAR,
+            'period_calendar_span_value' => 1,
+
+            'initial_balance_upon_eligibility' => 14,
+
+            'carry_over_balance_per_new_period' => true,
+            'carry_over_balance_type' => LeaveCarryOverType::LIMIT,
+            'carry_over_balance_value' => 7,
+        ]);
+
+        $leave1002C1->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 4, 'balance' => 2]);
+        $leave1002C1->balancePerPeriod()->create(['from_period' => 5, 'to_period' => 5, 'balance' => 5]);
+        $leave1002C1->balancePerPeriod()->create(['from_period' => 6, 'balance' => 10]);
+
+        $leave1002C2 = $company1002C->leaveTypes()->create([
+            'ulid' => Str::ulid(),
+            'code' => 'SL',
+            'name' => 'Sick leave',
+            'type' => LeaveTypeEnum::SICK,
+            'is_paid' => false,
+            'monetizable' => false,
+
+            'limit_usage' => false,
+
+            'eligibility_employment_types' => [EmploymentType::NOT_SPECIFIED, EmploymentType::CONTRACT, EmploymentType::FULL_TIME],
+
+            'period_type' => LeavePeriodType::CALENDAR_YEAR,
+            'period_calendar_span_value' => 1,
+
+            'initial_balance_upon_eligibility' => 6,
+
+            'carry_over_balance_per_new_period' => false,
+        ]);
+
+        $leave1002C2->balancePerPeriod()->create(['from_period' => 1, 'balance' => 6]);
+
+        $leave1002C3 = $company1002C->leaveTypes()->create([
+            'ulid' => Str::ulid(),
+            'code' => 'EL',
+            'name' => 'Emergency leave',
+            'type' => LeaveTypeEnum::EMERGENCY,
+            'is_paid' => false,
+            'monetizable' => false,
+
+            'limit_usage' => true,
+            'limit_usage_span_type' => LeaveUsageSpanType::DAY,
+            'limit_usage_span_value' => 42,
+            'limit_usage_value' => 5,
+
+            'eligibility_employment_types' => [EmploymentType::NOT_SPECIFIED, EmploymentType::CONTRACT, EmploymentType::FULL_TIME],
+
+            'period_type' => LeavePeriodType::INTERVAL,
+            'period_interval_span_type' => LeaveIntervalSpanType::MONTH,
+            'period_interval_span_value' => 6,
+
+            'initial_balance_upon_eligibility' => 2,
+
+            'carry_over_balance_per_new_period' => true,
+            'carry_over_balance_type' => LeaveCarryOverType::PERCENTAGE,
+            'carry_over_balance_value' => 0.5,
+        ]);
+
+        $leave1002C3->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 2, 'balance' => 3]);
+        $leave1002C3->balancePerPeriod()->create(['from_period' => 3, 'balance' => 6]);
 
         /*
          * Employee: has employee info and default assigned to a company
@@ -341,7 +426,7 @@ class Development extends Seeder
         $this->createEmployeeContact($employeeB1001, 'b1001.01@officemail.com');
         $this->createEmploymentProfile($employeeB1001);
         /**************************************************************************************************************************************************************************************************************/
-        //Create Employee C1001 Info, Contact, Employment Profile and Shift
+        //Create Employee C1001 Info, Contact, Employment Profile, Shift and Leave
         $employeeC1001 = $this->createEmployee(
             $company1002C,
             $account1002User01,
@@ -351,9 +436,12 @@ class Development extends Seeder
             'C1001', 'Employee 01', 'C', '1002');
         $this->createEmployeeContact($employeeC1001, 'c1001.01@officemail.com', 'c1001.01@personalmail.com');
         $this->createEmploymentProfile($employeeC1001);
-        $employeeC1001->shifts()->syncWithoutDetaching([$shiftC1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1001->shifts()->syncWithoutDetaching([$shift1002C1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1001->leaveTypes()->syncWithoutDetaching([
+            $leave1002C2->id => ['balance_upon_eligibility' => 12]
+        ]);
         /**************************************************************************************************************************************************************************************************************/
-        //Create Employee C1002 Info, Contact, Employment Profile and Shift
+        //Create Employee C1002 Info, Contact, Employment Profile, Shift and Leave
         $employeeC1002 = $this->createEmployee(
             $company1002C,
             $account1002User02,
@@ -363,7 +451,11 @@ class Development extends Seeder
             'C1002', 'Employee 02', 'C', '1002');
         $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
         $this->createEmploymentProfile($employeeC1002);
-        $employeeC1002->shifts()->syncWithoutDetaching([$shiftC2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1002->leaveTypes()->syncWithoutDetaching([
+            $leave1002C1->id => ['balance_upon_eligibility' => 14],
+            $leave1002C2->id => ['balance_upon_eligibility' => 12]
+        ]);
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee C1003 Info, Contact, Employment Profile and Shift
         $employeeC1003 = $this->createEmployee(
@@ -375,7 +467,7 @@ class Development extends Seeder
             'C1003', 'Employee 03', 'C', '1002');
         $this->createEmployeeContact($employeeC1003, 'c1003.01@officemail.com', '', '', '+639122111789');
         $this->createEmploymentProfile($employeeC1003);
-        $employeeC1003->shifts()->syncWithoutDetaching([$shiftC3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1003->shifts()->syncWithoutDetaching([$shift1002C3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
 
         //Create Employee C1004 to C1018 Info, Contact, Employment Profile and Shift
         for ($i = 4; $i <= 18; $i++) {
@@ -385,7 +477,7 @@ class Development extends Seeder
                 "C10" . sprintf('%02d', $i), "Employee " . sprintf('%02d', $i), 'C', '1002');
             $this->createEmployeeContact(${"employee$i"}, "c100$i.01@officemail.com");
             $this->createEmploymentProfile(${"employee$i"});
-            ${"employee$i"}->shifts()->syncWithoutDetaching([${"shiftC$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+            ${"employee$i"}->shifts()->syncWithoutDetaching([${"shift1002C$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         }
         /**************************************************************************************************************************************************************************************************************/
 
