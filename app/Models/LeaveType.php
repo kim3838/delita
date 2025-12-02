@@ -62,13 +62,13 @@ class LeaveType extends Model
         'limit_usage_value' => 'int',
 
         'eligibility_employment_types' => 'array',
+        'initial_balance_upon_eligibility' => 'int',
 
         'period_type' => LeavePeriodType::class,
         'period_interval_span_type' => LeaveIntervalSpanType::class,
         'period_interval_span_value' => 'int',
         'period_calendar_span_value' => 'int',
 
-        'initial_balance_upon_eligibility' => 'int',
 
         'carry_over_balance_per_new_period' => 'boolean',
         'carry_over_balance_type' => LeaveCarryOverType::class,
