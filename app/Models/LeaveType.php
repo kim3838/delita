@@ -72,7 +72,7 @@ class LeaveType extends Model
 
         'carry_over_balance_per_new_period' => 'boolean',
         'carry_over_balance_type' => LeaveCarryOverType::class,
-        'carry_over_balance_value' => 'decimal:2',
+        'carry_over_balance_value' => 'int',
     ];
 
     protected $hidden = [
