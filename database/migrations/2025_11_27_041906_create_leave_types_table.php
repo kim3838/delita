@@ -30,6 +30,9 @@ return new class extends Migration
             //Eligibility
             $table->json('eligibility_employment_types')->nullable();
 
+            //Eligibility balance
+            $table->integer('initial_balance_upon_eligibility')->default(0);
+
             //Period type
             $table->smallInteger('period_type')->nullable();
             //Interval period type
@@ -37,9 +40,6 @@ return new class extends Migration
             $table->integer('period_interval_span_value')->default(0);
             //Calendar year period type
             $table->integer('period_calendar_span_value')->default(0);
-
-            //Eligibility balance
-            $table->integer('initial_balance_upon_eligibility')->default(0);
 
             //Carry over balance per new period
             $table->boolean('carry_over_balance_per_new_period')->default(false);
