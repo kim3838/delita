@@ -247,8 +247,8 @@ class Development extends Seeder
             'initial_balance_upon_eligibility' => 2,
 
             'carry_over_balance_per_new_period' => true,
-            'carry_over_balance_type' => LeaveCarryOverType::PERCENTAGE,
-            'carry_over_balance_value' => 0.5,
+            'carry_over_balance_type' => LeaveCarryOverType::LIMIT,
+            'carry_over_balance_value' => 6,
         ]);
 
         $leave1002C3->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 2, 'balance' => 3]);
