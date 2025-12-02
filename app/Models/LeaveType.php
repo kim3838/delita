@@ -29,6 +29,8 @@ class LeaveType extends Model
 
         //Eligibility
         'eligibility_employment_types',
+        //Eligibility balance
+        'initial_balance_upon_eligibility',
 
         //Period type
         'period_type',
@@ -37,9 +39,6 @@ class LeaveType extends Model
         'period_interval_span_value',
         //Calendar year period type
         'period_calendar_span_value',
-
-        //Eligibility balance
-        'initial_balance_upon_eligibility',
 
         //Carry over balance per new period
         'carry_over_balance_per_new_period',
@@ -68,7 +67,6 @@ class LeaveType extends Model
         'period_interval_span_type' => LeaveIntervalSpanType::class,
         'period_interval_span_value' => 'int',
         'period_calendar_span_value' => 'int',
-
 
         'carry_over_balance_per_new_period' => 'boolean',
         'carry_over_balance_type' => LeaveCarryOverType::class,
