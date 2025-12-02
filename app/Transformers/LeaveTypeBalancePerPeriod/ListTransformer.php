@@ -14,6 +14,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $model->id,
             'leave_type_id' => $model->leave_type_id,
             'from_period' => $model->from_period,
+            'and_so_on' => $model->to_period == null ? true : false,
             'to_period' => $model->to_period,
             'balance' => $model->balance,
         ];
