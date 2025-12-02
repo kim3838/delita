@@ -45,6 +45,7 @@ use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
+use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\OvertimeController;
@@ -359,6 +360,9 @@ Route::group([
     Route::post('holiday', [HolidayController::class, 'store']);
     Route::patch('holiday/{holidayUlid}', [HolidayController::class, 'update']);
     Route::delete('holidays', [HolidayController::class, 'batchDestroy']);
+
+    //Leave types
+    Route::get('leave-types', [LeaveTypeController::class, 'index']);
 });
 
 Route::group([

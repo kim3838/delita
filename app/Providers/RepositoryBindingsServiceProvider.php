@@ -19,6 +19,7 @@ use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeeGroupRepository;
+use App\Blueprint\Repositories\EmployeeLeaveTypeRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmployeeShiftRepository;
@@ -28,6 +29,7 @@ use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\HolidayRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
+use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
@@ -55,6 +57,7 @@ use App\Concrete\Repositories\DepartmentRepositoryEloquent;
 use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeGroupRepositoryEloquent;
+use App\Concrete\Repositories\EmployeeLeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeShiftRepositoryEloquent;
@@ -64,6 +67,7 @@ use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\HolidayRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
+use App\Concrete\Repositories\LeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
@@ -100,6 +104,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'employee_contact' => EmployeeContactRepositoryEloquent::class,
         'employee_payroll_component' => EmployeePayrollComponentRepositoryEloquent::class,
         'employee_shift' => EmployeeShiftRepositoryEloquent::class,
+        'employee_leave_type' => EmployeeLeaveTypeRepositoryEloquent::class,
         'company_formula' => CompanyFormulaRepositoryEloquent::class,
         'compensation' => CompensationRepositoryEloquent::class,
         'company_compensation' => CompanyCompensationRepositoryEloquent::class,
@@ -116,6 +121,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'attendance_detail' => AttendanceDetailRepositoryEloquent::class,
         'overtime' => OvertimeRepositoryEloquent::class,
         'holiday' => HolidayRepositoryEloquent::class,
+        'leave_type' => LeaveTypeRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -133,6 +139,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         EmployeeContactRepository::class => EmployeeContactRepositoryEloquent::class,
         EmployeePayrollComponentRepository::class => EmployeePayrollComponentRepositoryEloquent::class,
         EmployeeShiftRepository::class => EmployeeShiftRepositoryEloquent::class,
+        EmployeeLeaveTypeRepository::class => EmployeeLeaveTypeRepositoryEloquent::class,
         CompanyFormulaRepository::class => CompanyFormulaRepositoryEloquent::class,
         CompensationRepository::class => CompensationRepositoryEloquent::class,
         CompanyCompensationRepository::class => CompanyCompensationRepositoryEloquent::class,
@@ -152,6 +159,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         AttendanceDetailRepository::class => AttendanceDetailRepositoryEloquent::class,
         OvertimeRepository::class => OvertimeRepositoryEloquent::class,
         HolidayRepository::class => HolidayRepositoryEloquent::class,
+        LeaveTypeRepository::class => LeaveTypeRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -177,6 +185,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'employee_contact',
             'employee_payroll_component',
             'employee_shift',
+            'employee_leave_type',
             'company_formula',
             'compensation',
             'company_compensation',
@@ -193,6 +202,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'attendance_detail',
             'overtime',
             'holiday',
+            'leave_type',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -213,6 +223,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             EmployeeContactRepository::class,
             EmployeePayrollComponentRepository::class,
             EmployeeShiftRepository::class,
+            EmployeeLeaveTypeRepository::class,
             CompanyFormulaRepository::class,
             CompensationRepository::class,
             CompanyCompensationRepository::class,
@@ -229,6 +240,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             AttendanceDetailRepository::class,
             OvertimeRepository::class,
             HolidayRepository::class,
+            LeaveTypeRepository::class,
         ];
     }
 }
