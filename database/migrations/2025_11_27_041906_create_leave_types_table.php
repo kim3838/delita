@@ -44,7 +44,7 @@ return new class extends Migration
             //Carry over balance per new period
             $table->boolean('carry_over_balance_per_new_period')->default(false);
             $table->smallInteger('carry_over_balance_type')->nullable();
-            $table->integer('carry_over_balance_value')->nullable();
+            $table->decimal('carry_over_balance_value', 4, 2)->nullable();
 
             $table->timestamps();
 
