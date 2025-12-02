@@ -19,7 +19,7 @@ class ShiftScheduleRepositoryEloquent extends BaseRepositoryEloquent implements 
 
     public function list($filters): Collection
     {
-        $queryBuilder = $this->model::getQuery()
+        $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->shift_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("shift_schedules.shift_id"), $value);
             })
