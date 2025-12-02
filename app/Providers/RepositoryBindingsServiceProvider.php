@@ -29,6 +29,7 @@ use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\HolidayRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
+use App\Blueprint\Repositories\LeaveTypeBalancePerPeriodRepository;
 use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
@@ -67,6 +68,7 @@ use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\HolidayRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
+use App\Concrete\Repositories\LeaveTypeBalancePerPeriodRepositoryEloquent;
 use App\Concrete\Repositories\LeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRepositoryEloquent;
@@ -122,6 +124,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'overtime' => OvertimeRepositoryEloquent::class,
         'holiday' => HolidayRepositoryEloquent::class,
         'leave_type' => LeaveTypeRepositoryEloquent::class,
+        'leave_type_balance_per_period' => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -160,6 +163,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         OvertimeRepository::class => OvertimeRepositoryEloquent::class,
         HolidayRepository::class => HolidayRepositoryEloquent::class,
         LeaveTypeRepository::class => LeaveTypeRepositoryEloquent::class,
+        LeaveTypeBalancePerPeriodRepository::class => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -203,6 +207,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'overtime',
             'holiday',
             'leave_type',
+            'leave_type_balance_per_period',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -241,6 +246,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             OvertimeRepository::class,
             HolidayRepository::class,
             LeaveTypeRepository::class,
+            LeaveTypeBalancePerPeriodRepository::class,
         ];
     }
 }

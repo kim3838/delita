@@ -45,4 +45,11 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
 
         return $this->hydratePaginationItems($paginator, $this->model());
     }
+
+    public function show($identifier)
+    {
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
+
+        return $queryBuilder->firstOrFail();
+    }
 }

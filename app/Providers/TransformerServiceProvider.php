@@ -19,6 +19,7 @@ class TransformerServiceProvider extends ServiceProvider
             'shift' => \App\Transformers\BasicTransformer::class,
             'formula' => \App\Transformers\BasicTransformer::class,
             'attendance' => \App\Transformers\BasicTransformer::class,
+            'leave_type' => \App\Transformers\BasicTransformer::class,
         ]
     ];
 

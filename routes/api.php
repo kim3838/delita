@@ -363,6 +363,8 @@ Route::group([
 
     //Leave types
     Route::get('leave-types', [LeaveTypeController::class, 'index']);
+    Route::get('leave-type/{ulid}', [LeaveTypeController::class, 'show']);
+    Route::get('leave-type-check/{ulid}', [LeaveTypeController::class, 'check']);
 });
 
 Route::group([
