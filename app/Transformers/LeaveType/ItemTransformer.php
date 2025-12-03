@@ -26,13 +26,12 @@ class ItemTransformer extends TransformerAbstract
             'limit_usage_value' => $model->limit_usage_value,
 
             'eligibility_employment_types' => $model->eligibility_employment_types,
+            'initial_balance_upon_eligibility' => $model->initial_balance_upon_eligibility,
 
             'period_type' => $model->period_type?->toArray(),
             'period_interval_span_type' => $model->period_interval_span_type?->toArray(),
             'period_interval_span_value' => $model->period_interval_span_value,
             'period_calendar_span_value' => $model->period_calendar_span_value,
-
-            'initial_balance_upon_eligibility' => $model->initial_balance_upon_eligibility,
 
             'carry_over_balance_per_new_period' => intval($model->carry_over_balance_per_new_period),
             'carry_over_balance_type' => $model->carry_over_balance_type?->toArray(),
