@@ -24,8 +24,8 @@ class BatchDestroyOvertimeRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'overtime.required' => 'Overtime is required',
-            'overtime.array' => 'Overtime must be an array',
+            'overtime_ids.required' => 'Overtime is required',
+            'overtime_ids.array' => 'Overtime must be an array',
         ];
     }
 }
