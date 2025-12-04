@@ -9,7 +9,7 @@ class DestroyFormulaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $formula = Formula::findOrFail($this->route('formulaId'));
+        $formula = Formula::query()->findOrFail($this->route('formulaId'));
 
         return $this->user()->can('delete', $formula);
     }

@@ -187,7 +187,7 @@ abstract class BaseRepositoryEloquent
     public function reOrder($orderables): void
     {
         foreach ($orderables as $orderable) {
-            $this->model::find($orderable->id)->update(['order' => $orderable->order]);
+            $this->model::query()->find($orderable->id)->update(['order' => $orderable->order]);
         }
     }
 

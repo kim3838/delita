@@ -12,7 +12,7 @@ class DestroyCompensationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $compensation = Compensation::findOrfail($this->route('compensationId'));
+        $compensation = Compensation::query()->findOrfail($this->route('compensationId'));
 
         return $this->user()->can('delete', $compensation);
     }

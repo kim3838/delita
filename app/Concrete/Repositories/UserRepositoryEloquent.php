@@ -80,8 +80,8 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
         $familyName = preg_replace('/\s+/', '', $data['family_name']);
         $givenName = preg_replace('/\s+/', '', $data['given_name']);
 
-        $userCount = (int)User::count();
-        $companyTimezone = Company::find($companyId)->timezone;
+        $userCount = User::query()->count();
+        $companyTimezone = Company::query()->find($companyId)->timezone;
 
         $familyName = strtolower($familyName);
         $givenNameFirstCharacter = substr(strtolower($givenName), 0, 1);

@@ -9,7 +9,7 @@ class DestroyShiftRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $shift = Shift::findOrFail($this->route('shiftId'));
+        $shift = Shift::query()->findOrFail($this->route('shiftId'));
 
         return $this->user()->can('delete', $shift);
     }

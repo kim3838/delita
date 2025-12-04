@@ -13,14 +13,14 @@ class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
      */
     public function authorize(): bool
     {
-        $compensation = Compensation::findOrfail($this->route('compensationId'));
+        $compensation = Compensation::query()->findOrfail($this->route('compensationId'));
 
         return $this->user()->can('update', $compensation);
     }
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -31,7 +31,7 @@ class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
                         ->whereNot('id', $this->route('compensationId'));
                 })
             ],
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

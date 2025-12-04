@@ -9,7 +9,7 @@ class UpdateDepartmentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $department = Department::findOrfail($this->route('departmentId'));
+        $department = Department::query()->findOrfail($this->route('departmentId'));
 
         return $this->user()->can('update', $department);
     }

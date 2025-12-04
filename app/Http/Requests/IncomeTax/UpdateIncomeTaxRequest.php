@@ -13,14 +13,14 @@ class UpdateIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
      */
     public function authorize(): bool
     {
-        $incomeTax = IncomeTax::findOrfail($this->route('incomeTaxId'));
+        $incomeTax = IncomeTax::query()->findOrfail($this->route('incomeTaxId'));
 
         return $this->user()->can('update', $incomeTax);
     }
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -31,7 +31,7 @@ class UpdateIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
                         ->whereNot('id', $this->route('incomeTaxId'));
                 })
             ],
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

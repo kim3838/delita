@@ -9,7 +9,7 @@ class UpdateJsonPresetRequest extends BaseJsonPresetRequest
 {
     public function authorize(): bool
     {
-        $jsonPreset = JsonPreset::findOrfail($this->route('jsonPresetId'));
+        $jsonPreset = JsonPreset::query()->findOrfail($this->route('jsonPresetId'));
 
         return $this->user()->can('update', $jsonPreset);
     }

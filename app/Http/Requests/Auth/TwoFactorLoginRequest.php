@@ -32,7 +32,7 @@ class TwoFactorLoginRequest extends FormRequest
 
         $model = Auth::getProvider()->getModel();
 
-        return $this->challengedUser = ($model::find($this->session()->get('login.id')));
+        return $this->challengedUser = ($model::query()->find($this->session()->get('login.id')));
     }
 
     public function remember()

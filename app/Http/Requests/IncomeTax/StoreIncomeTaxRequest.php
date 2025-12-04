@@ -18,7 +18,7 @@ class StoreIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -28,8 +28,7 @@ class StoreIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
                     return $query->where('company_id', $this->input('company_id'));
                 })
             ],
-
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

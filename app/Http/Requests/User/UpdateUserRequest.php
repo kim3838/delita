@@ -9,7 +9,7 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $user = User::findOrfail($this->route('userId'));
+        $user = User::query()->findOrfail($this->route('userId'));
 
         return $this->user()->can('update', $user);
     }

@@ -12,7 +12,7 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(AssociatedUser $model): array
     {
-        $associatedCompanies = User::find($model->user_id)
+        $associatedCompanies = User::query()->find($model->user_id)
             ->companies->map(function($assignedCompany){
 
                 $employee = Employee::query()

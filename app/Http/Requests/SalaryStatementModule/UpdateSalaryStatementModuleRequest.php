@@ -8,7 +8,7 @@ class UpdateSalaryStatementModuleRequest extends BaseSalaryStatementModuleReques
 {
     public function authorize(): bool
     {
-        $salaryStatementModule = SalaryStatementModule::findOrfail($this->route('salaryStatementModuleId'));
+        $salaryStatementModule = SalaryStatementModule::query()->findOrfail($this->route('salaryStatementModuleId'));
 
         return $this->user()->can('update', $salaryStatementModule);
     }

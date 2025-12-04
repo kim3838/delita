@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 class EmailVerificationRequest extends FormRequest
 {
     public function __construct(
-        public $user = null
+        public ?User $user = null
     ) {}
 
     /**
@@ -17,7 +17,7 @@ class EmailVerificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $this->user = User::find(Crypt::decrypt((string) $this->route('id')));
+        $this->user = User::query()->find(Crypt::decrypt((string) $this->route('id')));
 
         if(!$this->user){
             return false;

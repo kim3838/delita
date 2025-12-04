@@ -11,7 +11,7 @@ class UpdateEmployeeContactRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $employee = Employee::findOrfail($this->route('employeeId'));
+        $employee = Employee::query()->findOrfail($this->route('employeeId'));
 
         return $this->user()->can('update', $employee);
     }

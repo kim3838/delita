@@ -10,14 +10,14 @@ class UpdateShiftRequest extends BaseShiftStoreAndUpdateRequest
 
     public function authorize(): bool
     {
-        $shift = Shift::findOrFail($this->route('shiftId'));
+        $shift = Shift::query()->findOrFail($this->route('shiftId'));
 
         return $this->user()->can('update', $shift);
     }
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -30,6 +30,6 @@ class UpdateShiftRequest extends BaseShiftStoreAndUpdateRequest
             ],
             'shift_schedules.*.id' => ['required', 'integer'],
             'shift_schedules.*.shift_id' => ['required', 'integer'],
-        ]);
+        ], parent::rules());
     }
 }

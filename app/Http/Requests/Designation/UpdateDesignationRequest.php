@@ -9,7 +9,7 @@ class UpdateDesignationRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $designation = Designation::findOrfail($this->route('designationId'));
+        $designation = Designation::query()->findOrfail($this->route('designationId'));
 
         return $this->user()->can('update', $designation);
     }

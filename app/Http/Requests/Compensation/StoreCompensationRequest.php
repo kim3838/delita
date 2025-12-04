@@ -18,7 +18,7 @@ class StoreCompensationRequest extends BaseEmployeePayrollComponentRequest
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -29,7 +29,7 @@ class StoreCompensationRequest extends BaseEmployeePayrollComponentRequest
                 })
             ],
 
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

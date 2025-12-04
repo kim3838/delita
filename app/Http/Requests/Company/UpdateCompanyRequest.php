@@ -10,7 +10,7 @@ class UpdateCompanyRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $company = Company::findOrfail($this->route('companyId'));
+        $company = Company::query()->findOrfail($this->route('companyId'));
 
         return $this->user()->can('update', $company);
     }

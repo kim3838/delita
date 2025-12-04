@@ -14,7 +14,7 @@ class StoreShiftRequest extends BaseShiftStoreAndUpdateRequest
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -24,7 +24,7 @@ class StoreShiftRequest extends BaseShiftStoreAndUpdateRequest
                     return $query->where('company_id', $this->input('company_id'));
                 })
             ],
-        ]);
+        ], parent::rules());
     }
 
 }

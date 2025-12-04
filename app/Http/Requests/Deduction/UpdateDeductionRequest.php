@@ -13,14 +13,14 @@ class UpdateDeductionRequest extends BaseEmployeePayrollComponentRequest
      */
     public function authorize(): bool
     {
-        $deduction = Deduction::findOrfail($this->route('deductionId'));
+        $deduction = Deduction::query()->findOrfail($this->route('deductionId'));
 
         return $this->user()->can('update', $deduction);
     }
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -31,7 +31,7 @@ class UpdateDeductionRequest extends BaseEmployeePayrollComponentRequest
                         ->whereNot('id', $this->route('deductionId'));
                 })
             ],
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

@@ -9,14 +9,14 @@ class UpdatePayFrequencyRequest extends BasePayFrequencyRequest
 {
     public function authorize(): bool
     {
-        $payFrequency = PayFrequency::findOrfail($this->route('payFrequencyId'));
+        $payFrequency = PayFrequency::query()->findOrfail($this->route('payFrequencyId'));
 
         return $this->user()->can('update', $payFrequency);
     }
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return array_merge([
             'code' => [
                 'required',
                 'string',
@@ -27,7 +27,7 @@ class UpdatePayFrequencyRequest extends BasePayFrequencyRequest
                         ->whereNot('id', $this->route('payFrequencyId'));
                 })
             ],
-        ]);
+        ], parent::rules());
     }
 
     public function messages(): array

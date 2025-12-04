@@ -12,7 +12,7 @@ class DestroyDeductionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $deduction = Deduction::findOrfail($this->route('deductionId'));
+        $deduction = Deduction::query()->findOrfail($this->route('deductionId'));
 
         return $this->user()->can('delete', $deduction);
     }

@@ -12,7 +12,7 @@ class DestroyIncomeTaxRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $incomeTax = IncomeTax::findOrfail($this->route('incomeTaxId'));
+        $incomeTax = IncomeTax::query()->findOrfail($this->route('incomeTaxId'));
 
         return $this->user()->can('delete', $incomeTax);
     }

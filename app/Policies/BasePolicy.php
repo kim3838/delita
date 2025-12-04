@@ -15,7 +15,7 @@ class BasePolicy
             return false;
         }
 
-        return Company::findOrFail($companyId)
+        return Company::query()->findOrFail($companyId)
                 ->users
                 ->findOrfail($user->id)
                 ->pivot

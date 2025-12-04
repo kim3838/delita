@@ -9,7 +9,7 @@ class UpdatePolymorphicEmployeePayrollComponentRequest extends BasePolymorphicEm
 {
     public function authorize(): bool
     {
-        $employeePayrollComponent = EmployeePayrollComponent::findOrFail($this->route('employeePayrollComponentId'));
+        $employeePayrollComponent = EmployeePayrollComponent::query()->findOrFail($this->route('employeePayrollComponentId'));
 
         return $this->user()->can('update', $employeePayrollComponent);
     }

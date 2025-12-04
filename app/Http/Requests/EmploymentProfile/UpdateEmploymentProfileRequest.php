@@ -8,7 +8,7 @@ class UpdateEmploymentProfileRequest extends BaseStoreAndUpdateEmploymentProfile
 {
     public function authorize(): bool
     {
-        $employmentProfile = EmploymentProfile::findOrFail($this->route('employmentProfileId'));
+        $employmentProfile = EmploymentProfile::query()->findOrFail($this->route('employmentProfileId'));
 
         return $this->user()->can('update', $employmentProfile);
     }

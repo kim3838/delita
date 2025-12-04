@@ -9,7 +9,7 @@ class UpdateAccountRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $account = Account::findOrfail($this->route('accountId'));
+        $account = Account::query()->findOrfail($this->route('accountId'));
 
         return $this->user()->can('update', $account);
     }

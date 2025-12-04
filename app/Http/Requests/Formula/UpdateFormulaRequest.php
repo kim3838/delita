@@ -9,7 +9,7 @@ class UpdateFormulaRequest extends BaseFormulaRequest
 {
     public function authorize(): bool
     {
-        $formula = Formula::findOrfail($this->route('formulaId'));
+        $formula = Formula::query()->findOrfail($this->route('formulaId'));
 
         return $this->user()->can('update', $formula);
     }
