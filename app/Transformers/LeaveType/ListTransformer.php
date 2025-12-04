@@ -2,6 +2,7 @@
 
 namespace App\Transformers\LeaveType;
 
+use App\Blueprint\Repositories\LeaveTypeBalancePerPeriodRepository;
 use App\Enums\EmploymentType;
 use App\Enums\LeaveCarryOverType;
 use App\Enums\LeavePeriodType;
@@ -9,6 +10,7 @@ use App\Facades\Fractal;
 use App\Models\LeaveType;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as BalancePerPeriodListTransformer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
@@ -60,6 +62,12 @@ class ListTransformer extends TransformerAbstract
             $carryOverReadable = 'No carry over';
         }
 
+        $balancePerPeriod = App::make(LeaveTypeBalancePerPeriodRepository::class)->list((object)[
+            'leave_type_id' => $model->id
+        ]);
+
+        $balancePerPeriod = Fractal::collection($balancePerPeriod, BalancePerPeriodListTransformer::class)['data'];
+
         return [
             'id' => $model->id,
             'ulid' => $model->ulid,
@@ -92,7 +100,7 @@ class ListTransformer extends TransformerAbstract
             'carry_over_balance_value' => $model->carry_over_balance_value,
             'carry_over_readable' => $carryOverReadable,
 
-            'balance_per_period' => Fractal::collection($model->balancePerPeriod, BalancePerPeriodListTransformer::class)['data']
+            'balance_per_period' => $balancePerPeriod
         ];
     }
 }
