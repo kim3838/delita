@@ -24,8 +24,8 @@ class BatchDestroyEmployeeShiftRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'shift_assignment_ids.required' => 'Shift assignments is required',
-            'shift_assignment_ids.array' => 'Shift assignments must be an array',
+            'shift_assignment_ids.required' => 'Shift assignment ids is required',
+            'shift_assignment_ids.array' => 'Shift assignment ids must be an array',
         ];
     }
 }

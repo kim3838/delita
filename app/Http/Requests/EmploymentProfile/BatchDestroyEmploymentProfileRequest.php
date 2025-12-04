@@ -24,8 +24,8 @@ class BatchDestroyEmploymentProfileRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'employment_profile_ids.required' => 'Employment profile is required',
-            'employment_profile_ids.array' => 'Employment profile must be an array',
+            'employment_profile_ids.required' => 'Employment profile ids is required',
+            'employment_profile_ids.array' => 'Employment profile ids must be an array',
         ];
     }
 }

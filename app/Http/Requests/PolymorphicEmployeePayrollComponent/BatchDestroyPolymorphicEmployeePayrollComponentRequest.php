@@ -24,8 +24,8 @@ class BatchDestroyPolymorphicEmployeePayrollComponentRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'payroll_component_ids.required' => 'Payroll component is required',
-            'payroll_component_ids.array' => 'Payroll component must be an array',
+            'payroll_component_ids.required' => 'Payroll component ids is required',
+            'payroll_component_ids.array' => 'Payroll component ids must be an array',
         ];
     }
 }

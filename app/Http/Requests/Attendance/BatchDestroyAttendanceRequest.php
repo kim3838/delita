@@ -24,8 +24,8 @@ class BatchDestroyAttendanceRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'attendance_ids.required' => 'Attendance is required',
-            'attendance_ids.array' => 'Attendance must be an array',
+            'attendance_ids.required' => 'Attendance ids is required',
+            'attendance_ids.array' => 'Attendance ids must be an array',
         ];
     }
 }

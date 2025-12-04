@@ -24,8 +24,8 @@ class BatchDestroyHolidayRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'holiday_ids.required' => 'Holidays is required',
-            'holiday_ids.array' => 'Holidays must be an array',
+            'holiday_ids.required' => 'Holiday ids is required',
+            'holiday_ids.array' => 'Holiday ids must be an array',
         ];
     }
 }
