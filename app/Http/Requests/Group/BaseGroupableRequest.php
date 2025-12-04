@@ -10,7 +10,7 @@ class BaseGroupableRequest extends FormRequest
     {
         return [
             'company_id' => 'required|numeric',
-            'groups' => 'required|array',
+            'group_ids' => 'required|array',
         ];
     }
 
@@ -18,8 +18,8 @@ class BaseGroupableRequest extends FormRequest
     {
         return [
             'company_id.required' => 'Company is required',
-            'groups.required' => 'Shifts is required',
-            'groups.array' => 'Employees must be an array',
+            'group_ids.required' => 'Group ids is required',
+            'group_ids.array' => 'Group ids must be an array',
         ];
     }
 }

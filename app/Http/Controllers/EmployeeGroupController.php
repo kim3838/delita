@@ -127,7 +127,7 @@ class EmployeeGroupController extends Controller
     {
         if($request->expectsJson()){
 
-            $groupIds = data_get($request->validated(), 'groups', []);
+            $groupIds = data_get($request->validated(), 'group_ids', []);
 
             $this->repository->batchDelete($groupIds);
 
