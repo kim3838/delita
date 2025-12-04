@@ -52,4 +52,13 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
 
         return $queryBuilder->firstOrFail();
     }
+
+    public function update($identifier, $attributes)
+    {
+        $model = $this->model::query()->where('ulid', $identifier)->firstOrFail();
+
+        $model->update($attributes);
+
+        return $model;
+    }
 }

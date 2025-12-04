@@ -6,6 +6,9 @@ use App\Blueprint\Repositories\LeaveTypeBalancePerPeriodRepository;
 use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\LeaveType\BatchDestroyLeaveTypeRequest;
+use App\Http\Requests\LeaveType\StoreLeaveTypeRequest;
+use App\Http\Requests\LeaveType\UpdateLeaveTypeRequest;
 use App\Transformers\LeaveType\ItemTransformer;
 use App\Transformers\LeaveType\ListTransformer;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
@@ -15,7 +18,8 @@ use Illuminate\Support\Facades\App;
 class LeaveTypeController extends Controller
 {
     public function __construct(
-        protected readonly LeaveTypeRepository $repository
+        protected readonly LeaveTypeRepository $repository,
+        protected readonly LeaveTypeBalancePerPeriodRepository $balancePerPeriodRepository
     ){}
 
     public function index(Request $request)
@@ -29,6 +33,76 @@ class LeaveTypeController extends Controller
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class)
             );
+        }
+
+        abort(404);
+    }
+
+    public function store(StoreLeaveTypeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $leaveType = $this->repository->store($request->validated());
+
+            $balancePerPeriods = collect($request->validated()['leave_type_balance_per_period'])->map(function ($balancePerPeriod){
+                return [
+                    'from_period' => $balancePerPeriod['from_period'],
+                    'to_period' => $balancePerPeriod['to_period'],
+                    'balance' => $balancePerPeriod['balance'],
+                ];
+            });
+
+            $leaveType->balancePerPeriod()->createMany($balancePerPeriods->toArray());
+
+            return ResponseJson::successfulResponse([
+                'leave_type' => Fractal::item($leaveType, ListTransformer::class),
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function update(UpdateLeaveTypeRequest $request, $leaveTypeUlid)
+    {
+        if($request->expectsJson()){
+
+            if(!empty($request->validated()['spliced_leave_type_balance_per_period'])){
+                $this->balancePerPeriodRepository->batchDelete($request->validated()['spliced_leave_type_balance_per_period']);
+            }
+
+            $leaveType = $this->repository->update($leaveTypeUlid, $request->validated());
+
+            $balancePerPeriods = collect($request->validated()['leave_type_balance_per_period'])->filter(function ($balancePerPeriod){
+                return isset($balancePerPeriod['id']) && $balancePerPeriod['id'] != null;
+            })->map(function ($balancePerPeriod){
+                return [
+                    'id' => $balancePerPeriod['id'],
+                    'leave_type_id' => $balancePerPeriod['leave_type_id'],
+                    'from_period' => $balancePerPeriod['from_period'],
+                    'to_period' => $balancePerPeriod['to_period'],
+                    'balance' => $balancePerPeriod['balance'],
+                ];
+            });
+
+            $newBalancePerPeriods = collect($request->validated()['leave_type_balance_per_period'])->filter(function ($balancePerPeriod){
+                return !isset($balancePerPeriod['id']) || $balancePerPeriod['id'] == null;
+            })->map(function ($balancePerPeriod){
+                return [
+                    'from_period' => $balancePerPeriod['from_period'],
+                    'to_period' => $balancePerPeriod['to_period'],
+                    'balance' => $balancePerPeriod['balance'],
+                ];
+            });
+
+            foreach($balancePerPeriods as $balancePerPeriod){
+                $this->balancePerPeriodRepository->update($balancePerPeriod['id'], $balancePerPeriod);
+            }
+
+            $leaveType->balancePerPeriod()->createMany($newBalancePerPeriods->toArray());
+
+            return ResponseJson::successfulResponse([
+                'leave_type' => Fractal::item($leaveType, ListTransformer::class),
+            ]);
         }
 
         abort(404);
@@ -71,6 +145,20 @@ class LeaveTypeController extends Controller
             $leaveType = $this->repository->check($ulid);
 
             return ResponseJson::successfulResponse(['leave_type' => $leaveType]);
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyLeaveTypeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $leaveTypeIds = data_get($request->validated(), 'leave_type_ids', []);
+
+            $this->repository->batchDelete($leaveTypeIds);
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);

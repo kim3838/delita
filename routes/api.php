@@ -363,8 +363,11 @@ Route::group([
 
     //Leave types
     Route::get('leave-types', [LeaveTypeController::class, 'index']);
+    Route::post('leave-type', [LeaveTypeController::class, 'store']);
+    Route::patch('leave-type/{leaveTypeUlid}', [LeaveTypeController::class, 'update']);
     Route::get('leave-type/{ulid}', [LeaveTypeController::class, 'show']);
     Route::get('leave-type-check/{ulid}', [LeaveTypeController::class, 'check']);
+    Route::delete('leave-types', [LeaveTypeController::class, 'batchDestroy']);
 });
 
 Route::group([
