@@ -12,6 +12,7 @@ class EmployeeLeaveType extends Pivot
     protected $fillable =[
         'employee_id',
         'leave_type_id',
+        'override_balance_upon_eligibility',
         'balance_upon_eligibility',
     ];
 
@@ -23,6 +24,7 @@ class EmployeeLeaveType extends Pivot
     protected $casts = [
         'employee_id' => 'int',
         'leave_type_id' => 'int',
+        'override_balance_upon_eligibility' => 'boolean',
         'balance_upon_eligibility' => 'int',
     ];
 

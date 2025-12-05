@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
 
             //Override Leave type initial eligibility balance
+            $table->boolean('override_balance_upon_eligibility')->default(false);
             $table->integer('balance_upon_eligibility')->default(0);
             $table->timestamps();
         });
