@@ -42,6 +42,8 @@ class ListTransformer extends TransformerAbstract
             'shift_ulid' => $shiftAssignment->shift_ulid,
             'shift_code' => $shiftAssignment->shift_code,
             'shift_name' => $shiftAssignment->shift_name,
+
+            //Shift assignment settings
             'shift_start_date' => $shiftAssignment->shift_start_date?->format('Y-m-d'),
             'shift_stated_shift_end_date' => $shiftAssignment->shift_stated_shift_end_date,
             'shift_end_date' => $shiftAssignment->shift_end_date?->format('Y-m-d'),
