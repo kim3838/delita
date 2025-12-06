@@ -438,7 +438,7 @@ class Development extends Seeder
         $this->createEmploymentProfile($employeeC1001);
         $employeeC1001->shifts()->syncWithoutDetaching([$shift1002C1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         $employeeC1001->leaveTypes()->syncWithoutDetaching([
-            $leave1002C2->id => ['balance_upon_eligibility' => 12]
+            $leave1002C2->id
         ]);
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee C1002 Info, Contact, Employment Profile, Shift and Leave
@@ -453,8 +453,8 @@ class Development extends Seeder
         $this->createEmploymentProfile($employeeC1002);
         $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         $employeeC1002->leaveTypes()->syncWithoutDetaching([
-            $leave1002C1->id => ['balance_upon_eligibility' => 14],
-            $leave1002C2->id => ['balance_upon_eligibility' => 12]
+            $leave1002C1->id => ['override_balance_upon_eligibility' => true, 'balance_upon_eligibility' => 0],
+            $leave1002C2->id
         ]);
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee C1003 Info, Contact, Employment Profile and Shift
