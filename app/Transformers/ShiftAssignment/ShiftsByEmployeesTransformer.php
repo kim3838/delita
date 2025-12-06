@@ -15,7 +15,6 @@ class ShiftsByEmployeesTransformer extends TransformerAbstract
     public function transform(ShiftsByEmployees $shiftsByEmployees): array
     {
         $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
-
             'employee_id' => $shiftsByEmployees->employee_id,
             'is_active' => $shiftsByEmployees->employee_employment_status_active,
             'status' => $shiftsByEmployees->employee_current_employment_status,
