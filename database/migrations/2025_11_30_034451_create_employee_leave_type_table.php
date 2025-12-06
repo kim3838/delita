@@ -18,7 +18,7 @@ return new class extends Migration
 
             //Override Leave type initial eligibility balance
             $table->boolean('override_balance_upon_eligibility')->default(false);
-            $table->integer('balance_upon_eligibility')->default(0);
+            $table->integer('balance_upon_eligibility')->nullable();
             $table->timestamps();
         });
     }
