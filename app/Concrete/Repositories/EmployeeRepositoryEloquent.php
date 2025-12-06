@@ -87,6 +87,22 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                         ->whereIn('employee_shift.shift_id', $filters->not_assigned_shift_ids);
                 });
             })
+            ->when(!empty($filters->assigned_leave_type_ids) && is_array($filters->assigned_leave_type_ids), function ($builder) use ($filters) {
+                $builder->whereExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('employee_leave_type')
+                        ->whereColumn('employee_leave_type.employee_id', 'employees.id')
+                        ->whereIn('employee_leave_type.leave_type_id', $filters->assigned_leave_type_ids);
+                });
+            })
+            ->when(!empty($filters->not_assigned_leave_type_ids) && is_array($filters->not_assigned_leave_type_ids), function ($builder) use ($filters) {
+                $builder->whereNotExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('employee_leave_type')
+                        ->whereColumn('employee_leave_type.employee_id', 'employees.id')
+                        ->whereIn('employee_leave_type.leave_type_id', $filters->not_assigned_leave_type_ids);
+                });
+            })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
                     $clause->where('employees.number', 'LIKE', "%$value%")
