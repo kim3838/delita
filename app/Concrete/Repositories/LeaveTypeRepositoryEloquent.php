@@ -46,6 +46,35 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
         return $this->hydratePaginationItems($paginator, $this->model());
     }
 
+    public function selection($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'leave_types.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->when($filters->company_id ?? false, function ($builder, $value) {
+                $builder->where('leave_types.company_id', $value);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($query) use ($value) {
+                    $query->where('code', 'like', "%$value%")
+                        ->orWhere('name', 'like', "%$value%");
+                });
+            })
+            ->select([
+                'leave_types.id',
+                'leave_types.code',
+                'leave_types.name',
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
     public function show($identifier)
     {
         $queryBuilder = $this->model::query()->where('ulid', $identifier);
