@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\HigherOrderTapProxy;
 use Jenssegers\Agent\Agent;
 
 class AuthenticatedSessionController extends Controller
@@ -75,10 +76,10 @@ class AuthenticatedSessionController extends Controller
             ];
         });
 
-        return ResponseJson::successfulResponse($mappedSessions);
+        return ResponseJson::successfulResponse($mappedSessions->values()->toArray());
     }
 
-    protected function createAgent($session): Agent|\Illuminate\Support\HigherOrderTapProxy
+    protected function createAgent($session): Agent|HigherOrderTapProxy
     {
         return tap(new Agent, function ($agent) use ($session) {
             $agent->setUserAgent($session->user_agent);
