@@ -34,7 +34,8 @@ class AttemptToAuthenticate
         ]);
 
         // First check if user exists and has active status
-        $user = User::where($identifierField, $request->input('identifier'))
+        $user = User::query()
+            ->where($identifierField, $request->input('identifier'))
             ->first();
 
         if ($user && $user->status !== UserStatus::ACTIVE) {
