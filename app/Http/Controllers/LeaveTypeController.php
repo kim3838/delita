@@ -11,6 +11,7 @@ use App\Http\Requests\LeaveType\StoreLeaveTypeRequest;
 use App\Http\Requests\LeaveType\UpdateLeaveTypeRequest;
 use App\Transformers\LeaveType\ItemTransformer;
 use App\Transformers\LeaveType\ListTransformer;
+use App\Transformers\LeaveType\SelectionTransformer;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -33,6 +34,23 @@ class LeaveTypeController extends Controller
             return ResponseJson::successfulResponse(
                 Fractal::collection($data, ListTransformer::class)
             );
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);

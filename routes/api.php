@@ -25,6 +25,7 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeImportTemplateController;
+use App\Http\Controllers\EmployeeLeaveTypeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
@@ -363,11 +364,20 @@ Route::group([
 
     //Leave types
     Route::get('leave-types', [LeaveTypeController::class, 'index']);
+    Route::get('leave-type-selections', [LeaveTypeController::class, 'selection']);
     Route::post('leave-type', [LeaveTypeController::class, 'store']);
     Route::patch('leave-type/{leaveTypeUlid}', [LeaveTypeController::class, 'update']);
     Route::get('leave-type/{ulid}', [LeaveTypeController::class, 'show']);
     Route::get('leave-type-check/{ulid}', [LeaveTypeController::class, 'check']);
     Route::delete('leave-types', [LeaveTypeController::class, 'batchDestroy']);
+
+    //Leave type assignment
+    Route::get('leave-type-assignments', [EmployeeLeaveTypeController::class, 'index']);
+    Route::patch('leave-type-assignment/{employeeLeaveTypeId}', [EmployeeLeaveTypeController::class, 'update']);
+    Route::get('leave-types-by-employees', [EmployeeLeaveTypeController::class, 'leaveTypesByEmployees']);
+    Route::post('leave-type-assignment-sync-without-detaching', [EmployeeLeaveTypeController::class, 'syncWithoutDetaching']);
+    Route::post('leave-type-assignment-detach/{morphMapKey}', [EmployeeLeaveTypeController::class, 'detach']);
+    Route::delete('leave-type-assignments', [EmployeeLeaveTypeController::class, 'batchDestroy']);
 });
 
 Route::group([

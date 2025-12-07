@@ -8,6 +8,7 @@ use App\Enums\LeavePeriodType;
 use App\Enums\LeaveType;
 use App\Enums\LeaveUsageSpanType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
@@ -151,10 +152,20 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
 
                     if(!$balancePerPeriod['and_so_on']){
 
-                        if(!is_numeric($balancePerPeriod['to_period']) || (int)$balancePerPeriod['to_period'] > 999999){
-                            $fail('Balance per period: to period is invalid');
+                        $toPeriodValidation = Validator::make($balancePerPeriod, [
+                            'to_period' => ['required', 'integer', 'min:1', 'max:999999'],
+                        ]);
+                        $toPeriodValidation->setCustomMessages([
+                            'to_period.required' => 'Balance per period: to-period is invalid.',
+                            'to_period.integer' => 'Balance per period: to-period must be an integer.',
+                            'to_period.min' => 'Balance per period: to-period is invalid.',
+                            'to_period.max' => 'Balance per period: to-period is invalid.',
+                        ]);
+
+                        if($toPeriodValidation->fails()){
+                            $fail($toPeriodValidation->errors()->first());
                         } else if(is_numeric($balancePerPeriod['from_period']) && $balancePerPeriod['to_period'] < $balancePerPeriod['from_period']){
-                            $fail('Balance per period: to period must not be lesser than from period.');
+                            $fail('Balance per period: to-period must not be lesser than from-period.');
                         }
                     }
                 }
@@ -188,11 +199,13 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             'limit_usage_span_type.required' => 'Limit usage span type is required.',
             'limit_usage_span_type.in' => 'Limit usage span type is invalid.',
             'limit_usage_span_value.required' => 'Limit usage span value is required.',
+            'limit_usage_span_value.integer' => 'Limit usage span value must be an integer',
             'limit_usage_value.required' => 'Limit usage value is required.',
+            'limit_usage_value.integer' => 'Limit usage value must be an integer',
 
             'eligibility_employment_types.required' => 'Eligibility employment types is required.',
             'initial_balance_upon_eligibility.required' => 'Eligibility balance is required.',
-            'initial_balance_upon_eligibility.integer' => 'Eligibility balance must be an integer.',
+            'initial_balance_upon_eligibility.integer' => 'Eligibility balance must be an integer',
             'initial_balance_upon_eligibility.min' => 'Eligibility balance is invalid.',
             'initial_balance_upon_eligibility.max' => 'Eligibility balance is invalid.',
 
@@ -207,7 +220,8 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             'carry_over_balance_per_new_period.boolean' => 'Carry over balance per new period must be a boolean.',
             'carry_over_balance_type.required' => 'Carry over balance type is required.',
             'carry_over_balance_type.in' => 'Carry over balance type is invalid.',
-            'carry_over_balance_value.required' => 'Carry over balance value is required.',
+            'carry_over_balance_value.required' => 'Carry over balance limit value is required.',
+            'carry_over_balance_value.integer' => 'Carry over balance limit value must be an integer',
 
             'leave_type_balance_per_period.array' => 'Balance per period: must be an array.',
             'spliced_leave_type_balance_per_period.array' => 'Spliced balance per period: must be an array.',
@@ -215,7 +229,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             'leave_type_balance_per_period.*.leave_type_id.required' => 'Balance per period: Leave type is required.',
             'leave_type_balance_per_period.*.leave_type_id.exists' => 'Balance per period: Leave type does not exist.',
 
-            'leave_type_balance_per_period.*.from_period.required' => 'Balance per period: from-period is invalid / not found.',
+            'leave_type_balance_per_period.*.from_period.required' => 'Balance per period: from-period is invalid.',
             'leave_type_balance_per_period.*.from_period.min' => 'Balance per period: from-period is invalid.',
             'leave_type_balance_per_period.*.from_period.max' => 'Balance per period: from-period is invalid.',
             'leave_type_balance_per_period.*.from_period.integer' => 'Balance per period: from-period must be an integer.',
@@ -223,7 +237,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             'leave_type_balance_per_period.*.and_so_on.required' => 'Balance per period: and-so-on is required.',
             'leave_type_balance_per_period.*.and_so_on.boolean' => 'Balance per period: and-so-on must be a boolean.',
 
-            'leave_type_balance_per_period.*.balance.required' => 'Balance per period: balance is invalid / not found.',
+            'leave_type_balance_per_period.*.balance.required' => 'Balance per period: balance is invalid.',
             'leave_type_balance_per_period.*.balance.integer' => 'Balance per period: balance must be an integer.',
             'leave_type_balance_per_period.*.balance.min' => 'Balance per period: balance is invalid.',
             'leave_type_balance_per_period.*.balance.max' => 'Balance per period: balance is invalid.',
