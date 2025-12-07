@@ -11,7 +11,7 @@ class SelectionTransformer extends TransformerAbstract
     {
         return [
             'value' => $model->id,
-            'text' => $model->number . PHP_EOL . $model->full_name,
+            'text' => "($model->number) " . $model->full_name,
         ];
     }
 }
