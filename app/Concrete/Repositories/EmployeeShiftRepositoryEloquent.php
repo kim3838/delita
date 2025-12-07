@@ -142,7 +142,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
                 DB::raw("MAX(employee_sub.employment_status_active) AS employee_employment_status_active"),
                 DB::raw("MAX(employee_sub.current_employment_status) AS employee_current_employment_status"),
                 DB::raw("MAX(employee_sub.current_employment_type) AS employee_current_employment_type"),
-                DB::raw("GROUP_CONCAT(shifts.code) AS assigned_shift_codes"),
+                DB::raw("GROUP_CONCAT(shifts.code ORDER BY shifts.code ASC) AS assigned_shift_codes"),
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
