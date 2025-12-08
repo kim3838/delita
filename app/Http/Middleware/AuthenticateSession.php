@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Session\Middleware\AuthenticatesSessions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,15 +16,15 @@ use Illuminate\Support\Facades\Log;
 
 class AuthenticateSession implements AuthenticatesSessions
 {
-    protected $logger = false;
-    protected $delay = false;
+    protected bool $logger = false;
+    protected bool $delay = false;
 
     /**
      * The authentication factory implementation.
      *
      * @var AuthFactory
      */
-    protected $auth;
+    protected AuthFactory $auth;
 
     /**
      * The callback that should be used to generate the authentication redirect path.
@@ -183,7 +184,7 @@ class AuthenticateSession implements AuthenticatesSessions
      * @param Request $request
      * @return void
      */
-    protected function storePasswordHashInSession($request): void
+    protected function storePasswordHashInSession(Request $request): void
     {
         if (! $request->user()) {
             return;
@@ -222,11 +223,12 @@ class AuthenticateSession implements AuthenticatesSessions
      * Log the user out of the application.
      *
      * @param Request $request
+     * @param string $message
      * @return void
      *
      * @throws AuthenticationException
      */
-    protected function logout($request, $message = 'Unauthenticated.')
+    protected function logout(Request $request, string $message = 'Unauthenticated.'): void
     {
         $this->guard()->logoutCurrentDevice();
 
@@ -246,6 +248,9 @@ class AuthenticateSession implements AuthenticatesSessions
             Cookie::queue(Cookie::forget($rememberKey));
         }
 
+        Cookie::queue(Cookie::forget('pc'));//Forget persist company
+        Cookie::queue(Cookie::forget('pas'));//Forget persist account subscription
+
         throw new AuthenticationException(
             $message, [$this->auth->getDefaultDriver()], $this->redirectTo($request)
         );
@@ -254,9 +259,9 @@ class AuthenticateSession implements AuthenticatesSessions
     /**
      * Get the guard instance that should be used by the middleware.
      *
-     * @return AuthFactory
+     * @return AuthFactory|SessionGuard|Guard
      */
-    protected function guard(): AuthFactory
+    protected function guard(): AuthFactory | SessionGuard | Guard
     {
         return $this->auth;
     }
@@ -272,6 +277,8 @@ class AuthenticateSession implements AuthenticatesSessions
         if (static::$redirectToCallback) {
             return call_user_func(static::$redirectToCallback, $request);
         }
+
+        return null;
     }
 
     /**
