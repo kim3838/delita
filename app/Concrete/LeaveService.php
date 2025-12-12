@@ -38,6 +38,7 @@ class LeaveService
                     FROM employment_profiles
                         WHERE employee_id = ?
                         AND status = ?
+                        AND start_date < ?
                         ORDER BY created_at
                 ) AS employment_profile_series_sub WHERE employment_profile_series_sub.employment_profile_series = 1
                 UNION ALL
@@ -61,7 +62,8 @@ class LeaveService
                 [
                     $employmentProfileSeriesParams['parameter_employee_id'],
                     $employmentProfileSeriesParams['parameter_employment_status'],
-                    $employmentProfileSeriesParams['parameter_date_to']
+                    $employmentProfileSeriesParams['parameter_date_to'],
+                    $employmentProfileSeriesParams['parameter_date_to'],
                 ]
             );
 
