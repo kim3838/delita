@@ -123,6 +123,10 @@ class LeaveService
                 DB::raw("epbds.*"),
                 DB::raw("leave_types.period_type"),
                 DB::raw("leave_types.period_interval_span_type"),
+                DB::raw("leave_types.carry_over_balance_per_new_period"),
+                DB::raw("leave_types.carry_over_balance_type"),
+                DB::raw("leave_types.carry_over_balance_value"),
+                DB::raw("employee_leave_type.leave_type_id"),
                 DB::raw("
                     CASE
                         WHEN leave_types.period_type = ".LeavePeriodType::INTERVAL->value." AND (leave_types.period_interval_span_type = ".LeaveIntervalSpanType::DAY->value." OR leave_types.period_interval_span_type = ".LeaveIntervalSpanType::MONTH->value.")
@@ -133,7 +137,8 @@ class LeaveService
                             THEN leave_types.period_calendar_span_value
                     END AS `period_span_value`
                 "),
-                DB::raw("COALESCE(JSON_CONTAINS(leave_types.eligibility_employment_types, CAST(epbds.employment_type AS CHAR)),0) AS `eligible`")
+                DB::raw("COALESCE(JSON_CONTAINS(leave_types.eligibility_employment_types, CAST(epbds.employment_type AS CHAR)),0) AS `eligible`"),
+                DB::raw("CASE WHEN employee_leave_type.override_balance_upon_eligibility = 1 THEN employee_leave_type.balance_upon_eligibility ELSE leave_types.initial_balance_upon_eligibility END AS `balance_upon_eligibility`")
             ]);
 
         $employeeLeaveTypeSequenceStartQueryBuilder = app(QueryBuilder::class)
