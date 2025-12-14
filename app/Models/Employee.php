@@ -186,4 +186,9 @@ class Employee extends Model
             ->withPivot(['id', 'balance_upon_eligibility'])
             ->withTimestamps();
     }
+
+    public function leaveBalanceAdjustments(): HasMany
+    {
+        return $this->hasMany(LeaveBalanceAdjustment::class);
+    }
 }
