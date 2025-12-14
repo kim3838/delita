@@ -39,7 +39,7 @@ return new class extends Migration
             $table->smallInteger('period_interval_span_type')->nullable();
             $table->integer('period_interval_span_value')->default(0);
             //Calendar year period type
-            $table->integer('period_calendar_span_value')->default(0);
+            $table->integer('period_calendar_span_value')->default(1);
 
             //Carry over balance per new period
             $table->boolean('carry_over_balance_per_new_period')->default(false);
