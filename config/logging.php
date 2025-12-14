@@ -53,7 +53,7 @@ return [
     'channels' => [
 
         'debug' => [
-            'driver' => 'daily',
+            'driver' => 'single',
             'path' => storage_path('logs/debug/debug.log'),
             'level' => 'debug',
             'days' => 14,

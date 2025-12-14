@@ -57,6 +57,17 @@ function _log_query_builder_with_bindings(\Illuminate\Database\Query\Builder $qu
     \Illuminate\Support\Facades\Storage::disk('local')->put("$name.sql", $log);
 }
 
+if(!function_exists('_clear_debug')){
+    function _clear_debug(): void
+    {
+        $logFile = config('logging.channels.debug.path');
+
+        if (file_exists($logFile)) {
+            file_put_contents($logFile, '');
+        }
+    }
+}
+
 if(!function_exists('_debug')){
     function _debug($value): void
     {
