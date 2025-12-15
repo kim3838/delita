@@ -191,4 +191,9 @@ class Employee extends Model
     {
         return $this->hasMany(LeaveBalanceAdjustment::class);
     }
+
+    public function leaves(): HasMany
+    {
+        return $this->hasMany(Leave::class);
+    }
 }

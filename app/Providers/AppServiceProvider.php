@@ -67,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
             'overtime' => Overtime::class,
             'holiday' => Holiday::class,
             'leave_type' => LeaveType::class,
+            'leave' => LeaveType::class,
         ]);
     }
 }

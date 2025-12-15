@@ -58,6 +58,7 @@ class ObserverServiceProvider extends ServiceProvider
                     Relation::getMorphedModel('overtime'),
                     Relation::getMorphedModel('holiday'),
                     Relation::getMorphedModel('leave_type'),
+                    Relation::getMorphedModel('leave'),
                 ],
                 'observers' => [
                     HasUlid::class,
