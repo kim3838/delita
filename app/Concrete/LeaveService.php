@@ -3,15 +3,26 @@
 namespace App\Concrete;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
+use App\Facades\Fractal;
 use App\Models\EmployeeLeaveType;
+use App\Models\LeaveTypeBalancePerPeriod;
+use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class LeaveService
 {
-    public function balanceByPeriod(EmployeeLeaveType $employeeLeaveType, $upToDate): void
+    public bool $carryOverBalancePerNewPeriod = false;
+    public ?int $carryOverBalanceLimitValue = null;
+    public ?int $carryOverBalanceType = null;
+    public int $initialBalanceUponEligibility = 0;
+    public Collection $additionalBalancePerPeriod;
+
+    public function getBalanceMap(EmployeeLeaveType $employeeLeaveType, $upToDate): void
     {
         $employee = clone $employeeLeaveType->employee;
         $leaveType = clone $employeeLeaveType->leaveType;
@@ -27,12 +38,14 @@ class LeaveService
         ");
 
         $employmentProfileSeries = "
-            WITH RECURSIVE employment_profile_series(date_start,date_series) AS (
+            WITH RECURSIVE employment_profile_series(employee_id,date_start,date_series) AS (
                 SELECT
+                    employment_profile_series_sub.employee_id AS `employee_id`,
                     employment_profile_series_sub.employment_profile_start AS `date_start`,
                     employment_profile_series_sub.employment_profile_start AS `date_series`
                 FROM (
                     SELECT
+                        employment_profiles.employee_id,
                         ROW_NUMBER() OVER(PARTITION BY employee_id ORDER BY start_date, created_at) AS `employment_profile_series`,
                         start_date AS employment_profile_start
                     FROM employment_profiles
@@ -42,11 +55,11 @@ class LeaveService
                         ORDER BY created_at
                 ) AS employment_profile_series_sub WHERE employment_profile_series_sub.employment_profile_series = 1
                 UNION ALL
-                SELECT date_start, date_series + INTERVAL 1 DAY
+                SELECT employee_id,date_start, date_series + INTERVAL 1 DAY
                 FROM employment_profile_series
                 WHERE date_series < ?
             )
-            SELECT date_start, date_series
+            SELECT employee_id,date_start, date_series
             FROM employment_profile_series
         ";
 
@@ -94,6 +107,7 @@ class LeaveService
             ->fromSub($employmentProfileSeriesQueryBuilder, $employmentProfileSeriesAlias)
             ->selectRaw("YEAR(employment_profile_series_sub.date_series) AS year")
             ->selectRaw("MONTH(employment_profile_series_sub.date_series) AS month")
+            ->selectRaw("$employmentProfileSeriesAlias.employee_id")
             ->selectRaw("$employmentProfileSeriesAlias.date_start")
             ->selectRaw("$employmentProfileSeriesAlias.date_series")
             ->selectRaw("($employmentProfileByDateSeries) as employment_type", [
@@ -106,6 +120,7 @@ class LeaveService
             ->select([
                 DB::raw("employment_profile_by_date_series_sub.year"),
                 DB::raw("employment_profile_by_date_series_sub.month"),
+                DB::raw("employment_profile_by_date_series_sub.employee_id AS `employee_id`"),
                 DB::raw("employment_profile_by_date_series_sub.date_start"),
                 DB::raw("employment_profile_by_date_series_sub.date_series"),
                 //Date series partition slot
@@ -212,5 +227,297 @@ class LeaveService
                     END AS `period`
                 "),
             ]);
+
+        $employeeLeaveTypeBalancePipelineQueryBuilder = app(QueryBuilder::class)
+            ->fromSub($employeeLeaveTypeByPeriodQueryBuilder, 'eltbp')
+            ->select([
+                DB::raw("eltbp.*"),
+                DB::raw("
+                    (
+                        SELECT SUM(balance) FROM leave_balance_adjustments lba
+                        WHERE type = 100 AND employee_id = eltbp.employee_id AND leave_type_id = eltbp.leave_type_id AND effective_date = eltbp.date_series
+                        GROUP BY lba.employee_id, lba.leave_type_id, lba.type, lba.effective_date
+                    ) AS `running_balance_additions`
+                "),
+                DB::raw("
+                    (
+                        SELECT COUNT(*) FROM leaves
+                        WHERE employee_id = eltbp.employee_id AND leave_type_id = eltbp.leave_type_id AND date = eltbp.date_series
+                    ) AS `claims`
+                "),
+            ]);
+
+        $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder = app(QueryBuilder::class)
+            ->fromSub($employeeLeaveTypeBalancePipelineQueryBuilder, 'eltbpl')
+            ->select([
+                DB::raw("eltbpl.*"),
+                DB::raw("SUM(eltbpl.claims) OVER(PARTITION BY eltbpl.period) AS `period_claims`"),
+            ]);
+
+        _log_query_builder_with_bindings($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder);
+
+        $periodByDateSeriesCollection = $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder->get()->toArray();
+
+        _clear_debug();
+
+        $this->initialBalanceUponEligibility = $periodByDateSeriesCollection[0]->balance_upon_eligibility;
+        $this->carryOverBalancePerNewPeriod = boolval($periodByDateSeriesCollection[0]->carry_over_balance_per_new_period);
+
+        if($this->carryOverBalancePerNewPeriod){
+            $this->carryOverBalanceType = $periodByDateSeriesCollection[0]->carry_over_balance_type;
+
+            if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value){
+                $this->carryOverBalanceLimitValue = (int)$periodByDateSeriesCollection[0]->carry_over_balance_value;
+
+                $this->carryOverBalancePerNewPeriod = $this->carryOverBalanceLimitValue > 0;
+            }
+        }
+
+        $additionalBalancePerPeriodCollection = Fractal::collection(
+            LeaveTypeBalancePerPeriod::query()->where('leave_type_id', $periodByDateSeriesCollection[0]->leave_type_id)->get(),
+            LeaveTypeBalancePerPeriodListTransformer::class
+        )['data'];
+
+        $this->additionalBalancePerPeriod = collect($additionalBalancePerPeriodCollection);
+
+        $this->setBalancePerPeriod(
+            $periodByDateSeriesCollection,
+            1,
+            $this->initialBalanceUponEligibility
+        );
+
+        $claimsByPeriodQueryBuilder = app(QueryBuilder::class)
+            ->fromSub($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder, 'eltbptbp')
+            ->select([
+                DB::raw("eltbptbp.period"),
+                DB::raw("eltbptbp.period_claims"),
+            ])
+            ->whereNotNull(DB::raw("eltbptbp.period"))
+            ->groupBy([
+                DB::raw("eltbptbp.period"),
+                DB::raw("eltbptbp.period_claims"),
+            ])
+            ->orderBy(DB::raw("eltbptbp.period"));
+
+        $claimsByPeriodCollection = $claimsByPeriodQueryBuilder->get()->toArray();
+
+        $deductions = [
+            ['balance' => 0, 'date' => '2025-08-03'],
+            ['balance' => 5, 'date' => '2025-08-08'],
+        ];
+
+        /**
+         * If carry over enabled,
+         * deduct balance on all period before the period and current period,
+         * then recompute carry over on periods after
+         **/
+        if($this->carryOverBalancePerNewPeriod){
+
+            foreach ($claimsByPeriodCollection as $claimsByPeriod) {
+
+                $period = (int)$claimsByPeriod->period;
+                $balance = (int)$claimsByPeriod->period_claims;
+
+                if($balance <= 0){
+                    continue;
+                }
+
+                list(
+                    $reComputePeriodStart,
+                    $reComputeRunningBalance
+                ) = $this->deductRunningBalance($periodByDateSeriesCollection, $period, $balance);
+
+                $this->setBalancePerPeriod(
+                    $periodByDateSeriesCollection,
+                    $reComputePeriodStart,
+                    $reComputeRunningBalance
+                );
+            }
+        }
+
+        /**
+         * If carry over not enabled, deduct balance only on its period
+         **/
+        if(!$this->carryOverBalancePerNewPeriod){
+
+            foreach ($claimsByPeriodCollection as $claimsByPeriod) {
+
+                $period = (int)$claimsByPeriod->period;
+                $balance = (int)$claimsByPeriod->period_claims;
+
+                if($balance <= 0){
+                    continue;
+                }
+
+                $this->deductBalanceOnPeriod($periodByDateSeriesCollection, $period, $balance);
+            }
+        }
+
+        _debug([
+            'running_balance' => collect($periodByDateSeriesCollection)->map(function($item){
+
+                $array = [
+                    'date_series' => $item->date_series,
+                    'employment_type' => $item->employment_type,
+                    'eligible' => $item->eligible,
+                    'period' => $item->period,
+                    'running_balance' => $item->running_balance ?? null,
+                    'running_balance_additions' => $item->running_balance_additions,
+                    'period_claims' => $item->period_claims,
+                ];
+
+                $singleLine = $item->date_series . ';' .
+                    ($item->period ? 'PR' . str_pad($item->period, 3, '0', STR_PAD_LEFT) : '_____') . ';' .
+                    ((isset($item->running_balance) && is_numeric($item->running_balance)) ? $item->running_balance : '___');
+
+                return $singleLine;
+            })->values()->toArray(),
+            'claims_by_period' => $claimsByPeriodCollection,
+        ]);
+    }
+
+    public function setBalancePerPeriod($periodByDateSeriesCollection, $startingPeriod, $runningBalance, $withRunningBalanceAdditions = true): void
+    {
+        $period = $startingPeriod;
+        //Once per period: balance from leave type balance per period
+        $periodAdditionalBalance = null;
+        //Treat custom starting period(period that is > 1) as new period once, flag to false when claimed
+        $customStartingPeriodAsNewPeriod = true;
+
+        //Debug carry over and additional balance per period
+        if(false){
+            _debug([
+                'carry_over_settings' => [
+                    '$carryOverBalancePerNewPeriod' => $this->carryOverBalancePerNewPeriod,
+                    '$carryOverBalanceType' => LeaveCarryOverType::tryFrom($this->carryOverBalanceType)?->label(),
+                    '$carryOverBalanceLimitValue' => $this->carryOverBalanceLimitValue,
+                ],
+                'additional_balance_per_period' => $this->additionalBalancePerPeriod->map(function($item){
+                    return [
+                        'from_period' => $item['from_period'],
+                        'and_so_on' => $item['and_so_on'],
+                        'to_period' => $item['to_period'],
+                        'balance' => $item['balance'],
+                    ];
+                })->toArray(),
+            ]);
+        }
+
+        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+
+            if(empty($periodByDateSeries->period) || intval($periodByDateSeries->period) < $startingPeriod){
+                continue;
+            }
+
+            $newPeriod = false;
+
+            //Once: When period is greater than 1 and is equal to custom starting period, treat it as new period
+            if($customStartingPeriodAsNewPeriod && ($period > 1 && $period == $startingPeriod)){
+                $newPeriod = true;
+                $customStartingPeriodAsNewPeriod = false;
+            }
+
+            if(intval($periodByDateSeries->period) > $period){
+                $period += 1;
+                $periodAdditionalBalance = null;
+                $newPeriod = true;
+            }
+
+            if($newPeriod){
+
+                if($periodAdditionalBalance == null && !is_numeric($periodAdditionalBalance)){
+                    //Get additional balance per period
+                    $periodAdditionalBalances = $this->additionalBalancePerPeriod->filter(function($item) use($periodByDateSeries){
+                        return ($item['from_period'] <= $periodByDateSeries->period && !$item['and_so_on'] && $item['to_period'] >= $periodByDateSeries->period)
+                            || ($item['from_period'] <= $periodByDateSeries->period && $item['and_so_on']);
+                    });
+                    $mappedPeriodAdditionalBalances = $periodAdditionalBalances->map(function($item){
+                        return [
+                            'from_period' => $item['from_period'],
+                            'and_so_on' => $item['and_so_on'],
+                            'to_period' => $item['to_period'],
+                            'balance' => $item['balance'],
+                        ];
+                    })->toArray();
+                    $periodAdditionalBalance = $periodAdditionalBalances->sum('balance');
+                }
+
+                //Once per period: Check for carry over, if not enabled, running balance resets to 0
+                if($this->carryOverBalancePerNewPeriod){
+                    if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value){
+                        $runningBalance = $runningBalance >= $this->carryOverBalanceLimitValue
+                            ? $this->carryOverBalanceLimitValue
+                            : $runningBalance;
+                    }
+                } else {
+                    $runningBalance = 0;
+                }
+
+                //Once per period: Add additional balance per period
+                $runningBalance += $periodAdditionalBalance;
+            }
+
+            if($withRunningBalanceAdditions && is_numeric($periodByDateSeries->running_balance_additions)){
+                $runningBalance += (int)$periodByDateSeries->running_balance_additions;
+            }
+
+            //Set date series running balance
+            $periodByDateSeries->running_balance = $runningBalance;
+        }
+    }
+
+    public function deductRunningBalance(&$periodByDateSeriesCollection, $periodOrigin, $balance): array
+    {
+        $period = 1;
+        $reComputeCarryOverFlag = false;
+        $reComputeRunningBalance = 0;
+
+        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+
+            if(empty($periodByDateSeries->period)){
+                continue;
+            }
+
+            $newPeriod = false;
+
+            if(intval($periodByDateSeries->period) > $period){
+                $period += 1;
+                $newPeriod = true;
+            }
+
+            if($newPeriod){
+
+                if(!$reComputeCarryOverFlag && $period > $periodOrigin){
+                    break;
+                }
+            }
+
+            //Perform deduction on periods lesser and equal to period origin
+            if(!$reComputeCarryOverFlag && $period <= $periodOrigin){
+                //Deduct balance
+                $periodByDateSeries->running_balance -= $balance;
+
+                //Set running balance re-computer
+                $reComputeRunningBalance = $periodByDateSeries->running_balance;
+            }
+        }
+
+        return [
+            $period,
+            $reComputeRunningBalance
+        ];
+    }
+
+    public function deductBalanceOnPeriod(&$periodByDateSeriesCollection, $periodOrigin, $balance): void
+    {
+        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+
+            if(empty($periodByDateSeries->period) || intval($periodByDateSeries->period) !== $periodOrigin){
+                continue;
+            }
+
+            //Deduct balance
+            $periodByDateSeries->running_balance -= $balance;
+        }
     }
 }

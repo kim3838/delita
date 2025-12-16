@@ -481,16 +481,16 @@ class Development extends Seeder
         $employeeC1002->employmentProfiles()->create([
             'status' => EmploymentStatus::ACTIVE,
             'employment_type' => EmploymentType::PROBATIONARY,
-            'start_date' => '2026-01-01',
+            'start_date' => '2025-01-01',
             'end_of_service_type' => EndOfServiceType::END_OF_CONTRACT,
-            'end_date' => '2026-03-31'
+            'end_date' => '2025-03-31'
         ]);
         $employeeC1002->employmentProfiles()->create([
             'status' => EmploymentStatus::ACTIVE,
             'employment_type' => EmploymentType::FULL_TIME,
-            'start_date' => '2026-04-01',
+            'start_date' => '2025-04-01',
             'end_of_service_type' => EndOfServiceType::END_OF_CONTRACT,
-            'end_date' => '2028-11-30'
+            'end_date' => '2029-11-30'
         ]);
         $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         $employeeC1002->leaveTypes()->syncWithoutDetaching([
@@ -499,21 +499,38 @@ class Development extends Seeder
         $employeeC1002->leaveBalanceAdjustments()->create([
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
-            'balance' => 7,
-            'effective_date' => '2025-08-08'
+            'balance' => 1,
+            'effective_date' => '2026-05-21'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 3,
-            'effective_date' => '2025-08-08'
+            'effective_date' => '2026-05-21'
+        ]);
+        $employeeC1002->leaveBalanceAdjustments()->create([
+            'leave_type_id' => $leave1002C4->id,
+            'type' => LeaveBalanceAdjustmentType::ADD,
+            'balance' => 7,
+            'effective_date' => '2027-05-21'
+        ]);
+        $employeeC1002->leaveBalanceAdjustments()->create([
+            'leave_type_id' => $leave1002C4->id,
+            'type' => LeaveBalanceAdjustmentType::ADD,
+            'balance' => 3,
+            'effective_date' => '2027-05-21'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 1,
-            'effective_date' => '2025-08-10'
+            'effective_date' => '2027-09-21'
         ]);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-21']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-22']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-23']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-24']);
+
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-21']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-22']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-23']);
@@ -524,6 +541,12 @@ class Development extends Seeder
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-28']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-29']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-09-20']);
+
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-12-01']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-12-02']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-12-03']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-12-04']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-12-05']);
 
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee C1003 Info, Contact, Employment Profile and Shift
