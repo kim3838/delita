@@ -107,6 +107,7 @@ class LeaveService
             ->fromSub($employmentProfileSeriesQueryBuilder, $employmentProfileSeriesAlias)
             ->selectRaw("YEAR(employment_profile_series_sub.date_series) AS year")
             ->selectRaw("MONTH(employment_profile_series_sub.date_series) AS month")
+            ->selectRaw("CONCAT(YEAR(employment_profile_series_sub.date_series), '-', LPAD(MONTH(employment_profile_series_sub.date_series),2,'0')) AS 'year_month'")
             ->selectRaw("$employmentProfileSeriesAlias.employee_id")
             ->selectRaw("$employmentProfileSeriesAlias.date_start")
             ->selectRaw("$employmentProfileSeriesAlias.date_series")
@@ -120,6 +121,7 @@ class LeaveService
             ->select([
                 DB::raw("employment_profile_by_date_series_sub.year"),
                 DB::raw("employment_profile_by_date_series_sub.month"),
+                DB::raw("employment_profile_by_date_series_sub.year_month"),
                 DB::raw("employment_profile_by_date_series_sub.employee_id AS `employee_id`"),
                 DB::raw("employment_profile_by_date_series_sub.date_start"),
                 DB::raw("employment_profile_by_date_series_sub.date_series"),
@@ -220,9 +222,12 @@ class LeaveService
                                 CEIL(eltsbp.sequence_by_period_type / eltsbp.period_span_value)
                             WHEN eltsbp.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
                                 THEN
-                                    (IF(MONTH(eltsbp.eligibility_date_start) < eltsbp.period_span_value, 1, 0))
-                                    +SUM(IF(CONCAT(YEAR(eltsbp.date_series),LPAD(MONTH(eltsbp.date_series), 2, '0'),LPAD(DAY(eltsbp.date_series), 2, '0')) = CONCAT(eltsbp.year, LPAD(eltsbp.period_span_value, 2, '0'), '01'), 1, 0)
-                                ) OVER(ORDER BY eltsbp.year,eltsbp.month)
+                                    1+SUM(
+                                        IF(
+                                            CONCAT(YEAR(eltsbp.date_series),LPAD(MONTH(eltsbp.date_series), 2, '0'),LPAD(DAY(eltsbp.date_series), 2, '0')) = CONCAT(eltsbp.year, LPAD(eltsbp.period_span_value, 2, '0'), '01')
+                                            AND eltsbp.eligibility_started > 0,
+                                        1, 0)
+                                    ) OVER(ORDER BY eltsbp.year,eltsbp.month)
                         END
                     END AS `period`
                 "),
@@ -280,10 +285,11 @@ class LeaveService
 
         $this->additionalBalancePerPeriod = collect($additionalBalancePerPeriodCollection);
 
+        $startingPeriod = 1;
         $this->setBalancePerPeriod(
             $periodByDateSeriesCollection,
-            1,
-            $this->initialBalanceUponEligibility
+            $startingPeriod,
+            $this->initialBalanceUponEligibility + $this->getPeriodAdditionalBalance($startingPeriod)
         );
 
         $claimsByPeriodQueryBuilder = app(QueryBuilder::class)
@@ -376,7 +382,7 @@ class LeaveService
         ]);
     }
 
-    public function setBalancePerPeriod($periodByDateSeriesCollection, $startingPeriod, $runningBalance, $withRunningBalanceAdditions = true): void
+    public function setBalancePerPeriod($periodByDateSeriesCollection, $startingPeriod, $runningBalance): void
     {
         $period = $startingPeriod;
         //Once per period: balance from leave type balance per period
@@ -427,19 +433,7 @@ class LeaveService
 
                 if($periodAdditionalBalance == null && !is_numeric($periodAdditionalBalance)){
                     //Get additional balance per period
-                    $periodAdditionalBalances = $this->additionalBalancePerPeriod->filter(function($item) use($periodByDateSeries){
-                        return ($item['from_period'] <= $periodByDateSeries->period && !$item['and_so_on'] && $item['to_period'] >= $periodByDateSeries->period)
-                            || ($item['from_period'] <= $periodByDateSeries->period && $item['and_so_on']);
-                    });
-                    $mappedPeriodAdditionalBalances = $periodAdditionalBalances->map(function($item){
-                        return [
-                            'from_period' => $item['from_period'],
-                            'and_so_on' => $item['and_so_on'],
-                            'to_period' => $item['to_period'],
-                            'balance' => $item['balance'],
-                        ];
-                    })->toArray();
-                    $periodAdditionalBalance = $periodAdditionalBalances->sum('balance');
+                    $periodAdditionalBalance = $this->getPeriodAdditionalBalance($periodByDateSeries->period);
                 }
 
                 //Once per period: Check for carry over, if not enabled, running balance resets to 0
@@ -457,13 +451,32 @@ class LeaveService
                 $runningBalance += $periodAdditionalBalance;
             }
 
-            if($withRunningBalanceAdditions && is_numeric($periodByDateSeries->running_balance_additions)){
+            if(is_numeric($periodByDateSeries->running_balance_additions)){
                 $runningBalance += (int)$periodByDateSeries->running_balance_additions;
             }
 
             //Set date series running balance
             $periodByDateSeries->running_balance = $runningBalance;
         }
+    }
+
+    public function getPeriodAdditionalBalance($period)
+    {
+        $periodAdditionalBalances = $this->additionalBalancePerPeriod->filter(function($item) use($period){
+            return ($item['from_period'] <= $period && !$item['and_so_on'] && $item['to_period'] >= $period)
+                || ($item['from_period'] <= $period && $item['and_so_on']);
+        });
+
+        $mappedPeriodAdditionalBalances = $periodAdditionalBalances->map(function($item){
+            return [
+                'from_period' => $item['from_period'],
+                'and_so_on' => $item['and_so_on'],
+                'to_period' => $item['to_period'],
+                'balance' => $item['balance'],
+            ];
+        })->toArray();
+
+        return $periodAdditionalBalances->sum('balance');
     }
 
     public function deductRunningBalance(&$periodByDateSeriesCollection, $periodOrigin, $balance): array
