@@ -365,7 +365,7 @@ class LeaveService
         }
 
         /**
-         * Group date series by date and running balance spanning from the beginning and end of the month
+         * Group date series by month nad period
          **/
         $groupedByYearMonthPeriod = $this->groupByYearMonthPeriod($this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection));
 
