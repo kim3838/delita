@@ -25,7 +25,36 @@ class LeaveService
     public int $initialBalanceUponEligibility = 0;
     public Collection $additionalBalancePerPeriod;
 
+    public function getLatestBalance(EmployeeLeaveType $employeeLeaveType, $upToDate): void
+    {
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employeeLeaveType, $upToDate);
+
+        _clear_debug();
+        _debug([
+            'monthly_balance' => $periodByDateSeriesArray,
+        ]);
+    }
+
     public function getBalanceMap(EmployeeLeaveType $employeeLeaveType, $upToDate): void
+    {
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employeeLeaveType, $upToDate);
+
+        /**
+         * Group date series by year-month and period
+         **/
+        $mappedPeriodByDateSeries = $this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesArray);
+
+        $groupedByYearMonthPeriod = $this->groupByYearMonthPeriod($mappedPeriodByDateSeries);
+
+        $groupedDecodedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
+
+        _clear_debug();
+        _debug([
+            'grouped_decoded__by_year_monthly_balance' => $groupedDecodedByYearMonthPeriod->values()->all(),
+        ]);
+    }
+
+    public function getPeriodByDateSeries(EmployeeLeaveType $employeeLeaveType, $upToDate)
     {
         $employee = clone $employeeLeaveType->employee;
         $leaveType = clone $employeeLeaveType->leaveType;
@@ -269,27 +298,23 @@ class LeaveService
                 DB::raw("(SUM(eltbpl.claims) OVER(PARTITION BY eltbpl.period) + SUM(eltbpl.running_balance_deductions) OVER(PARTITION BY eltbpl.period)) AS `period_claims_and_deductions`"),
             ]);
 
-        _log_query_builder_with_bindings($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder);
+        $periodByDateSeriesArray = $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder->get()->toArray();
 
-        $periodByDateSeriesCollection = $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder->get()->toArray();
-
-        _clear_debug();
-
-        $this->initialBalanceUponEligibility = $periodByDateSeriesCollection[0]->balance_upon_eligibility;
-        $this->carryOverBalancePerNewPeriod = boolval($periodByDateSeriesCollection[0]->carry_over_balance_per_new_period);
+        $this->initialBalanceUponEligibility = $periodByDateSeriesArray[0]->balance_upon_eligibility;
+        $this->carryOverBalancePerNewPeriod = boolval($periodByDateSeriesArray[0]->carry_over_balance_per_new_period);
 
         if($this->carryOverBalancePerNewPeriod){
-            $this->carryOverBalanceType = $periodByDateSeriesCollection[0]->carry_over_balance_type;
+            $this->carryOverBalanceType = $periodByDateSeriesArray[0]->carry_over_balance_type;
 
             if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value){
-                $this->carryOverBalanceLimitValue = (int)$periodByDateSeriesCollection[0]->carry_over_balance_value;
+                $this->carryOverBalanceLimitValue = (int)$periodByDateSeriesArray[0]->carry_over_balance_value;
 
                 $this->carryOverBalancePerNewPeriod = $this->carryOverBalanceLimitValue > 0;
             }
         }
 
         $additionalBalancePerPeriodCollection = Fractal::collection(
-            LeaveTypeBalancePerPeriod::query()->where('leave_type_id', $periodByDateSeriesCollection[0]->leave_type_id)->get(),
+            LeaveTypeBalancePerPeriod::query()->where('leave_type_id', $periodByDateSeriesArray[0]->leave_type_id)->get(),
             LeaveTypeBalancePerPeriodListTransformer::class
         )['data'];
 
@@ -297,7 +322,7 @@ class LeaveService
 
         $startingPeriod = 1;
         $this->setBalancePerPeriod(
-            $periodByDateSeriesCollection,
+            $periodByDateSeriesArray,
             $startingPeriod,
             $this->initialBalanceUponEligibility + $this->getPeriodAdditionalBalance($startingPeriod)
         );
@@ -336,10 +361,10 @@ class LeaveService
                 list(
                     $reComputePeriodStart,
                     $reComputeRunningBalance
-                ) = $this->deductRunningBalance($periodByDateSeriesCollection, $period, $balance);
+                ) = $this->deductRunningBalance($periodByDateSeriesArray, $period, $balance);
 
                 $this->setBalancePerPeriod(
-                    $periodByDateSeriesCollection,
+                    $periodByDateSeriesArray,
                     $reComputePeriodStart,
                     $reComputeRunningBalance
                 );
@@ -360,23 +385,11 @@ class LeaveService
                     continue;
                 }
 
-                $this->deductBalanceOnPeriod($periodByDateSeriesCollection, $period, $balance);
+                $this->deductBalanceOnPeriod($periodByDateSeriesArray, $period, $balance);
             }
         }
 
-        /**
-         * Group date series by month nad period
-         **/
-        $groupedByYearMonthPeriod = $this->groupByYearMonthPeriod($this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection));
-
-        $groupedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
-
-        $singleLinePerBalance = $this->transformEachToSingleLine($periodByDateSeriesCollection);
-
-        _debug([
-            'monthly_balance' => $groupedByYearMonthPeriod->values()->all(),
-            'claims_by_period' => $claimsAndDeductionsByPeriodCollection,
-        ]);
+        return $periodByDateSeriesArray;
     }
 
     public function decodeYearMonthPeriodKeys($groupedByYearMonthEmploymentType)
@@ -436,16 +449,16 @@ class LeaveService
             });
     }
 
-    public function groupByYearMonthPeriod($periodByDateSeriesCollection)
+    public function groupByYearMonthPeriod($periodByDateSeriesArray)
     {
-        return $periodByDateSeriesCollection->groupBy(['year_month', function ($item) {
+        return $periodByDateSeriesArray->groupBy(['year_month', function ($item) {
             return $item['period'];
         }]);
     }
 
-    public function mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection): Collection
+    public function mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesArray): Collection
     {
-        return collect($periodByDateSeriesCollection)->map(function($item){
+        return collect($periodByDateSeriesArray)->map(function($item){
             return [
                 'year_month' => json_encode([
                     'year' => $item->year,
@@ -462,9 +475,9 @@ class LeaveService
         });
     }
 
-    public function mapToBasicInfo($periodByDateSeriesCollection): Collection
+    public function mapToBasicInfo($periodByDateSeriesArray): Collection
     {
-        return collect($periodByDateSeriesCollection)->map(function($item){
+        return collect($periodByDateSeriesArray)->map(function($item){
             return [
                 'year_month' => $item->year_month,
                 'date_series' => $item->date_series,
@@ -476,16 +489,16 @@ class LeaveService
         });
     }
 
-    public function transformEachToSingleLine($periodByDateSeriesCollection): array
+    public function transformEachToSingleLine($periodByDateSeriesArray): array
     {
-        return collect($periodByDateSeriesCollection)->map(function($item){
+        return collect($periodByDateSeriesArray)->map(function($item){
             return $item->date_series . ';' .
                 ($item->period ? 'PR' . str_pad($item->period, 3, '0', STR_PAD_LEFT) : '_____') . ';' .
                 ((isset($item->running_balance) && is_numeric($item->running_balance)) ? $item->running_balance : '___');
         })->values()->toArray();
     }
 
-    public function setBalancePerPeriod($periodByDateSeriesCollection, $startingPeriod, $runningBalance): void
+    public function setBalancePerPeriod($periodByDateSeriesArray, $startingPeriod, $runningBalance): void
     {
         $period = $startingPeriod;
         //Once per period: balance from leave type balance per period
@@ -493,26 +506,7 @@ class LeaveService
         //Treat custom starting period(period that is > 1) as new period once, flag to false when claimed
         $customStartingPeriodAsNewPeriod = true;
 
-        //Debug carry over and additional balance per period
-        if(false){
-            _debug([
-                'carry_over_settings' => [
-                    '$carryOverBalancePerNewPeriod' => $this->carryOverBalancePerNewPeriod,
-                    '$carryOverBalanceType' => LeaveCarryOverType::tryFrom($this->carryOverBalanceType)?->label(),
-                    '$carryOverBalanceLimitValue' => $this->carryOverBalanceLimitValue,
-                ],
-                'additional_balance_per_period' => $this->additionalBalancePerPeriod->map(function($item){
-                    return [
-                        'from_period' => $item['from_period'],
-                        'and_so_on' => $item['and_so_on'],
-                        'to_period' => $item['to_period'],
-                        'balance' => $item['balance'],
-                    ];
-                })->toArray(),
-            ]);
-        }
-
-        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+        foreach ($periodByDateSeriesArray as $periodByDateSeries) {
 
             if(empty($periodByDateSeries->period) || intval($periodByDateSeries->period) < $startingPeriod){
                 continue;
@@ -582,13 +576,13 @@ class LeaveService
         return $periodAdditionalBalances->sum('balance');
     }
 
-    public function deductRunningBalance(&$periodByDateSeriesCollection, $periodOrigin, $balance): array
+    public function deductRunningBalance(&$periodByDateSeriesArray, $periodOrigin, $balance): array
     {
         $period = 1;
         $reComputeCarryOverFlag = false;
         $reComputeRunningBalance = 0;
 
-        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+        foreach ($periodByDateSeriesArray as $periodByDateSeries) {
 
             if(empty($periodByDateSeries->period)){
                 continue;
@@ -624,9 +618,9 @@ class LeaveService
         ];
     }
 
-    public function deductBalanceOnPeriod(&$periodByDateSeriesCollection, $periodOrigin, $balance): void
+    public function deductBalanceOnPeriod(&$periodByDateSeriesArray, $periodOrigin, $balance): void
     {
-        foreach ($periodByDateSeriesCollection as $periodByDateSeries) {
+        foreach ($periodByDateSeriesArray as $periodByDateSeries) {
 
             if(empty($periodByDateSeries->period) || intval($periodByDateSeries->period) !== $periodOrigin){
                 continue;
