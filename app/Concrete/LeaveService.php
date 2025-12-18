@@ -367,30 +367,30 @@ class LeaveService
         /**
          * Group date series by date and running balance spanning from the beginning and end of the month
          **/
-        $groupedByYearMonthEmploymentType = $this->groupByYearMonthEmploymentType($this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection));
+        $groupedByYearMonthPeriod = $this->groupByYearMonthPeriod($this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection));
 
-        $groupedByYearMonthEmploymentType = $this->decodeYearMonthEmploymentTypeKeys($groupedByYearMonthEmploymentType);
+        $groupedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
 
         $singleLinePerBalance = $this->transformEachToSingleLine($periodByDateSeriesCollection);
 
         _debug([
-            'monthly_balance' => $groupedByYearMonthEmploymentType->values()->all(),
+            'monthly_balance' => $groupedByYearMonthPeriod->values()->all(),
             'claims_by_period' => $claimsAndDeductionsByPeriodCollection,
         ]);
     }
 
-    public function decodeYearMonthEmploymentTypeKeys($groupedByYearMonthEmploymentType)
+    public function decodeYearMonthPeriodKeys($groupedByYearMonthEmploymentType)
     {
         return $groupedByYearMonthEmploymentType
             ->map(function($yearMonthCollection, $yearMonthKey){
 
                 $yearMonth = json_decode($yearMonthKey, true);
 
-                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $employmentKey){
+                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $periodKey){
 
-                    $employment = json_decode($employmentKey, true);
+                    $mappedYearMonthItem = $yearMonthItem->groupBy('employment')->map(function($periodCollection, $employmentKey){
 
-                    $mappedYearMonthItem = $yearMonthItem->groupBy('period')->map(function($periodCollection, $periodKey){
+                        $employment = json_decode($employmentKey, true);
 
                         $mappedDateSeries = [];
                         $previousRunningBalance = null;
@@ -415,14 +415,14 @@ class LeaveService
                         }
 
                         return [
-                            'period' => $periodKey,
+                            'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
+                            'eligible' => boolval($employment['eligible']),
                             'value' => $mappedDateSeries
                         ];
                     });
 
                     return [
-                        'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
-                        'eligible' => boolval($employment['eligible']),
+                        'period' => $periodKey,
                         'value' => $mappedYearMonthItem->values()->all()
                     ];
                 });
@@ -436,10 +436,10 @@ class LeaveService
             });
     }
 
-    public function groupByYearMonthEmploymentType($periodByDateSeriesCollection)
+    public function groupByYearMonthPeriod($periodByDateSeriesCollection)
     {
         return $periodByDateSeriesCollection->groupBy(['year_month', function ($item) {
-            return $item['employment'];
+            return $item['period'];
         }]);
     }
 
