@@ -467,10 +467,8 @@ class LeaveService
         return collect($periodByDateSeriesCollection)->map(function($item){
             return [
                 'year_month' => $item->year_month,
-                'year_month_readable' => Carbon::createFromFormat('Y-m', $item->year_month)->format('Y F'),
                 'date_series' => $item->date_series,
                 'employment_type' => $item->employment_type,
-                'employment_type_eligibility' => $item->employment_type . ';' . $item->eligible,
                 'eligible' => $item->eligible,
                 'period' => ($item->period ?? '0'),
                 'running_balance' => $item->running_balance ?? 0,
