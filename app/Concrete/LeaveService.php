@@ -9,7 +9,11 @@ use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use App\Facades\Fractal;
+use App\Models\Employee;
 use App\Models\EmployeeLeaveType;
+use App\Models\Leave;
+use App\Models\LeaveBalanceAdjustment;
+use App\Models\LeaveType;
 use App\Models\LeaveTypeBalancePerPeriod;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Carbon\Carbon;
@@ -25,19 +29,18 @@ class LeaveService
     public int $initialBalanceUponEligibility = 0;
     public Collection $additionalBalancePerPeriod;
 
-    public function getLatestBalance(EmployeeLeaveType $employeeLeaveType, $upToDate): void
+    public function getLatestBalance(Employee $employee, LeaveType $leaveType, $upToDate): void
     {
-        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employeeLeaveType, $upToDate);
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
 
-        _clear_debug();
         _debug([
             'monthly_balance' => $periodByDateSeriesArray,
         ]);
     }
 
-    public function getBalanceMap(EmployeeLeaveType $employeeLeaveType, $upToDate): void
+    public function getBalanceMap(Employee $employee, LeaveType $leaveType, $upToDate): void
     {
-        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employeeLeaveType, $upToDate);
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
 
         /**
          * Group date series by year-month and period
@@ -48,16 +51,44 @@ class LeaveService
 
         $groupedDecodedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
 
-        _clear_debug();
         _debug([
             'grouped_decoded__by_year_monthly_balance' => $groupedDecodedByYearMonthPeriod->values()->all(),
         ]);
     }
 
-    public function getPeriodByDateSeries(EmployeeLeaveType $employeeLeaveType, $upToDate)
+    public function debugBalanceMapBySingleLinePerDateSeries(Employee $employee, LeaveType $leaveType, $upToDate): void
     {
-        $employee = clone $employeeLeaveType->employee;
-        $leaveType = clone $employeeLeaveType->leaveType;
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
+
+        _debug([
+            'monthly_balance' => $this->transformEachToSingleLine($periodByDateSeriesArray),
+        ]);
+    }
+
+    public function getMinimumUpToDate(Employee $employee, LeaveType $leaveType): ?string
+    {
+        $leaveQueryBuilder = Leave::query()
+            ->where('employee_id', $employee->id)
+            ->where('leave_type_id', $leaveType->id)
+            ->select(['employee_id', 'leave_type_id', 'date']);
+
+        $deductionAdjustmentQueryBuilder = LeaveBalanceAdjustment::query()
+            ->where('employee_id', $employee->id)
+            ->where('leave_type_id', $leaveType->id)
+            ->where('type', LeaveBalanceAdjustmentType::DEDUCT->value)
+            ->select(['employee_id', 'leave_type_id', DB::raw("effective_date AS `date`")])
+            ->union($leaveQueryBuilder);
+
+        $deductionAdjustmentAndLeaveQueryBuilder = app(QueryBuilder::class)
+            ->fromSub($deductionAdjustmentQueryBuilder, 'deduction_adjustment_and_leave')
+            ->select(DB::raw("MAX(deduction_adjustment_and_leave.date) AS `date`"));
+
+        return $deductionAdjustmentAndLeaveQueryBuilder->first()?->date;
+    }
+
+    public function getPeriodByDateSeries(Employee $employee, LeaveType $leaveType, $upToDate)
+    {
+        _clear_debug();
         $dateSeriesPartition = false;
         $dateSeriesPartitionColumn = DB::raw("
             DENSE_RANK() OVER(
@@ -163,9 +194,9 @@ class LeaveService
 
         $employeeLeaveTypeEligibilityQueryBuilder = app(QueryBuilder::class)
             ->fromSub($employmentProfileByDateSeriesQueryBuilder, 'epbds')
-            ->join('employee_leave_type', function ($join) use($employeeLeaveType) {
-                $join->where('employee_leave_type.leave_type_id', $employeeLeaveType->leave_type_id)
-                    ->where('employee_leave_type.employee_id', $employeeLeaveType->employee_id);
+            ->join('employee_leave_type', function ($join) use($employee, $leaveType) {
+                $join->where('employee_leave_type.leave_type_id', $leaveType->id)
+                    ->where('employee_leave_type.employee_id', $employee->id);
             })
             ->leftJoin('leave_types', 'leave_types.id', '=', 'employee_leave_type.leave_type_id')
             ->select([
@@ -300,6 +331,10 @@ class LeaveService
 
         $periodByDateSeriesArray = $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder->get()->toArray();
 
+        if(empty($periodByDateSeriesArray)){
+            return $periodByDateSeriesArray;
+        }
+
         $this->initialBalanceUponEligibility = $periodByDateSeriesArray[0]->balance_upon_eligibility;
         $this->carryOverBalancePerNewPeriod = boolval($periodByDateSeriesArray[0]->carry_over_balance_per_new_period);
 
@@ -366,10 +401,15 @@ class LeaveService
                 $this->setBalancePerPeriod(
                     $periodByDateSeriesArray,
                     $reComputePeriodStart,
-                    $reComputeRunningBalance
+                    $reComputeRunningBalance,
+                    true
                 );
             }
         }
+
+        _debug([
+            'claims' => $claimsAndDeductionsByPeriodCollection
+        ]);
 
         /**
          * If carry over not enabled, deduct balance only on its period
@@ -498,7 +538,7 @@ class LeaveService
         })->values()->toArray();
     }
 
-    public function setBalancePerPeriod($periodByDateSeriesArray, $startingPeriod, $runningBalance): void
+    public function setBalancePerPeriod(&$periodByDateSeriesArray, $startingPeriod, $runningBalance, $reCompute = false): void
     {
         $period = $startingPeriod;
         //Once per period: balance from leave type balance per period
@@ -508,7 +548,11 @@ class LeaveService
 
         foreach ($periodByDateSeriesArray as $periodByDateSeries) {
 
-            if(empty($periodByDateSeries->period) || intval($periodByDateSeries->period) < $startingPeriod){
+            if(
+                empty($periodByDateSeries->period) ||
+                intval($periodByDateSeries->period) < $startingPeriod ||
+                ($reCompute && intval($periodByDateSeries->period) <= $startingPeriod)
+            ){
                 continue;
             }
 

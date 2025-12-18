@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Concrete\LeaveService;
-use App\Models\EmployeeLeaveType;
+use App\Models\Employee;
+use App\Models\LeaveType;
 use Illuminate\Console\Command;
 
 class Debug extends Command
@@ -27,8 +28,17 @@ class Debug extends Command
      */
     public function handle()
     {
-        $employeeLeaveType = EmployeeLeaveType::query()->find(3);
+        $employee = Employee::query()->find(4);
+        $leave = LeaveType::query()->find(4);
 
-        new LeaveService()->getBalanceMap($employeeLeaveType, '2029-12-31');
+        $minimumUpToDate = new LeaveService()->getMinimumUpToDate($employee, $leave);
+
+        new LeaveService()->debugBalanceMapBySingleLinePerDateSeries(
+            $employee,
+            $leave,
+            $minimumUpToDate ?? '2027-12-05'
+        );
+
+        //new LeaveService()->debugBalanceMapBySingleLinePerDateSeries($employee, $leave, '2029-12-31');
     }
 }
