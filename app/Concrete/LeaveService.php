@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\LeaveBalanceAdjustmentType;
 use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
@@ -10,6 +11,7 @@ use App\Facades\Fractal;
 use App\Models\EmployeeLeaveType;
 use App\Models\LeaveTypeBalancePerPeriod;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -240,9 +242,16 @@ class LeaveService
                 DB::raw("
                     (
                         SELECT SUM(balance) FROM leave_balance_adjustments lba
-                        WHERE type = 100 AND employee_id = eltbp.employee_id AND leave_type_id = eltbp.leave_type_id AND effective_date = eltbp.date_series
+                        WHERE type = " . LeaveBalanceAdjustmentType::ADD->value . " AND employee_id = eltbp.employee_id AND leave_type_id = eltbp.leave_type_id AND effective_date = eltbp.date_series
                         GROUP BY lba.employee_id, lba.leave_type_id, lba.type, lba.effective_date
                     ) AS `running_balance_additions`
+                "),
+                DB::raw("
+                    COALESCE((
+                        SELECT SUM(balance) FROM leave_balance_adjustments lba
+                        WHERE type = " . LeaveBalanceAdjustmentType::DEDUCT->value . " AND employee_id = eltbp.employee_id AND leave_type_id = eltbp.leave_type_id AND effective_date = eltbp.date_series
+                        GROUP BY lba.employee_id, lba.leave_type_id, lba.type, lba.effective_date
+                    ),0) AS `running_balance_deductions`
                 "),
                 DB::raw("
                     (
@@ -256,7 +265,7 @@ class LeaveService
             ->fromSub($employeeLeaveTypeBalancePipelineQueryBuilder, 'eltbpl')
             ->select([
                 DB::raw("eltbpl.*"),
-                DB::raw("SUM(eltbpl.claims) OVER(PARTITION BY eltbpl.period) AS `period_claims`"),
+                DB::raw("(SUM(eltbpl.claims) OVER(PARTITION BY eltbpl.period) + SUM(eltbpl.running_balance_deductions) OVER(PARTITION BY eltbpl.period)) AS `period_claims_and_deductions`"),
             ]);
 
         _log_query_builder_with_bindings($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder);
@@ -292,25 +301,20 @@ class LeaveService
             $this->initialBalanceUponEligibility + $this->getPeriodAdditionalBalance($startingPeriod)
         );
 
-        $claimsByPeriodQueryBuilder = app(QueryBuilder::class)
+        $claimsAndDeductionsByPeriodQueryBuilder = app(QueryBuilder::class)
             ->fromSub($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder, 'eltbptbp')
             ->select([
                 DB::raw("eltbptbp.period"),
-                DB::raw("eltbptbp.period_claims"),
+                DB::raw("eltbptbp.period_claims_and_deductions"),
             ])
             ->whereNotNull(DB::raw("eltbptbp.period"))
             ->groupBy([
                 DB::raw("eltbptbp.period"),
-                DB::raw("eltbptbp.period_claims"),
+                DB::raw("eltbptbp.period_claims_and_deductions"),
             ])
             ->orderBy(DB::raw("eltbptbp.period"));
 
-        $claimsByPeriodCollection = $claimsByPeriodQueryBuilder->get()->toArray();
-
-        $deductions = [
-            ['balance' => 0, 'date' => '2025-08-03'],
-            ['balance' => 5, 'date' => '2025-08-08'],
-        ];
+        $claimsAndDeductionsByPeriodCollection = $claimsAndDeductionsByPeriodQueryBuilder->get()->toArray();
 
         /**
          * If carry over enabled,
@@ -319,10 +323,10 @@ class LeaveService
          **/
         if($this->carryOverBalancePerNewPeriod){
 
-            foreach ($claimsByPeriodCollection as $claimsByPeriod) {
+            foreach ($claimsAndDeductionsByPeriodCollection as $claimsAndDeductionsByPeriod) {
 
-                $period = (int)$claimsByPeriod->period;
-                $balance = (int)$claimsByPeriod->period_claims;
+                $period = (int)$claimsAndDeductionsByPeriod->period;
+                $balance = (int)$claimsAndDeductionsByPeriod->period_claims_and_deductions;
 
                 if($balance <= 0){
                     continue;
@@ -346,10 +350,10 @@ class LeaveService
          **/
         if(!$this->carryOverBalancePerNewPeriod){
 
-            foreach ($claimsByPeriodCollection as $claimsByPeriod) {
+            foreach ($claimsAndDeductionsByPeriodCollection as $claimsAndDeductionsByPeriod) {
 
-                $period = (int)$claimsByPeriod->period;
-                $balance = (int)$claimsByPeriod->period_claims;
+                $period = (int)$claimsAndDeductionsByPeriod->period;
+                $balance = (int)$claimsAndDeductionsByPeriod->period_claims;
 
                 if($balance <= 0){
                     continue;
@@ -359,27 +363,122 @@ class LeaveService
             }
         }
 
-        _debug([
-            'running_balance' => collect($periodByDateSeriesCollection)->map(function($item){
+        /**
+         * Group date series by date and running balance spanning from the beginning and end of the month
+         **/
+        $groupedByYearMonthEmploymentType = $this->groupByYearMonthEmploymentType($this->mapToYearMonthEmplopymentTypeDecodedAsKey($periodByDateSeriesCollection));
 
-                $array = [
-                    'date_series' => $item->date_series,
-                    'employment_type' => $item->employment_type,
-                    'eligible' => $item->eligible,
-                    'period' => $item->period,
-                    'running_balance' => $item->running_balance ?? null,
-                    'running_balance_additions' => $item->running_balance_additions,
-                    'period_claims' => $item->period_claims,
+        $groupedByYearMonthEmploymentType = $groupedByYearMonthEmploymentType
+            ->map(function($yearMonthCollection, $yearMonthKey){
+
+                $yearMonth = json_decode($yearMonthKey, true);
+
+                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $employmentKey){
+
+                    $employment = json_decode($employmentKey, true);
+
+                    $mappedYearMonthItem = $yearMonthItem->groupBy('period')->map(function($periodCollection, $periodKey){
+
+                        $mappedDateSeries = [];
+                        $previousRunningBalance = null;
+                        $firstPeriodCollection = $periodCollection->first();
+                        $lastPeriodCollection = $periodCollection->last();
+                        $firstPeriodDay = Carbon::parse($firstPeriodCollection['date_series'])->day;
+                        $lastPeriodDay = Carbon::parse($lastPeriodCollection['date_series'])->day;
+
+                        foreach ($periodCollection->toArray() as $periodItem){
+                            $dateSeries = Carbon::parse($periodItem['date_series']);
+
+                            if($previousRunningBalance !== $periodItem['running_balance'] || $dateSeries->day == $lastPeriodDay){
+
+                                if($dateSeries->day > (($firstPeriodDay + 1)) && !isset($mappedDateSeries[$dateSeries->day - 1]) && $dateSeries->day !== $lastPeriodDay){
+                                    $mappedDateSeries[$dateSeries->day - 1] = $previousRunningBalance;
+                                }
+
+                                $mappedDateSeries[$dateSeries->day] = $periodItem['running_balance'];
+                            }
+
+                            $previousRunningBalance = $periodItem['running_balance'];
+                        }
+
+                        return [
+                            'period' => $periodKey,
+                            'value' => $mappedDateSeries
+                        ];
+                    });
+
+                    return [
+                        'type'  => $employment['type'],
+                        'eligible' => $employment['eligible'],
+                        'value' => $mappedYearMonthItem->values()->all()
+                    ];
+                });
+
+                return [
+                    'year'  => $yearMonth['year'],
+                    'month' => $yearMonth['month'],
+                    'year_month_readable' => Carbon::createFromFormat('Y-m', $yearMonth['year'] . '-' . $yearMonth['month'])->format('Y F'),
+                    'value' => $mappedYearMonthCollection->values()->all()
                 ];
+            });
 
-                $singleLine = $item->date_series . ';' .
-                    ($item->period ? 'PR' . str_pad($item->period, 3, '0', STR_PAD_LEFT) : '_____') . ';' .
-                    ((isset($item->running_balance) && is_numeric($item->running_balance)) ? $item->running_balance : '___');
+        $singleLinePerBalance = $this->transformEachToSingleLine($periodByDateSeriesCollection);
 
-                return $singleLine;
-            })->values()->toArray(),
-            'claims_by_period' => $claimsByPeriodCollection,
+        _debug([
+            'monthly_balance' => $groupedByYearMonthEmploymentType->values()->all(),
+            'claims_by_period' => $claimsAndDeductionsByPeriodCollection,
         ]);
+    }
+
+    public function groupByYearMonthEmploymentType($periodByDateSeriesCollection)
+    {
+        return $periodByDateSeriesCollection->groupBy(['year_month', function ($item) {
+            return $item['employment'];
+        }]);
+    }
+
+    public function mapToYearMonthEmplopymentTypeDecodedAsKey($periodByDateSeriesCollection): Collection
+    {
+        return collect($periodByDateSeriesCollection)->map(function($item){
+            return [
+                'year_month' => json_encode([
+                    'year' => $item->year,
+                    'month' => $item->month,
+                ]),
+                'date_series' => $item->date_series,
+                'employment' => json_encode([
+                    'type' => $item->employment_type,
+                    'eligible' => $item->eligible,
+                ]),
+                'period' => ($item->period ?? '0'),
+                'running_balance' => $item->running_balance ?? 0,
+            ];
+        });
+    }
+
+    public function mapToBasicInfo($periodByDateSeriesCollection): Collection
+    {
+        return collect($periodByDateSeriesCollection)->map(function($item){
+            return [
+                'year_month' => $item->year_month,
+                'year_month_readable' => Carbon::createFromFormat('Y-m', $item->year_month)->format('Y F'),
+                'date_series' => $item->date_series,
+                'employment_type' => $item->employment_type,
+                'employment_type_eligibility' => $item->employment_type . ';' . $item->eligible,
+                'eligible' => $item->eligible,
+                'period' => ($item->period ?? '0'),
+                'running_balance' => $item->running_balance ?? 0,
+            ];
+        });
+    }
+
+    public function transformEachToSingleLine($periodByDateSeriesCollection): array
+    {
+        return collect($periodByDateSeriesCollection)->map(function($item){
+            return $item->date_series . ';' .
+                ($item->period ? 'PR' . str_pad($item->period, 3, '0', STR_PAD_LEFT) : '_____') . ';' .
+                ((isset($item->running_balance) && is_numeric($item->running_balance)) ? $item->running_balance : '___');
+        })->values()->toArray();
     }
 
     public function setBalancePerPeriod($periodByDateSeriesCollection, $startingPeriod, $runningBalance): void
