@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Enums\EmploymentStatus;
+use App\Enums\EmploymentType;
 use App\Enums\LeaveBalanceAdjustmentType;
 use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
@@ -366,9 +367,21 @@ class LeaveService
         /**
          * Group date series by date and running balance spanning from the beginning and end of the month
          **/
-        $groupedByYearMonthEmploymentType = $this->groupByYearMonthEmploymentType($this->mapToYearMonthEmplopymentTypeDecodedAsKey($periodByDateSeriesCollection));
+        $groupedByYearMonthEmploymentType = $this->groupByYearMonthEmploymentType($this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection));
 
-        $groupedByYearMonthEmploymentType = $groupedByYearMonthEmploymentType
+        $groupedByYearMonthEmploymentType = $this->decodeYearMonthEmploymentTypeKeys($groupedByYearMonthEmploymentType);
+
+        $singleLinePerBalance = $this->transformEachToSingleLine($periodByDateSeriesCollection);
+
+        _debug([
+            'monthly_balance' => $groupedByYearMonthEmploymentType->values()->all(),
+            'claims_by_period' => $claimsAndDeductionsByPeriodCollection,
+        ]);
+    }
+
+    public function decodeYearMonthEmploymentTypeKeys($groupedByYearMonthEmploymentType)
+    {
+        return $groupedByYearMonthEmploymentType
             ->map(function($yearMonthCollection, $yearMonthKey){
 
                 $yearMonth = json_decode($yearMonthKey, true);
@@ -408,8 +421,8 @@ class LeaveService
                     });
 
                     return [
-                        'type'  => $employment['type'],
-                        'eligible' => $employment['eligible'],
+                        'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
+                        'eligible' => boolval($employment['eligible']),
                         'value' => $mappedYearMonthItem->values()->all()
                     ];
                 });
@@ -417,17 +430,10 @@ class LeaveService
                 return [
                     'year'  => $yearMonth['year'],
                     'month' => $yearMonth['month'],
-                    'year_month_readable' => Carbon::createFromFormat('Y-m', $yearMonth['year'] . '-' . $yearMonth['month'])->format('Y F'),
+                    'month_readable' => Carbon::createFromFormat('m', $yearMonth['month'])->format('F'),
                     'value' => $mappedYearMonthCollection->values()->all()
                 ];
             });
-
-        $singleLinePerBalance = $this->transformEachToSingleLine($periodByDateSeriesCollection);
-
-        _debug([
-            'monthly_balance' => $groupedByYearMonthEmploymentType->values()->all(),
-            'claims_by_period' => $claimsAndDeductionsByPeriodCollection,
-        ]);
     }
 
     public function groupByYearMonthEmploymentType($periodByDateSeriesCollection)
@@ -437,7 +443,7 @@ class LeaveService
         }]);
     }
 
-    public function mapToYearMonthEmplopymentTypeDecodedAsKey($periodByDateSeriesCollection): Collection
+    public function mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesCollection): Collection
     {
         return collect($periodByDateSeriesCollection)->map(function($item){
             return [
