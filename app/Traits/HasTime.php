@@ -39,4 +39,11 @@ trait HasTime
 
         return sprintf('%02d:%02d', $hours, $mins);
     }
+
+    protected function getDateIfGteMinimum(Carbon $date, ?Carbon $minimum): Carbon
+    {
+        return !empty($minimum) && $date->lt($minimum)
+            ? $minimum
+            : $date;
+    }
 }

@@ -15,6 +15,7 @@ use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\LeaveTypeBalancePerPeriod;
+use App\Traits\HasTime;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -29,18 +30,32 @@ class LeaveService
     public int $initialBalanceUponEligibility = 0;
     public Collection $additionalBalancePerPeriod;
 
-    public function getLatestBalance(Employee $employee, LeaveType $leaveType, $upToDate): void
-    {
-        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
+    use HasTime;
 
-        _debug([
-            'monthly_balance' => $periodByDateSeriesArray,
-        ]);
+    public function getRunningBalanceByDate(Employee $employee, LeaveType $leaveType, $date)
+    {
+        $dateParsed = Carbon::parse($date);
+
+        $upToDateParsed = $this->getDateIfGteMinimum(
+            $dateParsed,
+            $this->getMinimumUpToDate($employee, $leaveType)
+        );
+
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDateParsed->toDateString());
+
+        return collect($periodByDateSeriesArray)
+            ->where('date_series', $dateParsed->toDateString())
+            ->first();
     }
 
-    public function getBalanceMap(Employee $employee, LeaveType $leaveType, $upToDate): void
+    public function getBalanceMap(Employee $employee, LeaveType $leaveType, $upToDate)
     {
-        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
+        $upToDateParsed = $this->getDateIfGteMinimum(
+            Carbon::parse($upToDate),
+            $this->getMinimumUpToDate($employee, $leaveType)
+        );
+
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDateParsed->toDateString());
 
         /**
          * Group date series by year-month and period
@@ -51,21 +66,24 @@ class LeaveService
 
         $groupedDecodedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
 
-        _debug([
-            'grouped_decoded__by_year_monthly_balance' => $groupedDecodedByYearMonthPeriod->values()->all(),
-        ]);
+        return $groupedDecodedByYearMonthPeriod->values()->all();
     }
 
     public function debugBalanceMapBySingleLinePerDateSeries(Employee $employee, LeaveType $leaveType, $upToDate): void
     {
-        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDate);
+        $upToDateParsed = $this->getDateIfGteMinimum(
+            Carbon::parse($upToDate),
+            $this->getMinimumUpToDate($employee, $leaveType)
+        );
+
+        $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDateParsed->toDateString());
 
         _debug([
             'monthly_balance' => $this->transformEachToSingleLine($periodByDateSeriesArray),
         ]);
     }
 
-    public function getMinimumUpToDate(Employee $employee, LeaveType $leaveType): ?string
+    public function getMinimumUpToDate(Employee $employee, LeaveType $leaveType): ?Carbon
     {
         $leaveQueryBuilder = Leave::query()
             ->where('employee_id', $employee->id)
@@ -83,12 +101,13 @@ class LeaveService
             ->fromSub($deductionAdjustmentQueryBuilder, 'deduction_adjustment_and_leave')
             ->select(DB::raw("MAX(deduction_adjustment_and_leave.date) AS `date`"));
 
-        return $deductionAdjustmentAndLeaveQueryBuilder->first()?->date;
+        $minimumUpToDate = $deductionAdjustmentAndLeaveQueryBuilder->first()?->date;
+
+        return empty($minimumUpToDate) ? null : Carbon::parse($minimumUpToDate);
     }
 
-    public function getPeriodByDateSeries(Employee $employee, LeaveType $leaveType, $upToDate)
+    public function periodByDateSeriesQueryBuilder(Employee $employee, LeaveType $leaveType, $upToDate): QueryBuilder
     {
-        _clear_debug();
         $dateSeriesPartition = false;
         $dateSeriesPartitionColumn = DB::raw("
             DENSE_RANK() OVER(
@@ -322,14 +341,21 @@ class LeaveService
                 "),
             ]);
 
-        $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder = app(QueryBuilder::class)
+        return app(QueryBuilder::class)
             ->fromSub($employeeLeaveTypeBalancePipelineQueryBuilder, 'eltbpl')
             ->select([
                 DB::raw("eltbpl.*"),
                 DB::raw("(SUM(eltbpl.claims) OVER(PARTITION BY eltbpl.period) + SUM(eltbpl.running_balance_deductions) OVER(PARTITION BY eltbpl.period)) AS `period_claims_and_deductions`"),
             ]);
+    }
 
-        $periodByDateSeriesArray = $employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder->get()->toArray();
+    public function getPeriodByDateSeries(Employee $employee, LeaveType $leaveType, $upToDate): array
+    {
+        _clear_debug();
+
+        $periodByDateSeriesQueryBuilder = $this->periodByDateSeriesQueryBuilder($employee, $leaveType, $upToDate);
+
+        $periodByDateSeriesArray = $periodByDateSeriesQueryBuilder->get()->toArray();
 
         if(empty($periodByDateSeriesArray)){
             return $periodByDateSeriesArray;
@@ -363,7 +389,7 @@ class LeaveService
         );
 
         $claimsAndDeductionsByPeriodQueryBuilder = app(QueryBuilder::class)
-            ->fromSub($employeeLeaveTypeBalancePipelineTotalsByPeriodQueryBuilder, 'eltbptbp')
+            ->fromSub($periodByDateSeriesQueryBuilder, 'eltbptbp')
             ->select([
                 DB::raw("eltbptbp.period"),
                 DB::raw("eltbptbp.period_claims_and_deductions"),

@@ -31,14 +31,14 @@ class Debug extends Command
         $employee = Employee::query()->find(4);
         $leave = LeaveType::query()->find(4);
 
-        $minimumUpToDate = new LeaveService()->getMinimumUpToDate($employee, $leave);
+        _debug([
+            'running_balance_by_date' => new LeaveService()->getRunningBalanceByDate($employee, $leave, '2027-12-01'),
+        ]);
 
-        new LeaveService()->debugBalanceMapBySingleLinePerDateSeries(
-            $employee,
-            $leave,
-            $minimumUpToDate ?? '2027-12-05'
-        );
+        _debug([
+            'grouped_decoded_by_year_monthly_balance' => new LeaveService()->getBalanceMap($employee, $leave, '2027-12-01'),
+        ]);
 
-        //new LeaveService()->debugBalanceMapBySingleLinePerDateSeries($employee, $leave, '2029-12-31');
+        new LeaveService()->debugBalanceMapBySingleLinePerDateSeries($employee, $leave, '2029-12-31');
     }
 }
