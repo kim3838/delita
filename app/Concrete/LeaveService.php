@@ -393,17 +393,7 @@ class LeaveService
                     continue;
                 }
 
-                list(
-                    $reComputePeriodStart,
-                    $reComputeRunningBalance
-                ) = $this->deductRunningBalance($periodByDateSeriesArray, $period, $balance);
-
-                $this->setBalancePerPeriod(
-                    $periodByDateSeriesArray,
-                    $reComputePeriodStart,
-                    $reComputeRunningBalance,
-                    true
-                );
+                $this->deductRunningBalance($periodByDateSeriesArray, $period, $balance);
             }
         }
 
@@ -620,10 +610,9 @@ class LeaveService
         return $periodAdditionalBalances->sum('balance');
     }
 
-    public function deductRunningBalance(&$periodByDateSeriesArray, $periodOrigin, $balance): array
+    public function deductRunningBalance(&$periodByDateSeriesArray, $periodOrigin, $balance): void
     {
         $period = 1;
-        $reComputeCarryOverFlag = false;
         $reComputeRunningBalance = 0;
 
         foreach ($periodByDateSeriesArray as $periodByDateSeries) {
@@ -640,14 +629,13 @@ class LeaveService
             }
 
             if($newPeriod){
-
-                if(!$reComputeCarryOverFlag && $period > $periodOrigin){
+                if($period > $periodOrigin){
                     break;
                 }
             }
 
             //Perform deduction on periods lesser and equal to period origin
-            if(!$reComputeCarryOverFlag && $period <= $periodOrigin){
+            if($period <= $periodOrigin){
                 //Deduct balance
                 $periodByDateSeries->running_balance -= $balance;
 
@@ -656,10 +644,17 @@ class LeaveService
             }
         }
 
-        return [
+        /**
+         * Re compute carry over on period after period origin
+         * if period is not incremented, it will be ignored on setBalancePerPeriod bacause if $reCompute flag
+         * to continue the $reComputeRunningBalance on the next period if exists
+         **/
+        $this->setBalancePerPeriod(
+            $periodByDateSeriesArray,
             $period,
-            $reComputeRunningBalance
-        ];
+            $reComputeRunningBalance,
+            true
+        );
     }
 
     public function deductBalanceOnPeriod(&$periodByDateSeriesArray, $periodOrigin, $balance): void
