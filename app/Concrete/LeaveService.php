@@ -62,11 +62,11 @@ class LeaveService
          **/
         $mappedPeriodByDateSeries = $this->mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesArray);
 
-        $groupedByYearMonthPeriod = $this->groupByYearMonthPeriod($mappedPeriodByDateSeries);
+        $groupedByPeriodYearMonth = $this->groupByPeriodYearMonth($mappedPeriodByDateSeries);
 
-        $groupedDecodedByYearMonthPeriod = $this->decodeYearMonthPeriodKeys($groupedByYearMonthPeriod);
+        $groupedDecodedByPeriodYearMonth = $this->decodePeriodYearMonthKeys($groupedByPeriodYearMonth);
 
-        return $groupedDecodedByYearMonthPeriod->values()->all();
+        return $groupedDecodedByPeriodYearMonth->values()->all();
     }
 
     public function debugBalanceMapBySingleLinePerDateSeries(Employee $employee, LeaveType $leaveType, $upToDate): void
@@ -448,47 +448,135 @@ class LeaveService
         return $periodByDateSeriesArray;
     }
 
-    public function decodeYearMonthPeriodKeys($groupedByYearMonthEmploymentType)
+    public function orderDateSeriesAndDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem)
     {
-        return $groupedByYearMonthEmploymentType
+        $order = 1;
+        $mapped = [];
+        $employmentKey = null;
+        $groupedEmployment = [];
+
+        foreach ($yearMonthItem as $dateSeriesItem){
+
+            if(empty($employmentKey) || $employmentKey !== $dateSeriesItem['employment']){
+
+                if(!empty($employmentKey)){
+                    $mapped[] = [
+                        'order' => $order,
+                        'employment' => $employmentKey,
+                        'value' => $groupedEmployment
+                    ];
+
+                    $order += 1;
+                    $groupedEmployment = [];
+                }
+
+                $employmentKey = $dateSeriesItem['employment'];
+            }
+
+            $groupedEmployment[] = [
+                'date_series' => $dateSeriesItem['date_series'],
+                'running_balance' => $dateSeriesItem['running_balance'],
+            ];
+        }
+
+        /**
+         * Include the first or the last year month employment eligibility series,
+         * since its not being iterated by the for loop
+         **/
+        $mapped[] = [
+            'order' => $order,
+            'employment' => $employmentKey,
+            'value' => $groupedEmployment
+        ];
+
+        return collect($mapped)
+            ->sortBy('order')
+            ->map(function($mappedEmploymentSeriesItem){
+
+                $employment = json_decode($mappedEmploymentSeriesItem['employment'], true);
+
+                $dateSeriesCollection = collect($mappedEmploymentSeriesItem['value']);
+
+                $mappedDateSeries = [];
+                $previousRunningBalance = null;
+                $firstPeriodCollection = $dateSeriesCollection->first();
+                $lastPeriodCollection = $dateSeriesCollection->last();
+                $firstPeriodDay = Carbon::parse($firstPeriodCollection['date_series'])->day;
+                $lastPeriodDay = Carbon::parse($lastPeriodCollection['date_series'])->day;
+
+                foreach ($dateSeriesCollection->toArray() as $dateSeriesItem){
+                    $dateSeries = Carbon::parse($dateSeriesItem['date_series']);
+
+                    if($previousRunningBalance !== $dateSeriesItem['running_balance'] || $dateSeries->day == $lastPeriodDay){
+
+                        if($dateSeries->day > (($firstPeriodDay + 1)) && !isset($mappedDateSeries[$dateSeries->day - 1]) && $dateSeries->day !== $lastPeriodDay){
+                            $mappedDateSeries[$dateSeries->day - 1] = $previousRunningBalance;
+                        }
+
+                        $mappedDateSeries[$dateSeries->day] = $dateSeriesItem['running_balance'];
+                    }
+
+                    $previousRunningBalance = $dateSeriesItem['running_balance'];
+                }
+
+                return [
+                    'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
+                    'eligible' => boolval($employment['eligible']),
+                    'value' => $mappedDateSeries
+                ];
+            });
+    }
+
+    public function groupByPeriodYearMonth($periodByDateSeriesArray)
+    {
+        return $periodByDateSeriesArray->groupBy(['period', function ($item) {
+            return $item['year_month'];
+        }]);
+    }
+
+    public function decodePeriodYearMonthKeys($grouped)
+    {
+        return $grouped
+            ->map(function($yearMonthCollection, $periodKey){
+
+                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $yearMonthKey){
+
+                    $yearMonth = json_decode($yearMonthKey, true);
+
+                    $mappedYearMonthItem = $this->orderDateSeriesAndDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem);
+
+                    return [
+                        'year'  => $yearMonth['year'],
+                        'month' => $yearMonth['month'],
+                        'month_readable' => Carbon::createFromFormat('m', $yearMonth['month'])->format('F'),
+                        'value' => $mappedYearMonthItem->values()->all()
+                    ];
+                });
+
+                return [
+                    'period' => $periodKey,
+                    'value' => $mappedYearMonthCollection->values()->all()
+                ];
+            });
+    }
+
+    public function groupByYearMonthPeriod($periodByDateSeriesArray)
+    {
+        return $periodByDateSeriesArray->groupBy(['year_month', function ($item) {
+            return $item['period'];
+        }]);
+    }
+
+    public function decodeYearMonthPeriodKeys($grouped)
+    {
+        return $grouped
             ->map(function($yearMonthCollection, $yearMonthKey){
 
                 $yearMonth = json_decode($yearMonthKey, true);
 
                 $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $periodKey){
 
-                    $mappedYearMonthItem = $yearMonthItem->groupBy('employment')->map(function($periodCollection, $employmentKey){
-
-                        $employment = json_decode($employmentKey, true);
-
-                        $mappedDateSeries = [];
-                        $previousRunningBalance = null;
-                        $firstPeriodCollection = $periodCollection->first();
-                        $lastPeriodCollection = $periodCollection->last();
-                        $firstPeriodDay = Carbon::parse($firstPeriodCollection['date_series'])->day;
-                        $lastPeriodDay = Carbon::parse($lastPeriodCollection['date_series'])->day;
-
-                        foreach ($periodCollection->toArray() as $periodItem){
-                            $dateSeries = Carbon::parse($periodItem['date_series']);
-
-                            if($previousRunningBalance !== $periodItem['running_balance'] || $dateSeries->day == $lastPeriodDay){
-
-                                if($dateSeries->day > (($firstPeriodDay + 1)) && !isset($mappedDateSeries[$dateSeries->day - 1]) && $dateSeries->day !== $lastPeriodDay){
-                                    $mappedDateSeries[$dateSeries->day - 1] = $previousRunningBalance;
-                                }
-
-                                $mappedDateSeries[$dateSeries->day] = $periodItem['running_balance'];
-                            }
-
-                            $previousRunningBalance = $periodItem['running_balance'];
-                        }
-
-                        return [
-                            'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
-                            'eligible' => boolval($employment['eligible']),
-                            'value' => $mappedDateSeries
-                        ];
-                    });
+                    $mappedYearMonthItem = $this->groupByEmploymentDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem);
 
                     return [
                         'period' => $periodKey,
@@ -505,11 +593,40 @@ class LeaveService
             });
     }
 
-    public function groupByYearMonthPeriod($periodByDateSeriesArray)
+    public function groupByEmploymentDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem)
     {
-        return $periodByDateSeriesArray->groupBy(['year_month', function ($item) {
-            return $item['period'];
-        }]);
+        return $yearMonthItem->groupBy('employment')->map(function($periodCollection, $employmentKey){
+
+            $employment = json_decode($employmentKey, true);
+
+            $mappedDateSeries = [];
+            $previousRunningBalance = null;
+            $firstPeriodCollection = $periodCollection->first();
+            $lastPeriodCollection = $periodCollection->last();
+            $firstPeriodDay = Carbon::parse($firstPeriodCollection['date_series'])->day;
+            $lastPeriodDay = Carbon::parse($lastPeriodCollection['date_series'])->day;
+
+            foreach ($periodCollection->toArray() as $periodItem){
+                $dateSeries = Carbon::parse($periodItem['date_series']);
+
+                if($previousRunningBalance !== $periodItem['running_balance'] || $dateSeries->day == $lastPeriodDay){
+
+                    if($dateSeries->day > (($firstPeriodDay + 1)) && !isset($mappedDateSeries[$dateSeries->day - 1]) && $dateSeries->day !== $lastPeriodDay){
+                        $mappedDateSeries[$dateSeries->day - 1] = $previousRunningBalance;
+                    }
+
+                    $mappedDateSeries[$dateSeries->day] = $periodItem['running_balance'];
+                }
+
+                $previousRunningBalance = $periodItem['running_balance'];
+            }
+
+            return [
+                'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
+                'eligible' => boolval($employment['eligible']),
+                'value' => $mappedDateSeries
+            ];
+        });
     }
 
     public function mapToYearMonthEmploymentTypeDecodedAsKey($periodByDateSeriesArray): Collection
