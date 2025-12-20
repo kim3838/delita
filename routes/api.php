@@ -373,6 +373,7 @@ Route::group([
 
     //Leave type assignment
     Route::get('leave-type-assignments', [EmployeeLeaveTypeController::class, 'index']);
+    Route::get('leave-type-assignment-selections', [EmployeeLeaveTypeController::class, 'selection']);
     Route::patch('leave-type-assignment/{employeeLeaveTypeId}', [EmployeeLeaveTypeController::class, 'update']);
     Route::get('leave-types-by-employees', [EmployeeLeaveTypeController::class, 'leaveTypesByEmployees']);
     Route::post('leave-type-assignment-sync-without-detaching', [EmployeeLeaveTypeController::class, 'syncWithoutDetaching']);
