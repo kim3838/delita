@@ -46,6 +46,7 @@ use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
@@ -379,6 +380,9 @@ Route::group([
     Route::post('leave-type-assignment-sync-without-detaching', [EmployeeLeaveTypeController::class, 'syncWithoutDetaching']);
     Route::post('leave-type-assignment-detach/{morphMapKey}', [EmployeeLeaveTypeController::class, 'detach']);
     Route::delete('leave-type-assignments', [EmployeeLeaveTypeController::class, 'batchDestroy']);
+
+    //Leave
+    Route::get('leaves', [LeaveController::class, 'index']);
 });
 
 Route::group([
