@@ -15,7 +15,7 @@ class SelectionTransformer extends TransformerAbstract
 
         return [
             'value' => $shiftAssignment->shift_id,
-            'text' => $shiftAssignment->shift_code . PHP_EOL . $shiftAssignment->shift_name . PHP_EOL . $assignmentReadable
+            'text' => "($shiftAssignment->shift_code)" . PHP_EOL . $shiftAssignment->shift_name . PHP_EOL . $assignmentReadable
         ];
     }
 }
