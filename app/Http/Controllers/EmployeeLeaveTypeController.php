@@ -12,6 +12,7 @@ use App\Http\Requests\EmployeeLeaveType\UpdateEmployeeLeaveTypeRequest;
 use App\Transformers\LeaveTypeAssignment\LeaveTypesByEmployeesTransformer;
 use App\Transformers\LeaveTypeAssignment\ListTransformer;
 use App\Transformers\LeaveTypeAssignment\PatchableTransformer;
+use App\Transformers\LeaveTypeAssignment\SelectionTransformer;
 use Illuminate\Http\Request;
 
 class EmployeeLeaveTypeController extends Controller
@@ -30,6 +31,23 @@ class EmployeeLeaveTypeController extends Controller
                 $this->repository->paginate($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);

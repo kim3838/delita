@@ -83,6 +83,37 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
         return $this->hydratePaginationItems($paginator, LeaveTypeAssignment::class);
     }
 
+    public function selection($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'leave_types.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->join('leave_types', 'leave_types.id', '=', 'employee_leave_type.leave_type_id')
+            ->when($filters->employee_id ?? false, function ($builder, $value) {
+                $builder->where('employee_leave_type.employee_id', $value);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($query) use ($value) {
+                    $query->where('leave_types.code', 'like', "%$value%")
+                        ->orWhere('leave_types.name', 'like', "%$value%");
+                });
+            })
+            ->select([
+                'leave_types.id AS leave_type_id',
+                'leave_types.ulid AS leave_type_ulid',
+                'leave_types.code AS leave_type_code',
+                'leave_types.name AS leave_type_name',
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, LeaveTypeAssignment::class);
+    }
+
     public function leaveTypesByEmployees($filters): LengthAwarePaginator
     {
         $orders = [
