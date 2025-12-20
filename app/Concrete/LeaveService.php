@@ -10,7 +10,6 @@ use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use App\Facades\Fractal;
 use App\Models\Employee;
-use App\Models\EmployeeLeaveType;
 use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
