@@ -19,7 +19,7 @@ class StoreOvertimeRequest extends ImportOvertime
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'attendance_id' => 'required|numeric|integer',
+            'attendance_id' => 'required|numeric|integer|exists:attendances,id',
             'company_id' => 'required|numeric|integer',
             'date' => [
                 'required',
@@ -80,6 +80,7 @@ class StoreOvertimeRequest extends ImportOvertime
     {
         return array_merge(parent::messages(), [
             'attendance_id.required' => 'Attendance not found',
+            'attendance_id.exists' => 'Attendance not found',
             'company_id.required' => 'Company not found',
         ]);
     }
