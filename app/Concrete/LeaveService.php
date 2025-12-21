@@ -10,11 +10,13 @@ use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use App\Facades\Fractal;
 use App\Models\Employee;
+use App\Models\Hydrations\Leave\RunningBalance as LeaveRunningBalance;
 use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\LeaveTypeBalancePerPeriod;
 use App\Traits\HasTime;
+use App\Transformers\LeaveRunningBalance\ItemTransformer as LeaveRunningBalanceItemTransformer;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -42,9 +44,14 @@ class LeaveService
 
         $periodByDateSeriesArray = $this->getPeriodByDateSeries($employee, $leaveType, $upToDateParsed->toDateString());
 
-        return collect($periodByDateSeriesArray)
+        $dateRunningBalance = collect($periodByDateSeriesArray)
             ->where('date_series', $dateParsed->toDateString())
             ->first();
+
+        return Fractal::item(
+            LeaveRunningBalance::query()->hydrate([$dateRunningBalance])->first(),
+            LeaveRunningBalanceItemTransformer::class
+        );
     }
 
     public function getBalanceMap(Employee $employee, LeaveType $leaveType, $upToDate)
@@ -434,7 +441,9 @@ class LeaveService
             foreach ($claimsAndDeductionsByPeriodCollection as $claimsAndDeductionsByPeriod) {
 
                 $period = (int)$claimsAndDeductionsByPeriod->period;
-                $balance = (int)$claimsAndDeductionsByPeriod->period_claims;
+                $balance = isset($claimsAndDeductionsByPeriod->period_claims)
+                    ? (int)$claimsAndDeductionsByPeriod->period_claims
+                    : 0;
 
                 if($balance <= 0){
                     continue;
