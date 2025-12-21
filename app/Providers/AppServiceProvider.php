@@ -17,6 +17,7 @@ use App\Models\Group;
 use App\Models\Holiday;
 use App\Models\IncomeTax;
 use App\Models\JsonPreset;
+use App\Models\Leave;
 use App\Models\LeaveType;
 use App\Models\Overtime;
 use App\Models\PayFrequency;
@@ -67,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
             'overtime' => Overtime::class,
             'holiday' => Holiday::class,
             'leave_type' => LeaveType::class,
-            'leave' => LeaveType::class,
+            'leave' => Leave::class,
         ]);
     }
 }
