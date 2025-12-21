@@ -384,6 +384,8 @@ Route::group([
 
     //Leave
     Route::get('leaves', [LeaveController::class, 'index']);
+    Route::post('leave', [LeaveController::class, 'store']);
+    Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
     //Leave balance
     Route::get('leave-balance', [LeaveBalanceController::class, 'index']);
