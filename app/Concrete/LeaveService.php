@@ -8,6 +8,7 @@ use App\Enums\LeaveBalanceAdjustmentType;
 use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
+use App\Enums\LeaveUsageSpanType;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\Hydrations\Leave\RunningBalance as LeaveRunningBalance;
@@ -20,6 +21,7 @@ use App\Transformers\LeaveRunningBalance\ItemTransformer as LeaveRunningBalanceI
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Carbon as LaravelCarbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -819,5 +821,32 @@ class LeaveService
             //Deduct balance
             $periodByDateSeries->running_balance -= $balance;
         }
+    }
+
+    public function isLimitReached(Employee $employee, LeaveType $leaveType, $date): bool
+    {
+        $limitReached = false;
+
+        if($leaveType->limit_usage){
+
+            $upToDateParsed = LaravelCarbon::parse($date);
+
+            $dateFrom = match($leaveType->limit_usage_span_type){
+                LeaveUsageSpanType::YEAR => $upToDateParsed->copy()->minus(years: $leaveType->limit_usage_span_value),
+                LeaveUsageSpanType::MONTH => $upToDateParsed->copy()->minus(months: $leaveType->limit_usage_span_value),
+                LeaveUsageSpanType::DAY => $upToDateParsed->copy()->minus(days: $leaveType->limit_usage_span_value),
+                default => $upToDateParsed->copy()->minus(days: $leaveType->limit_usage_span_value),
+            };
+
+            $leaveCount = Leave::query()
+                ->where('employee_id', $employee->id)
+                ->where('leave_type_id', $leaveType->id)
+                ->whereBetween('date', [$dateFrom->toDateString(), $upToDateParsed->toDateString()])
+                ->count();
+
+            $limitReached = $leaveCount >= $leaveType->limit_usage_value;
+        }
+
+        return $limitReached;
     }
 }

@@ -23,7 +23,8 @@ class LeaveBalanceController extends Controller
             $date = $request->validated()['date'];
 
             return ResponseJson::successfulResponse([
-                'date_series' => $this->service->getRunningBalanceByDate($employee, $leaveType, $date)
+                'date_series' => $this->service->getRunningBalanceByDate($employee, $leaveType, $date),
+                'limit_reached' => $this->service->isLimitReached($employee, $leaveType, $date),
             ]);
         }
 
