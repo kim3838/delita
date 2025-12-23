@@ -47,6 +47,7 @@ use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\LeaveDateRangeFilterController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
@@ -385,6 +386,9 @@ Route::group([
     Route::get('leaves', [LeaveController::class, 'index']);
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
+
+    //Leave date range filter
+    Route::post('leave-date-range-filter', [LeaveDateRangeFilterController::class, 'index']);
 });
 
 Route::group([
