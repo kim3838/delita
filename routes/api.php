@@ -46,7 +46,6 @@ use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
-use App\Http\Controllers\LeaveBalanceController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NonEmployeeUserController;
@@ -386,9 +385,6 @@ Route::group([
     Route::get('leaves', [LeaveController::class, 'index']);
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
-
-    //Leave balance
-    Route::get('leave-balance', [LeaveBalanceController::class, 'index']);
 });
 
 Route::group([
