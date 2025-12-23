@@ -432,7 +432,10 @@ class LeaveService
         }
 
         _debug([
-            'claims' => $claimsAndDeductionsByPeriodCollection
+            'date_by_series' => [
+                'up_to_date' => $upToDate,
+                'claims' => $claimsAndDeductionsByPeriodCollection
+            ]
         ]);
 
         /**
@@ -843,6 +846,14 @@ class LeaveService
                 ->where('leave_type_id', $leaveType->id)
                 ->whereBetween('date', [$dateFrom->toDateString(), $upToDateParsed->toDateString()])
                 ->count();
+
+            _debug([
+                'is_limit_reached' => [
+                    'from' => $dateFrom->toDateString(),
+                    'to' => $upToDateParsed->toDateString(),
+                    'count' => $leaveCount
+                ]
+            ]);
 
             $limitReached = $leaveCount >= $leaveType->limit_usage_value;
         }
