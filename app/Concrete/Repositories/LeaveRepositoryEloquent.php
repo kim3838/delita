@@ -5,7 +5,10 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Concrete\LeaveService;
+use App\Models\Employee;
 use App\Models\Leave;
+use App\Models\LeaveType;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,6 +17,12 @@ use Illuminate\Support\Facades\DB;
 
 class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRepository
 {
+    public function __construct(
+        protected readonly LeaveService $service
+    ){
+        parent::__construct(App::getInstance());
+    }
+
     public function model(): string
     {
         return Leave::class;
@@ -66,5 +75,63 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function store($attributes): array
+    {
+        $employee = Employee::query()->findOrFail($attributes['employee_id']);
+        $leaveType = LeaveType::query()->findOrFail($attributes['leave_type_id']);
+
+        $createdCount = 0;
+
+        $results = collect($attributes['dates'])->map(function($date) use ($employee, $leaveType, &$createdCount, $attributes) {
+
+            $irregularity = '';
+
+            $resultLabel = 'Not found';
+            $resultType = 'default';
+
+            $dateSeries = $this->service->getRunningBalanceByDate($employee, $leaveType, $date);
+            $limitReached = $this->service->isLimitReached($employee, $leaveType, $date);
+
+            $irregularity = match(true){
+                !$dateSeries['eligible'] => 'Not eligible',
+                $dateSeries['running_balance'] < 1 => 'Insufficient balance',
+                $limitReached => 'Limit reached',
+                default => $irregularity,
+            };
+
+            if(empty($irregularity)){
+
+                if($this->model::query()->create([
+                    'employee_id' => $employee->id,
+                    'leave_type_id' => $leaveType->id,
+                    'date' => $date,
+                ])){
+                    $resultLabel = 'Leave created';
+                    $resultType = 'success';
+                    $createdCount += 1;
+                } else {
+                    $resultLabel = 'Failed';
+                    $resultType = 'danger';
+                }
+
+            } else {
+                $resultLabel = $irregularity;
+            }
+
+            return [
+                'date' => $date,
+                'result' => [
+                    'label' => $resultLabel,
+                    'type' => $resultType,
+                ]
+            ];
+        });
+
+        return [
+            'results' => $results->values()->toArray(),
+            'created' => $createdCount
+        ];
     }
 }

@@ -17,7 +17,8 @@ class StoreLeaveRequest extends FormRequest
         return [
             'employee_id' => 'required|numeric|exists:employees,id',
             'leave_type_id' => 'required|numeric|exists:leave_types,id',
-            'date' => 'required|date|date_format:Y-m-d',
+            'dates' => 'required|array|min:1',
+            'dates.*' => 'required|date_format:Y-m-d',
         ];
     }
 
@@ -30,7 +31,10 @@ class StoreLeaveRequest extends FormRequest
             'leave_type_id.exists' => 'Leave type not found',
             'leave_type_id.required' => 'Leave type is required',
             'leave_type_id.numeric' => 'Leave type id must be numeric',
-            'date.date_format' => 'Date must match the format Y-m-d e.g.(2000-12-31)',
+            'dates.required' => 'Dates is required',
+            'dates.array' => 'Dates must be an array',
+            'dates.min' => 'At least one date is required',
+            'dates.*.date_format' => 'Date must match the format Y-m-d e.g.(2000-12-31)',
         ];
     }
 }

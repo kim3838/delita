@@ -35,9 +35,9 @@ class LeaveController extends Controller
     {
         if($request->expectsJson()){
 
-            $this->repository->store($request->validated());
-
-            return ResponseJson::successfulResponse();
+            return ResponseJson::successfulResponse(
+                $this->repository->store($request->validated())
+            );
         }
 
         abort(404);
