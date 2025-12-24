@@ -53,7 +53,7 @@ class ListTransformer extends TransformerAbstract
                 $carryOverReadable = 'All balance';
             } else if($model->carry_over_balance_type?->value == LeaveCarryOverType::LIMIT->value){
                 $carryOverReadable = $model->carry_over_balance_value > 0
-                    ? 'Max limit of ' . (int)$model->carry_over_balance_value
+                    ? 'Max limit of ' . $model->carry_over_balance_value
                     : 'No carry over';
             } else if($model->carry_over_balance_type?->value == LeaveCarryOverType::PERCENTAGE->value){
                 $carryOverReadable = (float)$model->carry_over_balance_value * 100 . '%';

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
             $table->smallInteger('type');
-            $table->integer('balance')->default(0);
+            $table->decimal('balance', 7, 1)->default(0);
             $table->date('effective_date');
             $table->timestamps();
         });

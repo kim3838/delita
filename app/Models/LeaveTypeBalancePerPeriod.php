@@ -18,7 +18,7 @@ class LeaveTypeBalancePerPeriod extends Model
         'leave_type_id' => 'int',
         'from_period' => 'int',
         'to_period' => 'int',
-        'balance' => 'int',
+        'balance' => 'decimal:1',
     ];
 
     protected $hidden = [

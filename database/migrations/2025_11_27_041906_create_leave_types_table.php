@@ -25,13 +25,13 @@ return new class extends Migration
             $table->boolean('limit_usage')->default(false);
             $table->smallInteger('limit_usage_span_type')->nullable();
             $table->integer('limit_usage_span_value')->default(0);
-            $table->integer('limit_usage_value')->default(0);
+            $table->decimal('limit_usage_value', 7, 1)->default(0);
 
             //Eligibility
             $table->json('eligibility_employment_types')->nullable();
 
             //Eligibility balance
-            $table->integer('initial_balance_upon_eligibility')->default(0);
+            $table->decimal('initial_balance_upon_eligibility', 7, 1)->default(0);
 
             //Period type
             $table->smallInteger('period_type')->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
             //Carry over balance per new period
             $table->boolean('carry_over_balance_per_new_period')->default(false);
             $table->smallInteger('carry_over_balance_type')->nullable();
-            $table->decimal('carry_over_balance_value', 9, 2)->nullable();
+            $table->decimal('carry_over_balance_value', 7, 1)->nullable();
 
             $table->timestamps();
 

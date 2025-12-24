@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
             $table->unsignedInteger('from_period');
             $table->unsignedInteger('to_period')->nullable();
-            $table->integer('balance');
+            $table->decimal('balance', 7, 1);
             $table->timestamps();
         });
     }

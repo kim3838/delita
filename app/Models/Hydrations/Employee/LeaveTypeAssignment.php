@@ -18,9 +18,9 @@ class LeaveTypeAssignment extends Model
         'leave_type_ulid' => 'string',
         'leave_type_code' => 'string',
         'leave_type_name' => 'string',
-        'leave_type_initial_balance_upon_eligibility' => 'int',
+        'leave_type_initial_balance_upon_eligibility' => 'decimal:1',
 
         'leave_type_assignment_override_balance_upon_eligibility' => 'boolean',
-        'leave_type_assignment_balance_upon_eligibility' => 'int',
+        'leave_type_assignment_balance_upon_eligibility' => 'decimal:1',
     ];
 }

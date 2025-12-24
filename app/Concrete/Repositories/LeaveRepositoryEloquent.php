@@ -94,9 +94,11 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
             $dateSeries = $this->service->getRunningBalanceByDate($employee, $leaveType, $date);
             $limitReached = $this->service->isLimitReached($employee, $leaveType, $date);
 
+            $wholeDayLeaveMinimumBalanceToRequest = 1;
+
             $irregularity = match(true){
                 !$dateSeries['eligible'] => 'Not eligible',
-                $dateSeries['running_balance'] < 1 => 'Insufficient balance',
+                (float)$dateSeries['running_balance'] < $wholeDayLeaveMinimumBalanceToRequest => 'Insufficient balance',
                 $limitReached => 'Limit reached',
                 default => $irregularity,
             };

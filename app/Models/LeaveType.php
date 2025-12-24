@@ -58,10 +58,10 @@ class LeaveType extends Model
         'limit_usage' => 'boolean',
         'limit_usage_span_type' => LeaveUsageSpanType::class,
         'limit_usage_span_value' => 'int',
-        'limit_usage_value' => 'int',
+        'limit_usage_value' => 'decimal:1',
 
         'eligibility_employment_types' => 'array',
-        'initial_balance_upon_eligibility' => 'int',
+        'initial_balance_upon_eligibility' => 'decimal:1',
 
         'period_type' => LeavePeriodType::class,
         'period_interval_span_type' => LeaveIntervalSpanType::class,
@@ -70,7 +70,7 @@ class LeaveType extends Model
 
         'carry_over_balance_per_new_period' => 'boolean',
         'carry_over_balance_type' => LeaveCarryOverType::class,
-        'carry_over_balance_value' => 'int',
+        'carry_over_balance_value' => 'decimal:1',
     ];
 
     protected $hidden = [

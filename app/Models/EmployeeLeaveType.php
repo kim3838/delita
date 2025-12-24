@@ -25,7 +25,7 @@ class EmployeeLeaveType extends Pivot
         'employee_id' => 'int',
         'leave_type_id' => 'int',
         'override_balance_upon_eligibility' => 'boolean',
-        'balance_upon_eligibility' => 'int',
+        'balance_upon_eligibility' => 'decimal:1',
     ];
 
     public function employee(): BelongsTo

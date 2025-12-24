@@ -28,9 +28,9 @@ use Illuminate\Support\Facades\DB;
 class LeaveService
 {
     public bool $carryOverBalancePerNewPeriod = false;
-    public ?int $carryOverBalanceLimitValue = null;
+    public ?float $carryOverBalanceLimitValue = null;
     public ?int $carryOverBalanceType = null;
-    public int $initialBalanceUponEligibility = 0;
+    public float $initialBalanceUponEligibility = 0;
     public Collection $additionalBalancePerPeriod;
 
     use HasTime;
@@ -369,14 +369,14 @@ class LeaveService
             return $periodByDateSeriesArray;
         }
 
-        $this->initialBalanceUponEligibility = $periodByDateSeriesArray[0]->balance_upon_eligibility;
+        $this->initialBalanceUponEligibility = (float)$periodByDateSeriesArray[0]->balance_upon_eligibility;
         $this->carryOverBalancePerNewPeriod = boolval($periodByDateSeriesArray[0]->carry_over_balance_per_new_period);
 
         if($this->carryOverBalancePerNewPeriod){
             $this->carryOverBalanceType = $periodByDateSeriesArray[0]->carry_over_balance_type;
 
             if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value){
-                $this->carryOverBalanceLimitValue = (int)$periodByDateSeriesArray[0]->carry_over_balance_value;
+                $this->carryOverBalanceLimitValue = (float)$periodByDateSeriesArray[0]->carry_over_balance_value;
 
                 $this->carryOverBalancePerNewPeriod = $this->carryOverBalanceLimitValue > 0;
             }
@@ -421,7 +421,7 @@ class LeaveService
             foreach ($claimsAndDeductionsByPeriodCollection as $claimsAndDeductionsByPeriod) {
 
                 $period = (int)$claimsAndDeductionsByPeriod->period;
-                $balance = (int)$claimsAndDeductionsByPeriod->period_claims_and_deductions;
+                $balance = (float)$claimsAndDeductionsByPeriod->period_claims_and_deductions;
 
                 if($balance <= 0){
                     continue;
@@ -447,7 +447,7 @@ class LeaveService
 
                 $period = (int)$claimsAndDeductionsByPeriod->period;
                 $balance = isset($claimsAndDeductionsByPeriod->period_claims)
-                    ? (int)$claimsAndDeductionsByPeriod->period_claims
+                    ? (float)$claimsAndDeductionsByPeriod->period_claims
                     : 0;
 
                 if($balance <= 0){
@@ -739,7 +739,7 @@ class LeaveService
             }
 
             if(is_numeric($periodByDateSeries->running_balance_additions)){
-                $runningBalance += (int)$periodByDateSeries->running_balance_additions;
+                $runningBalance += (float)$periodByDateSeries->running_balance_additions;
             }
 
             //Set date series running balance
@@ -763,7 +763,7 @@ class LeaveService
             ];
         })->toArray();
 
-        return $periodAdditionalBalances->sum('balance');
+        return (float)$periodAdditionalBalances->sum('balance');
     }
 
     public function deductRunningBalance(&$periodByDateSeriesArray, $periodOrigin, $balance): void
