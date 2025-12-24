@@ -802,7 +802,7 @@ class LeaveService
 
         /**
          * Re compute carry over on period after period origin
-         * if period is not incremented, it will be ignored on setBalancePerPeriod bacause if $reCompute flag
+         * if period is not incremented, it will be ignored on setBalancePerPeriod because if $reCompute flag
          * to continue the $reComputeRunningBalance on the next period if exists
          **/
         $this->setBalancePerPeriod(
