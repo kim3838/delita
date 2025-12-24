@@ -35,8 +35,8 @@ class StoreDeductionRequest extends BaseEmployeePayrollComponentRequest
     {
         return array_merge(parent::messages(), [
             'code.required' => 'Code is required',
-            'code.regex' => 'Code must not contain spaces.',
-            'code.unique' => 'Code has already been taken.',
+            'code.regex' => 'Code must not contain spaces',
+            'code.unique' => 'Code has already been taken',
         ]);
     }
 }

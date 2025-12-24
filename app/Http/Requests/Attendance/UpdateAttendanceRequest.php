@@ -115,7 +115,7 @@ class UpdateAttendanceRequest extends ImportAttendance
         return array_merge(parent::messages(), [
             'company_id.required' => 'Company is required',
             'employee_id.required' => 'Employee is required',
-            'shift_id.required' => 'Attendance shift not found. Please re-import attendance with existing shift assigned to employee.',
+            'shift_id.required' => 'Attendance shift not found. Please re-import attendance with existing shift assigned to employee',
         ]);
     }
 }

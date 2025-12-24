@@ -46,7 +46,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name.required' => 'Username is required',
-            'name.regex' => 'Username must not contain spaces.',
+            'name.regex' => 'Username must not contain spaces',
             'name.unique' => 'Username has already been taken',
             'email.required' => 'User email is required',
             'email.unique' => 'User email has already been taken',

@@ -27,7 +27,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'different:personal_email',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
-                        $fail('Office email has already been taken.');
+                        $fail('Office email has already been taken');
                     }
                 },
             ],
@@ -37,7 +37,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'different:office_email',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
-                        $fail('Personal email has already been taken.');
+                        $fail('Personal email has already been taken');
                     }
                 },
 
@@ -49,7 +49,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'different:personal_phone',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isPhoneTaken($value))) {
-                        $fail('Office phone has already been taken.');
+                        $fail('Office phone has already been taken');
                     }
                 },
             ],
@@ -60,7 +60,7 @@ class UpdateEmployeeContactRequest extends FormRequest
                 'different:office_phone',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isPhoneTaken($value))) {
-                        $fail('Personal phone has already been taken.');
+                        $fail('Personal phone has already been taken');
                     }
                 },
             ],
@@ -72,14 +72,14 @@ class UpdateEmployeeContactRequest extends FormRequest
         return [
             'company_id.required' => 'Company is required',
             'employee_id.required' => 'Employee account is required',
-            'office_email.email' => 'The office email must be a valid email address.',
-            'office_email.different' => 'The office email and personal email must be different.',
-            'personal_email.email' => 'The personal email must be a valid email address.',
-            'personal_email.different' => 'The personal email and office email must be different.',
-            'office_phone.different' => 'The office phone and personal phone must be different.',
-            'personal_phone.different' => 'The personal phone and office phone must be different.',
-            'office_phone.unique' => 'The office phone has already been taken.',
-            'personal_phone.unique' => 'The personal phone has already been taken.',
+            'office_email.email' => 'The office email must be a valid email address',
+            'office_email.different' => 'The office email and personal email must be different',
+            'personal_email.email' => 'The personal email must be a valid email address',
+            'personal_email.different' => 'The personal email and office email must be different',
+            'office_phone.different' => 'The office phone and personal phone must be different',
+            'personal_phone.different' => 'The personal phone and office phone must be different',
+            'office_phone.unique' => 'The office phone has already been taken',
+            'personal_phone.unique' => 'The personal phone has already been taken',
         ];
 
     }

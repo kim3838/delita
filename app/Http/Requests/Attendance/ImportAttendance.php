@@ -34,14 +34,14 @@ class ImportAttendance extends FormRequest
     public function messages(): array
     {
         return [
-            'first_in.required' => 'First in is required.',
-            'first_in.date_format' => 'First in must match the format Y-m-d H:i e.g.(2000-12-31 09:00).',
-            'lunch_out.required' => 'Lunch out is required.',
-            'lunch_out.date_format' => 'Lunch out must match the format Y-m-d H:i e.g.(2000-12-31 13:00).',
-            'lunch_in.required' => 'Lunch in is required.',
-            'lunch_in.date_format' => 'Lunch in must match the format Y-m-d H:i e.g.(2000-12-31 14:00).',
-            'last_out.required' => 'Last out is required.',
-            'last_out.date_format' => 'Last out must match the format Y-m-d H:i e.g.(2000-12-31 17:00).',
+            'first_in.required' => 'First in is required',
+            'first_in.date_format' => 'First in must match the format Y-m-d H:i e.g.(2000-12-31 09:00)',
+            'lunch_out.required' => 'Lunch out is required',
+            'lunch_out.date_format' => 'Lunch out must match the format Y-m-d H:i e.g.(2000-12-31 13:00)',
+            'lunch_in.required' => 'Lunch in is required',
+            'lunch_in.date_format' => 'Lunch in must match the format Y-m-d H:i e.g.(2000-12-31 14:00)',
+            'last_out.required' => 'Last out is required',
+            'last_out.date_format' => 'Last out must match the format Y-m-d H:i e.g.(2000-12-31 17:00)',
         ];
     }
 
@@ -59,11 +59,11 @@ class ImportAttendance extends FormRequest
          * Last out should be greater than schedule work start,
          **/
         if($firstIn->gte($schedule['work_end'])){
-            $errors[] = 'First in should be lesser than schedule work end.';
+            $errors[] = 'First in should be lesser than schedule work end';
         }
 
         if($lastOut->lte($schedule['work_start'])){
-            $errors[] = 'Last out should be greater than schedule work start.';
+            $errors[] = 'Last out should be greater than schedule work start';
         }
 
         /**
@@ -76,19 +76,19 @@ class ImportAttendance extends FormRequest
         if($validateLunch && !empty($lunchOut) && !empty($lunchIn)){
 
             if($lunchOut->lt($firstIn)){
-                $errors[] = 'Lunch out should be greater or equal to First in.';
+                $errors[] = 'Lunch out should be greater or equal to First in';
             }
 
             if($lunchOut->gte($lastOut) || $lunchOut->gte($schedule['work_end'])){
-                $errors[] = 'Lunch out should be lesser than both Last out and Schedule work end.';
+                $errors[] = 'Lunch out should be lesser than both Last out and Schedule work end';
             }
 
             if($lunchIn->lt($lunchOut)){
-                $errors[] = 'Lunch in should be greater or equal to Lunch out.';
+                $errors[] = 'Lunch in should be greater or equal to Lunch out';
             }
 
             if($lunchIn->gte($lastOut) || $lunchIn->gte($schedule['work_end'])) {
-                $errors[] = 'Lunch in should be lesser than both Last out and Schedule work end.';
+                $errors[] = 'Lunch in should be lesser than both Last out and Schedule work end';
             }
         }
 
