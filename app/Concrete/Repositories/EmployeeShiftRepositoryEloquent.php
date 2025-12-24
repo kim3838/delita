@@ -153,6 +153,18 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return $this->hydratePaginationItems($paginator, ShiftsByEmployees::class);
     }
 
+    public function sync($employeeIds, $shiftIds, $pivotData): void
+    {
+        foreach ($employeeIds as $employeeId) {
+
+            $employee = Employee::query()->find($employeeId);
+
+            $sync = collect($shiftIds)->mapWithKeys(fn ($id) => [$id => $pivotData])->toArray();
+
+            $employee->shifts()->sync($sync);
+        }
+    }
+
     public function syncWithoutDetaching($employeeIds, $shiftIds, $pivotData): void
     {
         foreach ($employeeIds as $employeeId) {

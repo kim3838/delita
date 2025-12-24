@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\EmployeeShift\BatchDestroyEmployeeShiftRequest;
+use App\Http\Requests\EmployeeShift\SyncEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\SyncWithoutDetachingEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\DestroyEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\DetachAssignedShiftsRequest;
@@ -79,6 +80,24 @@ class EmployeeShiftController extends Controller
                 $this->repository->shiftsByEmployees($filters),
                 ShiftsByEmployeesTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function sync(SyncEmployeeShiftRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $employeeIds = data_get($request->validated(), 'employees', []);
+            $shiftIds = data_get($request->validated(), 'shifts', []);
+
+            $hydratedEmployeeShift = $this->repository->hydrateItem($request->validated());
+            $patchableEmployeeShiftSettings = Fractal::item($hydratedEmployeeShift, PatchableTransformer::class);
+
+            $this->repository->sync($employeeIds, $shiftIds, $patchableEmployeeShiftSettings);
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);

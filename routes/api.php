@@ -334,6 +334,7 @@ Route::group([
     Route::get('shift-assignment-selections', [EmployeeShiftController::class, 'selection']);
     Route::patch('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'update']);
     Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
+    Route::post('shift-assignment-sync', [EmployeeShiftController::class, 'sync']);
     Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
     Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
     Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);

@@ -34,6 +34,15 @@ class EmployeeShiftPolicy extends BasePolicy
         return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 
+    public function sync(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+    }
+
     public function syncWithoutDetaching(User $user): bool
     {
         if($user->isSuperAdmin()){
