@@ -826,7 +826,7 @@ class LeaveService
         }
     }
 
-    public function isLimitReached(Employee $employee, LeaveType $leaveType, $date): bool
+    public function isLimitReached(Employee $employee, LeaveType $leaveType, $date, $requestingHalfDay = false): bool
     {
         $limitReached = false;
 
@@ -841,21 +841,49 @@ class LeaveService
                 default => $upToDateParsed->copy()->minus(days: $leaveType->limit_usage_span_value),
             };
 
-            $leaveCount = Leave::query()
+            $totalLeaveCount = 0;
+
+            $wholeDayLeaveCount = Leave::query()
                 ->where('employee_id', $employee->id)
                 ->where('leave_type_id', $leaveType->id)
                 ->whereBetween('date', [$dateFrom->toDateString(), $upToDateParsed->toDateString()])
                 ->count();
 
+            /**
+             * Todo: If requesting half day, Add (total of half day leave count from date range * 0.5) into total leave count
+             * example, if there is 3 half day leaves from date range then add 1.5 to the total leave count
+             *
+             * $totalLeaveCount += $requestingHalfDay ? ($halfDayLeaveCount * 0.5) : 0;
+             **/
+
+            $totalLeaveCount += $wholeDayLeaveCount;
+
+            /**
+             * If requesting for whole-day leave, don't include decimal(half-day value)
+             **/
+            $limit = $requestingHalfDay
+                ? (float)$leaveType->limit_usage_value
+                : (int)$leaveType->limit_usage_value;
+
+            $mustHaveAllowanceValueAfterTotalLeaveCount = $requestingHalfDay ? 0.5 : 1;
+
+            $totalLeaveCountGteLimitValue = $totalLeaveCount >= $limit;
+            $isBalanceHasAllowanceForRequestedLeaveValue = ($limit - $totalLeaveCount) >= $mustHaveAllowanceValueAfterTotalLeaveCount;
+
+            $limitReached = $totalLeaveCountGteLimitValue || !$isBalanceHasAllowanceForRequestedLeaveValue;
+
             _debug([
                 'is_limit_reached' => [
+                    'request for' => $requestingHalfDay ? 'Half day leave' : 'Whole day leave',
                     'from' => $dateFrom->toDateString(),
                     'to' => $upToDateParsed->toDateString(),
-                    'count' => $leaveCount
+                    'total leave count' => $totalLeaveCount,
+                    'limit value' => $limit,
+                    'total gte limit' => $totalLeaveCountGteLimitValue,
+                    'not enough allowance' => !$isBalanceHasAllowanceForRequestedLeaveValue,
+                    'limit reached' => $limitReached,
                 ]
             ]);
-
-            $limitReached = $leaveCount >= $leaveType->limit_usage_value;
         }
 
         return $limitReached;
