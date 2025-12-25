@@ -532,10 +532,17 @@ class LeaveService
                     $previousRunningBalance = $dateSeriesItem['running_balance'];
                 }
 
+                $mappedDateSeries = collect($mappedDateSeries)->map(function($runningBalance, $day){
+                    return [
+                        'day' => $day,
+                        'running_balance' => $runningBalance
+                    ];
+                });
+
                 return [
                     'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
                     'eligible' => boolval($employment['eligible']),
-                    'value' => $mappedDateSeries
+                    'value' => $mappedDateSeries->values()->all()
                 ];
             });
     }
@@ -552,13 +559,18 @@ class LeaveService
         return $grouped
             ->map(function($yearMonthCollection, $periodKey){
 
-                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $yearMonthKey){
+                $yearMonthItemCount = 0;
+
+                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $yearMonthKey) use($periodKey, &$yearMonthItemCount){
 
                     $yearMonth = json_decode($yearMonthKey, true);
 
                     $mappedYearMonthItem = $this->orderDateSeriesAndDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem);
 
+                    $yearMonthItemCount += $mappedYearMonthItem->count();
+
                     return [
+                        'period' => $periodKey,
                         'year'  => $yearMonth['year'],
                         'month' => $yearMonth['month'],
                         'month_readable' => Carbon::createFromFormat('m', $yearMonth['month'])->format('F'),
@@ -568,6 +580,7 @@ class LeaveService
 
                 return [
                     'period' => $periodKey,
+                    'year_month_item_count' => $yearMonthItemCount,
                     'value' => $mappedYearMonthCollection->values()->all()
                 ];
             });
