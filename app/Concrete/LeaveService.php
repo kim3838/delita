@@ -141,7 +141,7 @@ class LeaveService
                     FROM employment_profiles
                         WHERE employee_id = ?
                         AND status = ?
-                        AND start_date < ?
+                        AND start_date <= ?
                         ORDER BY created_at
                 ) AS employment_profile_series_sub WHERE employment_profile_series_sub.employment_profile_series = 1
                 UNION ALL
