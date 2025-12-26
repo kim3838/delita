@@ -446,9 +446,7 @@ class LeaveService
             foreach ($claimsAndDeductionsByPeriodCollection as $claimsAndDeductionsByPeriod) {
 
                 $period = (int)$claimsAndDeductionsByPeriod->period;
-                $balance = isset($claimsAndDeductionsByPeriod->period_claims)
-                    ? (float)$claimsAndDeductionsByPeriod->period_claims
-                    : 0;
+                $balance = (float)$claimsAndDeductionsByPeriod->period_claims_and_deductions;
 
                 if($balance <= 0){
                     continue;
