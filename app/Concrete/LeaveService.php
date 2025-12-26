@@ -559,15 +559,11 @@ class LeaveService
         return $grouped
             ->map(function($yearMonthCollection, $periodKey){
 
-                $yearMonthItemCount = 0;
-
-                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $yearMonthKey) use($periodKey, &$yearMonthItemCount){
+                $mappedYearMonthCollection = $yearMonthCollection->map(function($yearMonthItem, $yearMonthKey) use($periodKey){
 
                     $yearMonth = json_decode($yearMonthKey, true);
 
                     $mappedYearMonthItem = $this->orderDateSeriesAndDecodeYearMonthItemEmploymentKeysAndMapRunningBalanceByDateSeries($yearMonthItem);
-
-                    $yearMonthItemCount += $mappedYearMonthItem->count();
 
                     return [
                         'period' => $periodKey,
@@ -580,7 +576,6 @@ class LeaveService
 
                 return [
                     'period' => $periodKey,
-                    'year_month_item_count' => $yearMonthItemCount,
                     'value' => $mappedYearMonthCollection->values()->all()
                 ];
             });
