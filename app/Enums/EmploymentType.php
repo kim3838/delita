@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum EmploymentType: int implements BaseEnum
 {
+    case NOT_FOUND = -1;
     case NOT_SPECIFIED = 0;
     case OJT = 100;
     case INTERN = 101;
@@ -15,6 +16,7 @@ enum EmploymentType: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
+            self::NOT_FOUND => 'Not found',
             self::OJT => 'OJT',
             self::INTERN => 'Intern',
             self::PROBATIONARY => 'Probationary',
