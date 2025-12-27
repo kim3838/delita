@@ -289,7 +289,8 @@ class LeaveService
                     CASE
                         WHEN
                             (elteds.period_type = ".LeavePeriodType::INTERVAL->value." AND (elteds.period_interval_span_type = ".LeaveIntervalSpanType::MONTH->value." OR elteds.period_interval_span_type = ".LeaveIntervalSpanType::YEAR->value."))
-                            OR elteds.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
+                        THEN 1+TIMESTAMPDIFF(MONTH, elteds.eligibility_date_start, elteds.date_series)
+                        WHEN elteds.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
                         THEN 1+PERIOD_DIFF(
                                 CONCAT(YEAR(elteds.date_series),LPAD(MONTH(elteds.date_series), 2, '0')),
                                 CONCAT(YEAR(elteds.eligibility_date_start),LPAD(MONTH(elteds.eligibility_date_start), 2, '0'))
@@ -538,7 +539,7 @@ class LeaveService
                 });
 
                 return [
-                    'type'  => EmploymentType::tryFrom($employment['type'])?->toArray(),
+                    'type'  => EmploymentType::tryFrom($employment['type'] ?? EmploymentType::NOT_FOUND->value)?->toArray(),
                     'eligible' => boolval($employment['eligible']),
                     'value' => $mappedDateSeries->values()->all()
                 ];
