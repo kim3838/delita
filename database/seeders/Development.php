@@ -497,18 +497,21 @@ class Development extends Seeder
             $leave1002C4->id
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::DEDUCT,
             'balance' => 2,
             'effective_date' => '2026-01-01'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::DEDUCT,
             'balance' => 3,
             'effective_date' => '2026-01-01'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::DEDUCT,
             'balance' => 1,
@@ -516,12 +519,14 @@ class Development extends Seeder
         ]);
 
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 1,
             'effective_date' => '2026-05-21'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 3,
@@ -529,18 +534,21 @@ class Development extends Seeder
         ]);
 
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 7,
             'effective_date' => '2027-05-21'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 3,
             'effective_date' => '2027-05-21'
         ]);
         $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
             'type' => LeaveBalanceAdjustmentType::ADD,
             'balance' => 1,

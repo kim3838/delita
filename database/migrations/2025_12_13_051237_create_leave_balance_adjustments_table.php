@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('leave_balance_adjustments', function (Blueprint $table) {
             $table->id();
+            $table->ulid()->unique()->index();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
             $table->smallInteger('type');
-            $table->decimal('balance', 7, 1)->default(0);
             $table->date('effective_date');
+            $table->decimal('balance', 7, 1)->default(0);
             $table->timestamps();
         });
     }

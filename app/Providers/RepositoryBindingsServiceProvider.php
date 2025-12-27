@@ -29,6 +29,7 @@ use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\HolidayRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
+use App\Blueprint\Repositories\LeaveBalanceAdjustmentRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\LeaveTypeBalancePerPeriodRepository;
 use App\Blueprint\Repositories\LeaveTypeRepository;
@@ -69,6 +70,7 @@ use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\HolidayRepositoryEloquent;
 use App\Concrete\Repositories\IncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\JsonPresetRepositoryEloquent;
+use App\Concrete\Repositories\LeaveBalanceAdjustmentRepositoryEloquent;
 use App\Concrete\Repositories\LeaveRepositoryEloquent;
 use App\Concrete\Repositories\LeaveTypeBalancePerPeriodRepositoryEloquent;
 use App\Concrete\Repositories\LeaveTypeRepositoryEloquent;
@@ -128,6 +130,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'leave_type' => LeaveTypeRepositoryEloquent::class,
         'leave' => LeaveRepositoryEloquent::class,
         'leave_type_balance_per_period' => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
+        'leave_balance_adjustment' => LeaveBalanceAdjustmentRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
@@ -168,6 +171,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         LeaveTypeRepository::class => LeaveTypeRepositoryEloquent::class,
         LeaveRepository::class => LeaveRepositoryEloquent::class,
         LeaveTypeBalancePerPeriodRepository::class => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
+        LeaveBalanceAdjustmentRepository::class => LeaveBalanceAdjustmentRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -213,6 +217,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'leave_type',
             'leave',
             'leave_type_balance_per_period',
+            'leave_balance_adjustment',
             AccountRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
@@ -253,6 +258,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             LeaveTypeRepository::class,
             LeaveRepository::class,
             LeaveTypeBalancePerPeriodRepository::class,
+            LeaveBalanceAdjustmentRepository::class,
         ];
     }
 }

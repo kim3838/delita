@@ -18,6 +18,7 @@ use App\Models\Holiday;
 use App\Models\IncomeTax;
 use App\Models\JsonPreset;
 use App\Models\Leave;
+use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\Overtime;
 use App\Models\PayFrequency;
@@ -69,6 +70,7 @@ class AppServiceProvider extends ServiceProvider
             'holiday' => Holiday::class,
             'leave_type' => LeaveType::class,
             'leave' => Leave::class,
+            'leave_balance_adjustment' => LeaveBalanceAdjustment::class
         ]);
     }
 }

@@ -46,6 +46,7 @@ use App\Http\Controllers\IncomeTaxController;
 use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
+use App\Http\Controllers\LeaveBalanceAdjustmentController;
 use App\Http\Controllers\LeaveBalanceMapController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveDateRangeFilterController;
@@ -389,10 +390,13 @@ Route::group([
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
+    //Leave balance adjustment
+    Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
+
     //Leave balance map
     Route::get('leave-balance-map', [LeaveBalanceMapController::class, 'index']);
     Route::post('leave-balance-map-minimum-date', [LeaveBalanceMapController::class, 'minimumDate']);
-    
+
     //Leave date range filter
     Route::post('leave-date-range-filter', [LeaveDateRangeFilterController::class, 'index']);
 });

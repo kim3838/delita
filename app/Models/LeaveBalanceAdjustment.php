@@ -12,15 +12,15 @@ class LeaveBalanceAdjustment extends Model
         'employee_id',
         'leave_type_id',
         'type',
-        'balance',
-        'effective_date'
+        'effective_date',
+        'balance'
     ];
 
     protected $casts = [
         'employee_id' => 'int',
         'leave_type_id' => 'int',
         'type' => LeaveBalanceAdjustmentType::class,
-        'balance' => 'int',
+        'balance' => 'decimal:1',
         'effective_date' => 'date'
     ];
 
