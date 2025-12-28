@@ -69,4 +69,20 @@ class LeaveBalanceAdjustmentRepositoryEloquent extends BaseRepositoryEloquent im
 
         return $this->hydratePaginationItems($paginator, $this->model());
     }
+
+    public function show($identifier)
+    {
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
+
+        return $queryBuilder->firstOrFail();
+    }
+
+    public function update($identifier, $attributes)
+    {
+        $model = $this->model::query()->where('ulid', $identifier)->firstOrFail();
+
+        $model->update($attributes);
+
+        return $model;
+    }
 }
