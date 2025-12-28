@@ -392,6 +392,9 @@ Route::group([
 
     //Leave balance adjustment
     Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
+    Route::post('leave-balance-adjustment', [LeaveBalanceAdjustmentController::class, 'store']);
+    Route::patch('leave-balance-adjustment/{leaveBalanceAdjustmentUlid}', [LeaveBalanceAdjustmentController::class, 'update']);
+    Route::delete('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'batchDestroy']);
 
     //Leave balance map
     Route::get('leave-balance-map', [LeaveBalanceMapController::class, 'index']);
