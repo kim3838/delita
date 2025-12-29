@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\LeaveType;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements LeaveTypeRepository
@@ -15,15 +16,17 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
         return LeaveType::class;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function baseQueryBuilder($filters, $orders = [])
     {
-        $orders = [
-            ['field' => 'leave_types.code', 'direction' => 'ASC'],
-        ];
-
         $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("leave_types.company_id"), $value);
+            })
+            ->when(!empty($filters->ids) && is_array($filters->ids), function ($builder) use ($filters) {
+                $builder->whereIn('leave_types.id', $filters->ids);
+            })
+            ->when(!empty($filters->type) && is_array($filters->type), function ($builder) use ($filters) {
+                $builder->whereIn('leave_types.type', $filters->type);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
@@ -39,11 +42,36 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
                 'leave_types.*',
             ]);
 
+        return $queryBuilder;
+
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'leave_types.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'leave_types.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function selection($filters): LengthAwarePaginator
