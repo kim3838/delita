@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\PayFrequency;
 
+use App\Enums\RegexValidation;
 use App\Models\PayFrequency;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,7 @@ class UpdatePayFrequencyRequest extends BasePayFrequencyRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('pay_frequencies')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

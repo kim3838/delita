@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\RegexValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
@@ -16,7 +17,7 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
 
             'formulable_type' => 'required|numeric|integer',
 
-            'amount' => 'sometimes|required|numeric|min:1|regex:/^\d{1,12}(\.\d{1,6})?$/',
+            'amount' => 'sometimes|required|numeric|min:1|regex:' . RegexValidation::NUMERIC_12_DIGITS_6_DECIMALS->value,
             'currency' => 'sometimes|string',
             'pay_period' => 'sometimes|required|numeric|integer',
             'pay_type' => 'sometimes|required|numeric|integer',

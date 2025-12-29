@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\EmployeeLeaveType;
 
+use App\Enums\RegexValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BaseEmployeeLeaveTypeRequest extends FormRequest
@@ -14,7 +15,7 @@ class BaseEmployeeLeaveTypeRequest extends FormRequest
             'balance_upon_eligibility' => [
                 'sometimes',
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
                     if($this->input('balance_upon_eligibility')){
 

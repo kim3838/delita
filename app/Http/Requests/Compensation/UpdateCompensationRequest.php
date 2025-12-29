@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Compensation;
 
+use App\Enums\RegexValidation;
 use App\Http\Requests\BaseEmployeePayrollComponentRequest;
 use App\Models\Compensation;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('compensations')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

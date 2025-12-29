@@ -7,6 +7,7 @@ use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use App\Enums\LeaveType;
 use App\Enums\LeaveUsageSpanType;
+use App\Enums\RegexValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             'eligibility_employment_types' => ['required', 'array'],
             'initial_balance_upon_eligibility' => [
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
                     if($this->input('initial_balance_upon_eligibility')){
 
@@ -113,7 +114,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             ],
             'limit_usage_value' => [
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
                     if($this->input('limit_usage')){
                         if((float)$value == 0.0){
@@ -138,7 +139,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             ],
             'carry_over_balance_value' => [
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
                     if($this->input('carry_over_balance_per_new_period')){
 
@@ -183,7 +184,7 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
             ],
             'leave_type_balance_per_period.*.balance' => [
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
 
                     $index = $this->getBalancePerPeriodIndex($attribute);

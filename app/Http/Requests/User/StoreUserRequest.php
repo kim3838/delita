@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Enums\RegexValidation;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\App;
@@ -21,7 +22,7 @@ class StoreUserRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('users')
             ],

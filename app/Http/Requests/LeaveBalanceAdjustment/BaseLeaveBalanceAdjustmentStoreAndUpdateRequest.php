@@ -3,6 +3,7 @@
 namespace App\Http\Requests\LeaveBalanceAdjustment;
 
 use App\Enums\LeaveBalanceAdjustmentType;
+use App\Enums\RegexValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class BaseLeaveBalanceAdjustmentStoreAndUpdateRequest extends FormRequest
             'effective_date' => 'required|date|date_format:Y-m-d',
             'balance' => [
                 'required',
-                'regex:/^\d+(\.\d{1})?$/',
+                'regex:' . RegexValidation::NUMERIC_1_DECIMAL->value,
                 function($attribute, $value, $fail){
 
                     if((float)$value == 0.0){

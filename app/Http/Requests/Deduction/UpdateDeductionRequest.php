@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Deduction;
 
+use App\Enums\RegexValidation;
 use App\Http\Requests\BaseEmployeePayrollComponentRequest;
 use App\Models\Deduction;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class UpdateDeductionRequest extends BaseEmployeePayrollComponentRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('deductions')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

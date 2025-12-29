@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Company;
 
+use App\Enums\RegexValidation;
 use App\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class UpdateCompanyRequest extends FormRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('companies')->ignore($this->route('companyId'))
             ],

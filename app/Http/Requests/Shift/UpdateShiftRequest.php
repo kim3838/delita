@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Shift;
 
+use App\Enums\RegexValidation;
 use App\Models\Shift;
 use Illuminate\Validation\Rule;
 
@@ -21,7 +22,7 @@ class UpdateShiftRequest extends BaseShiftStoreAndUpdateRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',//Must not contain any spaces, tabs, or line breaks
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('shifts')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

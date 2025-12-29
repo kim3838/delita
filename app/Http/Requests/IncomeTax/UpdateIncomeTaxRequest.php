@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\IncomeTax;
 
+use App\Enums\RegexValidation;
 use App\Http\Requests\BaseEmployeePayrollComponentRequest;
 use App\Models\IncomeTax;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class UpdateIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
             'code' => [
                 'required',
                 'string',
-                'regex:/^\S+$/',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('income_taxes')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'))

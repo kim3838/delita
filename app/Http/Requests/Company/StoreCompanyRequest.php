@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Company;
 
+use App\Enums\RegexValidation;
 use App\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -18,7 +19,7 @@ class StoreCompanyRequest extends FormRequest
             'account_id' => 'required|numeric',
             'country_id' => 'required|numeric',
             'currency' => 'required|string',
-            'code' => 'required|string|regex:/^\S+$/|max:255|unique:companies,code',
+            'code' => 'required|string|regex:' . RegexValidation::NO_WHITESPACE->value . '|max:255|unique:companies,code',
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:25',
             'timezone' => 'required|string',
