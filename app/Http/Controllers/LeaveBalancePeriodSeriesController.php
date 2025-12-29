@@ -11,7 +11,7 @@ use App\Models\LeaveType;
 use App\Traits\HasTime;
 use Carbon\Carbon;
 
-class LeaveBalanceMapController extends Controller
+class LeaveBalancePeriodSeriesController extends Controller
 {
     public function __construct(
         protected readonly LeaveService $service
