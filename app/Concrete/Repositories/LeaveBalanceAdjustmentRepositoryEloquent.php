@@ -79,7 +79,7 @@ class LeaveBalanceAdjustmentRepositoryEloquent extends BaseRepositoryEloquent im
 
     public function update($identifier, $attributes)
     {
-        $model = $this->model::query()->where('ulid', $identifier)->firstOrFail();
+        $model = $this->show($identifier);
 
         $model->update($attributes);
 
