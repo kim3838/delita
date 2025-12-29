@@ -759,7 +759,7 @@ class LeaveService
         }
     }
 
-    public function getPeriodAdditionalBalance($period)
+    public function getPeriodAdditionalBalance($period): float
     {
         $periodAdditionalBalances = $this->additionalBalancePerPeriod->filter(function($item) use($period){
             return ($item['from_period'] <= $period && !$item['and_so_on'] && $item['to_period'] >= $period)
