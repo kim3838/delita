@@ -703,8 +703,7 @@ class LeaveService
 
             if(
                 empty($periodByDateSeries->period) ||
-                intval($periodByDateSeries->period) < $startingPeriod ||
-                ($reCompute && intval($periodByDateSeries->period) <= $startingPeriod)
+                intval($periodByDateSeries->period) < $startingPeriod
             ){
                 continue;
             }
@@ -732,11 +731,17 @@ class LeaveService
 
                 //Once per period: Check for carry over, if not enabled, running balance resets to 0
                 if($this->carryOverBalancePerNewPeriod){
-                    if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value){
+
+                    //Carry over limiter
+                    if($this->carryOverBalanceType == LeaveCarryOverType::LIMIT->value) {
                         $runningBalance = $runningBalance >= $this->carryOverBalanceLimitValue
                             ? $this->carryOverBalanceLimitValue
                             : $runningBalance;
                     }
+
+                    //Carried over balance should not be lesser than 0
+                    $runningBalance = $runningBalance > 0 ? $runningBalance : 0;
+
                 } else {
                     $runningBalance = 0;
                 }
