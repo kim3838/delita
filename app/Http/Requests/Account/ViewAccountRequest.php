@@ -9,7 +9,7 @@ class ViewAccountRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $account = Account::where('ulid', $this->route('ulid'))->firstOrFail();
+        $account = Account::query()->where('ulid', $this->route('ulid'))->firstOrFail();
 
         return $this->user()->can('view', $account);
     }

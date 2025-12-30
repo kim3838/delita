@@ -9,7 +9,7 @@ class ViewFormulaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $formula = Formula::where('ulid', $this->route('ulid'))->firstOrFail();
+        $formula = Formula::query()->where('ulid', $this->route('ulid'))->firstOrFail();
 
         return $this->user()->can('view', $formula);
     }
