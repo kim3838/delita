@@ -6,12 +6,13 @@ use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\EmploymentProfile\BatchDestroyEmploymentProfileRequest;
+use App\Http\Requests\EmploymentProfile\DestroyEmploymentProfileRequest;
+use App\Http\Requests\EmploymentProfile\ListEmploymentProfileRequest;
 use App\Http\Requests\EmploymentProfile\StoreEmploymentProfileRequest;
 use App\Http\Requests\EmploymentProfile\UpdateEmploymentProfileRequest;
 use App\Transformers\EmploymentProfile\ItemTransformer;
 use App\Transformers\EmploymentProfile\ListTransformer;
 use App\Transformers\EmploymentProfile\ValidatedTransformer;
-use Illuminate\Http\Request;
 
 class EmploymentProfileController extends Controller
 {
@@ -19,7 +20,17 @@ class EmploymentProfileController extends Controller
         protected readonly EmploymentProfileRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListEmploymentProfileRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListEmploymentProfileRequest $request)
     {
         if($request->expectsJson()){
 
@@ -81,7 +92,7 @@ class EmploymentProfileController extends Controller
         abort(404);
     }
 
-    public function destroy(Request $request, $employmentProfileId)
+    public function destroy(DestroyEmploymentProfileRequest $request, $employmentProfileId)
     {
         if($request->expectsJson()){
 

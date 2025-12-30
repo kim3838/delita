@@ -7,6 +7,15 @@ use App\Models\User;
 
 class EmploymentProfilePolicy extends BasePolicy
 {
+    public function viewAny(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+    }
+
     public function create(User $user): bool
     {
         if($user->isSuperAdmin()){
@@ -25,12 +34,21 @@ class EmploymentProfilePolicy extends BasePolicy
         return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 
+    public function delete(User $user, EmploymentProfile $employmentProfile): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+    }
+
     public function batchDelete(User $user): bool
     {
         if($user->isSuperAdmin()){
             return true;
         }
 
-        return false;
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
     }
 }

@@ -283,6 +283,7 @@ Route::group([
 
     //Employment Profile
     Route::get('employment-profiles', [EmploymentProfileController::class, 'index']);
+    Route::get('employment-profiles-gate', [EmploymentProfileController::class, 'indexGate']);
     Route::post('employment-profile-validate', [EmploymentProfileController::class, 'validate']);
     Route::post('employment-profile', [EmploymentProfileController::class, 'store']);
     Route::patch('employment-profile/{employmentProfileId}', [EmploymentProfileController::class, 'update']);

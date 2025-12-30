@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\EmploymentProfile\ListEmploymentProfileRequest;
 use App\Transformers\EmployeeEmploymentProfile\ListTransformer;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use stdClass;
 
@@ -16,7 +16,7 @@ class EmployeeEmploymentProfilesController extends Controller
         protected readonly EmploymentProfileRepository $repository
     ){}
 
-    public function index(Request $request, $employeeId)
+    public function index(ListEmploymentProfileRequest $request, $employeeId)
     {
         if($request->expectsJson()){
 
