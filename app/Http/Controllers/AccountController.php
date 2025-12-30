@@ -70,7 +70,7 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
-            $account = App::make(AccountRepository::class)->check($ulid);
+            $account = App::make(AccountRepository::class)->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['account' => $account]);
         }

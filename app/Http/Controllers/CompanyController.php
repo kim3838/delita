@@ -68,7 +68,7 @@ class CompanyController extends Controller
     {
         if($request->expectsJson()){
 
-            $company = App::make(CompanyRepository::class)->check($ulid);
+            $company = App::make(CompanyRepository::class)->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['company' => $company]);
         }

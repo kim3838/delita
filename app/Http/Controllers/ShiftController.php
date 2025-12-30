@@ -128,7 +128,7 @@ class ShiftController extends Controller
     {
         if($request->expectsJson()){
 
-            $shift = $this->repository->check($ulid);
+            $shift = $this->repository->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['shift' => $shift]);
         }

@@ -58,7 +58,7 @@ class FormulaController extends Controller
         if($request->expectsJson()){
 
             return ResponseJson::successfulResponse([
-                'formula' => $this->repository->check($ulid)
+                'formula' => $this->repository->showAndTransformToBasic($ulid)
             ]);
         }
 

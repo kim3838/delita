@@ -41,7 +41,7 @@ class AttendanceController extends Controller
     {
         if($request->expectsJson()){
 
-            $attendance = $this->repository->check($ulid);
+            $attendance = $this->repository->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['attendance' => $attendance]);
         }

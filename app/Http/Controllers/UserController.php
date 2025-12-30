@@ -113,7 +113,7 @@ class UserController extends Controller
     {
         if($request->expectsJson()){
 
-            $user = App::make(UserRepository::class)->check($ulid);
+            $user = App::make(UserRepository::class)->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['user' => $user]);
         }

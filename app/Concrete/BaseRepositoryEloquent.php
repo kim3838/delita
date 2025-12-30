@@ -76,8 +76,7 @@ abstract class BaseRepositoryEloquent
         return $this->model::query()->findOrfail($identifier);
     }
 
-    //Minimal version of show
-    public function check($identifier)
+    public function showAndTransformToBasic($identifier)
     {
         $model = $this->show($identifier);
 

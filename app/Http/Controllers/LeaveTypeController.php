@@ -160,7 +160,7 @@ class LeaveTypeController extends Controller
     {
         if($request->expectsJson()){
 
-            $leaveType = $this->repository->check($ulid);
+            $leaveType = $this->repository->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['leave_type' => $leaveType]);
         }

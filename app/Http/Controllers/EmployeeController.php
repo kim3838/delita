@@ -109,7 +109,7 @@ class EmployeeController extends Controller
     {
         if($request->expectsJson()){
 
-            $employee = App::make(EmployeeRepository::class)->check($ulid);
+            $employee = App::make(EmployeeRepository::class)->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['employee' => $employee]);
         }
