@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\DepartmentRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Department\DestroyDepartmentRequest;
+use App\Http\Requests\Department\ListDepartmentRequest;
 use App\Http\Requests\Department\StoreDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
 use App\Transformers\Department\ItemTransformer;
@@ -17,7 +18,17 @@ use Illuminate\Support\Facades\App;
 
 class DepartmentController extends Controller
 {
-    public function index(Request $request)
+    public function indexGate(ListDepartmentRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListDepartmentRequest $request)
     {
         if($request->expectsJson()){
 

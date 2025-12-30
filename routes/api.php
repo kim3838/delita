@@ -321,6 +321,7 @@ Route::group([
 
     //Departments
     Route::get('departments', [DepartmentController::class, 'index']);
+    Route::get('departments-gate', [DepartmentController::class, 'indexGate']);
     Route::get('department-selections', [DepartmentController::class, 'selection']);
     Route::post('department', [DepartmentController::class, 'store']);
     Route::patch('department/{departmentId}', [DepartmentController::class, 'update']);
