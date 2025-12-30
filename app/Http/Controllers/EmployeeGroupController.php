@@ -8,6 +8,7 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\EmployeeGroup\BatchDestroyEmployeeGroupRequest;
 use App\Http\Requests\EmployeeGroup\DetachAssignedGroupsRequest;
+use App\Http\Requests\EmployeeGroup\ListEmployeeGroupRequest;
 use App\Http\Requests\EmployeeGroup\StoreEmployeeGroupRequest;
 use App\Http\Requests\EmployeeGroup\SyncWithoutDetachingEmployeeGroupRequest;
 use App\Http\Requests\EmployeeGroup\UpdateEmployeeGroupRequest;
@@ -22,7 +23,17 @@ class EmployeeGroupController extends Controller
         protected readonly EmployeeGroupRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListEmployeeGroupRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListEmployeeGroupRequest $request)
     {
         if($request->expectsJson()){
 

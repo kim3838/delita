@@ -7,7 +7,7 @@ use App\Models\User;
 
 class GroupPolicy extends BasePolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         if($user->isSuperAdmin()){
             return true;
