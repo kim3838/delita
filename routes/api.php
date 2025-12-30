@@ -47,6 +47,7 @@ use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\LeaveBalanceAdjustmentController;
+use App\Http\Controllers\LeaveBalanceByTypeController;
 use App\Http\Controllers\LeaveBalancePeriodSeriesController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveDateRangeFilterController;
@@ -399,6 +400,8 @@ Route::group([
     //Leave balance
     Route::get('leave-balance-period-series', [LeaveBalancePeriodSeriesController::class, 'index']);
     Route::post('leave-balance-period-series-minimum-date', [LeaveBalancePeriodSeriesController::class, 'minimumDate']);
+
+    Route::get('leave-balance-by-type', [LeaveBalanceByTypeController::class, 'index']);
 
     //Leave date range filter
     Route::post('leave-date-range-filter', [LeaveDateRangeFilterController::class, 'index']);
