@@ -345,8 +345,9 @@ Route::group([
 
     //Attendance
     Route::get('attendances', [AttendanceController::class, 'index']);
-    Route::get('attendance-check/{attendanceUlid}', [AttendanceController::class, 'check']);
+    Route::get('attendances-gate', [AttendanceController::class, 'indexGate']);
     Route::get('attendance/{attendanceUlid}', [AttendanceController::class, 'show']);
+    Route::get('attendance-gate/{attendanceUlid}', [AttendanceController::class, 'showGate']);
     Route::patch('attendance/{attendanceUlid}', [AttendanceController::class, 'update']);
     Route::delete('attendances', [AttendanceController::class, 'batchDestroy']);
     Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);

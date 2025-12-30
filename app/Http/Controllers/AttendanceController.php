@@ -8,12 +8,13 @@ use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Attendance\BatchDestroyAttendanceRequest;
+use App\Http\Requests\Attendance\ListAttendanceRequest;
 use App\Http\Requests\Attendance\UpdateAttendanceRequest;
+use App\Http\Requests\Attendance\ViewAttendanceRequest;
 use App\Transformers\Attendance\ItemTransformer;
 use App\Transformers\Attendance\ListTransformer;
 use App\Transformers\AttendanceDetail\ListTransformer as AttendanceDetailListTransformer;
 use App\Transformers\Overtime\BasicTransformer as OvertimeBasicTransformer;
-use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
@@ -22,7 +23,17 @@ class AttendanceController extends Controller
         protected AttendanceDetailRepository $detailRepository,
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListAttendanceRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListAttendanceRequest $request)
     {
         if(request()->expectsJson()){
 
@@ -37,7 +48,7 @@ class AttendanceController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewAttendanceRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -49,7 +60,7 @@ class AttendanceController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewAttendanceRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
