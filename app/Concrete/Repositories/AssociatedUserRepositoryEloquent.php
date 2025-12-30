@@ -3,10 +3,12 @@
 namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AssociatedUserRepository;
+use App\Blueprint\Repositories\EmployeeRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
 
 class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedUserRepository
 {
@@ -17,11 +19,24 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $employeeRepositoryFilter = clone $filters;
+        $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
+        unset($employeeRepositoryFilter->user_search);
+        unset($employeeRepositoryFilter->employee_search);
+        unset($employeeRepositoryFilter->associated_companies);
+
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter);
+
         $queryBuilder = User::query()->getQuery()
+            ->when($filters->employee_search ?? false, function ($builder) use($employeeQueryBuilder){
+                $builder->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
+                    $join->on('employee_sub.user_id', '=', 'users.id');
+                });
+            })
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
             ->when(!empty($filters->associated_companies) && is_array($filters->associated_companies), function ($builder) use ($filters) {
 
-                $builder->where(function($clause) use($filters){
+                $builder->where(function ($clause) use ($filters) {
                     $clause->whereIn('company_user.company_id', $filters->associated_companies)
                         ->when($filters->user_id ?? false, function ($builder, $value) {
                             $builder->orWhere('users.created_by', $value);
@@ -31,8 +46,8 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('users.status', $filters->status);
             })
-            ->when($filters->search ?? false, function($builder, $value){
-                $builder->where(function($clause) use($value){
+            ->when($filters->user_search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
                     $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
                 });

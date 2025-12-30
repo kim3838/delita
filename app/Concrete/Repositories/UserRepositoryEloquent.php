@@ -2,6 +2,7 @@
 
 namespace App\Concrete\Repositories;
 
+use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\UserStatus;
@@ -11,6 +12,7 @@ use App\Models\Company;
 use App\Models\User;
 use App\Notifications\NewUserRegistered;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -23,7 +25,20 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $employeeRepositoryFilter = clone $filters;
+        $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
+        unset($employeeRepositoryFilter->user_search);
+        unset($employeeRepositoryFilter->employee_search);
+        unset($employeeRepositoryFilter->companies);
+
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter);
+
         $queryBuilder = $this->model::query()->getQuery()
+            ->when($filters->employee_search ?? false, function ($builder) use($employeeQueryBuilder){
+                $builder->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
+                    $join->on('employee_sub.user_id', '=', 'users.id');
+                });
+            })
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
             ->whereNot('users.type', UserType::SUPER_ADMIN)
             ->when(!empty($filters->companies) && is_array($filters->companies), function ($builder) use ($filters) {
@@ -32,7 +47,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('users.status', $filters->status);
             })
-            ->when($filters->search ?? false, function($builder, $value){
+            ->when($filters->user_search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
                     $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
