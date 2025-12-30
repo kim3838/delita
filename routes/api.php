@@ -313,6 +313,7 @@ Route::group([
 
     //Designations
     Route::get('designations', [DesignationController::class, 'index']);
+    Route::get('designations-gate', [DesignationController::class, 'indexGate']);
     Route::get('designation-selections', [DesignationController::class, 'selection']);
     Route::post('designation', [DesignationController::class, 'store']);
     Route::patch('designation/{designationId}', [DesignationController::class, 'update']);

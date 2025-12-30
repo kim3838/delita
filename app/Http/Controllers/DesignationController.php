@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\DesignationRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Designation\DestroyDesignationRequest;
+use App\Http\Requests\Designation\ListDesignationRequest;
 use App\Http\Requests\Designation\StoreDesignationRequest;
 use App\Http\Requests\Designation\UpdateDesignationRequest;
 use App\Transformers\Designation\ItemTransformer;
@@ -16,7 +17,17 @@ use Illuminate\Support\Facades\App;
 
 class DesignationController extends Controller
 {
-    public function index(Request $request)
+    public function indexGate(ListDesignationRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListDesignationRequest $request)
     {
         if($request->expectsJson()){
 
