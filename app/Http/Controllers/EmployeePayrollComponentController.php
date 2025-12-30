@@ -11,6 +11,7 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\BatchDestroyPolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\DestroyPolymorphicEmployeePayrollComponentRequest;
+use App\Http\Requests\PolymorphicEmployeePayrollComponent\ListPolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\StorePolymorphicEmployeePayrollComponentRequest;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\UpdatePolymorphicEmployeePayrollComponentRequest;
 use App\Transformers\Compensation\SelectionAsComponentableMorphTransformer as CompensationSelectionAsComponentableMorphTransformer;
@@ -28,7 +29,17 @@ class EmployeePayrollComponentController extends Controller
         protected EmployeePayrollComponentRepository $repository,
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListPolymorphicEmployeePayrollComponentRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListPolymorphicEmployeePayrollComponentRequest $request)
     {
         if($request->expectsJson()){
 

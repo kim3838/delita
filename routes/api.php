@@ -295,6 +295,7 @@ Route::group([
 
     //Employee Payroll Component
     Route::get('employee-payroll-components', [EmployeePayrollComponentController::class, 'index']);
+    Route::get('employee-payroll-components-gate', [EmployeePayrollComponentController::class, 'indexGate']);
     Route::get('employee-payroll-component-name-selections', [EmployeePayrollComponentController::class, 'payrollComponentName']);
     Route::get('employee-payroll-component-type-selections', [EmployeePayrollComponentController::class, 'payrollComponentType']);
     Route::post('employee-payroll-component-validate', [EmployeePayrollComponentController::class, 'validate']);
