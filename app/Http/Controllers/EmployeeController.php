@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Employee\ListEmployeeRequest;
 use App\Http\Requests\Employee\StoreEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
+use App\Http\Requests\Employee\ViewEmployeeRequest;
 use App\Transformers\Employee\ItemTransformer;
 use App\Transformers\Employee\ListTransformer;
 use App\Transformers\Employee\SelectionTransformer;
@@ -15,7 +17,17 @@ use Illuminate\Support\Facades\App;
 
 class EmployeeController extends Controller
 {
-    public function index(Request $request)
+    public function indexGate(ListEmployeeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListEmployeeRequest $request)
     {
         if($request->expectsJson()){
 
@@ -92,7 +104,7 @@ class EmployeeController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewEmployeeRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -105,7 +117,7 @@ class EmployeeController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewEmployeeRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

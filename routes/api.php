@@ -249,12 +249,13 @@ Route::group([
 
     //Employees
     Route::get('employees', [EmployeeController::class, 'index']);
+    Route::get('employees-gate', [EmployeeController::class, 'indexGate']);
     Route::post('employee-validate', [EmployeeController::class, 'validate']);
     Route::post('employee', [EmployeeController::class, 'store']);
     Route::patch('employee/{employeeId}', [EmployeeController::class, 'update']);
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
-    Route::get('employee-check/{ulid}', [EmployeeController::class, 'check']);
+    Route::get('employee-gate/{ulid}', [EmployeeController::class, 'showGate']);
     Route::post('employee-import-validate', [EmployeeImportController::class, 'read']);
     Route::post('employee-import-re-validate', [EmployeeImportController::class, 'reValidate']);
     Route::post('employee-import-save', [EmployeeImportController::class, 'save']);
