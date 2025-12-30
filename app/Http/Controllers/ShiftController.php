@@ -7,8 +7,10 @@ use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Shift\DestroyShiftRequest;
+use App\Http\Requests\Shift\ListShiftRequest;
 use App\Http\Requests\Shift\StoreShiftRequest;
 use App\Http\Requests\Shift\UpdateShiftRequest;
+use App\Http\Requests\Shift\ViewShiftRequest;
 use App\Transformers\Shift\ItemTransformer;
 use App\Transformers\Shift\ListTransformer;
 use App\Transformers\Shift\SelectionTransformer;
@@ -22,7 +24,17 @@ class ShiftController extends Controller
         protected readonly ShiftRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListShiftRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListShiftRequest $request)
     {
         if($request->expectsJson()){
 
@@ -94,7 +106,7 @@ class ShiftController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewShiftRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -124,7 +136,7 @@ class ShiftController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewShiftRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

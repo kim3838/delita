@@ -329,11 +329,12 @@ Route::group([
 
     //Shifts
     Route::get('shifts', [ShiftController::class, 'index']);
+    Route::get('shifts-gate', [ShiftController::class, 'indexGate']);
     Route::get('shift-selections', [ShiftController::class, 'selection']);
     Route::post('shift', [ShiftController::class, 'store']);
     Route::patch('shift/{shiftId}', [ShiftController::class, 'update']);
     Route::get('shift/{ulid}', [ShiftController::class, 'show']);
-    Route::get('shift-check/{ulid}', [ShiftController::class, 'check']);
+    Route::get('shift-gate/{ulid}', [ShiftController::class, 'showGate']);
     Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
 
     Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
