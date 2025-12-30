@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\EmployeeShift\BatchDestroyEmployeeShiftRequest;
+use App\Http\Requests\EmployeeShift\ListEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\SyncEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\SyncWithoutDetachingEmployeeShiftRequest;
 use App\Http\Requests\EmployeeShift\DestroyEmployeeShiftRequest;
@@ -23,7 +24,17 @@ class EmployeeShiftController extends Controller
         protected EmployeeShiftRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListEmployeeShiftRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListEmployeeShiftRequest $request)
     {
         if(request()->expectsJson()){
 
@@ -70,7 +81,7 @@ class EmployeeShiftController extends Controller
         abort(404);
     }
 
-    public function shiftsByEmployees(Request $request)
+    public function shiftsByEmployees(ListEmployeeShiftRequest $request)
     {
         if(request()->expectsJson()){
 
