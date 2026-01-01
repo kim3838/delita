@@ -28,11 +28,6 @@ class LeaveRunningBalancePeriodSeriesController extends Controller
             $upToDate = $request->validated()['up_to_date'];
             $balancePeriodSeries = $this->service->getBalancePeriodSeries($employee, $leaveType, $upToDate);
 
-            _clear_debug();
-            _debug([
-                '$balancePeriodSeries' => $balancePeriodSeries
-            ]);
-
             return ResponseJson::successfulResponse([
                 'balance_period_series' => $balancePeriodSeries,
             ]);
