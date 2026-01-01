@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\PolymorphicEmployeePayrollComponent;
 
 use App\Enums\RegexValidation;
 use Illuminate\Foundation\Http\FormRequest;

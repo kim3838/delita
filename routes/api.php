@@ -58,6 +58,7 @@ use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeImportTemplateController;
 use App\Http\Controllers\PayFrequencyController;
+use App\Http\Controllers\PayrollComponentController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
@@ -219,6 +220,9 @@ Route::group([
     Route::get('pay-frequencies', [PayFrequencyController::class, 'index']);
     Route::get('pay-frequency-selections', [PayFrequencyController::class, 'selection']);
     Route::patch('pay-frequency/{payFrequencyId}', [PayFrequencyController::class, 'update']);
+
+    //Payroll Component (compensation, deduction, income tax)
+    Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
 
     //Compensation
     Route::get('compensations', [CompensationController::class, 'index']);

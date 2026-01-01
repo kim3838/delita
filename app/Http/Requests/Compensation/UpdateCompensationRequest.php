@@ -3,11 +3,11 @@
 namespace App\Http\Requests\Compensation;
 
 use App\Enums\RegexValidation;
-use App\Http\Requests\BaseEmployeePayrollComponentRequest;
+use App\Http\Requests\PayrollComponent\BasePayrollComponentRequest;
 use App\Models\Compensation;
 use Illuminate\Validation\Rule;
 
-class UpdateCompensationRequest extends BaseEmployeePayrollComponentRequest
+class UpdateCompensationRequest extends BasePayrollComponentRequest
 {
     /**
      * Determine if the user is authorized to make this request.

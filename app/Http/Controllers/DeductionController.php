@@ -9,6 +9,7 @@ use App\Facades\ResponseJson;
 use App\Http\Requests\Deduction\DestroyDeductionRequest;
 use App\Http\Requests\Deduction\StoreDeductionRequest;
 use App\Http\Requests\Deduction\UpdateDeductionRequest;
+use App\Http\Requests\PayrollComponent\ListPayrollComponentRequest;
 use App\Transformers\CompanyDeduction\ListTransformer;
 use App\Transformers\Deduction\ItemTransformer as DeductionTransformer;
 use App\Transformers\Deduction\SelectionTransformer;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\App;
 
 class DeductionController extends Controller
 {
-    public function index(Request $request)
+    public function index(ListPayrollComponentRequest $request)
     {
         if(request()->expectsJson()){
 

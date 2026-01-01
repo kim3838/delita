@@ -3,11 +3,11 @@
 namespace App\Http\Requests\Deduction;
 
 use App\Enums\RegexValidation;
-use App\Http\Requests\BaseEmployeePayrollComponentRequest;
+use App\Http\Requests\PayrollComponent\BasePayrollComponentRequest;
 use App\Models\Deduction;
 use Illuminate\Validation\Rule;
 
-class UpdateDeductionRequest extends BaseEmployeePayrollComponentRequest
+class UpdateDeductionRequest extends BasePayrollComponentRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -3,11 +3,11 @@
 namespace App\Http\Requests\IncomeTax;
 
 use App\Enums\RegexValidation;
-use App\Http\Requests\BaseEmployeePayrollComponentRequest;
+use App\Http\Requests\PayrollComponent\BasePayrollComponentRequest;
 use App\Models\IncomeTax;
 use Illuminate\Validation\Rule;
 
-class StoreIncomeTaxRequest extends BaseEmployeePayrollComponentRequest
+class StoreIncomeTaxRequest extends BasePayrollComponentRequest
 {
     /**
      * Determine if the user is authorized to make this request.

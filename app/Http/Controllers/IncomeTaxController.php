@@ -9,6 +9,7 @@ use App\Facades\ResponseJson;
 use App\Http\Requests\IncomeTax\DestroyIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\StoreIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\UpdateIncomeTaxRequest;
+use App\Http\Requests\PayrollComponent\ListPayrollComponentRequest;
 use App\Transformers\CompanyIncomeTax\ListTransformer;
 use App\Transformers\IncomeTax\ItemTransformer as IncomeTaxTransformer;
 use App\Transformers\IncomeTax\SelectionTransformer;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\App;
 
 class IncomeTaxController extends Controller
 {
-    public function index(Request $request)
+    public function index(ListPayrollComponentRequest $request)
     {
         if(request()->expectsJson()){
 

@@ -9,6 +9,7 @@ use App\Facades\ResponseJson;
 use App\Http\Requests\Compensation\DestroyCompensationRequest;
 use App\Http\Requests\Compensation\StoreCompensationRequest;
 use App\Http\Requests\Compensation\UpdateCompensationRequest;
+use App\Http\Requests\PayrollComponent\ListPayrollComponentRequest;
 use App\Transformers\CompanyCompensation\ListTransformer;
 use App\Transformers\Compensation\ItemTransformer as CompensationTransformer;
 use App\Transformers\Compensation\SelectionTransformer;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\App;
 
 class CompensationController extends Controller
 {
-    public function index(Request $request)
+    public function index(ListPayrollComponentRequest $request)
     {
         if(request()->expectsJson()){
 

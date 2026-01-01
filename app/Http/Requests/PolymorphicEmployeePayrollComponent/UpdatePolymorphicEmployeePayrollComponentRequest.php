@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\PolymorphicEmployeePayrollComponent;
 
-use App\Http\Requests\BasePolymorphicEmployeePayrollComponentRequest;
 use App\Models\EmployeePayrollComponent;
 
 class UpdatePolymorphicEmployeePayrollComponentRequest extends BasePolymorphicEmployeePayrollComponentRequest

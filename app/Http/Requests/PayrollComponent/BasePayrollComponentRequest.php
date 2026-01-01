@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\PayrollComponent;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BaseEmployeePayrollComponentRequest extends FormRequest
+class BasePayrollComponentRequest extends FormRequest
 {
     public function rules(): array
     {
