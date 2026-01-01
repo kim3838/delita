@@ -11,7 +11,7 @@ use App\Enums\LeavePeriodType;
 use App\Enums\LeaveUsageSpanType;
 use App\Facades\Fractal;
 use App\Models\Employee;
-use App\Models\Hydrations\Leave\RunningBalance as LeaveRunningBalance;
+use App\Models\Hydrations\LeaveRunningBalance as LeaveRunningBalance;
 use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;

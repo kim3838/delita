@@ -2,12 +2,12 @@
 
 namespace App\Transformers\LeaveRunningBalance;
 
-use App\Models\Hydrations\Leave\RunningBalance;
+use App\Models\Hydrations\LeaveRunningBalance;
 use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
 {
-    public function transform(RunningBalance $runningBalance): array
+    public function transform(LeaveRunningBalance $runningBalance): array
     {
         return [
             'year' => $runningBalance->year,

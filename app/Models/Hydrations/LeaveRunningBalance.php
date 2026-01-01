@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Hydrations\Leave;
+namespace App\Models\Hydrations;
 
 use App\Enums\EmploymentType;
 use App\Enums\LeaveCarryOverType;
@@ -8,7 +8,7 @@ use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use Illuminate\Database\Eloquent\Model;
 
-class RunningBalance extends Model
+class LeaveRunningBalance extends Model
 {
     protected $casts = [
         'year' => 'string',
