@@ -56,7 +56,7 @@ class LeaveService
         );
     }
 
-    public function getBalanceMap(Employee $employee, LeaveType $leaveType, $upToDate)
+    public function getBalancePeriodSeries(Employee $employee, LeaveType $leaveType, $upToDate)
     {
         $upToDateParsed = $this->getDateIfGteMinimum(
             Carbon::parse($upToDate),

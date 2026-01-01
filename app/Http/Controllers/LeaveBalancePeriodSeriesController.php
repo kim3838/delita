@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Concrete\LeaveService;
 use App\Facades\ResponseJson;
-use App\Http\Requests\LeaveBalanceMap\LeaveBalanceMapRequest;
+use App\Http\Requests\LeaveBalanceMap\LeaveBalancePeriodSeriesRequest;
 use App\Http\Requests\LeaveBalanceMap\LeaveBalanceMinimumDateRequest;
 use App\Models\Employee;
 use App\Models\LeaveType;
@@ -19,7 +19,7 @@ class LeaveBalancePeriodSeriesController extends Controller
 
     use HasTime;
 
-    public function index(LeaveBalanceMapRequest $request)
+    public function index(LeaveBalancePeriodSeriesRequest $request)
     {
         if($request->expectsJson()){
 
@@ -28,7 +28,7 @@ class LeaveBalancePeriodSeriesController extends Controller
             $upToDate = $request->validated()['up_to_date'];
 
             return ResponseJson::successfulResponse([
-                'balance_map' => $this->service->getBalanceMap($employee, $leaveType, $upToDate),
+                'balance_map' => $this->service->getBalancePeriodSeries($employee, $leaveType, $upToDate),
             ]);
         }
 

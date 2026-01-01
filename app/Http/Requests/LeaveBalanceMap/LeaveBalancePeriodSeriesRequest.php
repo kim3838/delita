@@ -4,7 +4,7 @@ namespace App\Http\Requests\LeaveBalanceMap;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LeaveBalanceMapRequest extends FormRequest
+class LeaveBalancePeriodSeriesRequest extends FormRequest
 {
     public function rules(): array
     {
