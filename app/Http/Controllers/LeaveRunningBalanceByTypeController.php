@@ -8,11 +8,11 @@ use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Concrete\LeaveService;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\LeaveRunningBalance\LeaveRunningBalanceByTypeRequest;
 use App\Transformers\LeaveBalanceByType\ListTransformer;
 use App\Transformers\LeaveType\BasicTransformer;
-use Illuminate\Http\Request;
 
-class LeaveBalanceByTypeController extends Controller
+class LeaveRunningBalanceByTypeController extends Controller
 {
     public function __construct(
         protected EmployeeRepository $employeeRepository,
@@ -21,7 +21,7 @@ class LeaveBalanceByTypeController extends Controller
         protected EmploymentProfileRepository $employmentProfileRepository
     ){}
 
-    public function index(Request $request)
+    public function index(LeaveRunningBalanceByTypeRequest $request)
     {
         if($request->expectsJson()){
 

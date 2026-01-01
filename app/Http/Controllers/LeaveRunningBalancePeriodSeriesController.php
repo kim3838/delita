@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Concrete\LeaveService;
 use App\Facades\ResponseJson;
-use App\Http\Requests\LeaveBalanceMap\LeaveBalancePeriodSeriesRequest;
-use App\Http\Requests\LeaveBalanceMap\LeaveBalanceMinimumDateRequest;
+use App\Http\Requests\LeaveRunningBalance\LeaveRunningBalancePeriodSeriesRequest;
+use App\Http\Requests\LeaveRunningBalance\LeaveRunningBalanceMinimumDateRequest;
 use App\Models\Employee;
 use App\Models\LeaveType;
 use App\Traits\HasTime;
 use Carbon\Carbon;
 
-class LeaveBalancePeriodSeriesController extends Controller
+class LeaveRunningBalancePeriodSeriesController extends Controller
 {
     public function __construct(
         protected readonly LeaveService $service
@@ -19,23 +19,29 @@ class LeaveBalancePeriodSeriesController extends Controller
 
     use HasTime;
 
-    public function index(LeaveBalancePeriodSeriesRequest $request)
+    public function index(LeaveRunningBalancePeriodSeriesRequest $request)
     {
         if($request->expectsJson()){
 
             $employee = Employee::query()->findOrFail($request->validated()['employee_id']);
             $leaveType = LeaveType::query()->findOrFail($request->validated()['leave_type_id']);
             $upToDate = $request->validated()['up_to_date'];
+            $balancePeriodSeries = $this->service->getBalancePeriodSeries($employee, $leaveType, $upToDate);
+
+            _clear_debug();
+            _debug([
+                '$balancePeriodSeries' => $balancePeriodSeries
+            ]);
 
             return ResponseJson::successfulResponse([
-                'balance_map' => $this->service->getBalancePeriodSeries($employee, $leaveType, $upToDate),
+                'balance_period_series' => $balancePeriodSeries,
             ]);
         }
 
         abort(404);
     }
 
-    public function minimumDate(LeaveBalanceMinimumDateRequest $request)
+    public function minimumDate(LeaveRunningBalanceMinimumDateRequest $request)
     {
         if($request->expectsJson()){
 
