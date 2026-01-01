@@ -7,8 +7,10 @@ use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\LeaveType\BatchDestroyLeaveTypeRequest;
+use App\Http\Requests\LeaveType\ListLeaveTypeRequest;
 use App\Http\Requests\LeaveType\StoreLeaveTypeRequest;
 use App\Http\Requests\LeaveType\UpdateLeaveTypeRequest;
+use App\Http\Requests\LeaveType\ViewLeaveTypeRequest;
 use App\Transformers\LeaveType\ItemTransformer;
 use App\Transformers\LeaveType\ListTransformer;
 use App\Transformers\LeaveType\SelectionTransformer;
@@ -23,7 +25,17 @@ class LeaveTypeController extends Controller
         protected readonly LeaveTypeBalancePerPeriodRepository $balancePerPeriodRepository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListLeaveTypeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListLeaveTypeRequest $request)
     {
         if($request->expectsJson()){
 
@@ -126,7 +138,7 @@ class LeaveTypeController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewLeaveTypeRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -156,7 +168,7 @@ class LeaveTypeController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewLeaveTypeRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

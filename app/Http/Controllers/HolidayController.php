@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\HolidayRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Holiday\BatchDestroyHolidayRequest;
+use App\Http\Requests\Holiday\ListHolidayRequest;
 use App\Http\Requests\Holiday\StoreHolidayRequest;
 use App\Http\Requests\Holiday\UpdateHolidayRequest;
 use App\Transformers\Holiday\ItemTransformer;
@@ -19,7 +20,17 @@ class HolidayController extends Controller
         protected readonly HolidayRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListHolidayRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListHolidayRequest $request)
     {
         if($request->expectsJson()){
 

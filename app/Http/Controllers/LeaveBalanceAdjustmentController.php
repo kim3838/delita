@@ -6,10 +6,10 @@ use App\Blueprint\Repositories\LeaveBalanceAdjustmentRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\LeaveBalanceAdjustment\BatchDestroyLeaveBalanceAdjustmentRequest;
+use App\Http\Requests\LeaveBalanceAdjustment\ListLeaveBalanceAdjustmentRequest;
 use App\Http\Requests\LeaveBalanceAdjustment\StoreLeaveBalanceAdjustmentRequest;
 use App\Http\Requests\LeaveBalanceAdjustment\UpdateLeaveBalanceAdjustmentRequest;
 use App\Transformers\LeaveBalanceAdjustment\ListTransformer;
-use Illuminate\Http\Request;
 
 class LeaveBalanceAdjustmentController extends Controller
 {
@@ -17,7 +17,17 @@ class LeaveBalanceAdjustmentController extends Controller
         protected readonly LeaveBalanceAdjustmentRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListLeaveBalanceAdjustmentRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListLeaveBalanceAdjustmentRequest $request)
     {
         if(request()->expectsJson()){
 

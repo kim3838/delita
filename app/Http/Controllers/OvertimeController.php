@@ -7,10 +7,10 @@ use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Overtime\BatchDestroyOvertimeRequest;
+use App\Http\Requests\Overtime\ListOvertimeRequest;
 use App\Http\Requests\Overtime\StoreOvertimeRequest;
 use App\Http\Requests\Overtime\UpdateOvertimeRequest;
 use App\Transformers\Overtime\ListTransformer;
-use Illuminate\Http\Request;
 
 class OvertimeController extends Controller
 {
@@ -18,7 +18,17 @@ class OvertimeController extends Controller
         protected readonly OvertimeRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListOvertimeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListOvertimeRequest $request)
     {
         if(request()->expectsJson()){
 

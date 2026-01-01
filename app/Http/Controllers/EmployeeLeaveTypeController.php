@@ -7,6 +7,7 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\EmployeeLeaveType\BatchDestroyEmployeeLeaveTypeRequest;
 use App\Http\Requests\EmployeeLeaveType\DetachAssignedLeaveTypesRequest;
+use App\Http\Requests\EmployeeLeaveType\ListEmployeeLeaveTypeRequest;
 use App\Http\Requests\EmployeeLeaveType\SyncWithoutDetachingEmployeeLeaveTypeRequest;
 use App\Http\Requests\EmployeeLeaveType\UpdateEmployeeLeaveTypeRequest;
 use App\Transformers\LeaveTypeAssignment\LeaveTypesByEmployeesTransformer;
@@ -21,7 +22,17 @@ class EmployeeLeaveTypeController extends Controller
         protected EmployeeLeaveTypeRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListEmployeeLeaveTypeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListEmployeeLeaveTypeRequest $request)
     {
         if(request()->expectsJson()){
 
@@ -68,7 +79,7 @@ class EmployeeLeaveTypeController extends Controller
         abort(404);
     }
 
-    public function leaveTypesByEmployees(Request $request)
+    public function leaveTypesByEmployees(ListEmployeeLeaveTypeRequest $request)
     {
         if(request()->expectsJson()){
 

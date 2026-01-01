@@ -6,9 +6,9 @@ use App\Blueprint\Repositories\LeaveRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Leave\BatchDestroyLeaveRequest;
+use App\Http\Requests\Leave\ListLeaveRequest;
 use App\Http\Requests\Leave\StoreLeaveRequest;
 use App\Transformers\Leave\ListTransformer;
-use Illuminate\Http\Request;
 
 class LeaveController extends Controller
 {
@@ -16,7 +16,17 @@ class LeaveController extends Controller
         protected readonly LeaveRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListLeaveRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListLeaveRequest $request)
     {
         if(request()->expectsJson()){
 

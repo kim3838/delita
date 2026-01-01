@@ -364,6 +364,7 @@ Route::group([
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
+    Route::get('overtimes-gate', [OvertimeController::class, 'indexGate']);
     Route::patch('overtime/{overtimeUlid}', [OvertimeController::class, 'update']);
     Route::post('overtime', [OvertimeController::class, 'store']);
     Route::delete('overtimes', [OvertimeController::class, 'batchDestroy']);
@@ -373,6 +374,7 @@ Route::group([
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
+    Route::get('holidays-gate', [HolidayController::class, 'indexGate']);
     Route::get('holiday-selections', [HolidayController::class, 'selection']);
     Route::post('holiday', [HolidayController::class, 'store']);
     Route::patch('holiday/{holidayUlid}', [HolidayController::class, 'update']);
@@ -380,15 +382,17 @@ Route::group([
 
     //Leave types
     Route::get('leave-types', [LeaveTypeController::class, 'index']);
+    Route::get('leave-types-gate', [LeaveTypeController::class, 'indexGate']);
     Route::get('leave-type-selections', [LeaveTypeController::class, 'selection']);
     Route::post('leave-type', [LeaveTypeController::class, 'store']);
     Route::patch('leave-type/{leaveTypeUlid}', [LeaveTypeController::class, 'update']);
     Route::get('leave-type/{ulid}', [LeaveTypeController::class, 'show']);
-    Route::get('leave-type-check/{ulid}', [LeaveTypeController::class, 'check']);
+    Route::get('leave-type-gate/{ulid}', [LeaveTypeController::class, 'showGate']);
     Route::delete('leave-types', [LeaveTypeController::class, 'batchDestroy']);
 
     //Leave type assignment
     Route::get('leave-type-assignments', [EmployeeLeaveTypeController::class, 'index']);
+    Route::get('leave-type-assignments-gate', [EmployeeLeaveTypeController::class, 'indexGate']);
     Route::get('leave-type-assignment-selections', [EmployeeLeaveTypeController::class, 'selection']);
     Route::patch('leave-type-assignment/{employeeLeaveTypeId}', [EmployeeLeaveTypeController::class, 'update']);
     Route::get('leave-types-by-employees', [EmployeeLeaveTypeController::class, 'leaveTypesByEmployees']);
@@ -398,11 +402,13 @@ Route::group([
 
     //Leave
     Route::get('leaves', [LeaveController::class, 'index']);
+    Route::get('leaves-gate', [LeaveController::class, 'indexGate']);
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
     //Leave balance adjustment
     Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
+    Route::get('leave-balance-adjustments-gate', [LeaveBalanceAdjustmentController::class, 'indexGate']);
     Route::post('leave-balance-adjustment', [LeaveBalanceAdjustmentController::class, 'store']);
     Route::patch('leave-balance-adjustment/{leaveBalanceAdjustmentUlid}', [LeaveBalanceAdjustmentController::class, 'update']);
     Route::delete('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'batchDestroy']);
