@@ -6,6 +6,27 @@ use App\Models\User;
 
 class UserPolicy extends BasePolicy
 {
+    public function viewAny(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInAnyCompany($user);
+    }
+
+    public function view(User $user, User $stagedUser): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
+
+        return $this->userIsAdminInAnyCompany($user) &&
+            $userIsTheOneWhoCreatedTheStagedUser;
+    }
+
     public function create(User $user): bool
     {
         if($user->isSuperAdmin()){
@@ -23,6 +44,7 @@ class UserPolicy extends BasePolicy
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
 
-        return $this->userIsAdminInAnyCompany($user) || $userIsTheOneWhoCreatedTheStagedUser;
+        return $this->userIsAdminInAnyCompany($user) &&
+            $userIsTheOneWhoCreatedTheStagedUser;
     }
 }

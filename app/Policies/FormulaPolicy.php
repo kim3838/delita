@@ -7,12 +7,12 @@ use App\Models\User;
 
 class FormulaPolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->isSuperAdmin();
     }
 
-    public function view(User $user, Formula $formula)
+    public function view(User $user, Formula $formula): bool
     {
         return $user->isSuperAdmin();
     }

@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Company\ListCompanyRequest;
 use App\Http\Requests\Company\UpdateCompanyRequest;
+use App\Http\Requests\Company\ViewCompanyRequest;
 use App\Transformers\AssociatedCompany\ItemTransformer;
 use App\Transformers\AssociatedCompany\ListTransformer;
 use App\Transformers\AssociatedCompany\SelectionTransformer;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class AssociatedCompanyController extends Controller
 {
@@ -17,11 +19,21 @@ class AssociatedCompanyController extends Controller
         protected AssociatedCompanyRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListCompanyRequest $request)
     {
-        if($request::expectsJson()){
+        if($request->expectsJson()){
 
-            $filters = json_decode(Request::get('filters'));
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListCompanyRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
                 Fractal::collection(
@@ -36,9 +48,9 @@ class AssociatedCompanyController extends Controller
 
     public function selection(Request $request)
     {
-        if($request::expectsJson()){
+        if($request->expectsJson()){
 
-            $filters = json_decode(Request::get('filters'));
+            $filters = json_decode($request->get('filters'));
 
             $selection = $this->repository->selection($filters);
 
@@ -53,9 +65,9 @@ class AssociatedCompanyController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewCompanyRequest $request, $ulid)
     {
-        if($request::expectsJson()){
+        if($request->expectsJson()){
 
             $company = $this->repository->show($ulid);
 

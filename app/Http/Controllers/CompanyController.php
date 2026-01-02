@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\CompanyRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Company\ListCompanyRequest;
 use App\Http\Requests\Company\StoreCompanyRequest;
 use App\Http\Requests\Company\UpdateCompanyRequest;
+use App\Http\Requests\Company\ViewCompanyRequest;
 use App\Transformers\Company\ItemTransformer;
 use App\Transformers\Company\ListTransformer;
 use App\Transformers\Company\SelectionTransformer;
@@ -16,7 +18,17 @@ use Illuminate\Support\Facades\App;
 
 class CompanyController extends Controller
 {
-    public function index(Request $request)
+    public function indexGate(ListCompanyRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListCompanyRequest $request)
     {
         if($request->expectsJson()){
 
@@ -51,7 +63,7 @@ class CompanyController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewCompanyRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -64,7 +76,7 @@ class CompanyController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewCompanyRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

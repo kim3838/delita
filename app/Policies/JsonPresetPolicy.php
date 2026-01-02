@@ -7,12 +7,12 @@ use App\Models\User;
 
 class JsonPresetPolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->isSuperAdmin();
     }
 
-    public function view(User $user, JsonPreset $jsonPreset)
+    public function view(User $user, JsonPreset $jsonPreset): bool
     {
         return $user->isSuperAdmin();
     }

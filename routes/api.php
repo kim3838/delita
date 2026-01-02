@@ -130,17 +130,18 @@ Route::group([
     Route::get('accounts', [AccountController::class, 'index']);
     Route::get('account-selections', [AccountController::class, 'selection']);
     Route::get('account/{ulid}', [AccountController::class, 'show']);
-    Route::get('account-check/{ulid}', [AccountController::class, 'check']);
+    Route::get('account-gate/{ulid}', [AccountController::class, 'showGate']);
     Route::post('account', [AccountController::class, 'store']);
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
 
     //User
     Route::get('users', [UserController::class, 'index']);
+    Route::get('users-gate', [UserController::class, 'indexGate']);
     Route::get('user/{ulid}', [UserController::class, 'show']);
+    Route::get('user-gate/{ulid}', [UserController::class, 'showGate']);
     Route::post('user-validate', [UserController::class, 'validate']);
     Route::post('user', [UserController::class, 'store']);
     Route::patch('user/{userId}', [UserController::class, 'update']);
-    Route::get('user-check/{ulid}', [UserController::class, 'check']);
 
     Route::post('autogenerate-user-validate', [UserController::class, 'autoGenerateValidate']);
     Route::post('autogenerate-user', [UserController::class, 'autoGenerate']);
@@ -150,7 +151,7 @@ Route::group([
     //Formula
     Route::get('formulas', [FormulaController::class, 'index']);
     Route::get('formula-selections', [FormulaController::class, 'selection']);
-    Route::get('formula-check/{ulid}', [FormulaController::class, 'check']);
+    Route::get('formula-gate/{ulid}', [FormulaController::class, 'showGate']);
     Route::get('formula/{ulid}', [FormulaController::class, 'show']);
     Route::post('formula', [FormulaController::class, 'store']);
     Route::patch('formula/{formulaId}', [FormulaController::class, 'update']);
@@ -164,19 +165,21 @@ Route::group([
     Route::get('companies', [CompanyController::class, 'index']);
     Route::get('company-selections', [CompanyController::class, 'selection']);
     Route::get('company/{ulid}', [CompanyController::class, 'show']);
-    Route::get('company-check/{ulid}', [CompanyController::class, 'check']);
+    Route::get('company-gate/{ulid}', [CompanyController::class, 'showGate']);
     Route::post('company', [CompanyController::class, 'store']);
     Route::patch('company/{companyId}', [CompanyController::class, 'update']);
 
     //User relation
     Route::get('user-is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
 
-    Route::get('associated-users', [AssociatedUserController::class, 'index']);
-
     Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
     Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
 
+    Route::get('associated-users', [AssociatedUserController::class, 'index']);
+    Route::get('associated-users-gate', [AssociatedUserController::class, 'indexGate']);
+
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+    Route::get('associated-companies-gate', [AssociatedCompanyController::class, 'indexGate']);
     Route::get('associated-company/{ulid}', [AssociatedCompanyController::class, 'show']);
     Route::patch('associated-company/{companyId}', [AssociatedCompanyController::class, 'update']);
     Route::get('associated-company-selections', [AssociatedCompanyController::class, 'selection']);
@@ -206,7 +209,7 @@ Route::group([
 
     //JSON Preset
     Route::get('json-presets', [JsonPresetController::class, 'index']);
-    Route::get('json-preset-check/{jsonPresetId}', [JsonPresetController::class, 'check']);
+    Route::get('json-preset-gate/{jsonPresetId}', [JsonPresetController::class, 'showGate']);
     Route::post('json-preset', [JsonPresetController::class, 'store']);
     Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
     Route::get('json-preset-download/{jsonPresetId}', [JsonPresetController::class, 'download']);

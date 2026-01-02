@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\AssociatedUserRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\User\ListUserRequest;
 use App\Transformers\AssociatedUser\ListTransformer;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class AssociatedUserController extends Controller
 {
-    public function index(Request $request)
+    public function indexGate(ListUserRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListUserRequest $request)
     {
         if($request->expectsJson()){
 

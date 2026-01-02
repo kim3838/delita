@@ -53,7 +53,7 @@ class FormulaController extends Controller
         abort(404);
     }
 
-    public function check(ViewFormulaRequest $request, $ulid)
+    public function showGate(ViewFormulaRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

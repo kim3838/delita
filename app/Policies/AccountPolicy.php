@@ -7,12 +7,12 @@ use App\Models\User;
 
 class AccountPolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->isSuperAdmin();
     }
 
-    public function view(User $user, Account $account)
+    public function view(User $user, Account $account): bool
     {
         return $user->isSuperAdmin();
     }

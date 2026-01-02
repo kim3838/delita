@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\UserRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\User\ListUserRequest;
 use App\Http\Requests\User\StoreAutogenerateUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\ViewUserRequest;
 use App\Transformers\User\ItemTransformer;
 use App\Transformers\User\ListTransformer;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -57,7 +58,17 @@ class UserController extends Controller
         abort(404);
     }
 
-    public function index(Request $request)
+    public function indexGate(ListUserRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListUserRequest $request)
     {
         if($request->expectsJson()){
 
@@ -96,7 +107,7 @@ class UserController extends Controller
         abort(404);
     }
 
-    public function show(Request $request, $ulid)
+    public function show(ViewUserRequest $request, $ulid)
     {
         if($request->expectsJson()){
 
@@ -109,7 +120,7 @@ class UserController extends Controller
         abort(404);
     }
 
-    public function check(Request $request, $ulid)
+    public function showGate(ViewUserRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

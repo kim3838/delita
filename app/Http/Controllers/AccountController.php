@@ -66,7 +66,7 @@ class AccountController extends Controller
         abort(404);
     }
 
-    public function check(ViewAccountRequest $request, $ulid)
+    public function showGate(ViewAccountRequest $request, $ulid)
     {
         if($request->expectsJson()){
 

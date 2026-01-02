@@ -39,7 +39,7 @@ class JsonPresetController extends Controller
         abort(404);
     }
 
-    public function check(ViewJsonPresetRequest $request, $jsonPresetId)
+    public function showGate(ViewJsonPresetRequest $request, $jsonPresetId)
     {
         if($request->expectsJson()){
 
