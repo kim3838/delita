@@ -15,7 +15,8 @@ class BasePolicy
             return false;
         }
 
-        return Company::query()->findOrFail($companyId)
+        return Company::query()
+                ->findOrFail($companyId)
                 ->users
                 ->findOrfail($user->id)
                 ->pivot
@@ -24,7 +25,8 @@ class BasePolicy
 
     protected function userIsAdminInAnyCompany(User $user): bool
     {
-        return (bool)CompanyUser::where('user_id', $user->id)
+        return (bool)CompanyUser::query()
+            ->where('user_id', $user->id)
             ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
             ->count();
     }
