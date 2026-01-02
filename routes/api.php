@@ -218,6 +218,7 @@ Route::group([
 
     //Pay Frequencies
     Route::get('pay-frequencies', [PayFrequencyController::class, 'index']);
+    Route::get('pay-frequencies-gate', [PayFrequencyController::class, 'indexGate']);
     Route::get('pay-frequency-selections', [PayFrequencyController::class, 'selection']);
     Route::patch('pay-frequency/{payFrequencyId}', [PayFrequencyController::class, 'update']);
 

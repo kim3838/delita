@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\PayFrequency\ListPayFrequencyRequest;
 use App\Http\Requests\PayFrequency\UpdatePayFrequencyRequest;
 use App\Transformers\PayFrequency\ItemTransformer;
 use App\Transformers\PayFrequency\PatchableTransformer;
@@ -17,7 +18,17 @@ class PayFrequencyController extends Controller
         protected readonly PayFrequencyRepository $repository
     ){}
 
-    public function index(Request $request)
+    public function indexGate(ListPayFrequencyRequest $request)
+    {
+        if($request->expectsJson()){
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function index(ListPayFrequencyRequest $request)
     {
         if($request->expectsJson()){
 

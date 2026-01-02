@@ -7,6 +7,15 @@ use App\Models\User;
 
 class PayFrequencyPolicy extends BasePolicy
 {
+    public function viewAny(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+    }
+
     public function update(User $user, PayFrequency $payFrequency): bool
     {
         if($user->isSuperAdmin()){
