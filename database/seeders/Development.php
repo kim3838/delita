@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
+use App\Enums\AccountPlan;
 use App\Enums\AccountSubscriptionModules;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
@@ -66,117 +67,133 @@ class Development extends Seeder
         Prototype::factory()->count(50)->create();
 
         //Account 1001
-        $account1001 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString()]);
+        $account1001 = Account::query()->firstOrCreate(
+            ['number' => 'ACCOUNT20251001'],
+            ['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString()]
+        );
         //Account 1002
-        $account1002 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
+        $account1002 = Account::query()->firstOrCreate(
+            ['number' => 'ACCOUNT20251002'],
+            ['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString(),]
+        );
         //Account 1003
-        $account1003 = Account::factory()->standard()->create(['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'date_registered' => Carbon::now()->toDateTimeString(),]);
+        $account1003 = Account::query()->firstOrCreate(
+            ['number' => 'ACCOUNT20251003'],
+            ['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString(),]
+        );
 
-        $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-        $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        if($account1001->subscriptions->isEmpty()){
+            $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        }
 
-        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::INVENTORY, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-        $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::FINANCE_ACCOUNTING, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        if($account1002->subscriptions->isEmpty()){
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::INVENTORY, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::FINANCE_ACCOUNTING, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        }
 
-        $account1003->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        if($account1003->subscriptions->isEmpty()){
+            $account1003->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+        }
 
-        $philippines = Country::where('iso2', 'PH')->first();
+        $philippines = Country::query()->where('iso2', 'PH')->first();
 
         //Account 1001 Companies
-        $company1001A = $account1001->companies()->create(['short_name' => '1001A', 'name' => 'Company 1001-A', 'code' => '1001-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1001A = $account1001->companies()->firstOrCreate(['code' => '1001-A'],['short_name' => '1001A', 'name' => 'Company 1001-A', 'code' => '1001-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002 Companies
-        $company1002A = $account1002->companies()->create(['short_name' => '1002A', 'name' => 'Company 1002-A', 'code' => '1002-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002B = $account1002->companies()->create(['short_name' => '1002B', 'name' => 'Company 1002-B', 'code' => '1002-B', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002C = $account1002->companies()->create(['short_name' => '1002C', 'name' => 'Company 1002-C', 'code' => '1002-C', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
-        $company1002D = $account1002->companies()->create(['short_name' => '1002D', 'name' => 'Company 1002-D', 'code' => '1002-D', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002A = $account1002->companies()->firstOrCreate(['code' => '1002-A'],['short_name' => '1002A', 'name' => 'Company 1002-A', 'code' => '1002-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002B = $account1002->companies()->firstOrCreate(['code' => '1002-B'],['short_name' => '1002B', 'name' => 'Company 1002-B', 'code' => '1002-B', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002C = $account1002->companies()->firstOrCreate(['code' => '1002-C'],['short_name' => '1002C', 'name' => 'Company 1002-C', 'code' => '1002-C', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1002D = $account1002->companies()->firstOrCreate(['code' => '1002-D'],['short_name' => '1002D', 'name' => 'Company 1002-D', 'code' => '1002-D', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1001 Companies
-        $company1003A = $account1003->companies()->create(['short_name' => '1003A', 'name' => 'Company 1003-A', 'code' => '1003-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+        $company1003A = $account1003->companies()->firstOrCreate(['code' => '1003-A'],['short_name' => '1003A', 'name' => 'Company 1003-A', 'code' => '1003-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
 
         //Account 1002User01
-        $account1002User01 = User::factory()->default()->create(['name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
-        $account1002User02 = User::factory()->default()->create(['name' => '1002.user.2', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User03 = User::factory()->default()->create(['name' => '1002.user.3', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User04 = User::factory()->default()->create(['name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $user05 = User::factory()->default()->create(['name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
+        $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $user05 = User::query()->firstOrCreate(['name' => 'user.5'],[...User::factory()->definition(), 'name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
         //Company 1002-C Shifts
         //Regular no lunch out/in
-        $shift1002C1 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C1 = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular no lunch out/in 4.5 hours ot
-        $shift1002C2 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
-        $this->createShiftSchedules(Shift::where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C2 = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
+        $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in
-        $shift1002C3 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C3 = $company1002C->shifts()->firstOrCreate(['code' => '002-DAYSHIFT-REG-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in 4.5 hours ot
-        $shift1002C4 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
-        $this->createShiftSchedules(Shift::where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C4 = $company1002C->shifts()->firstOrCreate(['code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT'],['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 6.5]);
+        $this->createShiftSchedules(Shift::query()->where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible no lunch out/in
-        $shift1002C5 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '003-DAYSHIFT-FLEX-2DOFF-NL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C5 = $company1002C->shifts()->firstOrCreate(['code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I'],['ulid' => Str::ulid(), 'code' => '003-DAYSHIFT-FLEX-2DOFF-NL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '003-DAYSHIFT-FLEX-2DOFF-NL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular flexible with lunch out/in
-        $shift1002C6 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '004-DAYSHIFT-FLEX-2DOFF-WL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C6 = $company1002C->shifts()->firstOrCreate(['code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '004-DAYSHIFT-FLEX-2DOFF-WL0/I', 'name' => 'FLEXIBLE 2 DAYS OFF[SUN,SAT] 00:00 AM to 00:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '004-DAYSHIFT-FLEX-2DOFF-WL0/I')->first(), true, ['00:00','00:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night midnight start no lunch out/in
-        $shift1002C7 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C7 = $company1002C->shifts()->firstOrCreate(['code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I'],['ulid' => Str::ulid(), 'code' => '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 AM to 10:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '005-GRAVEYARD-NHT-MIDNIGHT-2DOFF-NL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night midnight start with lunch out/in
-        $shift1002C8 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C8 = $company1002C->shifts()->firstOrCreate(['code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 00:00 PM to 10:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '006-GRAVEYARD-NHT-MIDNIGHT-2DOFF-WL0/I')->first(), false, ['00:00','10:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in
-        $shift1002C9 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C9 = $company1002C->shifts()->firstOrCreate(['code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I'],['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 3 hours ot
-        $shift1002C10 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
-        $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C10 = $company1002C->shifts()->firstOrCreate(['code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT'],['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM NO LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 3]);
+        $this->createShiftSchedules(Shift::query()->where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in 10 hours ot quadruple split
-        $shift1002C11 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
-        $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C11 = $company1002C->shifts()->firstOrCreate(['code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT'],['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM NO LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $this->createShiftSchedules(Shift::query()->where('code', '007-GRAVEYARD-NHT-2DOFF-NL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in
-        $shift1002C12 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C12 = $company1002C->shifts()->firstOrCreate(['code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I')->first(), false, ['21:00','07:00'], '10:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 3 hours ot
-        $shift1002C13 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
-        $this->createShiftSchedules(Shift::where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C13 = $company1002C->shifts()->firstOrCreate(['code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT'],['ulid' => Str::ulid(), 'code' => '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 04:00 AM WITH LUNCH OUT/IN 03:00 MAX OT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 3]);
+        $this->createShiftSchedules(Shift::query()->where('code', '008-GRAVEYARD-NHT-2DOFF-WL0/I-3MOT')->first(), false, ['21:00','04:00'], '07:00', true, ['01:00','02:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night with lunch out/in 10 hours ot quadruple split
-        $shift1002C14 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
-        $this->createShiftSchedules(Shift::where('code', '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C14 = $company1002C->shifts()->firstOrCreate(['code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT'],['ulid' => Str::ulid(), 'code' => '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 18:00 PM to 21:00 PM WITH LUNCH OUT/IN 10:00 MAX OT QUADRUPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 0, 'max_overtime' => 10]);
+        $this->createShiftSchedules(Shift::query()->where('code', '007-GRAVEYARD-NHT-2DOFF-WL0/I-10MOTQUADSPLIT')->first(), false, ['18:00','21:00'], '03:00', true, ['19:00','20:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch double split
-        $shift1002C15 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C15 = $company1002C->shifts()->firstOrCreate(['code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT'],['ulid' => Str::ulid(), 'code' => '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '009-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch double split
-        $shift1002C16 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C16 = $company1002C->shifts()->firstOrCreate(['code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT'],['ulid' => Str::ulid(), 'code' => '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH DOUBLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '010-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-2-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['23:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Night no lunch out/in, lunch triple split
-        $shift1002C17 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C17 = $company1002C->shifts()->firstOrCreate(['code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT'],['ulid' => Str::ulid(), 'code' => '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM NO LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '011-GRAVEYARD-NHT-2DOFF-NL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
         //Night with lunch out/in, lunch triple split
-        $shift1002C18 = $company1002C->shifts()->create(['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
-        $this->createShiftSchedules(Shift::where('code', '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
-
+        $shift1002C18 = $company1002C->shifts()->firstOrCreate(['code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT'],['ulid' => Str::ulid(), 'code' => '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT', 'name' => 'GRAVEYARD 2 DAYS OFF[SUN,SAT] 21:00 PM to 07:00 AM WITH LUNCH OUT/IN LUNCH TRIPLE SPLIT', 'type' => ShiftType::GRAVEYARD, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
+        $this->createShiftSchedules(Shift::query()->where('code', '012-GRAVEYARD-NHT-2DOFF-WL0/I-LUNCH-3-SPLIT')->first(), false, ['21:00','07:00'], '10:00', true, ['21:30','00:30'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Company 1002-C Leave types
-        $leave1002C1 = $company1002C->leaveTypes()->create([
+        $leave1002C1 = $company1002C->leaveTypes()->firstOrCreate([
+            'code' => 'PVL'
+        ],[
             'ulid' => Str::ulid(),
             'code' => 'PVL',
             'name' => 'Vacation leave w/ pay',
@@ -200,11 +217,15 @@ class Development extends Seeder
             'carry_over_balance_value' => 7,
         ]);
 
-        $leave1002C1->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 4, 'balance' => 2]);
-        $leave1002C1->balancePerPeriod()->create(['from_period' => 5, 'to_period' => 5, 'balance' => 5]);
-        $leave1002C1->balancePerPeriod()->create(['from_period' => 6, 'balance' => 10]);
+        if($leave1002C1->balancePerPeriod->isEmpty()){
+            $leave1002C1->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 4, 'balance' => 2]);
+            $leave1002C1->balancePerPeriod()->create(['from_period' => 5, 'to_period' => 5, 'balance' => 5]);
+            $leave1002C1->balancePerPeriod()->create(['from_period' => 6, 'balance' => 10]);
+        }
 
-        $leave1002C2 = $company1002C->leaveTypes()->create([
+        $leave1002C2 = $company1002C->leaveTypes()->firstOrCreate([
+            'code' => 'SL'
+        ],[
             'ulid' => Str::ulid(),
             'code' => 'SL',
             'name' => 'Sick leave',
@@ -223,9 +244,13 @@ class Development extends Seeder
             'carry_over_balance_per_new_period' => false,
         ]);
 
-        $leave1002C2->balancePerPeriod()->create(['from_period' => 1, 'balance' => 6]);
+        if($leave1002C2->balancePerPeriod->isEmpty()){
+            $leave1002C2->balancePerPeriod()->create(['from_period' => 1, 'balance' => 6]);
+        }
 
-        $leave1002C3 = $company1002C->leaveTypes()->create([
+        $leave1002C3 = $company1002C->leaveTypes()->firstOrCreate([
+            'code' => 'EL'
+        ],[
             'ulid' => Str::ulid(),
             'code' => 'EL',
             'name' => 'Emergency leave',
@@ -250,10 +275,14 @@ class Development extends Seeder
             'carry_over_balance_value' => 6,
         ]);
 
-        $leave1002C3->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 2, 'balance' => 3]);
-        $leave1002C3->balancePerPeriod()->create(['from_period' => 3, 'balance' => 6]);
+        if($leave1002C3->balancePerPeriod->isEmpty()){
+            $leave1002C3->balancePerPeriod()->create(['from_period' => 2, 'to_period' => 2, 'balance' => 3]);
+            $leave1002C3->balancePerPeriod()->create(['from_period' => 3, 'balance' => 6]);
+        }
 
-        $leave1002C4 = $company1002C->leaveTypes()->create([
+        $leave1002C4 = $company1002C->leaveTypes()->firstOrCreate([
+            'code' => 'CL'
+        ],[
             'ulid' => Str::ulid(),
             'code' => 'CL',
             'name' => 'Casual leave',
@@ -277,9 +306,11 @@ class Development extends Seeder
             'carry_over_balance_value' => 6,
         ]);
 
-        $leave1002C4->balancePerPeriod()->create(['from_period' => 1, 'to_period' => 1, 'balance' => 0]);
-        $leave1002C4->balancePerPeriod()->create(['from_period' => 2, 'balance' => 2]);
-        $leave1002C4->balancePerPeriod()->create(['from_period' => 3, 'balance' => 4]);
+        if($leave1002C4->balancePerPeriod->isEmpty()){
+            $leave1002C4->balancePerPeriod()->create(['from_period' => 1, 'to_period' => 1, 'balance' => 0]);
+            $leave1002C4->balancePerPeriod()->create(['from_period' => 2, 'balance' => 2]);
+            $leave1002C4->balancePerPeriod()->create(['from_period' => 3, 'balance' => 4]);
+        }
 
         /*
          * Employee: has employee info and default assigned to a company
@@ -288,6 +319,7 @@ class Development extends Seeder
          * */
 
         //Assign 1002User01 to Company 1001-A as Admin
+        $account1002User01->companies()->detach();
         $account1002User01->companies()->syncWithoutDetaching([$company1001A->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign 1002User01 to Company 1002-A as Employee
@@ -298,6 +330,7 @@ class Development extends Seeder
         $account1002User01->companies()->syncWithoutDetaching([$company1002B->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign 1002User02 to Company 1002-B as Employee
+        $account1002User02->companies()->detach();
         $account1002User02->companies()->syncWithoutDetaching([$company1002B->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
 
 
@@ -308,9 +341,11 @@ class Development extends Seeder
         $account1002User02->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
 
         //Assign 1002User03 to Company 1002-C as Employee
+        $account1002User03->companies()->detach();
         $account1002User03->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
 
         //Assign 1002User04 to Company 1002-C as Admin
+        $account1002User04->companies()->detach();
         $account1002User04->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign 1002User04 to Company 1002-D as Admin
@@ -321,13 +356,24 @@ class Development extends Seeder
 
         foreach (App::make(SalaryStatementModuleRepository::class)->defaultPresets() as $salaryStatementModule) {
 
-            $company1002B->salaryStatementModules()->create($salaryStatementModule);
-            $company1002C->salaryStatementModules()->create($salaryStatementModule);
+            $company1002B->salaryStatementModules()->firstOrCreate([
+                'name' => $salaryStatementModule['name'],
+                'formulable_type' => $salaryStatementModule['formulable_type']
+            ], $salaryStatementModule);
+
+            $company1002C->salaryStatementModules()->firstOrCreate([
+                'name' => $salaryStatementModule['name'],
+                'formulable_type' => $salaryStatementModule['formulable_type']
+            ], $salaryStatementModule);
         }
 
         $formulas = Formula::all();
 
         //Company 1002-A, 1002-B, 1002-C Assign Formula Presets
+        $company1002A->formulas()->detach();
+        $company1002B->formulas()->detach();
+        $company1002C->formulas()->detach();
+
         foreach ($formulas as $formula) {
 
             $settings = empty($formula->default_settings?->cast) ? null : json_encode($formula->default_settings?->cast);
@@ -339,11 +385,11 @@ class Development extends Seeder
 
         // Company 1001-A, 1002-A, 1002-B, 1002-C, and 1002-D Pay Frequencies
         foreach (App::make(PayFrequencyRepository::class)->defaultPresets() as $payFrequency) {
-            $company1001A->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
-            $company1002A->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
-            $company1002B->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
-            $company1002C->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
-            $company1002D->payFrequencies()->create(['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1001A->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002A->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002B->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002C->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
+            $company1002D->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
         }
 
         //Company 1002-B, 1002-C Pre-create Compensations
@@ -387,42 +433,42 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Create Departments to Company 1002-B
-        $company1002B->departments()->create(['name' => 'Executive']);
-        $company1002B->departments()->create(['name' => 'HR']);
+        $company1002B->departments()->firstOrCreate(['name' => 'Executive']);
+        $company1002B->departments()->firstOrCreate(['name' => 'HR']);
         $company1002BHrDepartment = $company1002B->departments()->where('name', 'HR')->first();
-        $company1002B->departments()->create(['name' => 'Payroll', 'parent_id' => $company1002BHrDepartment->id]);
-        $company1002B->departments()->create(['name' => 'Training & Development', 'parent_id' => $company1002BHrDepartment->id]);
-        $company1002B->departments()->create(['name' => 'Finance & Accounting']);
+        $company1002B->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002B->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002B->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
         $company1002BFinanceAndAccountingDepartment = $company1002B->departments()->where('name', 'Finance & Accounting')->first();
-        $company1002B->departments()->create(['name' => 'Accounts Payable', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
-        $company1002B->departments()->create(['name' => 'Internal Audit', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+        $company1002B->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+        $company1002B->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
 
         //Create Departments to Company 1002-C
-        $company1002C->departments()->create(['name' => 'Executive']);
-        $company1002C->departments()->create(['name' => 'HR']);
+        $company1002C->departments()->firstOrCreate(['name' => 'Executive']);
+        $company1002C->departments()->firstOrCreate(['name' => 'HR']);
         $company1002CHrDepartment = $company1002C->departments()->where('name', 'HR')->first();
-        $company1002C->departments()->create(['name' => 'Payroll', 'parent_id' => $company1002CHrDepartment->id]);
-        $company1002C->departments()->create(['name' => 'Training & Development', 'parent_id' => $company1002CHrDepartment->id]);
-        $company1002C->departments()->create(['name' => 'Finance & Accounting']);
+        $company1002C->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002C->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002C->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
         $company1002CFinanceAndAccountingDepartment = $company1002C->departments()->where('name', 'Finance & Accounting')->first();
-        $company1002C->departments()->create(['name' => 'Accounts Payable', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
-        $company1002C->departments()->create(['name' => 'Internal Audit', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+        $company1002C->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+        $company1002C->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
 
         /**************************************************************************************************************************************************************************************************************/
 
         //Create Designations to Company 1002-B
-        $company1002B->designations()->create(['name' => 'CEO']);
-        $company1002B->designations()->create(['name' => 'HR Manager']);
-        $company1002B->designations()->create(['name' => 'HR Assistant']);
-        $company1002B->designations()->create(['name' => 'Account Manager']);
-        $company1002B->designations()->create(['name' => 'Accounting Staff']);
+        $company1002B->designations()->firstOrCreate(['name' => 'CEO']);
+        $company1002B->designations()->firstOrCreate(['name' => 'HR Manager']);
+        $company1002B->designations()->firstOrCreate(['name' => 'HR Assistant']);
+        $company1002B->designations()->firstOrCreate(['name' => 'Account Manager']);
+        $company1002B->designations()->firstOrCreate(['name' => 'Accounting Staff']);
 
         //Create Designations to Company 1002-C
-        $company1002C->designations()->create(['name' => 'CEO']);
-        $company1002C->designations()->create(['name' => 'HR Manager']);
-        $company1002C->designations()->create(['name' => 'HR Assistant']);
-        $company1002C->designations()->create(['name' => 'Account Manager']);
-        $company1002C->designations()->create(['name' => 'Accounting Staff']);
+        $company1002C->designations()->firstOrCreate(['name' => 'CEO']);
+        $company1002C->designations()->firstOrCreate(['name' => 'HR Manager']);
+        $company1002C->designations()->firstOrCreate(['name' => 'HR Assistant']);
+        $company1002C->designations()->firstOrCreate(['name' => 'Account Manager']);
+        $company1002C->designations()->firstOrCreate(['name' => 'Accounting Staff']);
 
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee A1001 Info, Contact and Employment Profile to Company 1002-A
@@ -463,7 +509,9 @@ class Development extends Seeder
             'C1001', 'Employee 01', 'C', '1002');
         $this->createEmployeeContact($employeeC1001, 'c1001.01@officemail.com', 'c1001.01@personalmail.com');
         $this->createEmploymentProfile($employeeC1001);
+        $employeeC1001->shifts()->detach();
         $employeeC1001->shifts()->syncWithoutDetaching([$shift1002C1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1001->leaveTypes()->detach();
         $employeeC1001->leaveTypes()->syncWithoutDetaching([
             $leave1002C1->id => ['override_balance_upon_eligibility' => true, 'balance_upon_eligibility' => 0],
             $leave1002C2->id
@@ -478,24 +526,27 @@ class Development extends Seeder
             null,
             'C1002', 'Employee 02', 'C', '1002');
         $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
-        $employeeC1002->employmentProfiles()->create([
+        $employeeC1002->employmentProfiles()->firstOrCreate([
             'status' => EmploymentStatus::ACTIVE,
             'employment_type' => EmploymentType::PROBATIONARY,
             'start_date' => '2025-01-01',
             'end_of_service_type' => EndOfServiceType::END_OF_CONTRACT,
             'end_date' => '2025-03-31'
         ]);
-        $employeeC1002->employmentProfiles()->create([
+        $employeeC1002->employmentProfiles()->firstOrCreate([
             'status' => EmploymentStatus::ACTIVE,
             'employment_type' => EmploymentType::FULL_TIME,
             'start_date' => '2025-04-01',
             'end_of_service_type' => EndOfServiceType::END_OF_CONTRACT,
             'end_date' => '2029-11-30'
         ]);
+        $employeeC1002->shifts()->detach();
         $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1002->leaveTypes()->detach();
         $employeeC1002->leaveTypes()->syncWithoutDetaching([
             $leave1002C4->id
         ]);
+        $employeeC1002->leaveBalanceAdjustments()->delete();
         $employeeC1002->leaveBalanceAdjustments()->create([
             'ulid' => Str::ulid(),
             'leave_type_id' => $leave1002C4->id,
@@ -554,11 +605,8 @@ class Development extends Seeder
             'balance' => 1,
             'effective_date' => '2027-09-21'
         ]);
-//        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-21']);
-//        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-22']);
-//        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-23']);
-//        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2025-05-24']);
 
+        $employeeC1002->leaves()->delete();
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-21']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-22']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-23']);
@@ -587,6 +635,7 @@ class Development extends Seeder
             'C1003', 'Employee 03', 'C', '1002');
         $this->createEmployeeContact($employeeC1003, 'c1003.01@officemail.com', '', '', '+639122111789');
         $this->createEmploymentProfile($employeeC1003);
+        $employeeC1003->shifts()->detach();
         $employeeC1003->shifts()->syncWithoutDetaching([$shift1002C3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
 
         //Create Employee C1004 to C1018 Info, Contact, Employment Profile and Shift
@@ -619,16 +668,25 @@ class Development extends Seeder
         $company1002BCompensationTax = $company1002B->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
 
         //Create Compensations for Employee B1001
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation']);
+        $employeeB1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]
+        );
+        $employeeB1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]
+        );
+        $employeeB1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation']
+        );
         //Create Deductions for Employee B1001
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BTardiness->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BUndertime->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BAbsent->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BUndertime->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee B1001
-        $employeeB1001->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+        $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Company 1002-C Monthly Pay Frequency
         $company1002CMonthlyPayFrequency = $company1002C->payFrequencies()->where('code', 'MONTHLY')->first();
@@ -648,45 +706,74 @@ class Development extends Seeder
         $company1002CCompensationTax = $company1002C->incomeTaxes->where('name', 'Compensation Tax')->where('type', IncomeTax::COMPENSATION_TAX)->first();
 
         //Create Compensations for Employee C1001
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        $employeeC1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1001->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']
+        );
         //Create Deductions for Employee C1001
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1001
-        $employeeC1001->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+        $employeeC1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Create Compensations for Employee C1002
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        $employeeC1002->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1002->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1002->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']
+        );
         //Create Deductions for Employee C1002
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1002->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1002
-        $employeeC1002->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+        $employeeC1002->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         //Create Compensations for Employee C1003
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']);
+        $employeeC1003->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1003->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+        );
+        $employeeC1003->payrollComponents()->firstOrCreate(
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation']
+        );
         //Create Deductions for Employee C1003
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CTardiness->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CUndertime->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CAbsent->id, 'payroll_componentable_type' => 'deduction']);
+        $employeeC1003->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002CSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee C1003
-        $employeeC1003->payrollComponents()->create(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
+        $employeeC1003->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002CCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
 
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-C Holidays
-        $company1002C->holidays()->create([
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Legal Recurring Jan 11th',
+        ],[
             'ulid' => Str::ulid(),
             'name' => 'Legal Recurring Jan 11th',
             'type' => HolidayType::LEGAL,
@@ -695,7 +782,9 @@ class Development extends Seeder
             'active' => true,
             'effective_date' => '2000-01-11',
         ]);
-        $company1002C->holidays()->create([
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Special Recurring Jan 13th',
+        ],[
             'ulid' => Str::ulid(),
             'name' => 'Special Recurring Jan 13th',
             'type' => HolidayType::SPECIAL,
@@ -710,7 +799,9 @@ class Development extends Seeder
     {
         $formulas = $company->formulas;
 
-        $company->{$component}()->create([
+        $company->{$component}()->firstOrCreate([
+            'code' => $attributes['code'],
+        ],[
             ...collect($attributes)->except('formula')->toArray(),
             'order' => ++$index,
             'company_formula_id' => $formulas->where('formulable_type', $formulableType)
@@ -733,7 +824,9 @@ class Development extends Seeder
 
             if($dayOff){
 
-                $shift->schedules()->create([
+                $shift->schedules()->firstOrCreate([
+                    'week_day' => $weekday
+                ],[
                     'week_day' => $weekday,
                     'is_rest_day' => in_array($weekday, $restDays),
                     'is_day_off' => true,
@@ -750,7 +843,9 @@ class Development extends Seeder
 
             } else {
 
-                $shift->schedules()->create([
+                $shift->schedules()->firstOrCreate([
+                    'week_day' => $weekday
+                ],[
                     'week_day' => $weekday,
                     'is_rest_day' => in_array($weekday, $restDays),
                     'is_day_off' => false,
@@ -781,7 +876,10 @@ class Development extends Seeder
     ){
         $baseModel = empty($user) ? $company : $user;
 
-        return $baseModel->employees()->create([
+        return $baseModel->employees()->firstOrCreate([
+            'company_id' => $company->id,
+            'number' => $number,
+        ],[
             'ulid' => Str::ulid(),
             'company_id' => $company->id,
             'department_id' => $department?->id,
@@ -796,20 +894,24 @@ class Development extends Seeder
 
     public function createEmployeeContact(Employee $employee, $officeEmail = '', $personalEmail = '', $officePhone = '', $personalPhone = '')
     {
-        return $employee->contact()->create([
-            'office_email' => $officeEmail,
-            'personal_email' => $personalEmail,
-            'office_phone' => $officePhone,
-            'personal_phone' => $personalPhone
-        ]);
+        return !empty($employee->contact)
+            ? $employee->contact
+            : $employee->contact()->create([
+                'office_email' => $officeEmail,
+                'personal_email' => $personalEmail,
+                'office_phone' => $officePhone,
+                'personal_phone' => $personalPhone
+            ]);
     }
 
     public function createEmploymentProfile(Employee $employee, EmploymentType $employmentType = EmploymentType::NOT_SPECIFIED)
     {
-        return $employee->employmentProfiles()->create([
-            'status' => EmploymentStatus::ACTIVE,
-            'employment_type' => $employmentType,
-            'start_date' => Carbon::now()->toDateString()
-        ]);
+        return !$employee->employmentProfiles->isEmpty()
+            ? $employee->employmentProfiles->first()
+            : $employee->employmentProfiles()->create([
+                'status' => EmploymentStatus::ACTIVE,
+                'employment_type' => $employmentType,
+                'start_date' => Carbon::now()->toDateString()
+            ]);
     }
 }
