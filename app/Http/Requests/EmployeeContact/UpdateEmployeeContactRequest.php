@@ -86,7 +86,7 @@ class UpdateEmployeeContactRequest extends FormRequest
 
     private function isEmailTaken(string $email): bool
     {
-        $queryBuilder = EmployeeContact::getQuery()
+        $queryBuilder = EmployeeContact::query()
             ->where('employee_id', '!=', $this->route('employeeId'))
             ->where(function ($query) use ($email) {
                 $query->where('office_email', $email)
@@ -97,7 +97,7 @@ class UpdateEmployeeContactRequest extends FormRequest
     }
     private function isPhoneTaken(string $phone): bool
     {
-        $queryBuilder = EmployeeContact::getQuery()
+        $queryBuilder = EmployeeContact::query()
             ->where('employee_id', '!=', $this->route('employeeId'))
             ->where(function ($query) use ($phone) {
                 $query->where('office_phone', $phone)

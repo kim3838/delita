@@ -80,7 +80,7 @@ class StoreEmployeeContactRequest extends FormRequest
 
     public function isEmailTaken(string $email): bool
     {
-        $queryBuilder = EmployeeContact::getQuery()->where('office_email', $email)
+        $queryBuilder = EmployeeContact::query()->where('office_email', $email)
             ->orWhere('personal_email', $email);
 
         return $queryBuilder->exists();
@@ -88,7 +88,7 @@ class StoreEmployeeContactRequest extends FormRequest
 
     private function isPhoneTaken(string $phone): bool
     {
-        $queryBuilder = EmployeeContact::getQuery()->where('office_phone', $phone)
+        $queryBuilder = EmployeeContact::query()->where('office_phone', $phone)
             ->orWhere('personal_phone', $phone);
 
         return $queryBuilder->exists();
