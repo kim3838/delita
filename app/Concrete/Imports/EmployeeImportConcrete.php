@@ -71,7 +71,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
 
                 $officeEmailValidation = Validator::make($row,[
                     'office_email' => [
-                        'email:rfc',
+                        'email:rfc,dns',
                         ...(App::environment('production') ? [
                             Rule::unique('users', 'email')
                         ] : [])

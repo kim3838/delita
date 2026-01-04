@@ -28,7 +28,7 @@ class StoreUserRequest extends FormRequest
             ],
             'email' => [
                 'required',
-                'email:rfc',
+                'email:rfc,dns',
                 ...(App::environment('production') ? [
                     Rule::unique('users')
                 ] : [])

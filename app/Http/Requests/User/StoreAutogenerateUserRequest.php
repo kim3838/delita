@@ -22,7 +22,7 @@ class StoreAutogenerateUserRequest extends FormRequest
             'given_name' => 'required|string|max:255',
             'office_email' => [
                 'required',
-                'email:rfc',
+                'email:rfc,dns',
                 ...(App::environment('production') ? [
                     Rule::unique('users', 'email')
                 ] : [])

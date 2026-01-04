@@ -23,7 +23,7 @@ class UpdateEmployeeContactRequest extends FormRequest
             'employee_id' => 'required|numeric|integer',
             'office_email' => [
                 'nullable',
-                'email:rfc',
+                'email:rfc,dns',
                 'different:personal_email',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
@@ -33,7 +33,7 @@ class UpdateEmployeeContactRequest extends FormRequest
             ],
             'personal_email' => [
                 'nullable',
-                'email:rfc',
+                'email:rfc,dns',
                 'different:office_email',
                 function ($attribute, $value, $fail) {
                     if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
