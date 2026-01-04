@@ -26,14 +26,17 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
-            ->when(!empty($filters->account_plan) && is_array($filters->account_plan), function ($builder) use ($filters) {
-                $builder->whereIn('accounts.plan', $filters->account_plan);
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('accounts.number', 'LIKE', "%$value%")
+                        ->orWhere('accounts.email', 'LIKE', "%$value%");
+                });
             })
             ->select([
                 'accounts.id as id',
                 'accounts.ulid as ulid',
                 'accounts.number as number',
-                'accounts.plan as plan',
+                'accounts.email as email',
                 'accounts.date_registered as date_registered',
             ])
             ->groupBy('accounts.id');
