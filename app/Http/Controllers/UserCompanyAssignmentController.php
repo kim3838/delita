@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\UserCompanyAssignment\SyncUserCompanyAssignment;
 use App\Transformers\CompanyAssignment\ListTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -27,7 +28,7 @@ class UserCompanyAssignmentController extends Controller
         abort(404);
     }
 
-    public function sync(Request $request, $userId)
+    public function sync(SyncUserCompanyAssignment $request, $userId)
     {
         if($request->expectsJson()){
 
