@@ -19,7 +19,7 @@ return new class extends Migration
             $table->ulid()->unique()->index();
             $table->string('name');
 
-            if(App::environment('development')){
+            if(App::environment('development', 'staging')){
                 $table->string('email');
             } else {
                 $table->string('email')->unique();
