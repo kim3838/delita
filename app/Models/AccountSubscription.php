@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\AccountSubscriptionModules;
+use App\Enums\AccountSubscriptionModule;
+use App\Enums\AccountSubscriptionPlan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,12 +12,14 @@ class AccountSubscription extends Model
     protected $fillable = [
         'account_id',
         'module',
+        'plan',
         'date_subscribed'
     ];
 
     protected $casts = [
         'account_id' => 'int',
-        'module' => AccountSubscriptionModules::class,
+        'module' => AccountSubscriptionModule::class,
+        'plan' => AccountSubscriptionPlan::class,
         'date_subscribed' => 'date:Y-m-d'
     ];
 

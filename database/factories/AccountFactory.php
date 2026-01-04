@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\AccountPlan;
+use App\Enums\AccountSubscriptionPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +19,7 @@ class AccountFactory extends Factory
     {
         return [
             'number' => $this->faker->numberBetween(1000, 1100),
-            'plan' => AccountPlan::STANDARD
+            'plan' => AccountSubscriptionPlan::STANDARD
         ];
     }
 
@@ -27,7 +27,7 @@ class AccountFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'plan' => AccountPlan::STANDARD
+                'plan' => AccountSubscriptionPlan::STANDARD
             ];
         });
     }
@@ -36,7 +36,7 @@ class AccountFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'plan' => AccountPlan::BUSINESS
+                'plan' => AccountSubscriptionPlan::BUSINESS
             ];
         });
     }

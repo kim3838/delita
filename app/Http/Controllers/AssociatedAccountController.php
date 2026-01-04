@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\AssociatedAccount\ListTransformer;
-use App\Transformers\AssociatedAccount\SelectionTransformer;
+use App\Transformers\Account\ListTransformer;
+use App\Transformers\Account\SelectionTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 

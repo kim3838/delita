@@ -2,7 +2,7 @@
 
 namespace App\Models\Hydrations;
 
-use App\Enums\AccountPlan;
+use App\Enums\AccountSubscriptionPlan;
 use Illuminate\Database\Eloquent\Model;
 
 class AssociatedAccount extends Model
@@ -11,6 +11,6 @@ class AssociatedAccount extends Model
         'id' => 'int',
         'ulid' => 'string',
         'number' => 'string',
-        'plan' => AccountPlan::class,
+        'plan' => AccountSubscriptionPlan::class,
     ];
 }

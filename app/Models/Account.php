@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\AccountPlan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +12,7 @@ class Account extends Model
 
     protected $fillable = [
         'number',
-        'plan',
+        'email',
         'date_registered',
     ];
 
@@ -21,7 +20,7 @@ class Account extends Model
         'id' => 'int',
         'ulid' => 'string',
         'number' => 'string',
-        'plan' => AccountPlan::class,
+        'email' => 'string',
         'date_registered' => 'date:Y-m-d'
     ];
 

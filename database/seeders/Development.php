@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
-use App\Enums\AccountPlan;
-use App\Enums\AccountSubscriptionModules;
+use App\Enums\AccountSubscriptionPlan;
+use App\Enums\AccountSubscriptionModule;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
@@ -69,33 +69,33 @@ class Development extends Seeder
         //Account 1001
         $account1001 = Account::query()->firstOrCreate(
             ['number' => 'ACCOUNT20251001'],
-            ['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString()]
+            ['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString()]
         );
         //Account 1002
         $account1002 = Account::query()->firstOrCreate(
             ['number' => 'ACCOUNT20251002'],
-            ['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
         //Account 1003
         $account1003 = Account::query()->firstOrCreate(
             ['number' => 'ACCOUNT20251003'],
-            ['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'plan' => AccountPlan::STANDARD, 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
         if($account1001->subscriptions->isEmpty()){
-            $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-            $account1001->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1001->subscriptions()->create(['module' => AccountSubscriptionModule::EMPLOYEE_PORTAL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1001->subscriptions()->create(['module' => AccountSubscriptionModule::HR_PAYROLL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         }
 
         if($account1002->subscriptions->isEmpty()){
-            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::EMPLOYEE_PORTAL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::INVENTORY, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
-            $account1002->subscriptions()->create(['module' => AccountSubscriptionModules::FINANCE_ACCOUNTING, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModule::EMPLOYEE_PORTAL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModule::HR_PAYROLL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModule::INVENTORY, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1002->subscriptions()->create(['module' => AccountSubscriptionModule::FINANCE_ACCOUNTING, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         }
 
         if($account1003->subscriptions->isEmpty()){
-            $account1003->subscriptions()->create(['module' => AccountSubscriptionModules::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
+            $account1003->subscriptions()->create(['module' => AccountSubscriptionModule::HR_PAYROLL, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
         }
 
         $philippines = Country::query()->where('iso2', 'PH')->first();

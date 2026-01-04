@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\AccountPlan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,7 +16,13 @@ return new class extends Migration
             $table->id();
             $table->ulid()->unique()->index();
             $table->string('number')->unique();
-            $table->smallInteger('plan')->default(AccountPlan::STANDARD);
+
+            if(App::environment('development', 'staging')){
+                $table->string('email');
+            } else {
+                $table->string('email')->unique();
+            }
+
             $table->dateTime('date_registered')->nullable();
             $table->timestamps();
         });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AccountSubscriptionPlan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
             $table->smallInteger('module');
+            $table->smallInteger('plan')->default(AccountSubscriptionPlan::STANDARD);
             $table->dateTime('date_subscribed');
             $table->timestamps();
         });
