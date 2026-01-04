@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Blueprint\Repositories\AccountRepository;
+use App\Blueprint\Repositories\AccountSubscriptionRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Account\ListAccountRequest;
@@ -12,12 +13,17 @@ use App\Http\Requests\Account\ViewAccountRequest;
 use App\Transformers\Account\ItemTransformer;
 use App\Transformers\Account\ListTransformer;
 use App\Transformers\Account\SelectionTransformer;
+use App\Transformers\AccountSubscription\PatchableTransformer as AccountSubscriptionPatchableTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 
 class AccountController extends Controller
 {
+    public function __construct(
+        protected readonly AccountRepository $repository,
+        protected readonly AccountSubscriptionRepository $subscriptionRepository
+    ){}
+
     public function index(ListAccountRequest $request)
     {
         if($request->expectsJson()){
@@ -25,10 +31,7 @@ class AccountController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
-                Fractal::collection(
-                    App::make(AccountRepository::class)->paginate($filters),
-                    ListTransformer::class
-                )
+                Fractal::collection($this->repository->paginate($filters), ListTransformer::class)
             );
         }
 
@@ -42,11 +45,7 @@ class AccountController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(
-                Fractal::collection(
-                    App::make(AccountRepository::class)->selection($filters),
-                    SelectionTransformer::class,
-                    'selection'
-                )
+                Fractal::collection($this->repository->selection($filters), SelectionTransformer::class, 'selection')
             );
         }
 
@@ -57,10 +56,20 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
-            $account = App::make(AccountRepository::class)->show($ulid);
+            $account = $this->repository->show($ulid);
+
+            $subscriptions = $account->subscriptions->isEmpty()
+                ? []
+                : Fractal::collection($account->subscriptions->sortBy(function($item, $key){
+                    return $item->module->value;
+                }, SORT_NUMERIC), AccountSubscriptionPatchableTransformer::class)['data'];
+
             $account = $account ? Fractal::item($account, ItemTransformer::class) : $account;
 
-            return ResponseJson::successfulResponse(['account' => $account]);
+            return ResponseJson::successfulResponse([
+                'account' => $account,
+                'subscriptions' => $subscriptions
+            ]);
         }
 
         abort(404);
@@ -70,7 +79,7 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
-            $account = App::make(AccountRepository::class)->showAndTransformToBasic($ulid);
+            $account = $this->repository->showAndTransformToBasic($ulid);
 
             return ResponseJson::successfulResponse(['account' => $account]);
         }
@@ -82,16 +91,22 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
-            $data = array_merge(
-                $request->validated(),
-                ['date_registered' => Carbon::now()->toDateTimeString()]
-            );
+            $data = array_merge($request->validated(), ['date_registered' => Carbon::now()->toDateTimeString()]);
+
+            $account = $this->repository->store($data);
+
+            $subscriptions = collect($request->validated()['subscriptions'])->map(function ($subscription){
+                return [
+                    'module' => $subscription['module'],
+                    'plan' => $subscription['plan'],
+                    'date_subscribed' => Carbon::now()->toDateTimeString()
+                ];
+            });
+
+            $account->subscriptions()->createMany($subscriptions->toArray());
 
             return ResponseJson::successfulResponse([
-                'account' => Fractal::item(
-                    App::make(AccountRepository::class)->store($data),
-                    ItemTransformer::class
-                )
+                'account' => Fractal::item($account, ItemTransformer::class)
             ]);
         }
 
@@ -102,11 +117,41 @@ class AccountController extends Controller
     {
         if($request->expectsJson()){
 
+            if(!empty($request->validated()['spliced_subscriptions'])){
+                $this->subscriptionRepository->batchDelete($request->validated()['spliced_subscriptions']);
+            }
+
+            $account = $this->repository->update($accountId, $request->validated());
+
+            $subscriptions = collect($request->validated()['subscriptions'])->filter(function ($subscription){
+                return isset($subscription['id']) && $subscription['id'] != null;
+            })->map(function ($subscription){
+                return [
+                    'id' => $subscription['id'],
+                    'account_id' => $subscription['account_id'],
+                    'module' => $subscription['module'],
+                    'plan' => $subscription['plan'],
+                ];
+            });
+
+            foreach($subscriptions as $subscription){
+                $this->subscriptionRepository->update($subscription['id'], $subscription);
+            }
+
+            $newSubscriptions = collect($request->validated()['subscriptions'])->filter(function ($subscription){
+                return !isset($subscription['id']) || $subscription['id'] == null;
+            })->map(function ($subscription){
+                return [
+                    'module' => $subscription['module'],
+                    'plan' => $subscription['plan'],
+                    'date_subscribed' => Carbon::now()->toDateTimeString()
+                ];
+            });
+
+            $account->subscriptions()->createMany($newSubscriptions->toArray());
+
             return ResponseJson::successfulResponse([
-                'account' => Fractal::item(
-                    App::make(AccountRepository::class)->update($accountId, $request->validated()),
-                    ItemTransformer::class
-                )
+                'account' => Fractal::item($account, ItemTransformer::class)
             ]);
         }
 
