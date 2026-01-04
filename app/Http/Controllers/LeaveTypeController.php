@@ -114,6 +114,10 @@ class LeaveTypeController extends Controller
                 ];
             });
 
+            foreach($balancePerPeriods as $balancePerPeriod){
+                $this->balancePerPeriodRepository->update($balancePerPeriod['id'], $balancePerPeriod);
+            }
+
             $newBalancePerPeriods = collect($request->validated()['leave_type_balance_per_period'])->filter(function ($balancePerPeriod){
                 return !isset($balancePerPeriod['id']) || $balancePerPeriod['id'] == null;
             })->map(function ($balancePerPeriod){
@@ -123,10 +127,6 @@ class LeaveTypeController extends Controller
                     'balance' => $balancePerPeriod['balance'],
                 ];
             });
-
-            foreach($balancePerPeriods as $balancePerPeriod){
-                $this->balancePerPeriodRepository->update($balancePerPeriod['id'], $balancePerPeriod);
-            }
 
             $leaveType->balancePerPeriod()->createMany($newBalancePerPeriods->toArray());
 
