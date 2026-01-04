@@ -2,16 +2,20 @@
 
 namespace App\Enums;
 
-enum AccountPlan: int implements BaseEnum
+enum AccountSubscriptionModule: int implements BaseEnum
 {
-    case STANDARD = 100;
-    case BUSINESS = 500;
+    case EMPLOYEE_PORTAL = 50;
+    case HR_PAYROLL = 100;
+    case INVENTORY = 200;
+    case FINANCE_ACCOUNTING = 300;
 
     public function label(): string
     {
         return match ($this) {
-            self::STANDARD => 'Standard',
-            self::BUSINESS => 'Business',
+            self::EMPLOYEE_PORTAL => 'Employee Portal',
+            self::HR_PAYROLL => 'HR & Payroll',
+            self::INVENTORY => 'Inventory',
+            self::FINANCE_ACCOUNTING => 'Finance & Accounting',
         };
     }
 
