@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Blueprint\Repositories\AccountRepository;
+use App\Blueprint\Repositories\AccountSubscriptionRepository;
 use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
 use App\Blueprint\Repositories\AssociatedUserRepository;
@@ -44,6 +45,7 @@ use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\Repositories\AccountRepositoryEloquent;
+use App\Concrete\Repositories\AccountSubscriptionRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedAccountRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedCompanyRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedUserRepositoryEloquent;
@@ -91,6 +93,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
 {
     public $bindings = [
         'account' => AccountRepositoryEloquent::class,
+        'account_subscription' => AccountSubscriptionRepositoryEloquent::class,
         'associated_account' => AssociatedAccountRepositoryEloquent::class,
         'user' => UserRepositoryEloquent::class,
         'non_employee_user' => NonEmployeeUserRepositoryEloquent::class,
@@ -132,6 +135,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'leave_type_balance_per_period' => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
         'leave_balance_adjustment' => LeaveBalanceAdjustmentRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
+        AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
         NonEmployeeUserRepository::class => NonEmployeeUserRepositoryEloquent::class,
@@ -178,6 +182,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
     {
         return [
             'account',
+            'account_subscription',
             'associated_account',
             'user',
             'non_employee_user',
@@ -219,6 +224,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'leave_type_balance_per_period',
             'leave_balance_adjustment',
             AccountRepository::class,
+            AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
             NonEmployeeUserRepository::class,
