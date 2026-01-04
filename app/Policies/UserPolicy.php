@@ -23,8 +23,7 @@ class UserPolicy extends BasePolicy
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
 
-        return $this->userIsAdminInAnyCompany($user) &&
-            $userIsTheOneWhoCreatedTheStagedUser;
+        return $this->userIsAdminInAnyCompany($user);
     }
 
     public function create(User $user): bool
@@ -44,7 +43,6 @@ class UserPolicy extends BasePolicy
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
 
-        return $this->userIsAdminInAnyCompany($user) &&
-            $userIsTheOneWhoCreatedTheStagedUser;
+        return $this->userIsAdminInAnyCompany($user);
     }
 }
