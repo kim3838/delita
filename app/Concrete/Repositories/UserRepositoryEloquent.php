@@ -100,7 +100,8 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
 
         $familyName = strtolower($familyName);
         $givenNameFirstCharacter = substr(strtolower($givenName), 0, 1);
-        $username = "$familyName.$givenNameFirstCharacter." . ($userCount+1);
+        $fourCharacter = substr(crc32(($userCount+1)), -3) . _str_random(1);
+        $username = "$familyName.$givenNameFirstCharacter." . strtolower($fourCharacter);
         $password = Str::random(8);
 
         return $this->store([
