@@ -78,7 +78,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                     ],
                 ]);
 
-                if(App::environment('production') && $this->isEmailTaken($row['office_email'])) {
+                if($this->isEmailTakenAsEmployeeContact($row['office_email'])) {
                     $validationErrors[] = 'Email already taken.';
                 }
 
@@ -106,12 +106,13 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
 
     public function getExistingEmployeeNumbers($companyId): array
     {
-        return Employee::where('company_id', $companyId)
+        return Employee::query()
+            ->where('company_id', $companyId)
             ->pluck('number')
             ->toArray();
     }
 
-    public function isEmailTaken(string $email): bool
+    public function isEmailTakenAsEmployeeContact(string $email): bool
     {
         return new StoreEmployeeContactRequest()->isEmailTaken($email);
     }
