@@ -10,7 +10,7 @@ use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
 {
-    public function transform(Employee $employee)
+    public function transform(Employee $employee): array
     {
         return [
             'id' => $employee->id,

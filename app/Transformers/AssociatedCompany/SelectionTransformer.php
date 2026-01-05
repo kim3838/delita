@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Hydrations\AssociatedCompany;
 use App\Transformers\Account\BasicTransformer as AccountBasicTransformer;
-use App\Transformers\Employee\ItemTransformer as EmployeeItemTransformer;
+use App\Transformers\Employee\BasicTransformer as EmployeeBasicTransformer;
 use League\Fractal\TransformerAbstract;
 
 class SelectionTransformer extends TransformerAbstract
@@ -23,7 +23,7 @@ class SelectionTransformer extends TransformerAbstract
 
         $isEmployeeAtCompany = (bool)$employee;
 
-        $employee = $employee ? Fractal::item($employee, EmployeeItemTransformer::class): $employee;
+        $employee = $employee ? Fractal::item($employee, EmployeeBasicTransformer::class): $employee;
 
         return [
             'value' => $model->company_id,
