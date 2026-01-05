@@ -10,7 +10,7 @@ use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Exports\BlankEmployeePayrollComponentTemplateExport;
-use App\Http\Requests\BasePolymorphicEmployeePayrollComponentRequest;
+use App\Http\Requests\PolymorphicEmployeePayrollComponent\BasePolymorphicEmployeePayrollComponentRequest;
 use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\Deduction;
