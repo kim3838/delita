@@ -77,9 +77,13 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                         ] : [])
                     ],
                 ]);
+                $officeEmailValidation->setCustomMessages([
+                    'office_email.email' => 'Invalid email.',
+                    'office_email.unique' => 'Email has already been taken.',
+                ]);
 
                 if($this->isEmailTakenAsEmployeeContact($row['office_email'])) {
-                    $validationErrors[] = 'Email already taken.';
+                    $validationErrors[] = 'Email has already been taken.';
                 }
 
                 if ($officeEmailValidation->fails()) {
