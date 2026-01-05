@@ -113,9 +113,24 @@ Route::group([
     'middleware' => ['auth:sanctum']
 ], function(){
 
+    //Common
+    Route::post('orderable/re-order/{module}', [OrderableController::class, 'reOrder']);
+    Route::post('read-json-file', [JsonController::class, 'read']);
     Route::get('model-selections/{module}', [FormModuleController::class, 'selection'])->name('selection');
     Route::get('enum-selections/{enum}', [EnumController::class, 'selection'])->name('enum.selection');
     Route::get('payroll-component-pay-selections', [EnumController::class, 'payrollComponentPaySelections']);
+
+    //JSON Preset
+    Route::get('json-presets', [JsonPresetController::class, 'index']);
+    Route::get('json-preset-gate/{jsonPresetId}', [JsonPresetController::class, 'showGate']);
+    Route::post('json-preset', [JsonPresetController::class, 'store']);
+    Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
+    Route::get('json-preset-download/{jsonPresetId}', [JsonPresetController::class, 'download']);
+    Route::patch('json-preset/{jsonPresetId}', [JsonPresetController::class, 'update']);
+    Route::delete('json-preset/{jsonPresetId}', [JsonPresetController::class, 'destroy']);
+
+    //Time Period Preset Selection
+    Route::get('time-period-preset-selections', [TimePeriodPresetController::class, 'selection']);
 
     //User authentication
     Route::get('user', [AuthenticatedSessionController::class, 'authenticated']);
@@ -148,42 +163,6 @@ Route::group([
 
     Route::get('non-employee-user-selections', [NonEmployeeUserController::class, 'selection']);
 
-    //Formula
-    Route::get('formulas', [FormulaController::class, 'index']);
-    Route::get('formula-selections', [FormulaController::class, 'selection']);
-    Route::get('formula-gate/{ulid}', [FormulaController::class, 'showGate']);
-    Route::get('formula/{ulid}', [FormulaController::class, 'show']);
-    Route::post('formula', [FormulaController::class, 'store']);
-    Route::patch('formula/{formulaId}', [FormulaController::class, 'update']);
-    Route::delete('formula/{formulaId}', [FormulaController::class, 'destroy']);
-
-    //User-Company Assignment
-    Route::get('user-company-assignment', [UserCompanyAssignmentController::class, 'index']);
-    Route::post('user-company-assignment-sync/{userId}', [UserCompanyAssignmentController::class, 'sync']);
-
-    //Company
-    Route::get('companies', [CompanyController::class, 'index']);
-    Route::get('company-selections', [CompanyController::class, 'selection']);
-    Route::get('company/{ulid}', [CompanyController::class, 'show']);
-    Route::get('company-gate/{ulid}', [CompanyController::class, 'showGate']);
-    Route::post('company', [CompanyController::class, 'store']);
-    Route::patch('company/{companyId}', [CompanyController::class, 'update']);
-
-    //User relation
-    Route::get('user-is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
-
-    Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
-    Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
-
-    Route::get('associated-users', [AssociatedUserController::class, 'index']);
-    Route::get('associated-users-gate', [AssociatedUserController::class, 'indexGate']);
-
-    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
-    Route::get('associated-companies-gate', [AssociatedCompanyController::class, 'indexGate']);
-    Route::get('associated-company/{ulid}', [AssociatedCompanyController::class, 'show']);
-    Route::patch('associated-company/{companyId}', [AssociatedCompanyController::class, 'update']);
-    Route::get('associated-company-selections', [AssociatedCompanyController::class, 'selection']);
-
     //Email verification
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
@@ -195,8 +174,22 @@ Route::group([
     Route::post('confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
     Route::delete('two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy']);
 
-    //Common
-    Route::post('orderable/re-order/{module}', [OrderableController::class, 'reOrder']);
+    //Formula
+    Route::get('formulas', [FormulaController::class, 'index']);
+    Route::get('formula-selections', [FormulaController::class, 'selection']);
+    Route::get('formula-gate/{ulid}', [FormulaController::class, 'showGate']);
+    Route::get('formula/{ulid}', [FormulaController::class, 'show']);
+    Route::post('formula', [FormulaController::class, 'store']);
+    Route::patch('formula/{formulaId}', [FormulaController::class, 'update']);
+    Route::delete('formula/{formulaId}', [FormulaController::class, 'destroy']);
+
+    //Company
+    Route::get('companies', [CompanyController::class, 'index']);
+    Route::get('company-selections', [CompanyController::class, 'selection']);
+    Route::get('company/{ulid}', [CompanyController::class, 'show']);
+    Route::get('company-gate/{ulid}', [CompanyController::class, 'showGate']);
+    Route::post('company', [CompanyController::class, 'store']);
+    Route::patch('company/{companyId}', [CompanyController::class, 'update']);
 
     //Company Formula
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
@@ -205,19 +198,37 @@ Route::group([
     Route::post('company-formula-assignment-sync/{companyFormulaId}', [CompanyFormulaController::class, 'sync']);
     Route::post('company-formula-assignment-sync-without-detaching/{companyFormulaId}', [CompanyFormulaController::class, 'syncWithoutDetaching']);
 
-    Route::post('read-json-file', [JsonController::class, 'read']);
+    //Departments
+    Route::get('departments', [DepartmentController::class, 'index']);
+    Route::get('departments-gate', [DepartmentController::class, 'indexGate']);
+    Route::get('department-selections', [DepartmentController::class, 'selection']);
+    Route::post('department', [DepartmentController::class, 'store']);
+    Route::patch('department/{departmentId}', [DepartmentController::class, 'update']);
+    Route::delete('department/{departmentId}', [DepartmentController::class, 'destroy']);
 
-    //JSON Preset
-    Route::get('json-presets', [JsonPresetController::class, 'index']);
-    Route::get('json-preset-gate/{jsonPresetId}', [JsonPresetController::class, 'showGate']);
-    Route::post('json-preset', [JsonPresetController::class, 'store']);
-    Route::get('json-preset/{jsonPresetId}', [JsonPresetController::class, 'show']);
-    Route::get('json-preset-download/{jsonPresetId}', [JsonPresetController::class, 'download']);
-    Route::patch('json-preset/{jsonPresetId}', [JsonPresetController::class, 'update']);
-    Route::delete('json-preset/{jsonPresetId}', [JsonPresetController::class, 'destroy']);
+    //Designations
+    Route::get('designations', [DesignationController::class, 'index']);
+    Route::get('designations-gate', [DesignationController::class, 'indexGate']);
+    Route::get('designation-selections', [DesignationController::class, 'selection']);
+    Route::post('designation', [DesignationController::class, 'store']);
+    Route::patch('designation/{designationId}', [DesignationController::class, 'update']);
+    Route::delete('designation/{designationId}', [DesignationController::class, 'destroy']);
 
-    //Time Period Preset Selection
-    Route::get('time-period-preset-selections', [TimePeriodPresetController::class, 'selection']);
+    //User association
+    Route::get('user-is-admin-in-any-company', [AuthenticatedSessionController::class, 'isAdminInAnyCompany']);
+    Route::get('associated-accounts', [AssociatedAccountController::class, 'index']);
+    Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
+    Route::get('associated-users', [AssociatedUserController::class, 'index']);
+    Route::get('associated-users-gate', [AssociatedUserController::class, 'indexGate']);
+    Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
+    Route::get('associated-companies-gate', [AssociatedCompanyController::class, 'indexGate']);
+    Route::get('associated-company/{ulid}', [AssociatedCompanyController::class, 'show']);
+    Route::patch('associated-company/{companyId}', [AssociatedCompanyController::class, 'update']);
+    Route::get('associated-company-selections', [AssociatedCompanyController::class, 'selection']);
+
+    //User-Company Assignment
+    Route::get('user-company-assignment', [UserCompanyAssignmentController::class, 'index']);
+    Route::post('user-company-assignment-sync/{userId}', [UserCompanyAssignmentController::class, 'sync']);
 
     //Pay Frequencies
     Route::get('pay-frequencies', [PayFrequencyController::class, 'index']);
@@ -320,45 +331,6 @@ Route::group([
     Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollInfoController::class, 'deductions']);
     Route::get('employee-payroll-info/{employeeUlid}/income-taxes', [EmployeePayrollInfoController::class, 'incomeTaxes']);
 
-    //Designations
-    Route::get('designations', [DesignationController::class, 'index']);
-    Route::get('designations-gate', [DesignationController::class, 'indexGate']);
-    Route::get('designation-selections', [DesignationController::class, 'selection']);
-    Route::post('designation', [DesignationController::class, 'store']);
-    Route::patch('designation/{designationId}', [DesignationController::class, 'update']);
-    Route::delete('designation/{designationId}', [DesignationController::class, 'destroy']);
-
-    //Departments
-    Route::get('departments', [DepartmentController::class, 'index']);
-    Route::get('departments-gate', [DepartmentController::class, 'indexGate']);
-    Route::get('department-selections', [DepartmentController::class, 'selection']);
-    Route::post('department', [DepartmentController::class, 'store']);
-    Route::patch('department/{departmentId}', [DepartmentController::class, 'update']);
-    Route::delete('department/{departmentId}', [DepartmentController::class, 'destroy']);
-
-    //Shifts
-    Route::get('shifts', [ShiftController::class, 'index']);
-    Route::get('shifts-gate', [ShiftController::class, 'indexGate']);
-    Route::get('shift-selections', [ShiftController::class, 'selection']);
-    Route::post('shift', [ShiftController::class, 'store']);
-    Route::patch('shift/{shiftId}', [ShiftController::class, 'update']);
-    Route::get('shift/{ulid}', [ShiftController::class, 'show']);
-    Route::get('shift-gate/{ulid}', [ShiftController::class, 'showGate']);
-    Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
-
-    Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
-
-    //Shift Assignments
-    Route::get('shift-assignments', [EmployeeShiftController::class, 'index']);
-    Route::get('shift-assignments-gate', [EmployeeShiftController::class, 'indexGate']);
-    Route::get('shift-assignment-selections', [EmployeeShiftController::class, 'selection']);
-    Route::patch('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'update']);
-    Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
-    Route::post('shift-assignment-sync', [EmployeeShiftController::class, 'sync']);
-    Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
-    Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
-    Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);
-
     //Attendance
     Route::get('attendances', [AttendanceController::class, 'index']);
     Route::get('attendances-gate', [AttendanceController::class, 'indexGate']);
@@ -387,6 +359,29 @@ Route::group([
     Route::post('holiday', [HolidayController::class, 'store']);
     Route::patch('holiday/{holidayUlid}', [HolidayController::class, 'update']);
     Route::delete('holidays', [HolidayController::class, 'batchDestroy']);
+
+    //Shifts
+    Route::get('shifts', [ShiftController::class, 'index']);
+    Route::get('shifts-gate', [ShiftController::class, 'indexGate']);
+    Route::get('shift-selections', [ShiftController::class, 'selection']);
+    Route::post('shift', [ShiftController::class, 'store']);
+    Route::patch('shift/{shiftId}', [ShiftController::class, 'update']);
+    Route::get('shift/{ulid}', [ShiftController::class, 'show']);
+    Route::get('shift-gate/{ulid}', [ShiftController::class, 'showGate']);
+    Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
+
+    Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
+
+    //Shift assignment
+    Route::get('shift-assignments', [EmployeeShiftController::class, 'index']);
+    Route::get('shift-assignments-gate', [EmployeeShiftController::class, 'indexGate']);
+    Route::get('shift-assignment-selections', [EmployeeShiftController::class, 'selection']);
+    Route::patch('shift-assignment/{employeeShiftId}', [EmployeeShiftController::class, 'update']);
+    Route::get('shifts-by-employees', [EmployeeShiftController::class, 'shiftsByEmployees']);
+    Route::post('shift-assignment-sync', [EmployeeShiftController::class, 'sync']);
+    Route::post('shift-assignment-sync-without-detaching', [EmployeeShiftController::class, 'syncWithoutDetaching']);
+    Route::post('shift-assignment-detach/{morphMapKey}', [EmployeeShiftController::class, 'detach']);
+    Route::delete('shift-assignments', [EmployeeShiftController::class, 'batchDestroy']);
 
     //Leave types
     Route::get('leave-types', [LeaveTypeController::class, 'index']);
