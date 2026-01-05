@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum PayFrequency: int implements BaseEnum
 {
-    case DAILY = 100;
     case WEEKLY = 200;
     case SEMI_MONTHLY = 300;
     case MONTHLY = 400;
@@ -12,7 +11,6 @@ enum PayFrequency: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            self::DAILY => "Daily",
             self::WEEKLY => "Weekly",
             self::SEMI_MONTHLY => "Semimonthly",
             self::MONTHLY => "Monthly",

@@ -26,17 +26,8 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
 
         return [
             [
-                'code' => 'DAILY',
-                'order' => 1,
-                'type' => PayFrequencyEnum::DAILY,
-                'time_period_preset_id' => null,
-                'period' => null,
-                'cutoff_type' => null,
-                'cut_off_value' => null,
-                'days_span' => null,
-            ],[
                 'code' => 'WEEKLY',
-                'order' => 2,
+                'order' => 1,
                 'type' => PayFrequencyEnum::WEEKLY,
                 'time_period_preset_id' => null,
                 'period' => null,
@@ -45,7 +36,7 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
                 'days_span' => 7,
             ],[
                 'code' => 'SEMI_MONTHLY',
-                'order' => 3,
+                'order' => 2,
                 'type' => PayFrequencyEnum::SEMI_MONTHLY,
                 'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
                 'period' => $endOfMonthTimePeriodPreset->semimonthly_period,
@@ -54,7 +45,7 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
                 'days_span' => null,
             ],[
                 'code' => 'MONTHLY',
-                'order' => 4,
+                'order' => 3,
                 'type' => PayFrequencyEnum::MONTHLY,
                 'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
                 'period' => $endOfMonthTimePeriodPreset->monthly_period,
