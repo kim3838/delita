@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 
 class EmployeeCreatedChain
 {
+    public bool $createInitialEmploymentProfile = false;
     /**
      * Create the event listener.
      */
@@ -26,7 +27,7 @@ class EmployeeCreatedChain
     public function handle(EmployeeCreated $event): void
     {
         //If an employee is imported, create a default employment profile
-        if($event->employee->creation_type == CreationType::IMPORT){
+        if($this->createInitialEmploymentProfile && $event->employee->creation_type == CreationType::IMPORT){
 
             $event->employee->employmentProfiles()->create([
                 'status' => EmploymentStatus::ACTIVE,
