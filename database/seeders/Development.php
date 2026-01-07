@@ -524,7 +524,7 @@ class Development extends Seeder
             $company1002C->departments()->where('name', 'Accounts Payable')->first(),
             $company1002C->designations()->where('name', 'Accounting Staff')->first(),
             null,
-            'C1002', 'Employee 02', 'C', '1002');
+            'C1002', 'José', 'C', 'Clariño');
         $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
         $employeeC1002->employmentProfiles()->firstOrCreate([
             'status' => EmploymentStatus::ACTIVE,
