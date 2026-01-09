@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AccountRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Events\Repositories\AccountCreated;
 use App\Models\Account;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
