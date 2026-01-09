@@ -24,6 +24,8 @@ use App\Enums\LeaveUsageSpanType;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
 use App\Enums\ShiftType;
+use App\Events\Repositories\AccountCreated;
+use App\Listeners\AccountCreatedChain;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Department;
@@ -71,17 +73,30 @@ class Development extends Seeder
             ['number' => 'ACCOUNT20251001'],
             ['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString()]
         );
+
         //Account 1002
         $account1002 = Account::query()->firstOrCreate(
             ['number' => 'ACCOUNT20251002'],
             ['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
+
         //Account 1003
         $account1003 = Account::query()->firstOrCreate(
             ['number' => 'ACCOUNT20251003'],
             ['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
+         //Account chain, role creation
+        new AccountCreatedChain()->handle(new AccountCreated($account1001));
+        new AccountCreatedChain()->handle(new AccountCreated($account1002));
+        new AccountCreatedChain()->handle(new AccountCreated($account1003));
+
+        //Account admin role
+        $account1001AdminRole = $account1001->roles()->where(['name' => 'Admin'])->first();
+        $account1002AdminRole = $account1002->roles()->where(['name' => 'Admin'])->first();
+        $account1003AdminRole = $account1003->roles()->where(['name' => 'Admin'])->first();
+
+         //Account subscriptions
         if($account1001->subscriptions->isEmpty()){
             $account1001->subscriptions()->create(['module' => AccountSubscriptionModule::EMPLOYEE_PORTAL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
             $account1001->subscriptions()->create(['module' => AccountSubscriptionModule::HR_PAYROLL, 'plan' => AccountSubscriptionPlan::STANDARD, 'date_subscribed' => Carbon::now()->toDateTimeString()]);
@@ -350,6 +365,9 @@ class Development extends Seeder
 
         //Assign 1002User04 to Company 1002-D as Admin
         $account1002User04->companies()->syncWithoutDetaching([$company1002D->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
+
+        //Assign Admin role of account 1001 and 1002 to 1002User01
+        $account1002User01->syncRoles([$account1001AdminRole, $account1002AdminRole]);
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
