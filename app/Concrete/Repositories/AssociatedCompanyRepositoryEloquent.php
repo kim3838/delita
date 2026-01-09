@@ -69,7 +69,9 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
-            ->whereIn('companies.account_id', $filters->account_id)
+            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_id);
+            })
             ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
                 $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
             })
