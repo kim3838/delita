@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\EmployeeGroup;
 
-use App\Models\Group;
+use App\Models\Hydrations\Group\EmployeeGroup;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEmployeeGroupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create', Group::class);
+        return $this->user()->can('create', EmployeeGroup::class);
     }
 
     public function rules(): array

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\EmployeeGroup;
 
 use App\Models\Group;
+use App\Models\Hydrations\Group\EmployeeGroup;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmployeeGroupRequest extends FormRequest
@@ -11,7 +12,9 @@ class UpdateEmployeeGroupRequest extends FormRequest
     {
         $group = Group::query()->where('ulid', $this->route('ulid'))->firstOrFail();
 
-        return $this->user()->can('update', $group);
+        $employeeGroup = EmployeeGroup::hydrate([$group->toArray()])->first();
+
+        return $this->user()->can('update', $employeeGroup);
     }
 
     public function rules(): array
