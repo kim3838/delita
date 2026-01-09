@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\AssociatedUserRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\UserType;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -34,23 +35,21 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 });
             })
             ->leftJoin('company_user', 'company_user.user_id', '=', 'users.id')
-            ->when(!empty($filters->associated_companies) && is_array($filters->associated_companies), function ($builder) use ($filters) {
-
-                $builder->where(function ($clause) use ($filters) {
-                    $clause->whereIn('company_user.company_id', $filters->associated_companies)
-                        ->when($filters->user_id ?? false, function ($builder, $value) {
-                            $builder->orWhere('users.created_by', $value);
+            ->whereNot('users.type', UserType::SUPER_ADMIN)
+            ->where(function ($clause) use ($filters) {
+                $clause->whereIn('company_user.company_id', $filters->associated_companies)
+                    ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
+                        $builder->whereIn('users.status', $filters->status);
+                    })
+                    ->when($filters->user_search ?? false, function ($builder, $value) {
+                        $builder->where(function ($clause) use ($value) {
+                            $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
+                                ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
                         });
-                });
-            })
-            ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
-                $builder->whereIn('users.status', $filters->status);
-            })
-            ->when($filters->user_search ?? false, function ($builder, $value) {
-                $builder->where(function ($clause) use ($value) {
-                    $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
-                        ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
-                });
+                    })
+                    ->when($filters->user_id ?? false, function ($builder, $value) {
+                        $builder->orWhere('users.created_by', $value);
+                    });
             })
             ->select([
                 'users.id as user_id',
