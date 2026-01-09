@@ -12,6 +12,7 @@ class LeaveRunningBalanceReportPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-leave-running-balance');
     }
 }
