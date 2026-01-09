@@ -13,7 +13,8 @@ class IncomeTaxPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-payroll-component');
     }
 
     public function update(User $user, IncomeTax $incomeTax): bool
@@ -22,7 +23,8 @@ class IncomeTaxPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, $incomeTax->company->id);
+        return $this->userIsAdminInCompany($user, $incomeTax->company->id)
+            && $this->hasPermission($user, 'update-payroll-component');
     }
 
     public function delete(User $user, IncomeTax $incomeTax): bool

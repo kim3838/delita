@@ -6,8 +6,8 @@ use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Enums\Formulable;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\PolymorphicEmployeePayrollComponent\ListPolymorphicEmployeePayrollComponentRequest;
 use App\Transformers\EmployeePayrollComponent\ItemTransformer;
-use Illuminate\Http\Request;
 
 class EmployeePayrollInfoController extends Controller
 {
@@ -15,7 +15,7 @@ class EmployeePayrollInfoController extends Controller
         protected EmployeePayrollComponentRepository $repository,
     ){}
 
-    public function compensations(Request $request, $employeeUlid)
+    public function compensations(ListPolymorphicEmployeePayrollComponentRequest $request, $employeeUlid)
     {
         if($request->expectsJson()){
 
@@ -34,7 +34,7 @@ class EmployeePayrollInfoController extends Controller
         abort(404);
     }
 
-    public function deductions(Request $request, $employeeUlid)
+    public function deductions(ListPolymorphicEmployeePayrollComponentRequest $request, $employeeUlid)
     {
         if($request->expectsJson()){
 
@@ -53,7 +53,7 @@ class EmployeePayrollInfoController extends Controller
         abort(404);
     }
 
-    public function incomeTaxes(Request $request, $employeeUlid)
+    public function incomeTaxes(ListPolymorphicEmployeePayrollComponentRequest $request, $employeeUlid)
     {
         if($request->expectsJson()){
 

@@ -13,7 +13,8 @@ class EmployeePayrollComponentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        && $this->hasPermission($user, 'view-employee-payroll-component');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class EmployeePayrollComponentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-employee-payroll-component');
     }
 
     public function update(User $user, EmployeePayrollComponent $employeePayrollComponent): bool
@@ -31,7 +33,8 @@ class EmployeePayrollComponentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-employee-payroll-component');
     }
 
     public function delete(User $user, EmployeePayrollComponent $employeePayrollComponent): bool
@@ -40,7 +43,8 @@ class EmployeePayrollComponentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-employee-payroll-component');
     }
 
     public function batchDelete(User $user): bool
@@ -49,6 +53,7 @@ class EmployeePayrollComponentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-employee-payroll-component');
     }
 }
