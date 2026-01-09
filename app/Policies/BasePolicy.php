@@ -39,7 +39,7 @@ class BasePolicy
 
         foreach ($userRoles as $role){
 
-            $permitted = $role->hasPermissionTo($permission);
+            $permitted = $role->permissions->contains('name', $permission);
 
             if($permitted) break;
         }

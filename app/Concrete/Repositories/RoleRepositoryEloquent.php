@@ -63,7 +63,7 @@ class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepos
 
             $map[$permission->name] = [
                 'id' => $permission->id,
-                'value' => empty($role) ? false : $role->hasPermissionTo($permission->name),
+                'value' => empty($role) ? false : $role->permissions->contains('name', $permission->name),
             ];
         }
 

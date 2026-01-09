@@ -97,7 +97,7 @@ class PermissionService
                 [
                     'key' => 'payroll-component',
                     'readable_name' => 'Payroll component',
-                    'actions' => ['view', 'update']
+                    'actions' => ['view', 'create', 'update']
                 ],[
                     'key' => 'employee-payroll-component',
                     'readable_name' => 'Employee payroll component',
