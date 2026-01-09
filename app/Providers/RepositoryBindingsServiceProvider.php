@@ -37,7 +37,9 @@ use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
+use App\Blueprint\Repositories\RoleRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
@@ -79,7 +81,9 @@ use App\Concrete\Repositories\LeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
+use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
+use App\Concrete\Repositories\RoleRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
 use App\Concrete\Repositories\ShiftRepositoryEloquent;
 use App\Concrete\Repositories\ShiftScheduleRepositoryEloquent;
@@ -96,6 +100,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'account_subscription' => AccountSubscriptionRepositoryEloquent::class,
         'associated_account' => AssociatedAccountRepositoryEloquent::class,
         'user' => UserRepositoryEloquent::class,
+        'role' => RoleRepositoryEloquent::class,
+        'permission' => PermissionRepositoryEloquent::class,
         'non_employee_user' => NonEmployeeUserRepositoryEloquent::class,
         'user_company_assignment' => UserCompanyAssignmentRepositoryEloquent::class,
         'associated_user' => AssociatedUserRepositoryEloquent::class,
@@ -138,6 +144,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
+        RoleRepository::class => RoleRepositoryEloquent::class,
+        PermissionRepository::class => PermissionRepositoryEloquent::class,
         NonEmployeeUserRepository::class => NonEmployeeUserRepositoryEloquent::class,
         UserCompanyAssignmentRepository::class => UserCompanyAssignmentRepositoryEloquent::class,
         AssociatedUserRepository::class => AssociatedUserRepositoryEloquent::class,
@@ -185,6 +193,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'account_subscription',
             'associated_account',
             'user',
+            'role',
+            'permission',
             'non_employee_user',
             'user_company_assignment',
             'associated_user',
@@ -227,6 +237,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
+            RoleRepository::class,
+            PermissionRepository::class,
             NonEmployeeUserRepository::class,
             UserCompanyAssignmentRepository::class,
             AssociatedUserRepository::class,

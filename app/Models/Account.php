@@ -38,4 +38,9 @@ class Account extends Model
     {
         return $this->hasMany(AccountSubscription::class);
     }
+
+    public function roles(): HasMany
+    {
+        return $this->hasMany(Role::class);
+    }
 }

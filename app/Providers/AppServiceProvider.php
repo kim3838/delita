@@ -22,6 +22,7 @@ use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\Overtime;
 use App\Models\PayFrequency;
+use App\Models\Role;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
 use App\Models\ShiftSchedule;
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'user' => User::class,
+            'role' => Role::class,
             'account' => Account::class,
             'formula' => Formula::class,
             'json_preset' => JsonPreset::class,
