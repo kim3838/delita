@@ -32,7 +32,9 @@ class UserCompanyAssignmentController extends Controller
     {
         if($request->expectsJson()){
 
-            $data = App::make(UserCompanyAssignmentRepository::class)->sync($userId, $request->all());
+            $assignments = data_get($request->all(), 'assignments', []);
+
+            $data = App::make(UserCompanyAssignmentRepository::class)->sync($userId, $assignments);
 
             return ResponseJson::successfulResponse($data);
         }
