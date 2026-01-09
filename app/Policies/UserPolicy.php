@@ -12,7 +12,8 @@ class UserPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'view-user');
     }
 
     public function view(User $user, User $stagedUser): bool
@@ -23,7 +24,8 @@ class UserPolicy extends BasePolicy
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'update-user');
     }
 
     public function create(User $user): bool
@@ -32,7 +34,8 @@ class UserPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'create-user');
     }
 
     public function update(User $user, User $stagedUser): bool
@@ -43,6 +46,7 @@ class UserPolicy extends BasePolicy
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'update-user');
     }
 }
