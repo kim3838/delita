@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TimePeriodPresetSeeder::class);
         $this->call(FormulaSeeder::class);
         $this->call(SuperAdminSeeder::class);
+        $this->call(PermissionAndRoleSeeder::class);
 
         if(App::environment('development')){
             $this->call(Development::class);

@@ -1,0 +1,141 @@
+<?php
+
+namespace App\Concrete;
+
+class PermissionService
+{
+    public static array $seriesMap = [
+        [
+            'name' => 'Admin',
+            'permissions' => [
+                [
+                    'key' => 'user',
+                    'readable_name' => 'User',
+                    'actions' => ['view', 'create', 'update']
+                ],[
+                    'key' => 'role',
+                    'readable_name' => 'Role',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ], [
+                    'key' => 'company',
+                    'readable_name' => 'Company',
+                    'actions' => ['view', 'create', 'update']
+                ],
+            ]
+        ],
+        [
+            'name' => 'Workforce',
+            'permissions' => [
+                [
+                    'key' => 'employee',
+                    'readable_name' => 'Employee',
+                    'actions' => ['view', 'create', 'update']
+                ],[
+                    'key' => 'employee-group',
+                    'readable_name' => 'Employee group',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'employee-employment-profile',
+                    'readable_name' => 'Employee employment profile',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ], [
+                    'key' => 'department',
+                    'readable_name' => 'Department',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'designation',
+                    'readable_name' => 'Designation',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ], [
+                    'key' => 'attendance',
+                    'readable_name' => 'Attendance',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'overtime',
+                    'readable_name' => 'Overtime',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'leave',
+                    'readable_name' => 'Leave',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'leave-balance-adjustment',
+                    'readable_name' => 'Leave balance adjustment',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],
+            ]
+        ],
+        [
+            'name' => 'Policies',
+            'permissions' => [
+                [
+                    'key' => 'shift',
+                    'readable_name' => 'Shift',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'employee-shift-assignment',
+                    'readable_name' => 'Employee shift assignment',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'leave-type',
+                    'readable_name' => 'Leave type',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'employee-leave-type-assignment',
+                    'readable_name' => 'Employee leave type assignment',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'holiday',
+                    'readable_name' => 'Holiday',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],
+            ]
+        ],
+        [
+            'name' => 'Payroll',
+            'permissions' => [
+                [
+                    'key' => 'payroll-component',
+                    'readable_name' => 'Payroll component',
+                    'actions' => ['view', 'update']
+                ],[
+                    'key' => 'employee-payroll-component',
+                    'readable_name' => 'Employee payroll component',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'payroll-frequency',
+                    'readable_name' => 'Payroll frequency',
+                    'actions' => ['view', 'update']
+                ],
+            ]
+        ],
+        [
+            'name' => 'Request & Approval',
+            'permissions' => [
+                [
+                    'key' => 'attendance-adjustment-request',
+                    'readable_name' => 'Attendance adjustment request',
+                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                ],[
+                    'key' => 'overtime-request',
+                    'readable_name' => 'Overtime request',
+                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                ],[
+                    'key' => 'leave-request',
+                    'readable_name' => 'Leave request',
+                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                ],
+            ]
+        ],
+        [
+            'name' => 'Reports',
+            'permissions' => [
+                [
+                    'key' => 'leave-running-balance',
+                    'readable_name' => 'Leave running balance',
+                    'actions' => ['view']
+                ]
+            ]
+        ],
+    ];
+}
