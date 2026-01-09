@@ -59,6 +59,8 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeImportTemplateController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\PayrollComponentController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
@@ -148,6 +150,17 @@ Route::group([
     Route::get('account-gate/{ulid}', [AccountController::class, 'showGate']);
     Route::post('account', [AccountController::class, 'store']);
     Route::patch('account/{accountId}', [AccountController::class, 'update']);
+
+    //Role
+    Route::get('roles', [RoleController::class, 'index']);
+    Route::get('role-permission-template', [RoleController::class, 'permissionTemplate']);
+    Route::get('role/{ulid}', [RoleController::class, 'show']);
+    Route::post('role', [RoleController::class, 'store']);
+    Route::patch('role/{ulid}', [RoleController::class, 'update']);
+    Route::delete('roles', [RoleController::class, 'batchDestroy']);
+
+    //Permission
+    Route::get('permission-series', [PermissionController::class, 'series']);
 
     //User
     Route::get('users', [UserController::class, 'index']);
