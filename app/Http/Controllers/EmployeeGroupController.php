@@ -110,7 +110,7 @@ class EmployeeGroupController extends Controller
         if(request()->expectsJson()){
 
             $employeeIds = data_get($request->validated(), 'employees', []);
-            $groupIds = data_get($request->validated(), 'groups', []);
+            $groupIds = data_get($request->validated(), 'group_ids', []);
 
             $this->repository->syncWithoutDetaching($employeeIds, $groupIds);
 
@@ -124,7 +124,7 @@ class EmployeeGroupController extends Controller
     {
         if(request()->expectsJson()){
 
-            $groupIds = data_get($request->validated(), 'groups', []);
+            $groupIds = data_get($request->validated(), 'group_ids', []);
 
             $this->repository->detachAssignedGroups($groupIds);
 
