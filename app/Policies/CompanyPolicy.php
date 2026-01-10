@@ -13,7 +13,8 @@ class CompanyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'view-company');
     }
 
     public function view(User $user, Company $company): bool
@@ -22,7 +23,8 @@ class CompanyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, $company->id);
+        return $this->userIsAdminInCompany($user, $company->id)
+            && $this->hasPermission($user, 'update-company');
     }
 
     public function create(User $user): bool
@@ -31,7 +33,8 @@ class CompanyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInAnyCompany($user);
+        return $this->userIsAdminInAnyCompany($user)
+            && $this->hasPermission($user, 'create-company');
     }
 
     public function update(User $user, Company $company): bool
@@ -40,7 +43,8 @@ class CompanyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, $company->id);
+        return $this->userIsAdminInCompany($user, $company->id)
+            && $this->hasPermission($user, 'update-company');
     }
 
     public function delete(User $user, Company $company): bool
