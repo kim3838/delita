@@ -39,6 +39,7 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'accounts.email as email',
                 'accounts.date_registered as date_registered',
             ])
+            ->orderBy('accounts.id', 'ASC')
             ->groupBy('accounts.id');
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
@@ -59,6 +60,7 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'accounts.id as id',
                 'accounts.number as number',
             ])
+            ->orderBy('accounts.id', 'ASC')
             ->groupBy('accounts.id');
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
