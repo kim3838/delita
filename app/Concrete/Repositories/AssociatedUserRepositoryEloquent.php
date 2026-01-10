@@ -47,18 +47,18 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
             ->whereNot('users.type', UserType::SUPER_ADMIN)
             ->where(function ($clause) use ($filters) {
                 $clause->whereIn('company_user.company_id', $filters->associated_companies)
-                    ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
-                        $builder->whereIn('users.status', $filters->status);
-                    })
-                    ->when($filters->user_search ?? false, function ($builder, $value) {
-                        $builder->where(function ($clause) use ($value) {
-                            $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
-                                ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
-                        });
-                    })
-                    ->when($filters->user_id ?? false, function ($builder, $value) {
-                        $builder->orWhere('users.created_by', $value);
+                    ->when(($filters->user_id ?? false), function ($builder) use($filters){
+                        $builder->orWhere('users.created_by', $filters->user_id);
                     });
+            })
+            ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
+                $builder->whereIn('users.status', $filters->status);
+            })
+            ->when($filters->user_search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
+                        ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
+                });
             })
             ->select([
                 'users.id',
@@ -68,6 +68,7 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'users.status',
                 'users.email_verified_at',
                 'users.timezone',
+                'users.created_by',
             ]);
 
         $this->setGroupsOnBuilder($queryBuilder, ['users.id']);
@@ -81,7 +82,15 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                     ->where(DB::raw("model_has_roles.model_type"), '=', 'user');
             })
             ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('roles.account_id', $filters->account_id)
+            ->where(function ($clause) use ($filters) {
+                /**
+                 * If filtered with accounts, show only user with roles in account_ids or no roles assigned
+                 **/
+                $clause->where('roles.account_id', $filters->account_id)->orWhereNull('roles.account_id');
+            })
+            ->when($filters->user_id ?? false, function ($builder, $value) {
+                $builder->orWhere('user_sub.created_by', $value);
+            })
             ->select([
                 'user_sub.id as user_id',
                 'user_sub.ulid as user_ulid',

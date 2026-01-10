@@ -84,8 +84,12 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
                     ->where(DB::raw("model_has_roles.model_type"), '=', 'user');
             })
             ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
+
+            /**
+             * If filtered with accounts, show only user with roles in account_ids or no roles assigned
+             **/
             ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
-                $builder->whereIn('roles.account_id', $filters->account_ids);
+                $builder->whereIn('roles.account_id', $filters->account_ids)->orWhereNull('roles.account_id');
             })
             ->select([
                 'user_sub.id as id',
