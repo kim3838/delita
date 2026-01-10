@@ -25,6 +25,7 @@ class AccountCreatedChain
         $adminRole = $event->account->roles()->create([
             'ulid' => Str::ulid(),
             'name' => 'Admin',
+            'guard_name' => 'web'
         ]);
 
         $adminRole->syncPermissions(Permission::all());
