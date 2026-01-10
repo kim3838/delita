@@ -10,6 +10,7 @@ use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements AssociatedUserRepository
 {
@@ -21,11 +22,11 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'users.id', 'direction' => 'ASC'],
+            ['field' => 'user_sub.id', 'direction' => 'ASC'],
         ];
 
         $groups = [
-            'users.id'
+            'user_sub.id'
         ];
 
         $employeeRepositoryFilter = clone $filters;
@@ -60,13 +61,36 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                     });
             })
             ->select([
-                'users.id as user_id',
-                'users.ulid as user_ulid',
-                'users.name as user_username',
-                'users.email as user_email',
-                'users.status as user_status',
-                'users.email_verified_at as user_email_verified_at',
-                'users.timezone as user_timezone',
+                'users.id',
+                'users.ulid',
+                'users.name',
+                'users.email',
+                'users.status',
+                'users.email_verified_at',
+                'users.timezone',
+            ]);
+
+        $this->setGroupsOnBuilder($queryBuilder, ['users.id']);
+
+        /**
+         * User roles
+         **/
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'user_sub')
+            ->leftJoin('model_has_roles', function ($join) {
+                $join->on(DB::raw("model_has_roles.model_id"), '=', DB::raw("user_sub.id"))
+                    ->where(DB::raw("model_has_roles.model_type"), '=', 'user');
+            })
+            ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('roles.account_id', $filters->account_id)
+            ->select([
+                'user_sub.id as user_id',
+                'user_sub.ulid as user_ulid',
+                'user_sub.name as user_username',
+                'user_sub.email as user_email',
+                'user_sub.status as user_status',
+                'user_sub.email_verified_at as user_email_verified_at',
+                'user_sub.timezone as user_timezone',
+                DB::raw("GROUP_CONCAT(roles.name ORDER BY roles.account_id ASC) AS account_roles"),
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

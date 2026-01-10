@@ -12,8 +12,11 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(AssociatedUser $model): array
     {
-        $associatedCompanies = User::query()->find($model->user_id)
-            ->companies->map(function($assignedCompany){
+        $user = User::query()->find($model->user_id);
+
+        $associatedCompanies = $user->companies
+            ->sortBy('code')->values()
+            ->map(function($assignedCompany){
 
                 $employee = Employee::query()
                     ->where('user_id', $assignedCompany->pivot->user_id)
@@ -37,7 +40,9 @@ class ListTransformer extends TransformerAbstract
             'status' => $model->user_status?->toArray(),
             'email_verified_at' => $model->user_email_verified_at,
             'timezone' => $model->user_timezone,
-            'associated_companies' => $associatedCompanies
+            'created_by' => $user->createdBy?->name ?? '',
+            'associated_companies' => $associatedCompanies,
+            'account_roles' => $model->account_roles
         ];
     }
 }
