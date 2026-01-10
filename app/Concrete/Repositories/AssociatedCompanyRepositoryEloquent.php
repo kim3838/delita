@@ -19,6 +19,10 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'companies.id', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
@@ -52,6 +56,8 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'companies.timezone as company_timezone',
                 'company_user.assignment_type as assignment_type',
             ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

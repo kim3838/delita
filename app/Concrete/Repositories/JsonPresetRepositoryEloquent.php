@@ -19,6 +19,10 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'json_presets.path', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
@@ -30,6 +34,8 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
                 DB::raw("ROW_NUMBER() OVER() AS `row_number`"),
                 "json_presets.*"
             ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

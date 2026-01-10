@@ -17,6 +17,12 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'formulas.formulable_type', 'direction' => 'ASC'],
+            ['field' => 'formulas.component_type', 'direction' => 'ASC'],
+            ['field' => 'formulas.name', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
 
@@ -56,10 +62,9 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
             })
             ->select([
                 'formulas.*'
-            ])
-            ->orderBy('formulas.formulable_type', 'ASC')
-            ->orderBy('formulas.component_type', 'ASC')
-            ->orderBy('formulas.name', 'ASC');
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

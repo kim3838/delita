@@ -20,6 +20,14 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'users.id', 'direction' => 'ASC'],
+        ];
+
+        $groups = [
+            'users.id'
+        ];
+
         $employeeRepositoryFilter = clone $filters;
         $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
         unset($employeeRepositoryFilter->user_search);
@@ -59,8 +67,10 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'users.status as user_status',
                 'users.email_verified_at as user_email_verified_at',
                 'users.timezone as user_timezone',
-            ])
-            ->groupBy('users.id');
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+        $this->setGroupsOnBuilder($queryBuilder, $groups);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

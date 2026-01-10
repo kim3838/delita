@@ -19,6 +19,10 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'companies.id', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
@@ -45,6 +49,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
                 'companies.timezone as company_timezone',
             ]);
 
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
@@ -53,6 +59,9 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
+            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_id);
+            })
             ->select([
                 'companies.*',
             ]);

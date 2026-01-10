@@ -25,6 +25,14 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'users.id', 'direction' => 'ASC'],
+        ];
+
+        $groups = [
+            'users.id'
+        ];
+
         $employeeRepositoryFilter = clone $filters;
         $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
         unset($employeeRepositoryFilter->user_search);
@@ -61,8 +69,10 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
                 'users.status as status',
                 'users.email_verified_at as email_verified_at',
                 'users.timezone as timezone',
-            ])
-            ->groupBy('users.id');
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+        $this->setGroupsOnBuilder($queryBuilder, $groups);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 

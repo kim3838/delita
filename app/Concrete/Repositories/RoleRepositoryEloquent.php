@@ -18,6 +18,10 @@ class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepos
 
     public function paginate($filters): LengthAwarePaginator
     {
+        $orders = [
+            ['field' => 'roles.id', 'direction' => 'ASC'],
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
             ->where(DB::raw("roles.account_id"), $filters->account_id)
             ->when($filters->search ?? false, function($builder, $value){
@@ -31,6 +35,8 @@ class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepos
                 'roles.account_id',
                 'roles.name',
             ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
