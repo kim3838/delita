@@ -37,7 +37,7 @@ class ListTransformer extends TransformerAbstract
             'status' => $model->status?->toArray(),
             'email_verified_at' => $model->email_verified_at,
             'timezone' => $model->timezone,
-            'created_by' => $user->createdBy?->name ?? '',
+            'created_by' => $model->createdBy?->name ?? '',
             'associated_companies' => $associatedCompanies,
             'account_roles' => $model->account_roles
         ];
