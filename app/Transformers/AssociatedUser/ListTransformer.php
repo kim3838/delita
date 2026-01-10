@@ -13,9 +13,9 @@ class ListTransformer extends TransformerAbstract
     public function transform(AssociatedUser $model): array
     {
         $user = User::query()->find($model->user_id);
+        $associatedCompanies = $user->companies->sortBy('code')->values();
 
-        $associatedCompanies = $user->companies
-            ->sortBy('code')->values()
+        $mappedAssociatedCompanies = $associatedCompanies
             ->map(function($assignedCompany){
 
                 $employee = Employee::query()
@@ -32,6 +32,18 @@ class ListTransformer extends TransformerAbstract
                 ];
             });
 
+        $associatedCompaniesSummary = [
+            'value' => 'None',
+            'extender' => ''
+        ];
+
+        if($associatedCompanies->count() == 1){
+            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
+        } else if($associatedCompanies->count() > 1){
+            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
+            $associatedCompaniesSummary['extender'] = ' +' . ($associatedCompanies->count() - 1) . ' more';
+        }
+
         return [
             'id' => $model->user_id,
             'ulid' => $model->user_ulid,
@@ -41,8 +53,9 @@ class ListTransformer extends TransformerAbstract
             'email_verified_at' => $model->user_email_verified_at,
             'timezone' => $model->user_timezone,
             'created_by' => $user->createdBy?->name ?? '',
-            'associated_companies' => $associatedCompanies,
-            'account_roles' => $model->account_roles
+            'associated_companies' => $mappedAssociatedCompanies,
+            'account_roles' => $model->account_roles,
+            'associated_companies_summary' => $associatedCompaniesSummary
         ];
     }
 }
