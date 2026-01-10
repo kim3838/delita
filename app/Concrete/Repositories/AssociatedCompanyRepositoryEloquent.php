@@ -30,11 +30,11 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
-            ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
-                $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
+            ->when(!empty($filters->assignment_types) && is_array($filters->assignment_types), function ($builder) use ($filters) {
+                $builder->whereIn('company_user.assignment_type', $filters->assignment_types);
             })
-            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
-                $builder->whereIn('companies.account_id', $filters->account_id);
+            ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_ids);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
@@ -75,11 +75,11 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
-            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
-                $builder->whereIn('companies.account_id', $filters->account_id);
+            ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_ids);
             })
-            ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
-                $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
+            ->when(!empty($filters->assignment_types) && is_array($filters->assignment_types), function ($builder) use ($filters) {
+                $builder->whereIn('company_user.assignment_type', $filters->assignment_types);
             })
             ->select([
                 'company_user.user_id as user_id',

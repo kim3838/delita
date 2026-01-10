@@ -26,8 +26,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
         $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('accounts', 'accounts.id', '=', 'companies.account_id')
             ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
-            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
-                $builder->whereIn('companies.account_id', $filters->account_id);
+            ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_ids);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->where(function($clause) use($value){
@@ -59,8 +59,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when(!empty($filters->account_id) && is_array($filters->account_id), function ($builder) use ($filters) {
-                $builder->whereIn('companies.account_id', $filters->account_id);
+            ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
+                $builder->whereIn('companies.account_id', $filters->account_ids);
             })
             ->select([
                 'companies.*',

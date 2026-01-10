@@ -23,8 +23,8 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
-            ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
-                $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
+            ->when(!empty($filters->assignment_types) && is_array($filters->assignment_types), function ($builder) use ($filters) {
+                $builder->whereIn('company_user.assignment_type', $filters->assignment_types);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
@@ -53,8 +53,8 @@ class AssociatedAccountRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
-            ->when(!empty($filters->assignment_type) && is_array($filters->assignment_type), function ($builder) use ($filters) {
-                $builder->whereIn('company_user.assignment_type', $filters->assignment_type);
+            ->when(!empty($filters->assignment_types) && is_array($filters->assignment_types), function ($builder) use ($filters) {
+                $builder->whereIn('company_user.assignment_type', $filters->assignment_types);
             })
             ->select([
                 'accounts.id as id',
