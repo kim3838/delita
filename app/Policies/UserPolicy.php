@@ -23,9 +23,10 @@ class UserPolicy extends BasePolicy
         }
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
+        $stagedUserOwner = $user->id == $stagedUser->id;
 
         return $this->userIsAdminInAnyCompany($user)
-            && $this->hasPermission($user, 'update-user');
+            && ($stagedUserOwner || $this->hasPermission($user, 'update-user'));
     }
 
     public function create(User $user): bool
@@ -45,8 +46,9 @@ class UserPolicy extends BasePolicy
         }
 
         $userIsTheOneWhoCreatedTheStagedUser = $stagedUser->created_by == $user->id;
+        $stagedUserOwner = $user->id == $stagedUser->id;
 
         return $this->userIsAdminInAnyCompany($user)
-            && $this->hasPermission($user, 'update-user');
+            && ($stagedUserOwner || $this->hasPermission($user, 'update-user'));
     }
 }
