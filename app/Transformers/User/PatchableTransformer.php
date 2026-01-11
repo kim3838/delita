@@ -5,7 +5,7 @@ namespace App\Transformers\User;
 use App\Models\User;
 use League\Fractal\TransformerAbstract;
 
-class ItemTransformer extends TransformerAbstract
+class PatchableTransformer extends TransformerAbstract
 {
     public function transform(User $model): array
     {
@@ -17,7 +17,7 @@ class ItemTransformer extends TransformerAbstract
             'status' => $model->status?->toArray(),
             'email_verified_at' => $model->email_verified_at?->format('Y-m-d'),
             'timezone' => $model->timezone,
-            'roles' => $model->roles
+            'roles' => $model->roles->pluck('id')->values()?->toArray(),
         ];
     }
 }

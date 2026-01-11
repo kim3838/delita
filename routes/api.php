@@ -153,6 +153,7 @@ Route::group([
 
     //Role
     Route::get('roles', [RoleController::class, 'index']);
+    Route::get('role-selections', [RoleController::class, 'selection']);
     Route::get('role-permission-template', [RoleController::class, 'permissionTemplate']);
     Route::get('role/{ulid}', [RoleController::class, 'show']);
     Route::post('role', [RoleController::class, 'store']);

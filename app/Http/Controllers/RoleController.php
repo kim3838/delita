@@ -10,8 +10,10 @@ use App\Http\Requests\Role\ListRoleRequest;
 use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Requests\Role\ViewRoleRequest;
+use App\Transformers\Role\AccountRoleSelectionTransformer;
 use App\Transformers\Role\ItemTransformer;
 use App\Transformers\Role\ListTransformer;
+use App\Transformers\Role\SelectionTransformer;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -53,6 +55,24 @@ class RoleController extends Controller
             return ResponseJson::successfulResponse([
                 'role' => $role,
             ]);
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            $transformer = $request->user()->isSuperAdmin()
+                ? AccountRoleSelectionTransformer::class
+                : SelectionTransformer::class;
+
+            return ResponseJson::successfulResponse(
+                Fractal::collection($this->repository->selection($filters), $transformer, 'selection')
+            );
         }
 
         abort(404);

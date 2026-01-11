@@ -2,13 +2,13 @@
 
 namespace App\Transformers\AssociatedUser;
 
+use App\Concrete\TransformerAbstractConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Models\Employee;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
-use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class ListTransformer extends TransformerAbstractConcrete
 {
     public function transform(AssociatedUser $model): array
     {
@@ -32,17 +32,11 @@ class ListTransformer extends TransformerAbstract
                 ];
             });
 
-        $associatedCompaniesSummary = [
-            'value' => 'None',
-            'extender' => ''
-        ];
+        $accountRoles = request()->account_id
+            ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
+            : $model->account_roles;
 
-        if($associatedCompanies->count() == 1){
-            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
-        } else if($associatedCompanies->count() > 1){
-            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
-            $associatedCompaniesSummary['extender'] = ' +' . ($associatedCompanies->count() - 1) . ' more';
-        }
+        $associatedCompaniesSummary = $this->collectionSummary($associatedCompanies, 'short_name');
 
         return [
             'id' => $model->user_id,
@@ -54,7 +48,7 @@ class ListTransformer extends TransformerAbstract
             'timezone' => $model->user_timezone,
             'created_by' => $user->createdBy?->name ?? '',
             'associated_companies' => $mappedAssociatedCompanies,
-            'account_roles' => $model->account_roles,
+            'account_roles' => $accountRoles,
             'associated_companies_summary' => $associatedCompaniesSummary
         ];
     }

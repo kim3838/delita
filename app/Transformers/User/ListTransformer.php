@@ -2,15 +2,17 @@
 
 namespace App\Transformers\User;
 
+use App\Concrete\TransformerAbstractConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Models\Employee;
 use App\Models\User;
-use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class ListTransformer extends TransformerAbstractConcrete
 {
     public function transform(User $model): array
     {
+        $filters = json_decode(request()->get('filters'));
+
         $associatedCompanies = $model->companies->sortBy('code')->values();
 
         $mappedAssociatedCompanies = $associatedCompanies
@@ -30,17 +32,26 @@ class ListTransformer extends TransformerAbstract
                 ];
             });
 
-        $associatedCompaniesSummary = [
-            'value' => 'None',
-            'extender' => ''
-        ];
+        $roles = !empty($filters->account_ids) && is_array($filters->account_ids)
+            ? $model->roles->whereIn('account_id', $filters->account_ids)
+            : $model->roles;
 
-        if($associatedCompanies->count() == 1){
-            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
-        } else if($associatedCompanies->count() > 1){
-            $associatedCompaniesSummary['value'] = $associatedCompanies->first()->short_name;
-            $associatedCompaniesSummary['extender'] = ' +' . ($associatedCompanies->count() - 1) . ' more';
-        }
+        $rolesByAccountNumber = $roles
+            ->sortBy('account_id')
+            ->values()
+            ->map(function($role){
+                return ['account_number' => $role->account->number, 'role' => $role->name];
+            })->groupBy(function($item){
+                return $item['account_number'];
+            })->map(function($item, $key){
+                return '...' . substr($key, -8) . '(' . $item->pluck('role')->join(', ', ' and ') . ')';
+            })
+            ->values()
+            ->all();
+
+        $accountRoles = $this->arraySummary($rolesByAccountNumber);
+
+        $associatedCompaniesSummary = $this->collectionSummary($associatedCompanies, 'short_name');
 
         return [
             'id' => $model->id,
@@ -52,7 +63,7 @@ class ListTransformer extends TransformerAbstract
             'timezone' => $model->timezone,
             'created_by' => $model->createdBy?->name ?? '',
             'associated_companies' => $mappedAssociatedCompanies,
-            'account_roles' => $model->account_roles,
+            'account_roles' => $accountRoles,
             'associated_companies_summary' => $associatedCompaniesSummary
         ];
     }

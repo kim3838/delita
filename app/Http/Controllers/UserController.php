@@ -12,6 +12,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\ViewUserRequest;
 use App\Transformers\User\ItemTransformer;
 use App\Transformers\User\ListTransformer;
+use App\Transformers\User\PatchableTransformer;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -96,11 +97,14 @@ class UserController extends Controller
                 'password' => Hash::make($request->validated()['password'])
             ]);
 
+            $roles = data_get($request->validated(), 'role_ids', []);
+
+            $user = App::make(UserRepository::class)->store($data);
+
+            $user->syncRoles($roles);
+
             return ResponseJson::successfulResponse([
-                'user' => Fractal::item(
-                    App::make(UserRepository::class)->store($data),
-                    ItemTransformer::class
-                )
+                'user' => Fractal::item($user, ItemTransformer::class)
             ]);
         }
 
@@ -112,7 +116,7 @@ class UserController extends Controller
         if($request->expectsJson()){
 
             $user = App::make(UserRepository::class)->show($ulid);
-            $user = $user ? Fractal::item($user, ItemTransformer::class) : $user;
+            $user = $user ? Fractal::item($user, PatchableTransformer::class) : $user;
 
             return ResponseJson::successfulResponse(['user' => $user]);
         }
@@ -136,11 +140,14 @@ class UserController extends Controller
     {
         if($request->expectsJson()){
 
+            $roles = data_get($request->validated(), 'role_ids', []);
+
+            $user = App::make(UserRepository::class)->update($userId, $request->validated());
+
+            $user->syncRoles($roles);
+
             return ResponseJson::successfulResponse([
-                'user' => Fractal::item(
-                    App::make(UserRepository::class)->update($userId, $request->validated()),
-                    ItemTransformer::class
-                )
+                'user' => Fractal::item($user, ItemTransformer::class)
             ]);
         }
 
