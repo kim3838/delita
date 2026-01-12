@@ -9,6 +9,7 @@ use App\Http\Requests\SalaryStatementModule\DestroySalaryStatementModuleRequest;
 use App\Http\Requests\SalaryStatementModule\ReOrderSalaryStatementModuleRequest;
 use App\Http\Requests\SalaryStatementModule\StoreSalaryStatementModuleRequest;
 use App\Http\Requests\SalaryStatementModule\UpdateSalaryStatementModuleRequest;
+use App\Transformers\SalaryStatementModule\BasicTransformer;
 use App\Transformers\SalaryStatementModule\ItemTransformer;
 use App\Transformers\SalaryStatementModule\ListTransformer;
 use App\Transformers\SalaryStatementModule\PatchableTransformer;
@@ -23,9 +24,13 @@ class SalaryStatementModuleController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
+            $transformer = $request->user()->isSuperAdmin()
+                ? ListTransformer::class
+                : BasicTransformer::class;
+
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(SalaryStatementModuleRepository::class)->list($filters),
-                ListTransformer::class,
+                $transformer,
                 'salary_statement_modules'
             ));
         }
