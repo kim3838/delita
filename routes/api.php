@@ -26,7 +26,10 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeImportTemplateController;
+use App\Http\Controllers\EmployeeLeaveBalanceAdjustmentController;
+use App\Http\Controllers\EmployeeLeaveController;
 use App\Http\Controllers\EmployeeLeaveTypeController;
+use App\Http\Controllers\EmployeeOvertimeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
@@ -374,6 +377,8 @@ Route::group([
     Route::post('overtime-import-re-validate', [OvertimeImportController::class, 'reValidate']);
     Route::post('overtime-import-save', [OvertimeImportController::class, 'save']);
 
+    Route::get('employee-overtimes', [EmployeeOvertimeController::class, 'index']);
+
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
     Route::get('holidays-gate', [HolidayController::class, 'indexGate']);
@@ -432,12 +437,16 @@ Route::group([
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
+    Route::get('employee-leaves', [EmployeeLeaveController::class, 'index']);
+
     //Leave balance adjustment
     Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
     Route::get('leave-balance-adjustments-gate', [LeaveBalanceAdjustmentController::class, 'indexGate']);
     Route::post('leave-balance-adjustment', [LeaveBalanceAdjustmentController::class, 'store']);
     Route::patch('leave-balance-adjustment/{leaveBalanceAdjustmentUlid}', [LeaveBalanceAdjustmentController::class, 'update']);
     Route::delete('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'batchDestroy']);
+
+    Route::get('employee-leave-balance-adjustments', [EmployeeLeaveBalanceAdjustmentController::class, 'index']);
 
     //Leave balance
     Route::get('leave-running-balance-gate', [LeaveRunningBalanceController::class, 'indexGate']);
