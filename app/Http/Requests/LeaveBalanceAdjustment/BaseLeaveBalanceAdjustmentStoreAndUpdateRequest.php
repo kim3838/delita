@@ -38,6 +38,7 @@ class BaseLeaveBalanceAdjustmentStoreAndUpdateRequest extends FormRequest
                     }
                 }
             ],
+            'remarks' => 'nullable|string|max:255',
         ];
     }
 
@@ -57,6 +58,7 @@ class BaseLeaveBalanceAdjustmentStoreAndUpdateRequest extends FormRequest
             'effective_date.date_format' => 'Date must match the format Y-m-d e.g.(2000-12-31)',
             'balance.required' => 'Balance is required',
             'balance.regex' => 'Balance is invalid',
+            'remarks.max' => 'Remarks must not be greater than 255 characters',
         ];
     }
 }

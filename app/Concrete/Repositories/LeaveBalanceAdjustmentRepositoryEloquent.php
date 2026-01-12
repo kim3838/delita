@@ -48,6 +48,7 @@ class LeaveBalanceAdjustmentRepositoryEloquent extends BaseRepositoryEloquent im
                 "leave_balance_adjustments.leave_type_id AS leave_type_id",
                 "leave_balance_adjustments.type AS type",
                 "leave_balance_adjustments.balance AS balance",
+                "leave_balance_adjustments.remarks AS remarks",
                 "leave_balance_adjustments.effective_date AS effective_date",
             ]);
 

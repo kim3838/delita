@@ -27,6 +27,7 @@ class ListTransformer extends TransformerAbstract
             'leave_type_id' => $leaveBalanceAdjustment->leave_type_id,
             'type' => $leaveBalanceAdjustment->type?->toArray(),
             'balance' => $leaveBalanceAdjustment->balance,
+            'remarks' => $leaveBalanceAdjustment->remarks,
             'effective_date' => $leaveBalanceAdjustment->effective_date->toDateString(),
             'employee' => [
                 'number' => $employee->number,

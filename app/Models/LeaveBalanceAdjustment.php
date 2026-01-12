@@ -13,7 +13,8 @@ class LeaveBalanceAdjustment extends Model
         'leave_type_id',
         'type',
         'effective_date',
-        'balance'
+        'balance',
+        'remarks'
     ];
 
     protected $casts = [
@@ -21,7 +22,8 @@ class LeaveBalanceAdjustment extends Model
         'leave_type_id' => 'int',
         'type' => LeaveBalanceAdjustmentType::class,
         'balance' => 'decimal:1',
-        'effective_date' => 'date'
+        'effective_date' => 'date',
+        'remarks' => 'string'
     ];
 
     protected $hidden = [

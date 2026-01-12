@@ -19,6 +19,7 @@ return new class extends Migration
             $table->smallInteger('type');
             $table->date('effective_date');
             $table->decimal('balance', 7, 1)->default(0);
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }
