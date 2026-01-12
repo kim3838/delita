@@ -3,10 +3,9 @@
 namespace App\Transformers\AssociatedUser;
 
 use App\Concrete\TransformerAbstractConcrete;
-use App\Enums\CompanyUserAssignmentType;
-use App\Models\Employee;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
+use App\Transformers\User\ListTransformer as UserListTransformer;
 
 class ListTransformer extends TransformerAbstractConcrete
 {
@@ -15,22 +14,7 @@ class ListTransformer extends TransformerAbstractConcrete
         $user = User::query()->find($model->user_id);
         $associatedCompanies = $user->companies->sortBy('code')->values();
 
-        $mappedAssociatedCompanies = $associatedCompanies
-            ->map(function($assignedCompany){
-
-                $employee = Employee::query()
-                    ->where('user_id', $assignedCompany->pivot->user_id)
-                    ->where('company_id', $assignedCompany->id)
-                    ->first();
-
-                return [
-                    'name' => $assignedCompany->name,
-                    'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
-                    'is_employee' => (bool)$employee,
-                    'employee_number' => $employee?->number,
-                    'employee_full_name' => $employee?->full_name,
-                ];
-            });
+        $mappedAssociatedCompanies = new UserListTransformer()->mapAssociatedCompanies($associatedCompanies);
 
         $accountRoles = request()->account_id
             ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')

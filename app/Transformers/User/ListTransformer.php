@@ -15,22 +15,7 @@ class ListTransformer extends TransformerAbstractConcrete
 
         $associatedCompanies = $model->companies->sortBy('code')->values();
 
-        $mappedAssociatedCompanies = $associatedCompanies
-            ->map(function($assignedCompany){
-
-                $employee = Employee::query()
-                    ->where('user_id', $assignedCompany->pivot->user_id)
-                    ->where('company_id', $assignedCompany->id)
-                    ->first();
-
-                return [
-                    'name' => $assignedCompany->name,
-                    'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
-                    'is_employee' => (bool)$employee,
-                    'employee_number' => $employee?->number,
-                    'employee_full_name' => $employee?->full_name,
-                ];
-            });
+        $mappedAssociatedCompanies = $this->mapAssociatedCompanies($associatedCompanies);
 
         $roles = !empty($filters->account_ids) && is_array($filters->account_ids)
             ? $model->roles->whereIn('account_id', $filters->account_ids)
@@ -66,5 +51,25 @@ class ListTransformer extends TransformerAbstractConcrete
             'account_roles' => $accountRoles,
             'associated_companies_summary' => $associatedCompaniesSummary
         ];
+    }
+
+    public function mapAssociatedCompanies($associatedCompanies): array
+    {
+        return $associatedCompanies
+            ->map(function($assignedCompany){
+
+                $employee = Employee::query()
+                    ->where('user_id', $assignedCompany->pivot->user_id)
+                    ->where('company_id', $assignedCompany->id)
+                    ->first();
+
+                return [
+                    'name' => $assignedCompany->name,
+                    'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
+                    'is_employee' => (bool)$employee,
+                    'employee_number' => $employee?->number,
+                    'employee_full_name' => $employee?->full_name,
+                ];
+            })->toArray();
     }
 }
