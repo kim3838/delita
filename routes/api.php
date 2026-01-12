@@ -383,6 +383,7 @@ Route::group([
     Route::get('shift/{ulid}', [ShiftController::class, 'show']);
     Route::get('shift-gate/{ulid}', [ShiftController::class, 'showGate']);
     Route::delete('shift/{shiftId}', [ShiftController::class, 'destroy']);
+    Route::delete('shifts', [ShiftController::class, 'batchDestroy']);
 
     Route::get('shift-schedules-preset', [ShiftScheduleController::class, 'preset']);
 
