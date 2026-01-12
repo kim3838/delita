@@ -13,7 +13,8 @@ class HolidayPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-holiday');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class HolidayPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-holiday');
     }
 
     public function update(User $user, Holiday $holiday): bool
@@ -31,7 +33,8 @@ class HolidayPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-holiday');
     }
 
     public function delete(User $user, Holiday $holiday): bool
@@ -40,7 +43,8 @@ class HolidayPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-holiday');
     }
 
     public function batchDelete(User $user): bool
@@ -49,6 +53,7 @@ class HolidayPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-holiday');
     }
 }

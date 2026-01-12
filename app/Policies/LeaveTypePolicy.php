@@ -13,7 +13,8 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-leave-type');
     }
 
     public function view(User $user, LeaveType $leaveType): bool
@@ -22,7 +23,8 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-leave-type');
     }
 
     public function create(User $user): bool
@@ -31,7 +33,8 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-leave-type');
     }
 
     public function update(User $user, LeaveType $leaveType): bool
@@ -40,7 +43,8 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-leave-type');
     }
 
     public function delete(User $user, LeaveType $leaveType): bool
@@ -49,7 +53,8 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-leave-type');
     }
 
     public function batchDelete(User $user): bool
@@ -58,6 +63,7 @@ class LeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-leave-type');
     }
 }

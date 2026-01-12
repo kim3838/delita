@@ -13,7 +13,8 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-employee-shift-assignment');
     }
 
     public function update(User $user, EmployeeShift $employeeShift): bool
@@ -22,7 +23,8 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-employee-shift-assignment');
     }
 
     public function delete(User $user, EmployeeShift $employeeShift): bool
@@ -31,7 +33,8 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 
     public function batchDelete(User $user): bool
@@ -40,7 +43,8 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 
     public function sync(User $user): bool
@@ -49,7 +53,10 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-employee-shift-assignment')
+            && $this->hasPermission($user, 'update-employee-shift-assignment')
+            && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 
     public function syncWithoutDetaching(User $user): bool
@@ -58,7 +65,8 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-employee-shift-assignment');
     }
 
     public function detachAssignedShifts(User $user): bool
@@ -67,6 +75,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 }
