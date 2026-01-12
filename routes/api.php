@@ -259,6 +259,7 @@ Route::group([
     Route::post('compensation', [CompensationController::class, 'store']);
     Route::patch('compensation/{compensationId}', [CompensationController::class, 'update']);
     Route::delete('compensation/{compensationId}', [CompensationController::class, 'destroy']);
+    Route::delete('compensations', [CompensationController::class, 'batchDestroy']);
 
     //Deduction
     Route::get('deductions', [DeductionController::class, 'index']);
@@ -266,6 +267,7 @@ Route::group([
     Route::post('deduction', [DeductionController::class, 'store']);
     Route::patch('deduction/{deductionId}', [DeductionController::class, 'update']);
     Route::delete('deduction/{deductionId}', [DeductionController::class, 'destroy']);
+    Route::delete('deductions', [DeductionController::class, 'batchDestroy']);
 
     //Income Tax
     Route::get('income-taxes', [IncomeTaxController::class, 'index']);
@@ -273,6 +275,7 @@ Route::group([
     Route::post('income-tax', [IncomeTaxController::class, 'store']);
     Route::patch('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'update']);
     Route::delete('income-tax/{incomeTaxId}', [IncomeTaxController::class, 'destroy']);
+    Route::delete('income-taxes', [IncomeTaxController::class, 'batchDestroy']);
 
     //Salary Statement Modules
     Route::get('salary-statement-modules', [SalaryStatementModuleController::class, 'index']);

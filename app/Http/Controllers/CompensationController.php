@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompanyCompensationRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Compensation\BatchDestroyCompensationRequest;
 use App\Http\Requests\Compensation\DestroyCompensationRequest;
 use App\Http\Requests\Compensation\StoreCompensationRequest;
 use App\Http\Requests\Compensation\UpdateCompensationRequest;
@@ -87,6 +88,20 @@ class CompensationController extends Controller
         if($request->expectsJson()){
 
             App::make(CompensationRepository::class)->delete($compensationId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyCompensationRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $compensationIds = data_get($request->validated(), 'compensation_ids', []);
+
+            App::make(CompensationRepository::class)->batchDelete($compensationIds);
 
             return ResponseJson::successfulResponse();
         }

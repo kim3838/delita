@@ -47,4 +47,13 @@ class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements Dedu
 
         return $model->delete();
     }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+            $this->delete($id);
+        }
+
+        return 1;
+    }
 }

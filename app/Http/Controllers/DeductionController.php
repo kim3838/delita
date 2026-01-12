@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompanyDeductionRepository;
 use App\Blueprint\Repositories\DeductionRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Deduction\BatchDestroyDeductionRequest;
 use App\Http\Requests\Deduction\DestroyDeductionRequest;
 use App\Http\Requests\Deduction\StoreDeductionRequest;
 use App\Http\Requests\Deduction\UpdateDeductionRequest;
@@ -87,6 +88,20 @@ class DeductionController extends Controller
         if($request->expectsJson()){
 
             App::make(DeductionRepository::class)->delete($deductionId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyDeductionRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $deductionIds = data_get($request->validated(), 'deduction_ids', []);
+
+            App::make(DeductionRepository::class)->batchDelete($deductionIds);
 
             return ResponseJson::successfulResponse();
         }

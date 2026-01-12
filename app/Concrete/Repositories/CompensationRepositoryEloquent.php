@@ -47,4 +47,13 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
 
         return $model->delete();
     }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+            $this->delete($id);
+        }
+
+        return 1;
+    }
 }

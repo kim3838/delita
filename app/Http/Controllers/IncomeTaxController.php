@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\IncomeTax\BatchDestroyIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\DestroyIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\StoreIncomeTaxRequest;
 use App\Http\Requests\IncomeTax\UpdateIncomeTaxRequest;
@@ -86,6 +87,20 @@ class IncomeTaxController extends Controller
         if($request->expectsJson()){
 
             App::make(IncomeTaxRepository::class)->delete($incomeTaxId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyIncomeTaxRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $incomeTaxIds = data_get($request->validated(), 'income_tax_ids', []);
+
+            App::make(IncomeTaxRepository::class)->batchDelete($incomeTaxIds);
 
             return ResponseJson::successfulResponse();
         }

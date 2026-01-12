@@ -31,4 +31,9 @@ class IncomeTaxPolicy extends BasePolicy
     {
         return $user->isSuperAdmin();
     }
+
+    public function batchDelete(User $user): bool
+    {
+        return $user->isSuperAdmin();
+    }
 }

@@ -47,4 +47,13 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
 
         return $model->delete();
     }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+            $this->delete($id);
+        }
+
+        return 1;
+    }
 }
