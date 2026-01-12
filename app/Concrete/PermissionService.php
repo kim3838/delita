@@ -57,7 +57,7 @@ class PermissionService
                 ],[
                     'key' => 'leave',
                     'readable_name' => 'Leave',
-                    'actions' => ['view', 'create', 'update', 'delete']
+                    'actions' => ['view', 'create', 'delete']
                 ],[
                     'key' => 'leave-balance-adjustment',
                     'readable_name' => 'Leave balance adjustment',

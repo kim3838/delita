@@ -12,7 +12,8 @@ class LeavePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-leave');
     }
 
     public function create(User $user): bool
@@ -21,7 +22,8 @@ class LeavePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-leave');
     }
 
     public function batchDelete(User $user): bool
@@ -30,6 +32,7 @@ class LeavePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-leave');
     }
 }

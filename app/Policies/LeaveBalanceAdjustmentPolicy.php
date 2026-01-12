@@ -13,7 +13,8 @@ class LeaveBalanceAdjustmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-leave-balance-adjustment');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class LeaveBalanceAdjustmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-leave-balance-adjustment');
     }
 
     public function update(User $user, LeaveBalanceAdjustment $leaveBalanceAdjustment): bool
@@ -31,7 +33,8 @@ class LeaveBalanceAdjustmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-leave-balance-adjustment');
     }
 
     public function delete(User $user, LeaveBalanceAdjustment $leaveBalanceAdjustment): bool
@@ -40,7 +43,8 @@ class LeaveBalanceAdjustmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-leave-balance-adjustment');
     }
 
     public function batchDelete(User $user): bool
@@ -49,6 +53,7 @@ class LeaveBalanceAdjustmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-leave-balance-adjustment');
     }
 }

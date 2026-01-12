@@ -13,7 +13,8 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-attendance');
     }
 
     public function view(User $user, Attendance $attendance): bool
@@ -22,7 +23,8 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-attendance');
     }
 
     public function create(User $user): bool
@@ -31,7 +33,8 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-attendance');
     }
 
     public function update(User $user, Attendance $attendance): bool
@@ -40,7 +43,8 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-attendance');
     }
 
     public function batchDelete(User $user): bool
@@ -49,6 +53,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-attendance');
     }
 }

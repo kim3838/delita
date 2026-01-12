@@ -13,7 +13,8 @@ class DesignationPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-designation');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class DesignationPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-designation');
     }
 
     public function update(User $user, Designation $designation): bool
@@ -31,7 +33,8 @@ class DesignationPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-designation');
     }
 
     public function delete(User $user, Designation $designation): bool
@@ -40,6 +43,7 @@ class DesignationPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-designation');
     }
 }

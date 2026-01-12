@@ -13,7 +13,8 @@ class OvertimePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-overtime');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class OvertimePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-overtime');
     }
 
     public function update(User $user, Overtime $overtime): bool
@@ -31,7 +33,8 @@ class OvertimePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-overtime');
     }
 
     public function batchDelete(User $user): bool
@@ -40,6 +43,7 @@ class OvertimePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-overtime');
     }
 }

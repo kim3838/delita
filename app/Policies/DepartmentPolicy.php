@@ -13,7 +13,8 @@ class DepartmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-department');
     }
 
     public function create(User $user): bool
@@ -22,7 +23,8 @@ class DepartmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-department');
     }
 
     public function update(User $user, Department $department): bool
@@ -31,7 +33,8 @@ class DepartmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-department');
     }
 
     public function delete(User $user, Department $department): bool
@@ -40,6 +43,7 @@ class DepartmentPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-department');
     }
 }
