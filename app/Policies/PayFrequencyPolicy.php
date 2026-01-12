@@ -13,7 +13,8 @@ class PayFrequencyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-payroll-frequency');
     }
 
     public function update(User $user, PayFrequency $payFrequency): bool
@@ -22,6 +23,7 @@ class PayFrequencyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'));
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-payroll-frequency');
     }
 }
