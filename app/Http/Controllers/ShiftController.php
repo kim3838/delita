@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Shift\BatchDestroyShiftRequest;
 use App\Http\Requests\Shift\DestroyShiftRequest;
 use App\Http\Requests\Shift\ListShiftRequest;
 use App\Http\Requests\Shift\StoreShiftRequest;
@@ -153,6 +154,20 @@ class ShiftController extends Controller
         if($request->expectsJson()){
 
             $this->repository->delete($shiftId);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyShiftRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $shiftIds = data_get($request->validated(), 'shift_ids', []);
+
+            $this->repository->batchDelete($shiftIds);
 
             return ResponseJson::successfulResponse();
         }
