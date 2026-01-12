@@ -21,6 +21,7 @@ use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\EmployeeAttendanceController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
@@ -358,6 +359,10 @@ Route::group([
     Route::post('attendance-import-validate', [AttendanceImportController::class, 'read']);
     Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
     Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
+
+    Route::get('employee-attendances', [EmployeeAttendanceController::class, 'index']);
+    Route::get('employee-attendance/{attendanceUlid}', [EmployeeAttendanceController::class, 'show']);
+    Route::get('employee-attendances-gate/{attendanceUlid}', [EmployeeAttendanceController::class, 'showGate']);
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
