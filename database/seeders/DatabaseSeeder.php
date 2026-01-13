@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SuperAdminSeeder::class);
         $this->call(PermissionAndRoleSeeder::class);
 
-        if(App::environment('development')){
+        if(App::environment('development', 'staging')){
             $this->call(Development::class);
         }
     }
