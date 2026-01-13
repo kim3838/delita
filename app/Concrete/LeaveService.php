@@ -782,6 +782,7 @@ class LeaveService
     {
         $period = 1;
         $reComputeRunningBalance = 0;
+        $debugEnabled = false;
 
         foreach ($periodByDateSeriesArray as $periodByDateSeries) {
 
@@ -810,6 +811,15 @@ class LeaveService
                 //Set running balance re-computer
                 $reComputeRunningBalance = $periodByDateSeries->running_balance;
             }
+        }
+
+        if($debugEnabled){
+            _debug([
+                'LeaveService@deductRunningBalance' => [
+                    'period' => $period,
+                    're_compute_running_balance' => $reComputeRunningBalance,
+                ]
+            ]);
         }
 
         /**
@@ -841,6 +851,7 @@ class LeaveService
     public function isLimitReached(Employee $employee, LeaveType $leaveType, $date, $requestingHalfDay = false): bool
     {
         $limitReached = false;
+        $debugEnabled = false;
 
         if($leaveType->limit_usage){
 
@@ -884,18 +895,20 @@ class LeaveService
 
             $limitReached = $totalLeaveCountGteLimitValue || !$isBalanceHasAllowanceForRequestedLeaveValue;
 
-            _debug([
-                'is_limit_reached' => [
-                    'request for' => $requestingHalfDay ? 'Half day leave' : 'Whole day leave',
-                    'from' => $dateFrom->toDateString(),
-                    'to' => $upToDateParsed->toDateString(),
-                    'total leave count' => $totalLeaveCount,
-                    'limit value' => $limit,
-                    'total gte limit' => $totalLeaveCountGteLimitValue,
-                    'not enough allowance' => !$isBalanceHasAllowanceForRequestedLeaveValue,
-                    'limit reached' => $limitReached,
-                ]
-            ]);
+            if($debugEnabled){
+                _debug([
+                    'is_limit_reached' => [
+                        'request for' => $requestingHalfDay ? 'Half day leave' : 'Whole day leave',
+                        'from' => $dateFrom->toDateString(),
+                        'to' => $upToDateParsed->toDateString(),
+                        'total leave count' => $totalLeaveCount,
+                        'limit value' => $limit,
+                        'total gte limit' => $totalLeaveCountGteLimitValue,
+                        'not enough allowance' => !$isBalanceHasAllowanceForRequestedLeaveValue,
+                        'limit reached' => $limitReached,
+                    ]
+                ]);
+            }
         }
 
         return $limitReached;
