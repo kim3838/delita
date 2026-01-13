@@ -358,8 +358,8 @@ class Development extends Seeder
         //Assign 1002User01 to Company 1002-C as Employee Admin
         $account1002User01->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
-        //Assign 1002User02 to Company 1002-C as Employee
-        $account1002User02->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
+        //Assign 1002User02 to Company 1002-C as Employee Admin
+        $account1002User02->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign 1002User03 to Company 1002-C as Employee
         $account1002User03->companies()->detach();
