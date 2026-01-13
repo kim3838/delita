@@ -28,17 +28,19 @@ class Debug extends Command
      */
     public function handle()
     {
+
+    }
+
+    private function leaveRunningBalance($debug)
+    {
         $employee = Employee::query()->find(4);
-        $leave = LeaveType::query()->find(4);
+        $leaveType = LeaveType::query()->find(4);
+        $leaveService = new LeaveService();
 
-//        _debug([
-//            'running_balance_by_date' => new LeaveService()->getRunningBalanceByDate($employee, $leave, '2027-12-01'),
-//        ]);
-
-        _debug([
-            'grouped_decoded_by_year_monthly_balance' => new LeaveService()->getBalanceMap($employee, $leave, '2027-12-01'),
-        ]);
-
-        //new LeaveService()->debugBalanceMapBySingleLinePerDateSeries($employee, $leave, '2029-12-31');
+        match(true){
+            $debug == 'running_balance_by_date' => $leaveService->getRunningBalanceByDate($employee, $leaveType, '2027-12-01'),
+            $debug == 'balance_by_period_series' => $leaveService->getBalancePeriodSeries($employee, $leaveType, '2029-12-31'),
+            $debug == 'debug_single_line_per_date_series' => $leaveService->debugBalanceMapBySingleLinePerDateSeries($employee, $leaveType, '2029-12-31')
+        };
     }
 }
