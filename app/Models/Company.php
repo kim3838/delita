@@ -121,4 +121,9 @@ class Company extends Model
     {
         return $this->hasMany(LeaveType::class);
     }
+
+    public function approvalSettings(): HasMany
+    {
+        return $this->hasMany(ApprovalSetting::class);
+    }
 }
