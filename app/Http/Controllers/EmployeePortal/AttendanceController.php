@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\EmployeePortal;
 
 use App\Blueprint\Repositories\AttendanceDetailRepository;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Http\Requests\EmployeeAttendance\ViewAttendanceRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\EmployeePortal\Attendance\ViewAttendanceRequest;
 use App\Transformers\Attendance\ItemTransformer;
 use App\Transformers\Attendance\ListTransformer;
 use App\Transformers\AttendanceDetail\ListTransformer as AttendanceDetailListTransformer;
 use App\Transformers\Overtime\BasicTransformer as OvertimeBasicTransformer;
 use Illuminate\Http\Request;
 
-class EmployeeAttendanceController extends Controller
+class AttendanceController extends Controller
 {
     public function __construct(
         protected AttendanceRepository $repository,

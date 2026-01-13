@@ -21,19 +21,19 @@ use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\EmployeeAttendanceController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeImportTemplateController;
-use App\Http\Controllers\EmployeeLeaveBalanceAdjustmentController;
-use App\Http\Controllers\EmployeeLeaveController;
 use App\Http\Controllers\EmployeeLeaveTypeController;
-use App\Http\Controllers\EmployeeOvertimeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
+use App\Http\Controllers\EmployeePortal\AttendanceController as EmployeePortalAttendanceController;
 use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmployeeController;
+use App\Http\Controllers\EmployeePortal\LeaveBalanceAdjustmentController as EmployeePortalLeaveBalanceAdjustmentController;
+use App\Http\Controllers\EmployeePortal\LeaveController as EmployeePortalLeaveController;
+use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -368,9 +368,9 @@ Route::group([
     Route::post('attendance-import-re-validate', [AttendanceImportController::class, 'reValidate']);
     Route::post('attendance-import-save', [AttendanceImportController::class, 'save']);
 
-    Route::get('employee-attendances', [EmployeeAttendanceController::class, 'index']);
-    Route::get('employee-attendance/{attendanceUlid}', [EmployeeAttendanceController::class, 'show']);
-    Route::get('employee-attendances-gate/{attendanceUlid}', [EmployeeAttendanceController::class, 'showGate']);
+    Route::get('employee-portal-attendances', [EmployeePortalAttendanceController::class, 'index']);
+    Route::get('employee-portal-attendance/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'show']);
+    Route::get('employee-portal-attendances-gate/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'showGate']);
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
@@ -382,7 +382,7 @@ Route::group([
     Route::post('overtime-import-re-validate', [OvertimeImportController::class, 'reValidate']);
     Route::post('overtime-import-save', [OvertimeImportController::class, 'save']);
 
-    Route::get('employee-overtimes', [EmployeeOvertimeController::class, 'index']);
+    Route::get('employee-portal-overtimes', [EmployeePortalOvertimeController::class, 'index']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
@@ -442,7 +442,7 @@ Route::group([
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
-    Route::get('employee-leaves', [EmployeeLeaveController::class, 'index']);
+    Route::get('employee-portal-leaves', [EmployeePortalLeaveController::class, 'index']);
 
     //Leave balance adjustment
     Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
@@ -451,7 +451,7 @@ Route::group([
     Route::patch('leave-balance-adjustment/{leaveBalanceAdjustmentUlid}', [LeaveBalanceAdjustmentController::class, 'update']);
     Route::delete('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'batchDestroy']);
 
-    Route::get('employee-leave-balance-adjustments', [EmployeeLeaveBalanceAdjustmentController::class, 'index']);
+    Route::get('employee-portal-leave-balance-adjustments', [EmployeePortalLeaveBalanceAdjustmentController::class, 'index']);
 
     //Leave balance
     Route::get('leave-running-balance-gate', [LeaveRunningBalanceController::class, 'indexGate']);

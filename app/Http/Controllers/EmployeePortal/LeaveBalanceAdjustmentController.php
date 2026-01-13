@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\EmployeePortal;
 
-use App\Blueprint\Repositories\LeaveRepository;
+use App\Blueprint\Repositories\LeaveBalanceAdjustmentRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\Leave\ListTransformer;
+use App\Http\Controllers\Controller;
+use App\Transformers\LeaveBalanceAdjustment\ListTransformer;
 use Illuminate\Http\Request;
 
-class EmployeeLeaveController extends Controller
+class LeaveBalanceAdjustmentController extends Controller
 {
     public function __construct(
-        protected readonly LeaveRepository $repository
+        protected readonly LeaveBalanceAdjustmentRepository $repository
     ){}
-
 
     public function index(Request $request)
     {

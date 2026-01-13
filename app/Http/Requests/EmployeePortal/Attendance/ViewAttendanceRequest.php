@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\EmployeeAttendance;
+namespace App\Http\Requests\EmployeePortal\Attendance;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Http\FormRequest;

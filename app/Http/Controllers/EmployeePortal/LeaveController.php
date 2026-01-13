@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\EmployeePortal;
 
-use App\Blueprint\Repositories\OvertimeRepository;
+use App\Blueprint\Repositories\LeaveRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\Overtime\ListTransformer;
+use App\Http\Controllers\Controller;
+use App\Transformers\Leave\ListTransformer;
 use Illuminate\Http\Request;
 
-class EmployeeOvertimeController extends Controller
+class LeaveController extends Controller
 {
     public function __construct(
-        protected readonly OvertimeRepository $repository
+        protected readonly LeaveRepository $repository
     ){}
+
 
     public function index(Request $request)
     {
