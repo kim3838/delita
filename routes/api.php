@@ -33,6 +33,7 @@ use App\Http\Controllers\EmployeeOvertimeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
+use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmployeeController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -300,6 +301,10 @@ Route::group([
     Route::post('employee-import-validate', [EmployeeImportController::class, 'read']);
     Route::post('employee-import-re-validate', [EmployeeImportController::class, 'reValidate']);
     Route::post('employee-import-save', [EmployeeImportController::class, 'save']);
+
+    Route::get('employee-portal-employees', [EmployeePortalEmployeeController::class, 'index']);
+    Route::get('employee-portal-employee-gate/{ulid}', [EmployeePortalEmployeeController::class, 'showGate']);
+    Route::get('employee-portal-employee/{ulid}', [EmployeePortalEmployeeController::class, 'show']);
 
     //Employee Groups
     Route::get('employee-groups', [EmployeeGroupController::class, 'index']);
