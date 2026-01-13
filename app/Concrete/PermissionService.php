@@ -116,7 +116,11 @@ class PermissionService
                     'key' => 'approval-setting',
                     'readable_name' => 'Approval setting',
                     'actions' => ['view', 'manage']
-                ], [
+                ],[
+                    'key' => 'any-request',
+                    'readable_name' => 'Any request',
+                    'actions' => ['approve']
+                ],[
                     'key' => 'attendance-adjustment-request',
                     'readable_name' => 'Attendance adjustment request',
                     'actions' => ['view', 'create', 'delete', 'approve']

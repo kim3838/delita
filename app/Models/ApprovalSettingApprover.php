@@ -13,6 +13,12 @@ class ApprovalSettingApprover extends Model
         'approver_id'
     ];
 
+    protected $casts = [
+        'approval_setting_id' => 'int',
+        'order' => 'int',
+        'approver_id' => 'int'
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',

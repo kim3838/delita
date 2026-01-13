@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Account;
 use App\Models\Attendance;
+use App\Models\AttendanceAdjustmentRequest;
 use App\Models\AttendanceDetail;
 use App\Models\Company;
 use App\Models\CompanyFormula;
@@ -72,7 +73,8 @@ class AppServiceProvider extends ServiceProvider
             'holiday' => Holiday::class,
             'leave_type' => LeaveType::class,
             'leave' => Leave::class,
-            'leave_balance_adjustment' => LeaveBalanceAdjustment::class
+            'leave_balance_adjustment' => LeaveBalanceAdjustment::class,
+            'attendance_adjustment_request' => AttendanceAdjustmentRequest::class,
         ]);
     }
 }

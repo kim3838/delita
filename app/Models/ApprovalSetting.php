@@ -13,6 +13,11 @@ class ApprovalSetting extends Model
         'request_model'
     ];
 
+    protected $casts = [
+        'company_id' => 'int',
+        'request_model' => 'string'
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
