@@ -15,8 +15,8 @@ class EmployeePayrollComponent extends Model
 {
     protected $fillable = [
         'employee_id',
-        'payroll_componentable_id',
         'payroll_componentable_type',
+        'payroll_componentable_id',
         'formulable_type',
         'amount',
         'currency',
@@ -31,8 +31,8 @@ class EmployeePayrollComponent extends Model
 
     protected $casts = [
         'employee_id' => 'int',
-        'payroll_componentable_id' => 'int',
         'payroll_componentable_type' => 'string',
+        'payroll_componentable_id' => 'int',
         'formulable_type' => Formulable::class,
         'amount' => 'decimal:6',
         'currency' => 'string',
