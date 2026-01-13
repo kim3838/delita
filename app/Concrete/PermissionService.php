@@ -113,17 +113,21 @@ class PermissionService
             'name' => 'Request & Approval',
             'permissions' => [
                 [
+                    'key' => 'approval-setting',
+                    'readable_name' => 'Approval setting',
+                    'actions' => ['view', 'manage']
+                ], [
                     'key' => 'attendance-adjustment-request',
                     'readable_name' => 'Attendance adjustment request',
-                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete', 'approve']
                 ],[
                     'key' => 'overtime-request',
                     'readable_name' => 'Overtime request',
-                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete', 'approve']
                 ],[
                     'key' => 'leave-request',
                     'readable_name' => 'Leave request',
-                    'actions' => ['view', 'create', 'update', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete', 'approve']
                 ],
             ]
         ],
