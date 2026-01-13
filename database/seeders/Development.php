@@ -87,9 +87,15 @@ class Development extends Seeder
         );
 
          //Account chain, role creation
-        new AccountCreatedChain()->handle(new AccountCreated($account1001));
-        new AccountCreatedChain()->handle(new AccountCreated($account1002));
-        new AccountCreatedChain()->handle(new AccountCreated($account1003));
+        if($account1001->roles->isEmpty()){
+            new AccountCreatedChain()->handle(new AccountCreated($account1001));
+        }
+        if($account1002->roles->isEmpty()){
+            new AccountCreatedChain()->handle(new AccountCreated($account1002));
+        }
+        if($account1003->roles->isEmpty()){
+            new AccountCreatedChain()->handle(new AccountCreated($account1003));
+        }
 
         //Account admin role
         $account1001AdminRole = $account1001->roles()->where(['name' => 'Admin'])->first();
@@ -367,7 +373,9 @@ class Development extends Seeder
         $account1002User04->companies()->syncWithoutDetaching([$company1002D->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
         //Assign Admin role of account 1001 and 1002 to 1002User01
-        $account1002User01->syncRoles([$account1001AdminRole, $account1002AdminRole]);
+        if($account1002User01->roles->isEmpty()){
+            $account1002User01->syncRoles([$account1001AdminRole, $account1002AdminRole]);
+        }
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
