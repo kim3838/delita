@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ApprovalSettingController;
 use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\AssociatedUserController;
@@ -254,6 +255,10 @@ Route::group([
     Route::get('pay-frequencies-gate', [PayFrequencyController::class, 'indexGate']);
     Route::get('pay-frequency-selections', [PayFrequencyController::class, 'selection']);
     Route::patch('pay-frequency/{payFrequencyId}', [PayFrequencyController::class, 'update']);
+
+    //Approval Settings
+    Route::get('approval-settings', [ApprovalSettingController::class, 'index']);
+    Route::get('approval-settings-gate', [ApprovalSettingController::class, 'indexGate']);
 
     //Payroll Component (compensation, deduction, income tax)
     Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
