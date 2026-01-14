@@ -7,6 +7,8 @@ use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\User\ListUserRequest;
 use App\Transformers\AssociatedUser\ListTransformer;
+use App\Transformers\AssociatedUser\SelectionTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class AssociatedUserController extends Controller
@@ -33,6 +35,21 @@ class AssociatedUserController extends Controller
                     ListTransformer::class
                 )
             );
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse(Fractal::collection(
+                App::make(AssociatedUserRepository::class)->paginate($filters),
+                SelectionTransformer::class
+            ));
         }
 
         abort(404);
