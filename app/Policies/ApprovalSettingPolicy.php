@@ -24,6 +24,6 @@ class ApprovalSettingPolicy extends BasePolicy
         }
 
         return $this->userIsAdminInCompany($user, request()->input('company_id'))
-            && $this->hasPermission($user, 'manage-approval-setting');
+            && $this->hasPermission($user, 'update-approval-setting');
     }
 }
