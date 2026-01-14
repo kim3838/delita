@@ -2,12 +2,12 @@
 
 namespace App\Transformers\ApprovalSettingApprover;
 
+use App\Concrete\TransformerAbstractConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Models\ApprovalSettingApprover;
 use App\Models\Employee;
-use League\Fractal\TransformerAbstract;
 
-class PatchableTransformer extends TransformerAbstract
+class PatchableTransformer extends TransformerAbstractConcrete
 {
     public function transform(ApprovalSettingApprover $model): array
     {
@@ -20,6 +20,10 @@ class PatchableTransformer extends TransformerAbstract
             : $user->companies;
 
         $mappedAssociatedCompanies = collect($this->mapAssociatedCompanies($associatedCompanies));
+
+        $accountRoles = request()->account_id
+            ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
+            : null;
 
         $companyEmployeeNumber = '';
         $companyEmployeeAssignmentType = '';
@@ -45,7 +49,9 @@ class PatchableTransformer extends TransformerAbstract
             'approver_username' => $model->approver->name,
             'company_employee_number' => $companyEmployeeNumber,
             'company_employee_full_name' => $companyEmployeeFullName,
-            'company_assignment_type' => $companyEmployeeAssignmentType
+            'company_assignment_type' => $companyEmployeeAssignmentType,
+
+            'account_roles_summary' => $accountRoles,
         ];
     }
 
