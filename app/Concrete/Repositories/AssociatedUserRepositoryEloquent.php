@@ -95,8 +95,7 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'user_sub.email as user_email',
                 'user_sub.status as user_status',
                 'user_sub.email_verified_at as user_email_verified_at',
-                'user_sub.timezone as user_timezone',
-                DB::raw("GROUP_CONCAT(roles.name ORDER BY roles.account_id ASC) AS account_roles"),
+                'user_sub.timezone as user_timezone'
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

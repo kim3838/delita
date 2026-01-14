@@ -92,7 +92,6 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
                 'user_sub.email_verified_at as email_verified_at',
                 'user_sub.timezone as timezone',
                 'user_sub.created_by as created_by',
-                DB::raw("GROUP_CONCAT(roles.name ORDER BY roles.account_id ASC) AS account_roles"),
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

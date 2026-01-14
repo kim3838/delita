@@ -18,7 +18,7 @@ class ListTransformer extends TransformerAbstractConcrete
 
         $accountRoles = request()->account_id
             ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
-            : $model->account_roles;
+            : null;
 
         $associatedCompaniesSummary = $this->collectionSummary($associatedCompanies, 'short_name');
 
