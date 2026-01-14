@@ -115,7 +115,7 @@ class PermissionService
                 [
                     'key' => 'approval-setting',
                     'readable_name' => 'Approval setting',
-                    'actions' => ['view', 'manage']
+                    'actions' => ['view', 'update']
                 ],[
                     'key' => 'any-request',
                     'readable_name' => 'Any request',
