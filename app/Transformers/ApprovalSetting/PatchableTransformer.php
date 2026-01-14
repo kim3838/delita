@@ -13,7 +13,7 @@ class PatchableTransformer extends TransformerAbstract
     public function transform(ApprovalSetting $model): array
     {
         $requestTitle = collect(new ApprovalService()::$seriesMap)
-            ->where('model_alias', 'attendance_adjustment_request')
+            ->where('model_alias', $model->request_model)
             ->first()['readable_name'] ?? 'Not found';
 
         $approvers = Fractal::collection(
@@ -25,7 +25,6 @@ class PatchableTransformer extends TransformerAbstract
             'id' => $model->id,
             'company_id' => $model->company_id,
             'request_title' => $requestTitle,
-            'request_model' => $model->request_model,
             'approvers' => $approvers,
         ];
     }
