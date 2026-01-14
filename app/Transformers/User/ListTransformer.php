@@ -48,7 +48,7 @@ class ListTransformer extends TransformerAbstractConcrete
             'timezone' => $model->timezone,
             'created_by' => $model->createdBy?->name ?? '',
             'associated_companies' => $mappedAssociatedCompanies,
-            'account_roles' => $accountRoles,
+            'account_roles_summary' => $accountRoles,
             'associated_companies_summary' => $associatedCompaniesSummary
         ];
     }
