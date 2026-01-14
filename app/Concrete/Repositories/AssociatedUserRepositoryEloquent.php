@@ -98,6 +98,8 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'user_sub.timezone as user_timezone'
             ]);
 
+        $this->setGroupsOnBuilder($queryBuilder, ['user_sub.id']);
+
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         return $queryBuilder;
@@ -109,13 +111,7 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
             ['field' => 'user_sub.id', 'direction' => 'ASC'],
         ];
 
-        $groups = [
-            'user_sub.id'
-        ];
-
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
-
-        $this->setGroupsOnBuilder($queryBuilder, $groups);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
