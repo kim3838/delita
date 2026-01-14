@@ -64,6 +64,7 @@ class ListTransformer extends TransformerAbstractConcrete
                     ->first();
 
                 return [
+                    'id' => $assignedCompany->id,
                     'name' => $assignedCompany->name,
                     'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
                     'is_employee' => (bool)$employee,
