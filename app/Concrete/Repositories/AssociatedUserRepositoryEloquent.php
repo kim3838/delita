@@ -19,18 +19,12 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
         return AssociatedUser::class;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function baseQueryBuilder($filters, $orders = [])
     {
-        $orders = [
-            ['field' => 'user_sub.id', 'direction' => 'ASC'],
-        ];
-
-        $groups = [
-            'user_sub.id'
-        ];
-
         $employeeRepositoryFilter = clone $filters;
-        $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
+        if(isset($employeeRepositoryFilter->employee_search)){
+            $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
+        }
         unset($employeeRepositoryFilter->user_search);
         unset($employeeRepositoryFilter->employee_search);
         unset($employeeRepositoryFilter->associated_companies);
@@ -59,6 +53,9 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                     $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
                         ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
                 });
+            })
+            ->when(!empty($filters->pre_selected_user_ids) && is_array($filters->pre_selected_user_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("users.id"), $filters->pre_selected_user_ids);
             })
             ->select([
                 'users.id',
@@ -103,6 +100,22 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'user_sub.id', 'direction' => 'ASC'],
+        ];
+
+        $groups = [
+            'user_sub.id'
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
         $this->setGroupsOnBuilder($queryBuilder, $groups);
 
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
