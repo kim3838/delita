@@ -15,6 +15,7 @@ use App\Blueprint\Repositories\CompanyDeductionRepository;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Blueprint\Repositories\CompanyRepository;
+use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Blueprint\Repositories\DeductionRepository;
 use App\Blueprint\Repositories\DepartmentRepository;
@@ -60,6 +61,7 @@ use App\Concrete\Repositories\CompanyDeductionRepositoryEloquent;
 use App\Concrete\Repositories\CompanyFormulaRepositoryEloquent;
 use App\Concrete\Repositories\CompanyIncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\CompanyRepositoryEloquent;
+use App\Concrete\Repositories\CompanyUserRepositoryEloquent;
 use App\Concrete\Repositories\CompensationRepositoryEloquent;
 use App\Concrete\Repositories\DeductionRepositoryEloquent;
 use App\Concrete\Repositories\DepartmentRepositoryEloquent;
@@ -102,6 +104,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'account_subscription' => AccountSubscriptionRepositoryEloquent::class,
         'associated_account' => AssociatedAccountRepositoryEloquent::class,
         'user' => UserRepositoryEloquent::class,
+        'company_user' => CompanyUserRepositoryEloquent::class,
         'role' => RoleRepositoryEloquent::class,
         'permission' => PermissionRepositoryEloquent::class,
         'non_employee_user' => NonEmployeeUserRepositoryEloquent::class,
@@ -147,6 +150,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
         UserRepository::class => UserRepositoryEloquent::class,
+        CompanyUserRepository::class => CompanyUserRepositoryEloquent::class,
         RoleRepository::class => RoleRepositoryEloquent::class,
         PermissionRepository::class => PermissionRepositoryEloquent::class,
         NonEmployeeUserRepository::class => NonEmployeeUserRepositoryEloquent::class,
@@ -197,6 +201,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'account_subscription',
             'associated_account',
             'user',
+            'company_user',
             'role',
             'permission',
             'non_employee_user',
@@ -242,6 +247,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
             UserRepository::class,
+            CompanyUserRepository::class,
             RoleRepository::class,
             PermissionRepository::class,
             NonEmployeeUserRepository::class,
