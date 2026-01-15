@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Blueprint\Repositories\AccountRepository;
 use App\Blueprint\Repositories\AccountSubscriptionRepository;
+use App\Blueprint\Repositories\ApprovalSettingApproverRepository;
 use App\Blueprint\Repositories\ApprovalSettingRepository;
 use App\Blueprint\Repositories\AssociatedAccountRepository;
 use App\Blueprint\Repositories\AssociatedCompanyRepository;
@@ -50,6 +51,7 @@ use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\Repositories\AccountRepositoryEloquent;
 use App\Concrete\Repositories\AccountSubscriptionRepositoryEloquent;
+use App\Concrete\Repositories\ApprovalSettingApproverRepositoryEloquent;
 use App\Concrete\Repositories\ApprovalSettingRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedAccountRepositoryEloquent;
 use App\Concrete\Repositories\AssociatedCompanyRepositoryEloquent;
@@ -146,6 +148,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'leave_type_balance_per_period' => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
         'leave_balance_adjustment' => LeaveBalanceAdjustmentRepositoryEloquent::class,
         'approval_setting' => ApprovalSettingRepositoryEloquent::class,
+        'approval_setting_approver' => ApprovalSettingApproverRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -192,6 +195,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         LeaveTypeBalancePerPeriodRepository::class => LeaveTypeBalancePerPeriodRepositoryEloquent::class,
         LeaveBalanceAdjustmentRepository::class => LeaveBalanceAdjustmentRepositoryEloquent::class,
         ApprovalSettingRepository::class => ApprovalSettingRepositoryEloquent::class,
+        ApprovalSettingApproverRepository::class => ApprovalSettingApproverRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -243,6 +247,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'leave_type_balance_per_period',
             'leave_balance_adjustment',
             'approval_setting',
+            'approval_setting_approver',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -289,6 +294,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             LeaveTypeBalancePerPeriodRepository::class,
             LeaveBalanceAdjustmentRepository::class,
             ApprovalSettingRepository::class,
+            ApprovalSettingApproverRepository::class,
         ];
     }
 }
