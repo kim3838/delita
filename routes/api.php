@@ -263,6 +263,7 @@ Route::group([
     //Approval Settings
     Route::get('approval-settings', [ApprovalSettingController::class, 'index']);
     Route::get('approval-settings-gate', [ApprovalSettingController::class, 'indexGate']);
+    Route::patch('approval-setting/{approvalSettingId}', [ApprovalSettingController::class, 'update']);
 
     //Payroll Component (compensation, deduction, income tax)
     Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
