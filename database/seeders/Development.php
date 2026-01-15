@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
+use App\Concrete\ApprovalService;
 use App\Enums\AccountSubscriptionPlan;
 use App\Enums\AccountSubscriptionModule;
 use App\Enums\CompanyUserAssignmentType;
@@ -132,6 +133,16 @@ class Development extends Seeder
 
         //Account 1001 Companies
         $company1003A = $account1003->companies()->firstOrCreate(['code' => '1003-A'],['short_name' => '1003A', 'name' => 'Company 1003-A', 'code' => '1003-A', 'country_id' => $philippines->id, 'currency' => 'PHP', 'timezone' => 'Asia/Manila', 'ulid' => Str::ulid(),]);
+
+        //Company approval settings
+        foreach(ApprovalService::$seriesMap as $approvalSetting){
+            $company1001A->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+            $company1002A->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+            $company1002B->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+            $company1002C->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+            $company1002D->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+            $company1003A->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+        }
 
         //Account 1002User01
         $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);

@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
+use App\Concrete\ApprovalService;
 use App\Enums\CompanyUserAssignmentType;
 use App\Events\Repositories\CompanyCreated;
 use Illuminate\Support\Facades\App;
@@ -65,5 +66,12 @@ class CompanyCreatedChain
         }
 
         $event->company->formulas()->sync($formulas);
+
+        /**
+         * Create approval settings for requestable model
+         **/
+        foreach(ApprovalService::$seriesMap as $approvalSetting){
+            $event->company->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+        }
     }
 }
