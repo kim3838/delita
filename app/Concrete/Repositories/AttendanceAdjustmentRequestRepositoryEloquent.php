@@ -22,6 +22,16 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
     {
         $attendanceRepositoryFilter = clone $filters;
 
+        if(isset($attendanceRepositoryFilter->attendance_date_from)){
+            $attendanceRepositoryFilter->date_from = $attendanceRepositoryFilter->attendance_date_from;
+        }
+        if(isset($attendanceRepositoryFilter->attendance_date_to)){
+            $attendanceRepositoryFilter->date_to = $attendanceRepositoryFilter->attendance_date_to;
+        }
+
+        unset($filters->attendance_date_from);
+        unset($filters->attendance_date_to);
+
         $attendanceQueryBuilder = App::make(AttendanceRepository::class)->baseQueryBuilder($attendanceRepositoryFilter, []);
 
         $queryBuilder = $this->model::query()->getQuery()
@@ -29,6 +39,9 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
                 $join->on('attendance_sub.id', '=', 'attendance_adjustment_requests.attendance_id');
             })
             ->join('companies', 'attendance_sub.employee_company_id', '=', 'companies.id')
+            ->when(!empty($filters->requested_by_ids) && is_array($filters->requested_by_ids), function ($builder) use ($filters) {
+                $builder->whereIn('attendance_adjustment_requests.requested_by', $filters->requested_by_ids);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "attendance_sub.employee_company_id AS employee_company_id",
