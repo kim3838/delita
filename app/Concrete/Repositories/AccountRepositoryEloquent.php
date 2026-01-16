@@ -51,13 +51,4 @@ class AccountRepositoryEloquent extends BaseRepositoryEloquent implements Accoun
 
         return $queryBuilder->firstOrFail();
     }
-
-    public function store($attributes)
-    {
-        $account = $this->model::query()->create($attributes);
-
-        AccountCreated::dispatchIf((!empty($account) && $account instanceof $this->model), $account);
-
-        return $account;
-    }
 }

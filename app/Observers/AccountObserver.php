@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\Repositories\AccountCreated;
 use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -19,6 +20,11 @@ class AccountObserver
         $this->addCustomNumberAttribute($account);
 
         return true;
+    }
+
+    public function created(Account $account): void
+    {
+        event(new AccountCreated($account));
     }
 
     public function addCustomNumberAttribute(Account $account): Account
