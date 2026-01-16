@@ -70,6 +70,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "employee_sub.number AS employee_number",
+                "employee_sub.company_id AS employee_company_id",
 
                 "attendances.id AS id",
                 "attendances.ulid AS ulid",

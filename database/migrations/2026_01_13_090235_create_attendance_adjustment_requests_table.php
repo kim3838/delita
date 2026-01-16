@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('attendance_adjustment_requests', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
             $table->foreignId('requested_by')->constrained('users')->cascadeOnDelete();
+            $table->dateTime('date_requested');
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
             $table->dateTime('first_in');
             $table->dateTime('lunch_out')->nullable();
             $table->dateTime('lunch_in')->nullable();
             $table->dateTime('last_out');
+            $table->string('reason');
             $table->timestamps();
         });
     }

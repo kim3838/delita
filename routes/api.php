@@ -5,6 +5,7 @@ use App\Http\Controllers\ApprovalSettingController;
 use App\Http\Controllers\AssociatedAccountController;
 use App\Http\Controllers\AssociatedCompanyController;
 use App\Http\Controllers\AssociatedUserController;
+use App\Http\Controllers\AttendanceAdjustmentRequestController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceImportTemplateController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -381,6 +382,9 @@ Route::group([
     Route::get('employee-portal-attendances', [EmployeePortalAttendanceController::class, 'index']);
     Route::get('employee-portal-attendance/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'show']);
     Route::get('employee-portal-attendances-gate/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'showGate']);
+
+    //Attendance Adjustment Request
+    Route::get('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'index']);
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
