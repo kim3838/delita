@@ -14,6 +14,6 @@ class CompanyCreated
 
     public function __construct(
         public Company $company,
-        public User $user
+        public ?User $user
     ){}
 }

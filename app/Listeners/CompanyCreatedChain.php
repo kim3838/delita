@@ -8,6 +8,7 @@ use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Concrete\ApprovalService;
 use App\Enums\CompanyUserAssignmentType;
 use App\Events\Repositories\CompanyCreated;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
 
 class CompanyCreatedChain
@@ -26,7 +27,7 @@ class CompanyCreatedChain
     public function handle(CompanyCreated $event): void
     {
         //Sync company assignment to the creator if not superadmin
-        if(!$event->user->isSuperAdmin()){
+        if($event->user instanceof User && !$event->user->isSuperAdmin()){
 
             $event->user->companies()->syncWithoutDetaching([
                 $event->company->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]

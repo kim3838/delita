@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Observers\AccountObserver;
+use App\Observers\CompanyObserver;
 use App\Observers\EmployeeObserver;
 use App\Observers\HasUlid;
 use App\Observers\OrderableObserver;
@@ -36,6 +37,14 @@ class ObserverServiceProvider extends ServiceProvider
         return array(
             array(
                 'observables' => [
+                    Relation::getMorphedModel('company'),
+                ],
+                'observers' => [
+                    CompanyObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
                     Relation::getMorphedModel('account'),
                 ],
                 'observers' => [
@@ -57,7 +66,6 @@ class ObserverServiceProvider extends ServiceProvider
                 'observables' => [
                     Relation::getMorphedModel('user'),
                     Relation::getMorphedModel('role'),
-                    Relation::getMorphedModel('company'),
                     Relation::getMorphedModel('shift'),
                     Relation::getMorphedModel('pay_frequency'),
                     Relation::getMorphedModel('formula'),
