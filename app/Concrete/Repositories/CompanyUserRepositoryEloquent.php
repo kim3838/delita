@@ -45,6 +45,12 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('users.status', $filters->status);
             })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
+                        ->orWhere('users.email', 'LIKE', ('%' . $value . '%'));
+                });
+            })
             ->when($filters->user_search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
                     $clause->where('users.name', 'LIKE', ('%' . $value . '%'))
@@ -130,6 +136,19 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
     {
         $orders = [
             ['field' => 'user_sub.user_id', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function selection($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'user_sub.user_username', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);

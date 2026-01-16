@@ -242,6 +242,7 @@ Route::group([
     Route::get('associated-account-selections', [AssociatedAccountController::class, 'selection']);
     Route::get('associated-users', [AssociatedUserController::class, 'index']);
 
+    Route::get('company-users', [CompanyUserController::class, 'index']);
     Route::get('company-user-selections', [CompanyUserController::class, 'selection']);
 
     Route::get('associated-users-gate', [AssociatedUserController::class, 'indexGate']);
