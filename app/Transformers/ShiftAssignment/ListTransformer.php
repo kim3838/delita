@@ -36,7 +36,7 @@ class ListTransformer extends TransformerAbstract
             'employee_number' => $employee->number,
             'employee_full_name' => $employee->full_name,
             'employee_current_employment_profile' => $currentEmploymentProfile,
-            'employee_department' => $employee->department,
+            'employee_department' => $employee->departments->first(),
             'employee_designation' => $employee->designation,
 
             'shift_ulid' => $shiftAssignment->shift_ulid,

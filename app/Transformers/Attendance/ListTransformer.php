@@ -73,7 +73,7 @@ class ListTransformer extends TransformerAbstract
             'employee' => [
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,
-                'department' => $employee->department,
+                'department' => $employee->departments->first(),
                 'designation' => $employee->designation,
             ],
             'shift' => $attendanceShift,

@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Enums\EmploymentStatus;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -56,11 +57,16 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when(!empty($filters->employment_type) && is_array($filters->employment_type), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("current_employment_profile.employment_type"), $filters->employment_type);
             })
-            ->when(!empty($filters->department_ids) && is_array($filters->department_ids), function ($builder) use ($filters) {
-                $builder->whereIn(DB::raw("employees.department_id"), $filters->department_ids);
-            })
             ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
+            })
+            ->when(!empty($filters->department_ids) && is_array($filters->department_ids), function ($builder) use ($filters) {
+                $builder->whereExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('department_employee')
+                        ->whereColumn('department_employee.employee_id', 'employees.id')
+                        ->whereIn('department_employee.department_id', $filters->department_ids);
+                });
             })
             ->when(!empty($filters->assigned_employee_group_ids) && is_array($filters->assigned_employee_group_ids), function ($builder) use ($filters) {
                 $builder->whereExists(function ($query) use ($filters) {
@@ -187,5 +193,39 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         $queryBuilder = $this->model::query()->where('ulid', $identifier);
 
         return $queryBuilder->firstOrFail();
+    }
+
+    public function store($attributes)
+    {
+        $model = $this->model::query()->create($attributes);
+
+        $this->syncDepartments($model, $attributes);
+
+        return $model;
+    }
+
+    public function update($identifier, $attributes)
+    {
+        $model = $this->model::query()->findOrfail($identifier);
+
+        $this->syncDepartments($model, $attributes);
+
+        $model->update($attributes);
+
+        return $model;
+    }
+
+    public function syncDepartments($model, $attributes): void
+    {
+        if($attributes['department_id'] && in_array($attributes['department_assignment_type'], DepartmentEmployeeAssignmentType::valuesToArray())){
+
+            $sync = collect([$attributes['department_id']])->mapWithKeys(fn ($id) => [$id => ['department_assignment_type' => $attributes['department_assignment_type']]])->toArray();
+
+            $model->departments()->sync($sync);
+
+        } else {
+
+            $model->departments()->detach();
+        }
     }
 }

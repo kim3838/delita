@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests\Employee;
 
+use App\Enums\DepartmentEmployeeAssignmentType;
+use App\Models\DepartmentEmployee;
 use App\Models\Employee;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreEmployeeRequest extends FormRequest
+class StoreEmployeeRequest extends BaseEmployeeRequest
 {
     public function authorize(): bool
     {
@@ -15,12 +16,7 @@ class StoreEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'user_id' => 'sometimes|required|numeric|integer',
-            'company_id' => 'required|numeric|integer',
-            'department_id' => 'nullable|numeric|integer',
-            'designation_id' => 'nullable|numeric|integer',
-            'manager_id' => 'nullable|numeric|integer',
+        return array_merge(parent::rules(), [
             'number' => [
                 'required',
                 'string',
@@ -29,22 +25,25 @@ class StoreEmployeeRequest extends FormRequest
                     return $query->where('company_id', $this->input('company_id'));
                 })
             ],
-            'family_name' => 'required|string|max:255',
-            'given_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'birth_date' => 'required|date',
-            'gender' => 'required|numeric|integer',
-            'marital_status' => 'required|numeric|integer',
-        ];
-    }
+            'department_assignment_type' => [
+                'nullable',
+                'numeric',
+                'integer',
+                function($attribute, $value, $fail) {
 
-    public function messages(): array
-    {
-        return [
-            'user_id.required' => 'User account is required',
-            'company_id.required' => 'Company is required',
-            'number.required' => 'Employee number is required',
-            'number.unique' =>  'Employee number has already been taken',
-        ];
+                    $departmentId = $this->input('department_id');
+
+                    if(
+                        $value == DepartmentEmployeeAssignmentType::HEAD->value &&
+                        DepartmentEmployee::query()
+                            ->where('department_id', $departmentId)
+                            ->where('department_assignment_type', DepartmentEmployeeAssignmentType::HEAD->value)
+                            ->exists()
+                    ){
+                        $fail('Department head already exists');
+                    }
+                }
+            ],
+        ]);
     }
 }

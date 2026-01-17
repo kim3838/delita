@@ -45,7 +45,7 @@ class ListTransformer extends TransformerAbstract
             'full_name' => $employee->full_name,
             'gender' => $employee->gender?->toArray(),
             'marital_status' => $employee->marital_status?->toArray(),
-            'department' => $employee->department,
+            'department' => $employee->departments->first(),
             'designation' => $employee->designation,
             'manager' => $employee->manager,
             'contact' => $employee->contact,

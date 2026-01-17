@@ -28,7 +28,7 @@ class ListTransformer extends TransformerAbstract
                 'id' => $employee->id,
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,
-                'department' => $employee->department,
+                'department' => $employee->departments->first(),
                 'designation' => $employee->designation,
             ],
             'leave_type' => $leaveType
