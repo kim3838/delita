@@ -23,7 +23,6 @@ class Employee extends Model
     protected $fillable = [
         'user_id',
         'company_id',
-        'department_id',
         'designation_id',
         'manager_id',
         'number',
@@ -103,9 +102,12 @@ class Employee extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function department(): BelongsTo
+    public function departments(): BelongsToMany
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsToMany(Department::class)
+            ->using(DepartmentEmployee::class)
+            ->withPivot(['id', 'department_assignment_type'])
+            ->withTimestamps();
     }
 
     public function designation(): BelongsTo
