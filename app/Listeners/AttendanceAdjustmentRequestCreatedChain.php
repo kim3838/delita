@@ -3,12 +3,15 @@
 namespace App\Listeners;
 
 use App\Events\Repositories\AttendanceAdjustmentRequestCreated;
+use App\Traits\HasApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Queue\InteractsWithQueue;
 
 class AttendanceAdjustmentRequestCreatedChain
 {
+    use HasApproval;
+
     /**
      * Create the event listener.
      */
@@ -22,22 +25,13 @@ class AttendanceAdjustmentRequestCreatedChain
      */
     public function handle(AttendanceAdjustmentRequestCreated $event): void
     {
-        $companyApprovalSettings = $event->attendanceAdjustmentRequest->company->approvalSettings;
+        $attendanceAdjustmentRequest = $event->attendanceAdjustmentRequest;
+        $modelThroughEmployeeForeign = $attendanceAdjustmentRequest->attendance_id;
+        $requestedBy = $attendanceAdjustmentRequest->requestedBy;
 
         $modelAlias = Relation::getMorphAlias($event->attendanceAdjustmentRequest::class);
 
-        $approversArray = $companyApprovalSettings
-            ->where('request_model', $modelAlias)
-            ->first()?->approvers
-            ->map(function($approver){
-                return [
-                    'order' => $approver->order,
-                    'approver_id' => $approver->approver_id
-                ];
-            })
-            ->sortBy('order')
-            ->values()
-            ->toArray();
+        $approversArray = $this->getRequestableApprovers($modelAlias, $modelThroughEmployeeForeign, $event->attendanceAdjustmentRequest->company, $requestedBy->id);
 
         //Create approval states
         $event->attendanceAdjustmentRequest->approvalStates()->createMany($approversArray);
