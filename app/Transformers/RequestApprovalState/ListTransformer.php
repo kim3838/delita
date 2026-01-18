@@ -12,6 +12,7 @@ class ListTransformer extends TransformerAbstract
         return [
             'order' => $requestApprovalState->order,
             'approver' => $requestApprovalState->approver->name,
+            'remarks' => $requestApprovalState->remarks,
             'status' => $requestApprovalState->status?->toArray(),
         ];
     }

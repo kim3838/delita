@@ -14,6 +14,7 @@ class RequestApprovalState extends Model
         'requestable_id',
         'order',
         'approver_id',
+        'remarks',
         'status'
     ];
 
@@ -22,6 +23,7 @@ class RequestApprovalState extends Model
         'requestable_id' => 'int',
         'order' => 'int',
         'approver_id' => 'int',
+        'remarks' => 'string',
         'status' => RequestApprovalStatus::class
     ];
 
