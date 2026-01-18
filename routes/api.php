@@ -386,6 +386,8 @@ Route::group([
 
     //Attendance Adjustment Request
     Route::get('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'index']);
+    Route::post('attendance-adjustment-request', [AttendanceAdjustmentRequestController::class, 'store']);
+    Route::delete('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'batchDestroy']);
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);

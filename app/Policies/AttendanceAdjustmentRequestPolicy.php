@@ -15,4 +15,24 @@ class AttendanceAdjustmentRequestPolicy extends BasePolicy
         return $this->userIsAdminInCompany($user, request()->input('company_id'))
             && $this->hasPermission($user, 'view-attendance-adjustment-request');
     }
+
+    public function create(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'create-attendance-adjustment-request');
+    }
+
+    public function batchDelete(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-attendance-adjustment-request');
+    }
 }

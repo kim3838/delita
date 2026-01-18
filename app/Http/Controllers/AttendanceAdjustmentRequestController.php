@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\AttendanceAdjustmentRequest\BatchDestroyAttendanceAdjustmentRequestRequest;
 use App\Http\Requests\AttendanceAdjustmentRequest\ListAttendanceAdjustmentRequestRequest;
+use App\Http\Requests\AttendanceAdjustmentRequest\StoreAttendanceAdjustmentRequestRequest;
 use App\Transformers\AttendanceAdjustmentRequest\ListTransformer;
+use Carbon\Carbon;
 
 class AttendanceAdjustmentRequestController extends Controller
 {
@@ -24,6 +27,37 @@ class AttendanceAdjustmentRequestController extends Controller
                 $this->repository->paginate($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function store(StoreAttendanceAdjustmentRequestRequest $request)
+    {
+        if(request()->expectsJson()){
+
+            $data = array_merge($request->validated(), [
+                'requested_by' => $request->user()->id,
+                'date_requested' => Carbon::now()->toDateTimeString()
+            ]);
+
+            $this->repository->store($data);
+
+            return ResponseJson::successfulResponse();
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyAttendanceAdjustmentRequestRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $attendanceAdjustmentRequestIds = data_get($request->validated(), 'attendance_adjustment_request_ids', []);
+
+            $this->repository->batchDelete($attendanceAdjustmentRequestIds);
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dateTime('lunch_out')->nullable();
             $table->dateTime('lunch_in')->nullable();
             $table->dateTime('last_out');
-            $table->string('reason');
+            $table->string('reason')->nullable();
             $table->timestamps();
         });
     }
