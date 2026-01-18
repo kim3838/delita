@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Attendance;
 
+use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -43,6 +44,16 @@ class ImportAttendance extends FormRequest
             'last_out.required' => 'Last out is required',
             'last_out.date_format' => 'Last out must match the format Y-m-d H:i e.g.(2000-12-31 17:00)',
         ];
+    }
+
+    public function attendanceIsClean(Attendance $attendance): bool
+    {
+        $attendance->first_in = $this->input('first_in');
+        $attendance->lunch_out = empty($this->input('lunch_out'))? null : $this->input('lunch_out');
+        $attendance->lunch_in = empty($this->input('lunch_in'))? null : $this->input('lunch_in');
+        $attendance->last_out = $this->input('last_out');
+
+        return $attendance->isClean();
     }
 
     public function validateAttendance(

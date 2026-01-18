@@ -56,6 +56,13 @@ class UpdateAttendanceRequest extends ImportAttendance
                         $fail('Attendance not found');
                     } else {
 
+                        /**
+                         * Validate if there are any changes
+                         **/
+                        if($this->attendanceIsClean($attendance)){
+                            $fail('No changes found');
+                        }
+
                         $this->setShift($shift);
 
                         /**
