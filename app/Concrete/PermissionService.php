@@ -123,15 +123,15 @@ class PermissionService
                 ],[
                     'key' => 'attendance-adjustment-request',
                     'readable_name' => 'Attendance adjustment request',
-                    'actions' => ['view', 'create', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete']
                 ],[
                     'key' => 'overtime-request',
                     'readable_name' => 'Overtime request',
-                    'actions' => ['view', 'create', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete']
                 ],[
                     'key' => 'leave-request',
                     'readable_name' => 'Leave request',
-                    'actions' => ['view', 'create', 'delete', 'approve']
+                    'actions' => ['view', 'create', 'delete']
                 ],
             ]
         ],
