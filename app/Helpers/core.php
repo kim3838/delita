@@ -105,3 +105,12 @@ if (!function_exists('isNameInEnum')){
     }
 
 }
+
+if (!function_exists('arrayOfNumbersHasDuplicates')){
+
+    function arrayOfNumbersHasDuplicates($array): bool
+    {
+        return count($array) !== count(array_unique($array));
+    }
+
+}

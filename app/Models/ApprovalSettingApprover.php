@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApproverType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -10,12 +11,14 @@ class ApprovalSettingApprover extends Model
     protected $fillable = [
         'approval_setting_id',
         'order',
+        'type',
         'approver_id'
     ];
 
     protected $casts = [
         'approval_setting_id' => 'int',
         'order' => 'int',
+        'type' => ApproverType::class,
         'approver_id' => 'int'
     ];
 

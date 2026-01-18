@@ -60,6 +60,7 @@ class ApprovalSettingController extends Controller
                     'id' => $approvalSequence['id'],
                     'approval_setting_id' => $approvalSequence['approval_setting_id'],
                     'order' => $approvalSequence['order'],
+                    'type' => $approvalSequence['type'],
                     'approver_id' => $approvalSequence['approver_id'],
                 ];
             });
@@ -73,6 +74,7 @@ class ApprovalSettingController extends Controller
             })->map(function ($approvalSequence){
                 return [
                     'order' => $approvalSequence['order'],
+                    'type' => $approvalSequence['type'],
                     'approver_id' => $approvalSequence['approver_id'],
                 ];
             })->sortBy('order')->values();

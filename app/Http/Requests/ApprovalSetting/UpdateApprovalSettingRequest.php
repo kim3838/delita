@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ApprovalSetting;
 
+use App\Enums\ApproverType;
 use App\Models\ApprovalSetting;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,9 +22,32 @@ class UpdateApprovalSettingRequest extends FormRequest
             'account_id' => 'required|numeric|exists:accounts,id',
             'company_id' => 'required|numeric|exists:companies,id',
             'approval_setting_id' => 'required|numeric|exists:approval_settings,id',
-            'approver_sequence' => 'array',
+            'approver_sequence' => [
+                'array',
+                function($attribute, $value, $fail){
+                    $selectedTypeApproverIds = collect($this->input('approver_sequence'))
+                        ->where('type', ApproverType::SELECTED->value)
+                        ->pluck('approver_id')
+                        ->values()
+                        ->toArray();
+
+                    if(arrayOfNumbersHasDuplicates($selectedTypeApproverIds)){
+                        $fail('Approval sequence: selected type approver must not have a duplicate');
+                    }
+                }
+            ],
 
             'approver_sequence.*.id' => ['nullable', 'integer'],
+            'approver_sequence.*.type' => [
+                'required',
+                'integer',
+                function($attribute, $value, $fail){
+
+                    if(!in_array($value, ApproverType::valuesToArray())){
+                        $fail('Approval sequence: Invalid approval type');
+                    }
+                }
+            ],
             'approver_sequence.*.approval_setting_id' => [
                 'required',
                 'integer',
@@ -48,16 +72,16 @@ class UpdateApprovalSettingRequest extends FormRequest
                 }
             ],
             'approver_sequence.*.approver_id' => [
-                'distinct',
                 function ($attribute, $value, $fail) {
 
                     $index = $this->getApproverSequenceIndex($attribute);
                     $approvalSequence = $this->input("approver_sequence.{$index}");
 
+                    $type = $approvalSequence['type'];
                     $user = User::query()->find($approvalSequence['approver_id']);
 
-                    if(empty($user)){
-                        $fail('Approval sequence: approver does not exist');
+                    if(empty($user) && $type == ApproverType::SELECTED->value){
+                        $fail('Approval sequence: selected type approver does not exist');
                     }
                 }
             ],
@@ -86,8 +110,8 @@ class UpdateApprovalSettingRequest extends FormRequest
             'approver_sequence.array' => 'Approver sequence must be an array',
             'approver_sequence.*.approval_setting_id.exists' => 'Approval setting does not exist',
             'approver_sequence.*.approval_setting_id.required' => 'Approval setting is required',
+            'approver_sequence.*.type.required' => 'Approval type is required',
             'approver_sequence.*.order.min' => 'Approval sequence: order must be greater than 0',
-            'approver_sequence.*.approver_id.distinct' => 'Approval sequence: approver must not have a duplicate',
 
             'spliced_approver_sequence.array' => 'Spliced approvers must be an array',
             'spliced_approver_sequence.*.integer' => 'Spliced approvers must be an integer',
