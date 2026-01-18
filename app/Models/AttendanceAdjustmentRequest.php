@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RequestApprovalStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -29,7 +30,8 @@ class AttendanceAdjustmentRequest extends Model
         'lunch_out' => 'datetime',
         'lunch_in' => 'datetime',
         'last_out' => 'datetime',
-        'reason' => 'string'
+        'reason' => 'string',
+        'status_summary' => RequestApprovalStatus::class
     ];
 
     protected $hidden = [

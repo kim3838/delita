@@ -5,7 +5,9 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\RequestApprovalStatus;
 use App\Models\AttendanceAdjustmentRequest;
+use App\Models\RequestApprovalState;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
@@ -38,9 +40,15 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
             ->joinSub($attendanceQueryBuilder, 'attendance_sub', function ($join) {
                 $join->on('attendance_sub.id', '=', 'attendance_adjustment_requests.attendance_id');
             })
+            ->joinSub($this->statusQueryBuilder(), 'status_sub', function ($join) {
+                $join->on('status_sub.id', '=', 'attendance_adjustment_requests.id');
+            })
             ->join('companies', 'attendance_sub.employee_company_id', '=', 'companies.id')
             ->when(!empty($filters->requested_by_ids) && is_array($filters->requested_by_ids), function ($builder) use ($filters) {
                 $builder->whereIn('attendance_adjustment_requests.requested_by', $filters->requested_by_ids);
+            })
+            ->when(!empty($filters->statuses) && is_array($filters->statuses), function ($builder) use ($filters) {
+                $builder->whereIn('status_sub.status_summary', $filters->statuses);
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
@@ -103,7 +111,47 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
                 'attendance_adjustment_requests.lunch_in AS lunch_in',
                 'attendance_adjustment_requests.last_out AS last_out',
                 'attendance_adjustment_requests.reason AS reason',
+                'status_sub.status_summary AS status_summary',
             ]);
+
+        return $queryBuilder;
+    }
+
+    public function statusQueryBuilder(): QueryBuilder
+    {
+        $declined = RequestApprovalStatus::DECLINED->value;
+        $approved = RequestApprovalStatus::APPROVED->value;
+        $pending = RequestApprovalStatus::PENDING->value;
+
+        $queryBuilder = RequestApprovalState::query()->getQuery()
+            ->select([
+                DB::raw("request_approval_states.requestable_id"),
+                DB::raw("COUNT(*) OVER(PARTITION BY request_approval_states.requestable_id) AS total_approvers"),
+                DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY request_approval_states.requestable_id) AS at_least_one_declined"),
+                DB::raw("MIN(request_approval_states.status = " . $approved . ") OVER(PARTITION BY request_approval_states.requestable_id) = 1 AS all_approved"),
+                DB::raw("SUM(request_approval_states.status <> " . $pending . ") OVER(PARTITION BY request_approval_states.requestable_id) = 0 AS all_pending"),
+                DB::raw("MAX(request_approval_states.status = " . $pending . ") OVER(PARTITION BY request_approval_states.requestable_id) AS at_least_one_pending"),
+            ]);
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->leftJoinSub($queryBuilder, 'status_sub', function ($join) {
+                $join->on('status_sub.requestable_id', '=', 'attendance_adjustment_requests.id');
+            })
+            ->select([
+                'attendance_adjustment_requests.id',
+                DB::raw("
+                    CASE WHEN SUM(status_sub.at_least_one_declined) > 0 THEN " . $declined . " ELSE (
+                        CASE WHEN SUM(status_sub.all_approved) = status_sub.total_approvers THEN " . $approved . " ELSE (
+                            CASE WHEN SUM(status_sub.all_pending) = status_sub.total_approvers THEN " . $pending . " ELSE (
+                                CASE WHEN SUM(status_sub.at_least_one_pending) > 0 THEN " . $pending . " ELSE " . $pending . " END
+                            ) END
+                        ) END
+                    )
+                    END AS status_summary
+                "),
+            ]);
+
+        $this->setGroupsOnBuilder($queryBuilder, ['attendance_adjustment_requests.id']);
 
         return $queryBuilder;
     }

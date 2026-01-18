@@ -69,6 +69,7 @@ class ListTransformer extends TransformerAbstract
             'lunch_in' => $attendanceAdjustmentRequest->lunch_in?->format('Y-m-d H:i'),
             'last_out' => $attendanceAdjustmentRequest->last_out->format('Y-m-d H:i'),
             'reason' => $attendanceAdjustmentRequest->reason,
+            'status_summary' => $attendanceAdjustmentRequest->status_summary?->toArray(),
 
             'approval_states' => Fractal::collection(
                 $attendanceAdjustmentRequest->approvalStates,
