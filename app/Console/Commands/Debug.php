@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Concrete\LeaveService;
 use App\Models\Employee;
 use App\Models\LeaveType;
@@ -29,6 +30,19 @@ class Debug extends Command
     public function handle()
     {
 
+    }
+
+    private function requestApprovalState()
+    {
+        $filters = (object)[
+            'account_id' => 2,
+            'associated_companies' => [4],
+            'requestable_type' => 'attendance_adjustment_request',
+            'requestable_ids' => [19],
+            'user_ids' => [],//14
+            'show_only_current_state' => false];
+
+        app(RequestApprovalStateRepository::class)->baseQueryBuilder($filters);
     }
 
     private function leaveRunningBalance($debug)
