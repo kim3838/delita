@@ -3,10 +3,12 @@
 namespace App\Transformers\AttendanceAdjustmentRequest;
 
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Facades\Fractal;
 use App\Models\AttendanceAdjustmentRequest;
 use App\Transformers\Attendance\ItemTransformer as AttendanceItemTransformer;
-use App\Transformers\RequestApprovalState\BasicListTransformer as RequestApprovalStateBasicListTransformer;
+use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -55,6 +57,21 @@ class ListTransformer extends TransformerAbstract
 
         $attendance = Fractal::item($attendanceHydrated, AttendanceItemTransformer::class);
 
+        $filters = json_decode(request()->get('filters'));
+
+        $approvalStateFilters = (object)[
+            'account_id' => request()->account_id,
+            'associated_companies' => [$filters->company_id],
+            'requestable_type' => Relation::getMorphAlias( AttendanceAdjustmentRequest::class),
+            'requestable_ids' => [$attendanceAdjustmentRequest->id],
+            'show_only_current_state' => false
+        ];
+
+        $approvalStates = Fractal::collection(
+            App::make(RequestApprovalStateRepository::class)->list($approvalStateFilters),
+            RequestApprovalStateListTransformer::class
+        )['data'];
+
         return [
             'row_number' => $attendanceAdjustmentRequest->row_number,
 
@@ -72,10 +89,7 @@ class ListTransformer extends TransformerAbstract
             'reason' => $attendanceAdjustmentRequest->reason,
             'status_summary' => $attendanceAdjustmentRequest->status_summary?->toArray(),
 
-            'approval_states' => Fractal::collection(
-                $attendanceAdjustmentRequest->approvalStates,
-                RequestApprovalStateBasicListTransformer::class
-            )['data']
+            'approval_states' => $approvalStates
         ];
     }
 }

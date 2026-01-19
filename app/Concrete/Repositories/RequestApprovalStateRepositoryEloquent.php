@@ -9,6 +9,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\RequestApprovalState;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -102,6 +103,12 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                     $clause->where('request_approval_states_sub.requestable_number', 'LIKE', "%$value%");
                 });
             })
+            ->when(!empty($filters->requestable_type), function ($builder) use ($filters) {
+                $builder->where('request_approval_states_sub.requestable_type', $filters->requestable_type);
+            })
+            ->when(!empty($filters->requestable_ids) && is_array($filters->requestable_ids), function ($builder) use ($filters) {
+                $builder->whereIn('request_approval_states_sub.requestable_id', $filters->requestable_ids);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 'request_approval_states_sub.requestable_type',
@@ -132,5 +139,17 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
+            ['field' => 'request_approval_states_sub.order', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }
