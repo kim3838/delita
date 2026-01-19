@@ -6,7 +6,7 @@ use App\Blueprint\Repositories\AttendanceRepository;
 use App\Facades\Fractal;
 use App\Models\AttendanceAdjustmentRequest;
 use App\Transformers\Attendance\ItemTransformer as AttendanceItemTransformer;
-use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
+use App\Transformers\RequestApprovalState\BasicListTransformer as RequestApprovalStateBasicListTransformer;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -73,7 +73,7 @@ class ListTransformer extends TransformerAbstract
 
             'approval_states' => Fractal::collection(
                 $attendanceAdjustmentRequest->approvalStates,
-                RequestApprovalStateListTransformer::class
+                RequestApprovalStateBasicListTransformer::class
             )['data']
         ];
     }

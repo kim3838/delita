@@ -5,7 +5,7 @@ namespace App\Transformers\RequestApprovalState;
 use App\Models\RequestApprovalState;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class BasicListTransformer extends TransformerAbstract
 {
     public function transform(RequestApprovalState $requestApprovalState): array
     {
