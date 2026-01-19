@@ -50,6 +50,7 @@ class ListTransformer extends TransformerAbstract
 
         return [
             'row_number' => $requestApprovalState->row_number,
+            'id' => $requestApprovalState->id,
             'requestable' => [
                 'type' => $requestApprovalState->requestable_type,
                 'id' => $requestApprovalState->requestable_id,

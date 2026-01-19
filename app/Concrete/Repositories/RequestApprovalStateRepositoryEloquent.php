@@ -38,6 +38,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 $builder->whereIn(DB::raw("request_approval_states.approver_id"), $filters->user_ids);
             })
             ->select([
+                DB::raw("request_approval_states.id"),
                 DB::raw("request_approval_states.requestable_type"),
                 DB::raw("request_approval_states.requestable_id"),
                 DB::raw("
@@ -59,6 +60,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         //At least one declined and previous status
         $queryBuilder = $this->queryAsSub($queryBuilder, 'sub')
             ->select([
+                DB::raw("sub.id"),
                 DB::raw("sub.requestable_type"),
                 DB::raw("sub.requestable_id"),
                 DB::raw("sub.requestable_number"),
@@ -77,6 +79,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         if(isset($filters->show_only_current_state) && $filters->show_only_current_state){
             $queryBuilder = $this->queryAsSub($queryBuilder, 'current_state_flag_sub')
                 ->select([
+                    DB::raw("current_state_flag_sub.id"),
                     DB::raw("current_state_flag_sub.requestable_type"),
                     DB::raw("current_state_flag_sub.requestable_id"),
                     DB::raw("current_state_flag_sub.requestable_number"),
@@ -111,6 +114,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                'request_approval_states_sub.id',
                 'request_approval_states_sub.requestable_type',
                 'request_approval_states_sub.requestable_id',
                 'request_approval_states_sub.requestable_number',
