@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('attendance_adjustment_requests', function (Blueprint $table) {
             $table->id();
+            $table->string('number');
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
             $table->foreignId('requested_by')->constrained('users')->cascadeOnDelete();
             $table->dateTime('date_requested');
