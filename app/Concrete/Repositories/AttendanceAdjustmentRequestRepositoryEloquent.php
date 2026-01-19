@@ -24,6 +24,10 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
     {
         $attendanceRepositoryFilter = clone $filters;
 
+        if(isset($attendanceRepositoryFilter->attendance_search)){
+            unset($attendanceRepositoryFilter->search);
+            $attendanceRepositoryFilter->search = $attendanceRepositoryFilter->attendance_search;
+        }
         if(isset($attendanceRepositoryFilter->attendance_date_from)){
             $attendanceRepositoryFilter->date_from = $attendanceRepositoryFilter->attendance_date_from;
         }
@@ -31,6 +35,7 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
             $attendanceRepositoryFilter->date_to = $attendanceRepositoryFilter->attendance_date_to;
         }
 
+        unset($filters->attendance_search);
         unset($filters->attendance_date_from);
         unset($filters->attendance_date_to);
 
@@ -49,6 +54,11 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
             })
             ->when(!empty($filters->statuses) && is_array($filters->statuses), function ($builder) use ($filters) {
                 $builder->whereIn('status_sub.status_summary', $filters->statuses);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('attendance_adjustment_requests.number', 'LIKE', "%$value%");
+                });
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
