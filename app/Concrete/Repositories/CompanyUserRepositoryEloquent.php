@@ -117,7 +117,6 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
             })
             ->select([
                 'user_sub.*',
-                'companies.id AS company_id',
                 'companies.name AS company_name',
                 'company_user.assignment_type AS company_assignment_type',
                 DB::raw("employees.id IS NOT NULL AS is_employee"),
