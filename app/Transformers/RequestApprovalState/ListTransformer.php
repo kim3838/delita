@@ -66,6 +66,7 @@ class ListTransformer extends TransformerAbstract
                 'company_employee_full_name' => $employeeFullName,
 
                 'status' => $companyUserHydrated->user_status?->toArray(),
+                'user_id' => $companyUserHydrated->user_id,
                 'username' => $companyUserHydrated->user_username,
             ],
         ];
