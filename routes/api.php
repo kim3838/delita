@@ -68,6 +68,7 @@ use App\Http\Controllers\OvertimeImportTemplateController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\PayrollComponentController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RequestApprovalStateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
@@ -266,6 +267,9 @@ Route::group([
     Route::get('approval-settings', [ApprovalSettingController::class, 'index']);
     Route::get('approval-settings-gate', [ApprovalSettingController::class, 'indexGate']);
     Route::patch('approval-setting/{approvalSettingId}', [ApprovalSettingController::class, 'update']);
+
+    //Approval States
+    Route::get('approval-states', [RequestApprovalStateController::class, 'index']);
 
     //Payroll Component (compensation, deduction, income tax)
     Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
