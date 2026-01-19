@@ -13,12 +13,12 @@ class ApprovalService
                 [
                     'foreign' => 'attendance_id',
                     'model' => 'attendance'
-                ],[
+                ], [
                     'foreign' => 'employee_id',
                     'model' => 'employee'
                 ],
             ]
-        ],[
+        ], [
             'model_alias' => 'overtime_request',
             'readable_name' => 'Overtime request',
             'foreign_path' => 'employee_foreign_relation_path',
@@ -26,12 +26,12 @@ class ApprovalService
                 [
                     'foreign' => 'attendance_id',
                     'model' => 'attendance'
-                ],[
+                ], [
                     'foreign' => 'employee_id',
                     'model' => 'employee'
                 ],
             ]
-        ],[
+        ], [
             'model_alias' => 'leave_request',
             'readable_name' => 'Leave request',
             'foreign_path' => 'employee_foreign_relation_path',
