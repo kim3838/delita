@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Concrete\Repositories;
+
+use App\Blueprint\Repositories\CompanyUserRepository;
+use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\RequestApprovalStatus;
+use App\Models\RequestApprovalState;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+
+class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent implements RequestApprovalStateRepository
+{
+    public function model(): string
+    {
+        return RequestApprovalState::class;
+    }
+
+    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    {
+        $companyUserRepositoryFilter = clone $filters;
+        if(isset($companyUserRepositoryFilter->user_ids)){
+            $companyUserRepositoryFilter->pre_selected_user_ids = $companyUserRepositoryFilter->user_ids;
+        }
+        unset($companyUserRepositoryFilter->user_ids);
+
+        $declined = RequestApprovalStatus::DECLINED->value;
+        $approved = RequestApprovalStatus::APPROVED->value;
+        $pending = RequestApprovalStatus::PENDING->value;
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->when(!empty($filters->user_ids) && is_array($filters->user_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("request_approval_states.approver_id"), $filters->user_ids);
+            })
+            ->select([
+                DB::raw("request_approval_states.requestable_type"),
+                DB::raw("request_approval_states.requestable_id"),
+                DB::raw("request_approval_states.order"),
+                DB::raw("request_approval_states.approver_id"),
+                DB::raw("request_approval_states.status"),
+                DB::raw("request_approval_states.status = " . $pending . " AS is_pending"),
+                DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY requestable_id) AS at_least_one_declined"),
+                DB::raw("LAG(request_approval_states.status) OVER(PARTITION BY requestable_id ORDER BY request_approval_states.order) AS previous_status"),
+            ]);
+
+        //At least one declined and previous status
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'sub')
+            ->select([
+                DB::raw("sub.requestable_type"),
+                DB::raw("sub.requestable_id"),
+                DB::raw("sub.order"),
+                DB::raw("sub.approver_id"),
+                DB::raw("sub.status"),
+                DB::raw("
+                    IF(NOT sub.at_least_one_declined,
+                        IF(sub.is_pending AND (sub.previous_status IS NULL OR sub.previous_status IN(" . $approved . ")), 1, null)
+                    , null) AS current_state_flag
+                "),
+            ]);
+
+        //Show only the current pending approval flag
+        if(isset($filters->show_only_current_state) && $filters->show_only_current_state){
+            $queryBuilder = $this->queryAsSub($queryBuilder, 'current_state_flag_sub')
+                ->select([
+                    DB::raw("current_state_flag_sub.requestable_type"),
+                    DB::raw("current_state_flag_sub.requestable_id"),
+                    DB::raw("current_state_flag_sub.order"),
+                    DB::raw("current_state_flag_sub.approver_id"),
+                    DB::raw("current_state_flag_sub.status"),
+                ])
+                ->whereRaw("current_state_flag_sub.current_state_flag IS NOT NULL");
+        }
+
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'request_approval_states_sub')
+            ->select('request_approval_states_sub.*');
+
+        $companyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($companyUserRepositoryFilter, []);
+
+        $queryBuilder = $queryBuilder
+            ->joinSub($companyUserQueryBuilder, 'company_user', function ($join) {
+                $join->on('company_user.user_id', '=', 'request_approval_states_sub.approver_id');
+            })
+            ->select([
+                'request_approval_states_sub.requestable_type',
+                'request_approval_states_sub.requestable_id',
+                'request_approval_states_sub.order AS request_approval_state_order',
+                'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
+                'request_approval_states_sub.status AS request_approval_state_status',
+                'company_user.*'
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+}

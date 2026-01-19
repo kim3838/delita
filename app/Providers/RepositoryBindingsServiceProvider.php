@@ -43,6 +43,7 @@ use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
+use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\Repositories\RoleRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Blueprint\Repositories\ShiftRepository;
@@ -91,6 +92,7 @@ use App\Concrete\Repositories\OvertimeRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
+use App\Concrete\Repositories\RequestApprovalStateRepositoryEloquent;
 use App\Concrete\Repositories\RoleRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
 use App\Concrete\Repositories\ShiftRepositoryEloquent;
@@ -151,6 +153,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'leave_balance_adjustment' => LeaveBalanceAdjustmentRepositoryEloquent::class,
         'approval_setting' => ApprovalSettingRepositoryEloquent::class,
         'approval_setting_approver' => ApprovalSettingApproverRepositoryEloquent::class,
+        'request_approval_state' => RequestApprovalStateRepositoryEloquent::class,
         'attendance_adjustment_request' => AttendanceAdjustmentRequestRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
@@ -199,6 +202,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         LeaveBalanceAdjustmentRepository::class => LeaveBalanceAdjustmentRepositoryEloquent::class,
         ApprovalSettingRepository::class => ApprovalSettingRepositoryEloquent::class,
         ApprovalSettingApproverRepository::class => ApprovalSettingApproverRepositoryEloquent::class,
+        RequestApprovalStateRepository::class => RequestApprovalStateRepositoryEloquent::class,
         AttendanceAdjustmentRequestRepository::class => AttendanceAdjustmentRequestRepositoryEloquent::class,
     ];
 
@@ -252,6 +256,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'leave_balance_adjustment',
             'approval_setting',
             'approval_setting_approver',
+            'request_approval_state',
             'attendance_adjustment_request',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
@@ -300,6 +305,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             LeaveBalanceAdjustmentRepository::class,
             ApprovalSettingRepository::class,
             ApprovalSettingApproverRepository::class,
+            RequestApprovalStateRepository::class,
             AttendanceAdjustmentRequestRepository::class,
         ];
     }
