@@ -61,6 +61,7 @@ class ListTransformer extends TransformerAbstract
             'attendance' => $attendance,
 
             'id' => $attendanceAdjustmentRequest->id,
+            'number' => $attendanceAdjustmentRequest->number,
             'requested_by' => $attendanceAdjustmentRequest->requestedBy,
             'date_requested' => $attendanceAdjustmentRequest->date_requested->format('Y-m-d H:i'),
             'attendance_id' => $attendanceAdjustmentRequest->attendance_id,

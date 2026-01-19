@@ -38,8 +38,16 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             ->select([
                 DB::raw("request_approval_states.requestable_type"),
                 DB::raw("request_approval_states.requestable_id"),
+                DB::raw("
+                    CASE
+                        WHEN requestable_type = 'attendance_adjustment_request' THEN
+                            (SELECT number FROM attendance_adjustment_requests WHERE id = requestable_id)
+                        ELSE ''
+                    END AS requestable_number
+                "),
                 DB::raw("request_approval_states.order"),
                 DB::raw("request_approval_states.approver_id"),
+                DB::raw("request_approval_states.remarks"),
                 DB::raw("request_approval_states.status"),
                 DB::raw("request_approval_states.status = " . $pending . " AS is_pending"),
                 DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY requestable_id) AS at_least_one_declined"),
@@ -51,8 +59,10 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             ->select([
                 DB::raw("sub.requestable_type"),
                 DB::raw("sub.requestable_id"),
+                DB::raw("sub.requestable_number"),
                 DB::raw("sub.order"),
                 DB::raw("sub.approver_id"),
+                DB::raw("sub.remarks"),
                 DB::raw("sub.status"),
                 DB::raw("
                     IF(NOT sub.at_least_one_declined,
@@ -67,9 +77,12 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 ->select([
                     DB::raw("current_state_flag_sub.requestable_type"),
                     DB::raw("current_state_flag_sub.requestable_id"),
+                    DB::raw("current_state_flag_sub.requestable_number"),
                     DB::raw("current_state_flag_sub.order"),
                     DB::raw("current_state_flag_sub.approver_id"),
+                    DB::raw("current_state_flag_sub.remarks"),
                     DB::raw("current_state_flag_sub.status"),
+                    DB::raw("current_state_flag_sub.current_state_flag"),
                 ])
                 ->whereRaw("current_state_flag_sub.current_state_flag IS NOT NULL");
         }
@@ -83,12 +96,21 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             ->joinSub($companyUserQueryBuilder, 'company_user', function ($join) {
                 $join->on('company_user.user_id', '=', 'request_approval_states_sub.approver_id');
             })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('request_approval_states_sub.requestable_number', 'LIKE', "%$value%");
+                });
+            })
             ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 'request_approval_states_sub.requestable_type',
                 'request_approval_states_sub.requestable_id',
+                'request_approval_states_sub.requestable_number',
                 'request_approval_states_sub.order AS request_approval_state_order',
                 'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
+                'request_approval_states_sub.remarks AS request_approval_state_remarks',
                 'request_approval_states_sub.status AS request_approval_state_status',
+                'request_approval_states_sub.current_state_flag AS request_approval_state_current_state_flag',
                 'company_user.*'
             ]);
 
@@ -101,6 +123,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
     {
         $orders = [
             ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
+            ['field' => 'request_approval_states_sub.order', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);

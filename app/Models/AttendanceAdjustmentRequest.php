@@ -11,6 +11,7 @@ class AttendanceAdjustmentRequest extends Model
 {
     protected $fillable = [
         'company_id',
+        'number',
         'requested_by',
         'date_requested',
         'attendance_id',
@@ -23,6 +24,7 @@ class AttendanceAdjustmentRequest extends Model
 
     protected $casts = [
         'company_id' => 'int',
+        'number' => 'string',
         'requested_by' => 'int',
         'date_requested' => 'datetime',
         'attendance_id' => 'int',
@@ -42,6 +44,11 @@ class AttendanceAdjustmentRequest extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function attendance(): BelongsTo
+    {
+        return $this->belongsTo(Attendance::class);
     }
 
     public function requestedBy(): BelongsTo
