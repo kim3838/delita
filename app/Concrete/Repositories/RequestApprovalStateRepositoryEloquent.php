@@ -26,6 +26,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             $companyUserRepositoryFilter->pre_selected_user_ids = $companyUserRepositoryFilter->user_ids;
         }
         unset($companyUserRepositoryFilter->user_ids);
+        unset($companyUserRepositoryFilter->search);
 
         $declined = RequestApprovalStatus::DECLINED->value;
         $approved = RequestApprovalStatus::APPROVED->value;
