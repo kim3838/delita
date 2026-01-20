@@ -18,6 +18,7 @@ use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Blueprint\Repositories\CompanyIncomeTaxRepository;
 use App\Blueprint\Repositories\CompanyRepository;
 use App\Blueprint\Repositories\CompanyUserRepository;
+use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\CompensationRepository;
 use App\Blueprint\Repositories\DeductionRepository;
 use App\Blueprint\Repositories\DepartmentRepository;
@@ -67,6 +68,7 @@ use App\Concrete\Repositories\CompanyFormulaRepositoryEloquent;
 use App\Concrete\Repositories\CompanyIncomeTaxRepositoryEloquent;
 use App\Concrete\Repositories\CompanyRepositoryEloquent;
 use App\Concrete\Repositories\CompanyUserRepositoryEloquent;
+use App\Concrete\Repositories\CompanyUserRolePermissionRepositoryEloquent;
 use App\Concrete\Repositories\CompensationRepositoryEloquent;
 use App\Concrete\Repositories\DeductionRepositoryEloquent;
 use App\Concrete\Repositories\DepartmentRepositoryEloquent;
@@ -112,6 +114,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'user' => UserRepositoryEloquent::class,
         'company_user' => CompanyUserRepositoryEloquent::class,
         'role' => RoleRepositoryEloquent::class,
+        'company_user_role_permission' => CompanyUserRolePermissionRepositoryEloquent::class,
         'permission' => PermissionRepositoryEloquent::class,
         'non_employee_user' => NonEmployeeUserRepositoryEloquent::class,
         'user_company_assignment' => UserCompanyAssignmentRepositoryEloquent::class,
@@ -161,6 +164,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         UserRepository::class => UserRepositoryEloquent::class,
         CompanyUserRepository::class => CompanyUserRepositoryEloquent::class,
         RoleRepository::class => RoleRepositoryEloquent::class,
+        CompanyUserRolePermissionRepository::class => CompanyUserRolePermissionRepositoryEloquent::class,
         PermissionRepository::class => PermissionRepositoryEloquent::class,
         NonEmployeeUserRepository::class => NonEmployeeUserRepositoryEloquent::class,
         UserCompanyAssignmentRepository::class => UserCompanyAssignmentRepositoryEloquent::class,
@@ -215,6 +219,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'user',
             'company_user',
             'role',
+            'company_user_role_permission',
             'permission',
             'non_employee_user',
             'user_company_assignment',
@@ -264,6 +269,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             UserRepository::class,
             CompanyUserRepository::class,
             RoleRepository::class,
+            CompanyUserRolePermissionRepository::class,
             PermissionRepository::class,
             NonEmployeeUserRepository::class,
             UserCompanyAssignmentRepository::class,

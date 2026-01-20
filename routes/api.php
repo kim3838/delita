@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyUserController;
+use App\Http\Controllers\CompanyUserRolePermissionController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
 use App\Http\Controllers\DeductionController;
@@ -245,6 +246,9 @@ Route::group([
 
     Route::get('company-users', [CompanyUserController::class, 'index']);
     Route::get('company-user-selections', [CompanyUserController::class, 'selection']);
+
+    //Company User Role Permission
+    Route::get('company-user-role-permissions', [CompanyUserRolePermissionController::class, 'index']);
 
     Route::get('associated-users-gate', [AssociatedUserController::class, 'indexGate']);
     Route::get('associated-companies', [AssociatedCompanyController::class, 'index']);
