@@ -39,11 +39,19 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("request_approval_states.requestable_type"),
                 DB::raw("request_approval_states.requestable_id"),
                 DB::raw("
-                    CASE
-                        WHEN requestable_type = 'attendance_adjustment_request' THEN
-                            (SELECT number FROM attendance_adjustment_requests WHERE id = requestable_id)
-                        ELSE ''
-                    END AS requestable_number
+                    CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
+                        (SELECT companies.account_id FROM attendance_adjustment_requests LEFT JOIN companies ON companies.id = attendance_adjustment_requests.company_id WHERE attendance_adjustment_requests.id = requestable_id)
+                    ELSE '' END AS requestable_account_id
+                "),
+                DB::raw("
+                    CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
+                        (SELECT company_id FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    ELSE '' END AS requestable_company_id
+                "),
+                DB::raw("
+                    CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
+                        (SELECT number FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    ELSE '' END AS requestable_number
                 "),
                 DB::raw("request_approval_states.order"),
                 DB::raw("request_approval_states.approver_id"),
@@ -56,10 +64,16 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
 
         //At least one declined and previous status
         $queryBuilder = $this->queryAsSub($queryBuilder, 'sub')
+            ->where(function ($clause) use ($filters) {
+                $clause->where('sub.requestable_account_id', $filters->account_id)
+                    ->whereIn('sub.requestable_company_id', $filters->associated_companies);
+            })
             ->select([
                 DB::raw("sub.id"),
                 DB::raw("sub.requestable_type"),
                 DB::raw("sub.requestable_id"),
+                DB::raw("sub.requestable_account_id"),
+                DB::raw("sub.requestable_company_id"),
                 DB::raw("sub.requestable_number"),
                 DB::raw("sub.order"),
                 DB::raw("sub.approver_id"),
@@ -79,6 +93,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                     DB::raw("current_state_flag_sub.id"),
                     DB::raw("current_state_flag_sub.requestable_type"),
                     DB::raw("current_state_flag_sub.requestable_id"),
+                    DB::raw("current_state_flag_sub.requestable_account_id"),
+                    DB::raw("current_state_flag_sub.requestable_company_id"),
                     DB::raw("current_state_flag_sub.requestable_number"),
                     DB::raw("current_state_flag_sub.order"),
                     DB::raw("current_state_flag_sub.approver_id"),
@@ -117,6 +133,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 'request_approval_states_sub.id',
                 'request_approval_states_sub.requestable_type',
                 'request_approval_states_sub.requestable_id',
+                'request_approval_states_sub.requestable_account_id',
+                'request_approval_states_sub.requestable_company_id',
                 'request_approval_states_sub.requestable_number',
                 'request_approval_states_sub.order AS request_approval_state_order',
                 'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
