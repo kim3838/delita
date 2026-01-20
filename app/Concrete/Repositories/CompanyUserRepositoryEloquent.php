@@ -9,6 +9,7 @@ use App\Enums\UserType;
 use App\Models\Hydrations\CompanyUser;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -142,6 +143,17 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'user_sub.user_id', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function selection($filters): LengthAwarePaginator
