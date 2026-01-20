@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Concrete\LeaveService;
 use App\Models\Employee;
@@ -32,6 +33,21 @@ class Debug extends Command
 
     }
 
+    private function companyUserRolePermission()
+    {
+        $filters = (object)[
+            'account_id' => 2,
+            'associated_company' => 4,
+            'user_id' => 3,
+            'permission_keys' => [
+                'approve-any-request',
+                'view-leave-running-balance'
+            ]
+        ];
+
+        app(CompanyUserRolePermissionRepository::class)->list($filters);
+    }
+
     private function requestApprovalState()
     {
         $filters = (object)[
@@ -40,7 +56,8 @@ class Debug extends Command
             'requestable_type' => 'attendance_adjustment_request',
             'requestable_ids' => [19],
             'user_ids' => [],//14
-            'show_only_current_state' => false];
+            'show_only_current_state' => false
+        ];
 
         app(RequestApprovalStateRepository::class)->baseQueryBuilder($filters);
     }
