@@ -34,9 +34,6 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $pending = RequestApprovalStatus::PENDING->value;
 
         $queryBuilder = $this->model::query()->getQuery()
-            ->when(!empty($filters->user_ids) && is_array($filters->user_ids), function ($builder) use ($filters) {
-                $builder->whereIn(DB::raw("request_approval_states.approver_id"), $filters->user_ids);
-            })
             ->select([
                 DB::raw("request_approval_states.id"),
                 DB::raw("request_approval_states.requestable_type"),
@@ -100,6 +97,9 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $queryBuilder = $queryBuilder
             ->joinSub($companyUserQueryBuilder, 'company_user', function ($join) {
                 $join->on('company_user.user_id', '=', 'request_approval_states_sub.approver_id');
+            })
+            ->when(!empty($filters->user_ids) && is_array($filters->user_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("request_approval_states_sub.approver_id"), $filters->user_ids);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
