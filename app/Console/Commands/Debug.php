@@ -54,8 +54,8 @@ class Debug extends Command
             'account_id' => 2,
             'associated_companies' => [4],
             'requestable_type' => 'attendance_adjustment_request',
-            'requestable_ids' => [19],
-            'user_ids' => [],//14
+            'requestable_ids' => [],
+            'user_ids' => [14],
             'show_only_current_state' => false
         ];
 
