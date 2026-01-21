@@ -33,6 +33,7 @@ use App\Http\Controllers\EmployeeLeaveTypeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
 use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
+use App\Http\Controllers\EmployeePortal\AttendanceAdjustmentRequestController as EmployeePortalAttendanceAdjustmentRequestController;
 use App\Http\Controllers\EmployeePortal\AttendanceController as EmployeePortalAttendanceController;
 use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmployeeController;
 use App\Http\Controllers\EmployeePortal\LeaveBalanceAdjustmentController as EmployeePortalLeaveBalanceAdjustmentController;
@@ -404,6 +405,8 @@ Route::group([
     Route::get('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'index']);
     Route::post('attendance-adjustment-request', [AttendanceAdjustmentRequestController::class, 'store']);
     Route::delete('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'batchDestroy']);
+
+    Route::post('employee-portal-attendance-adjustment-request', [EmployeePortalAttendanceAdjustmentRequestController::class, 'store']);
 
     //Overtime
     Route::get('overtimes', [OvertimeController::class, 'index']);
