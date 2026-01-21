@@ -170,7 +170,7 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'attendance_adjustment_requests.id', 'direction' => 'DESC'],
+            ['field' => 'attendance_adjustment_requests.date_requested', 'direction' => 'DESC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
