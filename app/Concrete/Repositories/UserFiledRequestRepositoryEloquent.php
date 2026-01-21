@@ -52,6 +52,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'company_user_sub.user_timezone',
                 'company_user_sub.company_id AS user_company_id',
                 'company_user_sub.company_name',
+                'company_user_sub.company_timezone',
                 'company_user_sub.company_assignment_type',
                 'company_user_sub.is_employee',
                 'company_user_sub.company_employee_number',
@@ -89,6 +90,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
 
                 'attendance_adjustment_requests.company_id AS user_company_id',
                 'attendance_adjustment_requests.company_name',
+                'attendance_adjustment_requests.company_timezone',
                 'attendance_adjustment_requests.company_assignment_type',
                 'attendance_adjustment_requests.is_employee',
                 'attendance_adjustment_requests.company_employee_number',

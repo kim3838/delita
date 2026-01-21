@@ -119,6 +119,7 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
             ->select([
                 'user_sub.*',
                 'companies.name AS company_name',
+                'companies.timezone AS company_timezone',
                 'company_user.assignment_type AS company_assignment_type',
                 DB::raw("employees.id IS NOT NULL AS is_employee"),
                 'employees.number AS company_employee_number',

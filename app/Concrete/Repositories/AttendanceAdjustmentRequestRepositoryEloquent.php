@@ -117,6 +117,7 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
                 'attendance_adjustment_requests.number AS number',
                 'attendance_adjustment_requests.requested_by AS requested_by',
                 DB::raw("CONVERT_TZ(attendance_adjustment_requests.date_requested, 'UTC', companies.timezone) AS date_requested"),
+                'companies.timezone AS company_timezone',
                 'attendance_adjustment_requests.attendance_id AS attendance_id',
                 'attendance_adjustment_requests.first_in AS first_in',
                 'attendance_adjustment_requests.lunch_out AS lunch_out',

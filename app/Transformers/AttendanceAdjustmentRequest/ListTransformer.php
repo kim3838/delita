@@ -81,6 +81,7 @@ class ListTransformer extends TransformerAbstract
             'number' => $attendanceAdjustmentRequest->number,
             'requested_by' => $attendanceAdjustmentRequest->requestedBy,
             'date_requested' => $attendanceAdjustmentRequest->date_requested->format('Y-m-d H:i'),
+            'company_timezone' => $attendanceAdjustmentRequest->company_timezone,
             'attendance_id' => $attendanceAdjustmentRequest->attendance_id,
             'first_in' => $attendanceAdjustmentRequest->first_in->format('Y-m-d H:i'),
             'lunch_out' => $attendanceAdjustmentRequest->lunch_out?->format('Y-m-d H:i'),

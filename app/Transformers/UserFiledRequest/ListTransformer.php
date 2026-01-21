@@ -16,6 +16,7 @@ class ListTransformer extends TransformerAbstract
             'requestable_id' => $userFiledRequest->requestable_id,
             'number' => $userFiledRequest->number,
             'date_requested' => $userFiledRequest->date_requested->format('Y-m-d H:i'),
+            'company_timezone' => $userFiledRequest->company_timezone,
             'reason' => $userFiledRequest->reason,
             'status_summary' => $userFiledRequest->status_summary?->toArray(),
 

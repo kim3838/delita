@@ -118,8 +118,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $companyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($companyUserRepositoryFilter, []);
 
         $queryBuilder = $queryBuilder
-            ->joinSub($companyUserQueryBuilder, 'company_user', function ($join) {
-                $join->on('company_user.user_id', '=', 'request_approval_states_sub.approver_id');
+            ->joinSub($companyUserQueryBuilder, 'company_user_sub', function ($join) {
+                $join->on('company_user_sub.user_id', '=', 'request_approval_states_sub.approver_id');
             })
             ->when(!empty($filters->user_ids) && is_array($filters->user_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("request_approval_states_sub.approver_id"), $filters->user_ids);
@@ -143,13 +143,13 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 'request_approval_states_sub.requestable_account_id',
                 'request_approval_states_sub.requestable_company_id',
                 'request_approval_states_sub.requestable_number',
-                'request_approval_states_sub.requestable_date_requested',
+                DB::raw("CONVERT_TZ(request_approval_states_sub.requestable_date_requested, 'UTC', company_user_sub.company_timezone) AS requestable_date_requested"),
                 'request_approval_states_sub.order AS request_approval_state_order',
                 'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
                 'request_approval_states_sub.remarks AS request_approval_state_remarks',
                 'request_approval_states_sub.status AS request_approval_state_status',
                 'request_approval_states_sub.current_state_flag AS request_approval_state_current_state_flag',
-                'company_user.*'
+                'company_user_sub.*'
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
