@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Concrete\LeaveService;
 use App\Models\Employee;
 use App\Models\LeaveType;
@@ -31,6 +32,18 @@ class Debug extends Command
     public function handle()
     {
 
+    }
+
+    private function userFiledRequest()
+    {
+        $filters = (object)[
+            'account_id' => 2,
+            'associated_companies' => [4],
+            'user_ids' => [3],
+            'statuses' => []
+        ];
+
+        app(UserFiledRequestRepository::class)->baseQueryBuilder($filters);
     }
 
     private function companyUserRolePermission()
