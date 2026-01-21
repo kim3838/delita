@@ -51,6 +51,7 @@ use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Blueprint\Repositories\TimePeriodPresetRepository;
 use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
+use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\Repositories\AccountRepositoryEloquent;
 use App\Concrete\Repositories\AccountSubscriptionRepositoryEloquent;
@@ -101,6 +102,7 @@ use App\Concrete\Repositories\ShiftRepositoryEloquent;
 use App\Concrete\Repositories\ShiftScheduleRepositoryEloquent;
 use App\Concrete\Repositories\TimePeriodPresetRepositoryEloquent;
 use App\Concrete\Repositories\UserCompanyAssignmentRepositoryEloquent;
+use App\Concrete\Repositories\UserFiledRequestRepositoryEloquent;
 use App\Concrete\Repositories\UserRepositoryEloquent;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
@@ -158,6 +160,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'approval_setting_approver' => ApprovalSettingApproverRepositoryEloquent::class,
         'request_approval_state' => RequestApprovalStateRepositoryEloquent::class,
         'attendance_adjustment_request' => AttendanceAdjustmentRequestRepositoryEloquent::class,
+        'user_filed_request' => UserFiledRequestRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -208,6 +211,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         ApprovalSettingApproverRepository::class => ApprovalSettingApproverRepositoryEloquent::class,
         RequestApprovalStateRepository::class => RequestApprovalStateRepositoryEloquent::class,
         AttendanceAdjustmentRequestRepository::class => AttendanceAdjustmentRequestRepositoryEloquent::class,
+        UserFiledRequestRepository::class => UserFiledRequestRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -263,6 +267,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'approval_setting_approver',
             'request_approval_state',
             'attendance_adjustment_request',
+            'user_filed_request',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -313,6 +318,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             ApprovalSettingApproverRepository::class,
             RequestApprovalStateRepository::class,
             AttendanceAdjustmentRequestRepository::class,
+            UserFiledRequestRepository::class,
         ];
     }
 }
