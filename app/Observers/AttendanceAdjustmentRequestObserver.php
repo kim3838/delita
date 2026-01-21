@@ -36,6 +36,7 @@ class AttendanceAdjustmentRequestObserver
     public function addCustomNumberAttribute(AttendanceAdjustmentRequest $attendanceAdjustmentRequest): AttendanceAdjustmentRequest
     {
         $series = 1;
+        $seriesLength = 4;
 
         $dateRequested = Carbon::parse($attendanceAdjustmentRequest->date_requested);
         $companyId = $attendanceAdjustmentRequest->company_id;
@@ -52,13 +53,15 @@ class AttendanceAdjustmentRequestObserver
             ->whereBetween('date_requested', [
                 Carbon::parse($dateRequested)->startOfYear()->toDateTimeString(),
                 Carbon::parse($dateRequested)->endOfYear()->toDateTimeString()
-            ])->count();
+            ])
+            ->selectRaw("MAX(RIGHT(attendance_adjustment_requests.number, " . $seriesLength . ")) as max_series")
+            ->value('max_series');
 
         $series = $series + $seriesUpToDate;
 
         $yearCreating = $dateRequested->year;
-        $series = str_pad($series,3, '0',STR_PAD_LEFT);
-        $prefix = 'AA' . '-' . (!empty($employeeNumber) ? $employeeNumber : '');
+        $series = str_pad($series,$seriesLength, '0',STR_PAD_LEFT);
+        $prefix = 'AAR' . '-' . (!empty($employeeNumber) ? $employeeNumber : '');
 
         $number = "{$prefix}{$yearCreating}{$series}";
 
