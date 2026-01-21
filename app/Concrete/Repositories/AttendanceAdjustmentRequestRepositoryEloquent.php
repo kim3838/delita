@@ -10,6 +10,7 @@ use App\Models\AttendanceAdjustmentRequest;
 use App\Models\RequestApprovalState;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -54,6 +55,9 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
             })
             ->when(!empty($filters->statuses) && is_array($filters->statuses), function ($builder) use ($filters) {
                 $builder->whereIn('status_sub.status_summary', $filters->statuses);
+            })
+            ->when(!empty($filters->request_numbers) && is_array($filters->request_numbers), function ($builder) use ($filters) {
+                $builder->whereIn('attendance_adjustment_requests.number', $filters->request_numbers);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
@@ -182,5 +186,17 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
+    }
+
+    public function showFromFilters($filters)
+    {
+        return $this->list($filters)->first();
     }
 }

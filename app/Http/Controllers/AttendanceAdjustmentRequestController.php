@@ -8,6 +8,8 @@ use App\Facades\ResponseJson;
 use App\Http\Requests\AttendanceAdjustmentRequest\BatchDestroyAttendanceAdjustmentRequestRequest;
 use App\Http\Requests\AttendanceAdjustmentRequest\ListAttendanceAdjustmentRequestRequest;
 use App\Http\Requests\AttendanceAdjustmentRequest\StoreAttendanceAdjustmentRequestRequest;
+use App\Http\Requests\AttendanceAdjustmentRequest\ViewAttendanceAdjustmentRequestRequest;
+use App\Transformers\AttendanceAdjustmentRequest\ItemTransformer;
 use App\Transformers\AttendanceAdjustmentRequest\ListTransformer;
 use Carbon\Carbon;
 
@@ -27,6 +29,24 @@ class AttendanceAdjustmentRequestController extends Controller
                 $this->repository->paginate($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function show(ViewAttendanceAdjustmentRequestRequest $request, $requestableNumber)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            $attendanceAdjustment = $this->repository->showFromFilters($filters);
+
+            $attendanceAdjustment = $attendanceAdjustment ? Fractal::item($attendanceAdjustment, ItemTransformer::class) : $attendanceAdjustment;
+
+            return ResponseJson::successfulResponse([
+                'attendance_adjustment' => $attendanceAdjustment
+            ]);
         }
 
         abort(404);

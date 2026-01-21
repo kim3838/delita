@@ -403,6 +403,7 @@ Route::group([
 
     //Attendance Adjustment Request
     Route::get('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'index']);
+    Route::get('attendance-adjustment-request/{requestNumber}', [AttendanceAdjustmentRequestController::class, 'show']);
     Route::post('attendance-adjustment-request', [AttendanceAdjustmentRequestController::class, 'store']);
     Route::delete('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'batchDestroy']);
 
