@@ -28,8 +28,14 @@ class BaseEmployeeRequest extends FormRequest
         return [
             'user_id.required' => 'User account is required',
             'company_id.required' => 'Company is required',
+            'family_name.required' => 'Family name is required',
+            'given_name.required' => 'Given name is required',
+            'birth_date.required' => 'Birth date is required',
+            'gender.required' => 'Gender is required',
+            'marital_status.required' => 'Marital status is required',
             'number.required' => 'Employee number is required',
             'number.unique' =>  'Employee number has already been taken',
+            'number.regex' => 'Employee number must not contain spaces',
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Employee;
 
 use App\Enums\DepartmentEmployeeAssignmentType;
+use App\Enums\RegexValidation;
 use App\Models\DepartmentEmployee;
 use App\Models\Employee;
 use Illuminate\Validation\Rule;
@@ -20,6 +21,7 @@ class StoreEmployeeRequest extends BaseEmployeeRequest
             'number' => [
                 'required',
                 'string',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
                 'max:255',
                 Rule::unique('employees')->where(function ($query) {
                     return $query->where('company_id', $this->input('company_id'));

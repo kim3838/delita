@@ -7,6 +7,7 @@ use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseImportConcrete;
 use App\Enums\CreationType;
+use App\Enums\RegexValidation;
 use App\Exports\BlankEmployeeTemplateExport;
 use App\Http\Requests\EmployeeContact\StoreEmployeeContactRequest;
 use App\Models\Employee;
@@ -56,6 +57,19 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                     $validationErrors[] = 'Duplicate employee number.';
                 } else {
                     $fileNumbers[] = $row['number'];
+                }
+
+                $employeeNumberValidation = Validator::make($row,[
+                    'number' => [
+                        'regex:' . RegexValidation::NO_WHITESPACE->value
+                    ],
+                ]);
+                $employeeNumberValidation->setCustomMessages([
+                    'number.regex' => 'Employee number must not contain spaces',
+                ]);
+
+                if ($employeeNumberValidation->fails()) {
+                    $validationErrors[] = $employeeNumberValidation->errors()->first();
                 }
             }
 
