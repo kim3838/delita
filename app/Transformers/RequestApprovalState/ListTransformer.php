@@ -55,6 +55,7 @@ class ListTransformer extends TransformerAbstract
                 'type' => $requestApprovalState->requestable_type,
                 'id' => $requestApprovalState->requestable_id,
                 'number' => $requestApprovalState->requestable_number,
+                'date_requested' => $requestApprovalState->requestable_date_requested->format('Y-m-d H:i'),
             ],
             ...$basicRequestApprovalState,
             'current_state_flag' => $requestApprovalState->request_approval_state_current_state_flag,

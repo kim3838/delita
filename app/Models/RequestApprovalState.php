@@ -24,7 +24,9 @@ class RequestApprovalState extends Model
         'order' => 'int',
         'approver_id' => 'int',
         'remarks' => 'string',
-        'status' => RequestApprovalStatus::class
+        'status' => RequestApprovalStatus::class,
+
+        'requestable_date_requested' => 'datetime',
     ];
 
     protected $hidden = [

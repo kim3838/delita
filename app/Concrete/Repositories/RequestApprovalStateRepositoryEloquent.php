@@ -53,6 +53,11 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                         (SELECT number FROM attendance_adjustment_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_number
                 "),
+                DB::raw("
+                    CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
+                        (SELECT date_requested FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    ELSE '' END AS requestable_date_requested
+                "),
                 DB::raw("request_approval_states.order"),
                 DB::raw("request_approval_states.approver_id"),
                 DB::raw("request_approval_states.remarks"),
@@ -75,6 +80,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("sub.requestable_account_id"),
                 DB::raw("sub.requestable_company_id"),
                 DB::raw("sub.requestable_number"),
+                DB::raw("sub.requestable_date_requested"),
                 DB::raw("sub.order"),
                 DB::raw("sub.approver_id"),
                 DB::raw("sub.remarks"),
@@ -96,6 +102,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                     DB::raw("current_state_flag_sub.requestable_account_id"),
                     DB::raw("current_state_flag_sub.requestable_company_id"),
                     DB::raw("current_state_flag_sub.requestable_number"),
+                    DB::raw("current_state_flag_sub.requestable_date_requested"),
                     DB::raw("current_state_flag_sub.order"),
                     DB::raw("current_state_flag_sub.approver_id"),
                     DB::raw("current_state_flag_sub.remarks"),
@@ -136,6 +143,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 'request_approval_states_sub.requestable_account_id',
                 'request_approval_states_sub.requestable_company_id',
                 'request_approval_states_sub.requestable_number',
+                'request_approval_states_sub.requestable_date_requested',
                 'request_approval_states_sub.order AS request_approval_state_order',
                 'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
                 'request_approval_states_sub.remarks AS request_approval_state_remarks',
