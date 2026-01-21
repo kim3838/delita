@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Concrete\Repositories;
+
+use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
+use App\Blueprint\Repositories\CompanyUserRepository;
+use App\Blueprint\Repositories\UserFiledRequestRepository;
+use App\Concrete\BaseRepositoryEloquent;
+use App\Models\Hydrations\User\UserFiledRequest;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+
+class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implements UserFiledRequestRepository
+{
+    public function model(): string
+    {
+        return UserFiledRequest::class;
+    }
+
+    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    {
+        $companyUserRepositoryFilter = clone $filters;
+        if(isset($companyUserRepositoryFilter->user_ids)){
+            $companyUserRepositoryFilter->pre_selected_user_ids = $companyUserRepositoryFilter->user_ids;
+        }
+        unset($companyUserRepositoryFilter->user_ids);
+        unset($companyUserRepositoryFilter->search);
+        unset($companyUserRepositoryFilter->statuses);
+
+        $companyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($companyUserRepositoryFilter, []);
+
+        $requestableFilter = clone $filters;
+
+        $attendanceAdjustmentRequestBuilder = App::make(AttendanceAdjustmentRequestRepository::class)->baseQueryBuilder($requestableFilter, []);
+
+        $attendanceAdjustmentRequestBuilder = $this->queryAsSub($companyUserQueryBuilder, 'company_user_sub')
+            ->joinSub($attendanceAdjustmentRequestBuilder, 'attendance_adjustment_request_sub', function ($join) {
+                $join->on('attendance_adjustment_request_sub.requested_by', '=', 'company_user_sub.user_id');
+            })
+            ->where(function ($clause) use ($filters) {
+                $clause->whereIn('attendance_adjustment_request_sub.company_id', $filters->associated_companies);
+            })
+            ->select([
+                'company_user_sub.user_id',
+                'company_user_sub.user_ulid',
+                'company_user_sub.user_username',
+                'company_user_sub.user_email',
+                'company_user_sub.user_status',
+                'company_user_sub.user_email_verified_at',
+                'company_user_sub.user_timezone',
+                'company_user_sub.company_id AS user_company_id',
+                'company_user_sub.company_name',
+                'company_user_sub.company_assignment_type',
+                'company_user_sub.is_employee',
+                'company_user_sub.company_employee_number',
+                'company_user_sub.company_employee_family_name',
+                'company_user_sub.company_employee_middle_name',
+                'company_user_sub.company_employee_given_name',
+
+                'attendance_adjustment_request_sub.company_id AS company_id',
+                DB::raw("'attendance_adjustment_request' AS requestable_type"),
+                'attendance_adjustment_request_sub.id AS requestable_id',
+                'attendance_adjustment_request_sub.number AS number',
+                'attendance_adjustment_request_sub.date_requested AS date_requested',
+                'attendance_adjustment_request_sub.reason AS reason',
+                'attendance_adjustment_request_sub.status_summary AS status_summary',
+            ]);
+
+        $queryBuilder = $this->queryAsSub($attendanceAdjustmentRequestBuilder, 'attendance_adjustment_requests')
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                DB::raw("CONCAT(attendance_adjustment_requests.requestable_type, '_', attendance_adjustment_requests.requestable_id) AS id"),
+                'attendance_adjustment_requests.requestable_type',
+                'attendance_adjustment_requests.requestable_id',
+                'attendance_adjustment_requests.number',
+                'attendance_adjustment_requests.date_requested',
+                'attendance_adjustment_requests.reason',
+                'attendance_adjustment_requests.status_summary',
+
+                'attendance_adjustment_requests.user_id',
+                'attendance_adjustment_requests.user_ulid',
+                'attendance_adjustment_requests.user_username',
+                'attendance_adjustment_requests.user_email',
+                'attendance_adjustment_requests.user_status',
+                'attendance_adjustment_requests.user_email_verified_at',
+                'attendance_adjustment_requests.user_timezone',
+
+                'attendance_adjustment_requests.company_id AS user_company_id',
+                'attendance_adjustment_requests.company_name',
+                'attendance_adjustment_requests.company_assignment_type',
+                'attendance_adjustment_requests.is_employee',
+                'attendance_adjustment_requests.company_employee_number',
+                'attendance_adjustment_requests.company_employee_family_name',
+                'attendance_adjustment_requests.company_employee_middle_name',
+                'attendance_adjustment_requests.company_employee_given_name',
+            ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'date_requested', 'direction' => 'DESC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+}

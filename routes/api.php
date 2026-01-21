@@ -76,6 +76,7 @@ use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\ShiftScheduleController;
+use App\Http\Controllers\UserFiledRequestController;
 use App\Http\Controllers\UserRequestApprovalStateController;
 use App\Http\Controllers\WorldController;
 use App\Http\Controllers\UserCompanyAssignmentController;
@@ -278,6 +279,9 @@ Route::group([
 
     //Approval States: that are only to be approved by the user
     Route::get('user-approval-states', [UserRequestApprovalStateController::class, 'index']);
+
+    //Requests (Attendance adjustments) that requested by the user
+    Route::get('user-filed-requests', [UserFiledRequestController::class, 'index']);
 
     //Payroll Component (compensation, deduction, income tax)
     Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
