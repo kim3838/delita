@@ -23,9 +23,9 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::in([
-                    LeaveType::VACATION->value,
-                    LeaveType::SICK->value,
-                    LeaveType::EMERGENCY->value,
+                    LeaveType::VACATION,
+                    LeaveType::SICK,
+                    LeaveType::EMERGENCY,
                 ])
             ],
             'is_paid' => ['required', 'boolean'],
@@ -49,17 +49,17 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::in([
-                    LeavePeriodType::CALENDAR_YEAR->value,
-                    LeavePeriodType::INTERVAL->value,
+                    LeavePeriodType::CALENDAR_YEAR,
+                    LeavePeriodType::INTERVAL,
                 ])
             ],
             'period_interval_span_type' => [
                 'nullable',
                 'integer',
                 Rule::in([
-                    LeaveIntervalSpanType::YEAR->value,
-                    LeaveIntervalSpanType::MONTH->value,
-                    LeaveIntervalSpanType::DAY->value,
+                    LeaveIntervalSpanType::YEAR,
+                    LeaveIntervalSpanType::MONTH,
+                    LeaveIntervalSpanType::DAY,
                 ])
             ],
             'period_interval_span_value' => [
@@ -92,9 +92,9 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::in([
-                    LeaveUsageSpanType::YEAR->value,
-                    LeaveUsageSpanType::MONTH->value,
-                    LeaveUsageSpanType::DAY->value,
+                    LeaveUsageSpanType::YEAR,
+                    LeaveUsageSpanType::MONTH,
+                    LeaveUsageSpanType::DAY,
                 ])
             ],
             'limit_usage_span_value' => [
@@ -133,8 +133,8 @@ class BaseLeaveTypeStoreAndUpdateRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::in([
-                    LeaveCarryOverType::ALL->value,
-                    LeaveCarryOverType::LIMIT->value,
+                    LeaveCarryOverType::ALL,
+                    LeaveCarryOverType::LIMIT,
                 ])
             ],
             'carry_over_balance_value' => [

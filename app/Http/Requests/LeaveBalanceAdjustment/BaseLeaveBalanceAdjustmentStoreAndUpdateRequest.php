@@ -19,8 +19,8 @@ class BaseLeaveBalanceAdjustmentStoreAndUpdateRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::in([
-                    LeaveBalanceAdjustmentType::ADD->value,
-                    LeaveBalanceAdjustmentType::DEDUCT->value,
+                    LeaveBalanceAdjustmentType::ADD,
+                    LeaveBalanceAdjustmentType::DEDUCT,
                 ])
             ],
             'effective_date' => 'required|date|date_format:Y-m-d',
@@ -53,6 +53,8 @@ class BaseLeaveBalanceAdjustmentStoreAndUpdateRequest extends FormRequest
             'leave_type_id.exists' => 'Leave type not found',
             'leave_type_id.required' => 'Leave type is required',
             'leave_type_id.numeric' => 'Leave type id must be numeric',
+            'type.required' => 'Adjustment type is required',
+            'type.in' => 'Invalid adjustment type',
             'effective_date.required' => 'Date is required',
             'effective_date.date' => 'Date must be a valid date',
             'effective_date.date_format' => 'Date must match the format Y-m-d e.g.(2000-12-31)',
