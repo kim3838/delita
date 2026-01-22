@@ -16,13 +16,15 @@ class ListTransformer extends TransformerAbstract
         $requestApprovalStateHydrated = App::make(RequestApprovalStateRepository::class)->hydrateItem([
             'order' => $requestApprovalState->request_approval_state_order,
             'approver_id' => $requestApprovalState->request_approval_state_approver_id,
+            'approved_by' => $requestApprovalState->request_approval_state_approved_by,
             'remarks' => $requestApprovalState->request_approval_state_remarks,
             'status' => $requestApprovalState->request_approval_state_status,
+            'approved_at' => $requestApprovalState->request_approval_state_approved_at,
         ]);
 
         $basicRequestApprovalState = Fractal::item($requestApprovalStateHydrated, BasicListTransformer::class);
 
-        $companyUserHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
+        $companyUserApproverHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
             'user_id' => $requestApprovalState->user_id,
             'user_ulid' => $requestApprovalState->user_ulid,
             'user_username' => $requestApprovalState->user_username,
@@ -41,12 +43,29 @@ class ListTransformer extends TransformerAbstract
             'company_employee_given_name' => $requestApprovalState->company_employee_given_name
         ]);
 
-        $employeeFullName = implode(' ', array_filter([
-            $companyUserHydrated->company_employee_family_name,
-            $companyUserHydrated->company_employee_given_name,
-            $companyUserHydrated->company_employee_middle_name
+        $companyUserApproverEmployeeFullName = implode(' ', array_filter([
+            $companyUserApproverHydrated->company_employee_family_name,
+            $companyUserApproverHydrated->company_employee_given_name,
+            $companyUserApproverHydrated->company_employee_middle_name
         ]));
-        $employeeFullName = $companyUserHydrated->is_employee ? $employeeFullName : null;
+        $companyUserApproverEmployeeFullName = $companyUserApproverHydrated->is_employee ? $companyUserApproverEmployeeFullName : null;
+
+        $companyUserApprovedByHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
+            'user_id' => $requestApprovalState->approved_by_user_id,
+            'user_username' => $requestApprovalState->approved_by_user_username,
+            'is_employee' => $requestApprovalState->approved_by_user_is_employee,
+            'company_employee_number' => $requestApprovalState->approved_by_user_company_employee_number,
+            'company_employee_family_name' => $requestApprovalState->approved_by_user_company_employee_family_name,
+            'company_employee_middle_name' => $requestApprovalState->approved_by_user_company_employee_middle_name,
+            'company_employee_given_name' => $requestApprovalState->approved_by_user_company_employee_given_name
+        ]);
+
+        $companyUserApprovedByEmployeeFullName = implode(' ', array_filter([
+            $companyUserApprovedByHydrated->company_employee_family_name,
+            $companyUserApprovedByHydrated->company_employee_given_name,
+            $companyUserApprovedByHydrated->company_employee_middle_name
+        ]));
+        $companyUserApprovedByEmployeeFullName = $companyUserApprovedByHydrated->is_employee ? $companyUserApprovedByEmployeeFullName : null;
 
         return [
             'row_number' => $requestApprovalState->row_number,
@@ -58,20 +77,29 @@ class ListTransformer extends TransformerAbstract
                 'date_requested' => $requestApprovalState->requestable_date_requested->format('Y-m-d H:i'),
                 'company_timezone' => $requestApprovalState->company_timezone,
             ],
-            ...$basicRequestApprovalState,
+            'order' => $basicRequestApprovalState['order'],
+            'remarks' => $basicRequestApprovalState['remarks'],
+            'status' => $basicRequestApprovalState['status'],
             'current_state_flag' => $requestApprovalState->request_approval_state_current_state_flag,
             'current_state_message' => $requestApprovalState->request_approval_state_current_state_flag ? 'Awaiting' : '',
             'approver' => [
-                'company_name' => $companyUserHydrated->company_name,
-                'company_assignment_type' => $companyUserHydrated->company_assignment_type?->toArray(),
-                'is_employee' => $companyUserHydrated->is_employee,
-                'company_employee_number' => $companyUserHydrated->company_employee_number,
-                'company_employee_full_name' => $employeeFullName,
+                'company_name' => $companyUserApproverHydrated->company_name,
+                'company_assignment_type' => $companyUserApproverHydrated->company_assignment_type?->toArray(),
+                'is_employee' => $companyUserApproverHydrated->is_employee,
+                'company_employee_number' => $companyUserApproverHydrated->company_employee_number,
+                'company_employee_full_name' => $companyUserApproverEmployeeFullName,
 
-                'status' => $companyUserHydrated->user_status?->toArray(),
-                'user_id' => $companyUserHydrated->user_id,
-                'username' => $companyUserHydrated->user_username,
+                'status' => $companyUserApproverHydrated->user_status?->toArray(),
+                'user_id' => $companyUserApproverHydrated->user_id,
+                'username' => $companyUserApproverHydrated->user_username,
             ],
+            'approved_by' => [
+                'company_employee_number' => $companyUserApprovedByHydrated->company_employee_number,
+                'company_employee_full_name' => $companyUserApprovedByEmployeeFullName,
+
+                'username' => $companyUserApprovedByHydrated->user_username,
+                'approved_at' => $basicRequestApprovalState['approved_at'],
+            ]
         ];
     }
 }

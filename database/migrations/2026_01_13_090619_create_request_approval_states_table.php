@@ -18,8 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('requestable_id');
             $table->smallInteger('order');
             $table->foreignId('approver_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('remarks')->nullable();
             $table->smallInteger('status')->default(RequestApprovalStatus::PENDING);
+            $table->dateTime('approved_at')->nullable();
             $table->timestamps();
 
             $table->index(['requestable_type', 'requestable_id']);

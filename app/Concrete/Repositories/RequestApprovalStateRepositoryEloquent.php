@@ -29,6 +29,10 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         unset($companyUserRepositoryFilter->user_ids);
         unset($companyUserRepositoryFilter->search);
 
+        $approvedByCompanyUserRepositoryFilter = clone $filters;
+        unset($companyUserRepositoryFilter->user_ids);
+        unset($companyUserRepositoryFilter->search);
+
         $declined = RequestApprovalStatus::DECLINED->value;
         $approved = RequestApprovalStatus::APPROVED->value;
         $pending = RequestApprovalStatus::PENDING->value;
@@ -60,8 +64,10 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 "),
                 DB::raw("request_approval_states.order"),
                 DB::raw("request_approval_states.approver_id"),
+                DB::raw("request_approval_states.approved_by"),
                 DB::raw("request_approval_states.remarks"),
                 DB::raw("request_approval_states.status"),
+                DB::raw("request_approval_states.approved_at"),
                 DB::raw("request_approval_states.status = " . $pending . " AS is_pending"),
                 DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY requestable_id) AS at_least_one_declined"),
                 DB::raw("LAG(request_approval_states.status) OVER(PARTITION BY requestable_id ORDER BY request_approval_states.order) AS previous_status"),
@@ -83,8 +89,10 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("sub.requestable_date_requested"),
                 DB::raw("sub.order"),
                 DB::raw("sub.approver_id"),
+                DB::raw("sub.approved_by"),
                 DB::raw("sub.remarks"),
                 DB::raw("sub.status"),
+                DB::raw("sub.approved_at"),
                 DB::raw("
                     IF(NOT sub.at_least_one_declined,
                         IF(sub.is_pending AND (sub.previous_status IS NULL OR sub.previous_status IN(" . $approved . ")), 1, null)
@@ -105,8 +113,10 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                     DB::raw("current_state_flag_sub.requestable_date_requested"),
                     DB::raw("current_state_flag_sub.order"),
                     DB::raw("current_state_flag_sub.approver_id"),
+                    DB::raw("current_state_flag_sub.approved_by"),
                     DB::raw("current_state_flag_sub.remarks"),
                     DB::raw("current_state_flag_sub.status"),
+                    DB::raw("current_state_flag_sub.approved_at"),
                     DB::raw("current_state_flag_sub.current_state_flag"),
                 ])
                 ->whereRaw("current_state_flag_sub.current_state_flag IS NOT NULL");
@@ -117,9 +127,14 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
 
         $companyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($companyUserRepositoryFilter, []);
 
+        $approvedByCompanyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($approvedByCompanyUserRepositoryFilter, []);
+
         $queryBuilder = $queryBuilder
             ->joinSub($companyUserQueryBuilder, 'company_user_sub', function ($join) {
                 $join->on('company_user_sub.user_id', '=', 'request_approval_states_sub.approver_id');
+            })
+            ->leftJoinSub($approvedByCompanyUserQueryBuilder, 'approved_by_company_user_sub', function ($join) {
+                $join->on('approved_by_company_user_sub.user_id', '=', 'request_approval_states_sub.approved_by');
             })
             ->when(!empty($filters->user_ids) && is_array($filters->user_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("request_approval_states_sub.approver_id"), $filters->user_ids);
@@ -146,10 +161,19 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("CONVERT_TZ(request_approval_states_sub.requestable_date_requested, 'UTC', company_user_sub.company_timezone) AS requestable_date_requested"),
                 'request_approval_states_sub.order AS request_approval_state_order',
                 'request_approval_states_sub.approver_id AS request_approval_state_approver_id',
+                'request_approval_states_sub.approved_by AS request_approval_state_approved_by',
                 'request_approval_states_sub.remarks AS request_approval_state_remarks',
                 'request_approval_states_sub.status AS request_approval_state_status',
+                DB::raw("CONVERT_TZ(request_approval_states_sub.approved_at, 'UTC', company_user_sub.company_timezone) AS request_approval_state_approved_at"),
                 'request_approval_states_sub.current_state_flag AS request_approval_state_current_state_flag',
-                'company_user_sub.*'
+                'company_user_sub.*',
+                'approved_by_company_user_sub.user_id AS approved_by_user_id',
+                'approved_by_company_user_sub.user_username AS approved_by_user_username',
+                'approved_by_company_user_sub.is_employee AS approved_by_user_is_employee',
+                'approved_by_company_user_sub.company_employee_number AS approved_by_user_company_employee_number',
+                'approved_by_company_user_sub.company_employee_family_name AS approved_by_user_company_employee_family_name',
+                'approved_by_company_user_sub.company_employee_middle_name AS approved_by_user_company_employee_middle_name',
+                'approved_by_company_user_sub.company_employee_given_name AS approved_by_user_company_employee_given_name',
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

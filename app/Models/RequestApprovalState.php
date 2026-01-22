@@ -14,8 +14,10 @@ class RequestApprovalState extends Model
         'requestable_id',
         'order',
         'approver_id',
+        'approved_by',
         'remarks',
-        'status'
+        'status',
+        'approved_at',
     ];
 
     protected $casts = [
@@ -23,8 +25,10 @@ class RequestApprovalState extends Model
         'requestable_id' => 'int',
         'order' => 'int',
         'approver_id' => 'int',
+        'approved_by' => 'int',
         'remarks' => 'string',
         'status' => RequestApprovalStatus::class,
+        'approved_at' => 'datetime',
 
         'requestable_date_requested' => 'datetime',
     ];
@@ -42,5 +46,10 @@ class RequestApprovalState extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

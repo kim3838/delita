@@ -11,9 +11,12 @@ class BasicListTransformer extends TransformerAbstract
     {
         return [
             'order' => $requestApprovalState->order,
-            'approver' => $requestApprovalState->approver->name,
+            'approver_id' => $requestApprovalState->approver_id,
+            'approved_by' => $requestApprovalState->approved_by,
+            'approved_by_username' => $requestApprovalState->approvedBy?->name,
             'remarks' => $requestApprovalState->remarks,
             'status' => $requestApprovalState->status?->toArray(),
+            'approved_at' => $requestApprovalState->approved_at?->format('Y-m-d H:i'),
         ];
     }
 }
