@@ -87,7 +87,7 @@ class ListTransformer extends TransformerAbstract
             'lunch_out' => $attendanceAdjustmentRequest->lunch_out?->format('Y-m-d H:i'),
             'lunch_in' => $attendanceAdjustmentRequest->lunch_in?->format('Y-m-d H:i'),
             'last_out' => $attendanceAdjustmentRequest->last_out->format('Y-m-d H:i'),
-            'reason' => $attendanceAdjustmentRequest->reason,
+            'remarks' => $attendanceAdjustmentRequest->remarks,
             'status_summary' => $attendanceAdjustmentRequest->status_summary?->toArray(),
 
             'approval_states' => $approvalStates

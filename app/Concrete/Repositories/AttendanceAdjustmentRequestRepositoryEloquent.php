@@ -127,7 +127,7 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
                 'attendance_adjustment_requests.lunch_out AS lunch_out',
                 'attendance_adjustment_requests.lunch_in AS lunch_in',
                 'attendance_adjustment_requests.last_out AS last_out',
-                'attendance_adjustment_requests.reason AS reason',
+                'attendance_adjustment_requests.remarks AS remarks',
                 'status_sub.status_summary AS status_summary',
             ]);
 

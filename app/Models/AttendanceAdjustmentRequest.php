@@ -19,7 +19,7 @@ class AttendanceAdjustmentRequest extends Model
         'lunch_out',
         'lunch_in',
         'last_out',
-        'reason'
+        'remarks'
     ];
 
     protected $casts = [
@@ -32,7 +32,7 @@ class AttendanceAdjustmentRequest extends Model
         'lunch_out' => 'datetime',
         'lunch_in' => 'datetime',
         'last_out' => 'datetime',
-        'reason' => 'string',
+        'remarks' => 'string',
         'status_summary' => RequestApprovalStatus::class
     ];
 

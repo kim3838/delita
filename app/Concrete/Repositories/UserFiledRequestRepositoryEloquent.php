@@ -65,7 +65,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'attendance_adjustment_request_sub.id AS requestable_id',
                 'attendance_adjustment_request_sub.number AS number',
                 'attendance_adjustment_request_sub.date_requested AS date_requested',
-                'attendance_adjustment_request_sub.reason AS reason',
+                'attendance_adjustment_request_sub.remarks AS remarks',
                 'attendance_adjustment_request_sub.status_summary AS status_summary',
             ]);
 
@@ -77,7 +77,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'attendance_adjustment_requests.requestable_id',
                 'attendance_adjustment_requests.number',
                 'attendance_adjustment_requests.date_requested',
-                'attendance_adjustment_requests.reason',
+                'attendance_adjustment_requests.remarks',
                 'attendance_adjustment_requests.status_summary',
 
                 'attendance_adjustment_requests.user_id',

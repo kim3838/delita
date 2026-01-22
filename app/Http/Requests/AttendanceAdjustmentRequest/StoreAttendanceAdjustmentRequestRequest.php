@@ -114,7 +114,7 @@ class StoreAttendanceAdjustmentRequestRequest extends ImportAttendance
                     }
                 }
             ],
-            'reason' => 'nullable|string|max:255',
+            'remarks' => 'nullable|string|max:255',
         ]);
     }
 
@@ -122,7 +122,7 @@ class StoreAttendanceAdjustmentRequestRequest extends ImportAttendance
     {
         return array_merge(parent::messages(), [
             'company_id.required' => 'Company is required',
-            'reason.max' => 'Reason must not exceed 255 characters'
+            'remarks.max' => 'Remarks must not exceed 255 characters'
         ]);
     }
 }
