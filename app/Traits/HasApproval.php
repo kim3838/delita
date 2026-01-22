@@ -74,6 +74,15 @@ trait HasApproval
 
         $approversArray = $this->getRequestableRawApprovers($modelAlias, $companyApprovalSettings);
 
+        //Get the owner of a requestable entity
+        $requestableOwnerEmployeeOwnerModel = $this->chainForeignPath($modelThroughForeign, $modelAlias);
+        $requestableOwnerUserId = null;
+
+        if(!empty($requestableOwnerEmployeeOwnerModel)){
+
+            $requestableOwnerUserId = $requestableOwnerEmployeeOwnerModel?->user?->id;
+        }
+
         foreach ($approversArray as &$approver) {
 
             if($approver['type'] == ApproverType::MANAGER){
@@ -105,9 +114,10 @@ trait HasApproval
 
         $approversArray = $this->mapApprover($approversArray);
         $approversArray = $this->removeEmptyApprover($approversArray);
-        if(!empty($requesterId)){
-            $approversArray = $this->removeRequesterFromApprover($approversArray, $requesterId);
-        }
+        $filterOutApprovers = array_filter([$requesterId, $requestableOwnerUserId], fn($approverId) => !empty($approverId));
+
+        $approversArray = $this->removeUserIdsFromApprover($approversArray, $filterOutApprovers);
+
         $approversArray = $this->removeDuplicateApproverAndKeepFirstOccurrence($approversArray);
 
         return $this->reOrderApprover($approversArray);
@@ -130,10 +140,10 @@ trait HasApproval
         });
     }
 
-    public function removeRequesterFromApprover($approversArray, $requesterId): array
+    public function removeUserIdsFromApprover($approversArray, $userIds): array
     {
-        return array_filter($approversArray, function($approver) use ($requesterId){
-            return $approver['approver_id'] != $requesterId;
+        return array_filter($approversArray, function($approver) use ($userIds){
+            return !in_array($approver['approver_id'], $userIds);
         });
     }
 
