@@ -31,7 +31,7 @@ return new class extends Migration
             $table->smallInteger('status')->default(UserStatus::ACTIVE);
             $table->string('timezone')->default('UTC');
             $table->rememberToken();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

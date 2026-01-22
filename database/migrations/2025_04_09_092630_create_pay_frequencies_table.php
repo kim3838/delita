@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('code');
             $table->smallInteger('order');
             $table->smallInteger('type');
-            $table->foreignId('time_period_preset_id')->nullable()->constrained('time_period_presets', 'id')->onDelete('set null');
+            $table->foreignId('time_period_preset_id')->nullable()->constrained('time_period_presets', 'id')->nullOnDelete();
             $table->json('period')->nullable();
             $table->smallInteger('cutoff_type')->nullable();
             $table->smallInteger('cut_off_value')->nullable();
