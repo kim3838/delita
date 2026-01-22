@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\EmployeePortal\UserFiledRequest\BatchDestroyUserFiledRequestRequest;
 use App\Transformers\UserFiledRequest\ListTransformer;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,22 @@ class UserFiledRequestController extends Controller
                 $this->repository->paginate($filters),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyUserFiledRequestRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $requestables = data_get($request->validated(), 'requestables', []);
+
+            foreach($requestables as $requestable => $ids){
+                app($requestable)->batchDelete($ids);
+            }
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);

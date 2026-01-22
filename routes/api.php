@@ -283,6 +283,7 @@ Route::group([
 
     //Requests (Attendance adjustments) that requested by the user
     Route::get('user-filed-requests', [UserFiledRequestController::class, 'index']);
+    Route::delete('user-filed-requests', [UserFiledRequestController::class, 'batchDestroy']);
 
     //Payroll Component (compensation, deduction, income tax)
     Route::get('payroll-components-gate', [PayrollComponentController::class, 'indexGate']);
