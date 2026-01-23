@@ -17,6 +17,15 @@ enum RequestApprovalStatus: int implements BaseEnum
         };
     }
 
+    public function verbLabel(): string
+    {
+        return match ($this) {
+            self::PENDING => 'Pending',
+            self::DECLINED => 'Decline',
+            self::APPROVED => 'Approve',
+        };
+    }
+
     public function toArray(): array
     {
         return [
