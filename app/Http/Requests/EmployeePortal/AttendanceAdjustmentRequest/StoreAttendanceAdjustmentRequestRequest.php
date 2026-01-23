@@ -2,12 +2,9 @@
 
 namespace App\Http\Requests\EmployeePortal\AttendanceAdjustmentRequest;
 
-use App\Http\Requests\AttendanceAdjustmentRequest\StoreAttendanceAdjustmentRequestRequest as StoreAttendanceAdjustmentRequestRequestAlias;
+use App\Http\Requests\AttendanceAdjustmentRequest\BaseStoreAttendanceAdjustmentRequestRequest;
 
-class StoreAttendanceAdjustmentRequestRequest extends StoreAttendanceAdjustmentRequestRequestAlias
+class StoreAttendanceAdjustmentRequestRequest extends BaseStoreAttendanceAdjustmentRequestRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
+
 }
