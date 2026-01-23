@@ -3,10 +3,14 @@
 namespace App\Transformers\UserFiledRequest;
 
 use App\Models\Hydrations\User\UserFiledRequest;
+use App\Traits\HasTime;
+use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
+    use HasTime;
+
     public function transform(UserFiledRequest $userFiledRequest): array
     {
         return [
@@ -16,6 +20,10 @@ class ListTransformer extends TransformerAbstract
             'requestable_id' => $userFiledRequest->requestable_id,
             'number' => $userFiledRequest->number,
             'date_requested' => $userFiledRequest->date_requested->format('Y-m-d H:i'),
+            'date_requested_diff' => $this->diffForHumans(
+                $userFiledRequest->date_requested->shiftTimezone($userFiledRequest->company_timezone),
+                Carbon::now($userFiledRequest->company_timezone)
+            ),
             'company_timezone' => $userFiledRequest->company_timezone,
             'reason' => $userFiledRequest->reason,
             'status_summary' => $userFiledRequest->status_summary?->toArray(),

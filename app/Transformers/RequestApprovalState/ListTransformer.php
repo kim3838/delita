@@ -6,11 +6,15 @@ use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Facades\Fractal;
 use App\Models\RequestApprovalState;
+use App\Traits\HasTime;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
+    use HasTime;
+
     public function transform(RequestApprovalState $requestApprovalState): array
     {
         $requestApprovalStateHydrated = App::make(RequestApprovalStateRepository::class)->hydrateItem([
@@ -35,6 +39,7 @@ class ListTransformer extends TransformerAbstract
 
             'company_id' => $requestApprovalState->company_id,
             'company_name' => $requestApprovalState->company_name,
+            'company_timezone' => $requestApprovalState->company_timezone,
             'company_assignment_type' => $requestApprovalState->company_assignment_type,
             'is_employee' => $requestApprovalState->is_employee,
             'company_employee_number' => $requestApprovalState->company_employee_number,
@@ -51,13 +56,15 @@ class ListTransformer extends TransformerAbstract
         $companyUserApproverEmployeeFullName = $companyUserApproverHydrated->is_employee ? $companyUserApproverEmployeeFullName : null;
 
         $companyUserApprovedByHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
-            'user_id' => $requestApprovalState->approved_by_user_id,
-            'user_username' => $requestApprovalState->approved_by_user_username,
+            'company_timezone' => $requestApprovalState->approved_by_user_company_timezone,
             'is_employee' => $requestApprovalState->approved_by_user_is_employee,
             'company_employee_number' => $requestApprovalState->approved_by_user_company_employee_number,
             'company_employee_family_name' => $requestApprovalState->approved_by_user_company_employee_family_name,
             'company_employee_middle_name' => $requestApprovalState->approved_by_user_company_employee_middle_name,
-            'company_employee_given_name' => $requestApprovalState->approved_by_user_company_employee_given_name
+            'company_employee_given_name' => $requestApprovalState->approved_by_user_company_employee_given_name,
+
+            'user_id' => $requestApprovalState->approved_by_user_id,
+            'user_username' => $requestApprovalState->approved_by_user_username,
         ]);
 
         $companyUserApprovedByEmployeeFullName = implode(' ', array_filter([
@@ -74,7 +81,10 @@ class ListTransformer extends TransformerAbstract
                 'type' => $requestApprovalState->requestable_type,
                 'id' => $requestApprovalState->requestable_id,
                 'number' => $requestApprovalState->requestable_number,
-                'date_requested' => $requestApprovalState->requestable_date_requested->format('Y-m-d H:i'),
+                'date_requested_diff' => $this->diffForHumans(
+                    $requestApprovalState->requestable_date_requested->shiftTimezone($requestApprovalState->company_timezone),
+                    Carbon::now($requestApprovalState->company_timezone)
+                ),
                 'company_timezone' => $requestApprovalState->company_timezone,
             ],
             'order' => $basicRequestApprovalState['order'],
@@ -98,7 +108,13 @@ class ListTransformer extends TransformerAbstract
                 'company_employee_full_name' => $companyUserApprovedByEmployeeFullName,
 
                 'username' => $companyUserApprovedByHydrated->user_username,
-                'approved_at' => $basicRequestApprovalState['approved_at'],
+                'approved_at' => $basicRequestApprovalState['approved_at']?->toDateTimeString(),
+                'company_timezone' => $companyUserApprovedByHydrated->company_timezone,
+
+                'approved_at_diff' => !empty($basicRequestApprovalState['approved_at']) ? $this->diffForHumans(
+                    $basicRequestApprovalState['approved_at']->shiftTimezone($requestApprovalState->company_timezone),
+                    Carbon::now($requestApprovalState->company_timezone)
+                ): null,
             ]
         ];
     }

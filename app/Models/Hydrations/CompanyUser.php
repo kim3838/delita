@@ -11,6 +11,7 @@ class CompanyUser extends Model
     protected $casts = [
         'company_id' => 'int',
         'company_name' => 'string',
+        'company_timezone' => 'string',
         'company_assignment_type' => CompanyUserAssignmentType::class,
         'is_employee' => 'boolean',
         'company_employee_number' => 'string',

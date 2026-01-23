@@ -6,14 +6,18 @@ use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Facades\Fractal;
 use App\Models\AttendanceAdjustmentRequest;
+use App\Traits\HasTime;
 use App\Transformers\Attendance\ItemTransformer as AttendanceItemTransformer;
 use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
 {
+    use HasTime;
+
     public function transform(AttendanceAdjustmentRequest $attendanceAdjustmentRequest): array
     {
         $attendanceHydrated = App::make(AttendanceRepository::class)->hydrateItem([
@@ -80,7 +84,11 @@ class ListTransformer extends TransformerAbstract
             'id' => $attendanceAdjustmentRequest->id,
             'number' => $attendanceAdjustmentRequest->number,
             'requested_by' => $attendanceAdjustmentRequest->requestedBy,
-            'date_requested' => $attendanceAdjustmentRequest->date_requested->format('Y-m-d H:i'),
+            'date_requested_diff' => $this->diffForHumans(
+                $attendanceAdjustmentRequest->date_requested->shiftTimezone($attendanceAdjustmentRequest->company_timezone),
+                Carbon::now($attendanceAdjustmentRequest->company_timezone)
+            ),
+
             'company_timezone' => $attendanceAdjustmentRequest->company_timezone,
             'attendance_id' => $attendanceAdjustmentRequest->attendance_id,
             'first_in' => $attendanceAdjustmentRequest->first_in->format('Y-m-d H:i'),

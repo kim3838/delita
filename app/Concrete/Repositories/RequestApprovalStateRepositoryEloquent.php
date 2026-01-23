@@ -167,6 +167,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("CONVERT_TZ(request_approval_states_sub.approved_at, 'UTC', company_user_sub.company_timezone) AS request_approval_state_approved_at"),
                 'request_approval_states_sub.current_state_flag AS request_approval_state_current_state_flag',
                 'company_user_sub.*',
+                'approved_by_company_user_sub.company_timezone AS approved_by_user_company_timezone',
                 'approved_by_company_user_sub.user_id AS approved_by_user_id',
                 'approved_by_company_user_sub.user_username AS approved_by_user_username',
                 'approved_by_company_user_sub.is_employee AS approved_by_user_is_employee',

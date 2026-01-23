@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 trait HasTime
 {
@@ -45,5 +46,20 @@ trait HasTime
         return !empty($minimum) && $date->lt($minimum)
             ? $minimum
             : $date;
+    }
+
+    protected function diffForHumans(Carbon $date, Carbon $now): string
+    {
+        $diffInSeconds = $date->diffInSeconds($now);
+
+        $diffForHumans = $diffInSeconds > 0 && $diffInSeconds < 60
+            ? 'just now'
+            : $date->diffForHumans($now,[
+                    'syntax' => CarbonInterface::DIFF_RELATIVE_TO_NOW,
+                    'short' => true,
+                ]
+            );
+
+        return $diffForHumans;
     }
 }

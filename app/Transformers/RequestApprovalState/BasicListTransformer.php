@@ -16,7 +16,7 @@ class BasicListTransformer extends TransformerAbstract
             'approved_by_username' => $requestApprovalState->approvedBy?->name,
             'remarks' => $requestApprovalState->remarks,
             'status' => $requestApprovalState->status?->toArray(),
-            'approved_at' => $requestApprovalState->approved_at?->format('Y-m-d H:i'),
+            'approved_at' => $requestApprovalState->approved_at,
         ];
     }
 }
