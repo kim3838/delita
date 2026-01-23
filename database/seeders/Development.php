@@ -10,6 +10,7 @@ use App\Enums\AccountSubscriptionModule;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\Compensation;
 use App\Enums\Deduction;
+use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Enums\EmploymentStatus;
 use App\Enums\EmploymentType;
 use App\Enums\EndOfServiceType;
@@ -387,6 +388,11 @@ class Development extends Seeder
         if($account1002User01->roles->isEmpty()){
             $account1002User01->syncRoles([$account1001AdminRole, $account1002AdminRole]);
         }
+
+        //Assign Admin role of account 1002 to 1002User02
+        if($account1002User02->roles->isEmpty()){
+            $account1002User02->syncRoles([$account1002AdminRole]);
+        }
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B, 1002-C Salary Statement Modules
@@ -515,10 +521,7 @@ class Development extends Seeder
             null,
             null,
             null,
-            'A1001',
-            'Employee 01',
-            'A',
-            '1002');
+            'A1001', 'Maëlle', 'A', 'Le Bris');
         $this->createEmployeeContact($employeeA1001, 'a1001.01@officemail.com', 'a1001.01@personalmail.com', '+639123456789', '+639123456789');
         $this->createEmploymentProfile($employeeA1001);
         /**************************************************************************************************************************************************************************************************************/
@@ -530,9 +533,7 @@ class Development extends Seeder
             null,
             null,
             'B1001',
-            'Employee 01',
-            'B',
-            '1002');
+            'Dubois', 'B', 'Anaïs');
         $this->createEmployeeContact($employeeB1001, 'b1001.01@officemail.com');
         $this->createEmploymentProfile($employeeB1001);
         /**************************************************************************************************************************************************************************************************************/
@@ -543,7 +544,7 @@ class Development extends Seeder
             $company1002C->departments()->where('name', 'HR')->first(),
             $company1002C->designations()->where('name', 'HR Manager')->first(),
             null,
-            'C1001', 'Employee 01', 'C', '1002');
+            'C1001', 'Amanda', 'N', 'Nõrth');
         $this->createEmployeeContact($employeeC1001, 'c1001.01@officemail.com', 'c1001.01@personalmail.com');
         $this->createEmploymentProfile($employeeC1001);
         $employeeC1001->shifts()->detach();
@@ -561,7 +562,7 @@ class Development extends Seeder
             $company1002C->departments()->where('name', 'Accounts Payable')->first(),
             $company1002C->designations()->where('name', 'Accounting Staff')->first(),
             null,
-            'C1002', 'José', 'C', 'Clariño');
+            'C1002', 'Palamuérta', 'C', 'Scañtily');
         $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
         $employeeC1002->employmentProfiles()->firstOrCreate([
             'status' => EmploymentStatus::ACTIVE,
@@ -665,25 +666,93 @@ class Development extends Seeder
         //Create Employee C1003 Info, Contact, Employment Profile and Shift
         $employeeC1003 = $this->createEmployee(
             $company1002C,
-            $account1002User03,
-            $company1002C->departments()->where('name', 'Accounts Payable')->first(),
-            $company1002C->designations()->where('name', 'Accounting Staff')->first(),
-            $employeeC1001,
-            'C1003', 'Employee 03', 'C', '1002');
+            null,
+            null,
+            null,
+            null,
+            'C1003', 'L’Écuyer', 'W', 'François');
         $this->createEmployeeContact($employeeC1003, 'c1003.01@officemail.com', '', '', '+639122111789');
         $this->createEmploymentProfile($employeeC1003);
         $employeeC1003->shifts()->detach();
         $employeeC1003->shifts()->syncWithoutDetaching([$shift1002C3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
 
-        //Create Employee C1004 to C1018 Info, Contact, Employment Profile and Shift
-        for ($i = 4; $i <= 18; $i++) {
+        //Create Employee C1004 Info, Contact, Employment Profile
+        $employeeC1004 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1004', 'José María', 'E', 'Fernández-López');
 
-            ${"employee$i"} = $this->createEmployee(
-                $company1002C, null, null,null,null,
-                "C10" . sprintf('%02d', $i), "Employee " . sprintf('%02d', $i), 'C', '1002');
-            $this->createEmployeeContact(${"employee$i"}, "c100$i.01@officemail.com");
-            $this->createEmploymentProfile(${"employee$i"});
-            ${"employee$i"}->shifts()->syncWithoutDetaching([${"shift1002C$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        //Create Employee C1005 Info, Contact, Employment Profile
+        $employeeC1005 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1005', 'Jürgen', 'C', 'Müller');
+
+        //Create Employee C1006 Info, Contact, Employment Profile
+        $employeeC1006 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1006', 'Renée', 'S', 'O’Connor');
+
+        //Create Employee C1007 Info, Contact, Employment Profile
+        $employeeC1007 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1007', 'Søren', 'M', 'Bjørnsen');
+
+        //Create Employee C1008 Info, Contact, Employment Profile
+        $employeeC1008 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1008', 'Björk', 'A', 'Guðmundsdóttir');
+
+        //Create Employee C1009 Info, Contact, Employment Profile
+        $employeeC1009 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1009', 'Márton', 'F', 'Szőke');
+
+        //Create Employee C1010 Info, Contact, Employment Profile
+        $employeeC1010 = $this->createEmployee(
+            $company1002C,
+            null,
+            null,
+            null,
+            null,
+            'C1010', 'İbrahiM', 'I', 'Özdemir');
+
+        /**************************************************************************************************************************************************************************************************************/
+
+        //Create Employee C1011 to C1020 Info, Contact, Employment Profile and Shift
+        $createIteratedEmpoyees = false;
+        if($createIteratedEmpoyees){
+            for ($i = 11; $i <= 20; $i++) {
+
+                ${"employee$i"} = $this->createEmployee(
+                    $company1002C, null, null,null,null,
+                    "C10" . sprintf('%02d', $i), "Employee " . sprintf('%02d', $i), 'C', '1002');
+                $this->createEmployeeContact(${"employee$i"}, "c100$i.01@officemail.com");
+                $this->createEmploymentProfile(${"employee$i"});
+                ${"employee$i"}->shifts()->syncWithoutDetaching([${"shift1002C$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+            }
         }
         /**************************************************************************************************************************************************************************************************************/
 
@@ -913,13 +982,12 @@ class Development extends Seeder
     ){
         $baseModel = empty($user) ? $company : $user;
 
-        return $baseModel->employees()->firstOrCreate([
+        $employee = $baseModel->employees()->firstOrCreate([
             'company_id' => $company->id,
             'number' => $number,
         ],[
             'ulid' => Str::ulid(),
             'company_id' => $company->id,
-            'department_id' => $department?->id,
             'designation_id' => $designation?->id,
             'manager_id' => $manager?->id,
             'number' => $number,
@@ -927,6 +995,8 @@ class Development extends Seeder
             'middle_name' => $middleName,
             'family_name' => $familyName,
         ]);
+
+        return $employee;
     }
 
     public function createEmployeeContact(Employee $employee, $officeEmail = '', $personalEmail = '', $officePhone = '', $personalPhone = '')
