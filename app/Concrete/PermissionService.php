@@ -119,7 +119,7 @@ class PermissionService
                 ],[
                     'key' => 'any-request',
                     'readable_name' => 'Any request',
-                    'actions' => ['approve']
+                    'actions' => ['approve', 'decline']
                 ],[
                     'key' => 'approval-states',
                     'readable_name' => 'Approval States',
