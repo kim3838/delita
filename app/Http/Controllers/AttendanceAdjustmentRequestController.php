@@ -44,7 +44,11 @@ class AttendanceAdjustmentRequestController extends Controller
 
             $attendanceAdjustment = $attendanceAdjustment ? Fractal::item($attendanceAdjustment, ItemTransformer::class) : $attendanceAdjustment;
 
-            return ResponseJson::successfulResponse($attendanceAdjustment);
+            if(empty($attendanceAdjustment)){
+                return ResponseJson::notFoundResponse();
+            } else {
+                return ResponseJson::successfulResponse($attendanceAdjustment);
+            }
         }
 
         abort(404);
