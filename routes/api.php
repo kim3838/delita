@@ -277,6 +277,8 @@ Route::group([
 
     //Approval States
     Route::get('approval-states', [RequestApprovalStateController::class, 'index']);
+    //Apply approval workflow
+    Route::post('approval-states-workflow', [RequestApprovalStateController::class, 'applyWorkflow']);
 
     //Approval States: that are only to be approved by the user
     Route::get('user-approval-states', [UserRequestApprovalStateController::class, 'index']);
