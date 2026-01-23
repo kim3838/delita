@@ -6,9 +6,12 @@ use App\Enums\CompanyUserAssignmentType;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
+use App\Traits\HasPolicy;
 
 class BasePolicy
 {
+    use HasPolicy;
+
     protected function userIsAdminInCompany(User $user, $companyId): bool
     {
         if(empty($companyId)){
@@ -29,21 +32,5 @@ class BasePolicy
             ->where('user_id', $user->id)
             ->where('assignment_type', CompanyUserAssignmentType::ADMIN->value)
             ->count();
-    }
-
-    protected function hasPermission(User $user, string $permission, $accountId = null): bool
-    {
-        $permitted = false;
-        $accountId = empty($accountId) ? request()->input('account_id') : $accountId;
-        $userRoles = $user->roles->where('account_id', $accountId);
-
-        foreach ($userRoles as $role){
-
-            $permitted = $role->permissions->contains('name', $permission);
-
-            if($permitted) break;
-        }
-
-        return $permitted;
     }
 }
