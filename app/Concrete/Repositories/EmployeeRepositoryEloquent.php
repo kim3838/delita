@@ -123,10 +123,12 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 "employees.*",
 
                 ...(in_array('user', $relations) ? [
+                    DB::raw("users.id AS user_id"),
                     DB::raw("users.name AS user_name"),
                     DB::raw("users.email AS user_email"),
+                    DB::raw("users.status AS user_status"),
                     DB::raw("users.email_verified_at AS user_email_verified_at"),
-                    DB::raw("users.status AS user_status")
+                    DB::raw("users.timezone AS user_timezone"),
                 ] : []),
 
                 ...(in_array('current_employment_profile', $relations) ? [

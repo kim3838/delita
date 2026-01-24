@@ -7,7 +7,7 @@ use App\Blueprint\Repositories\UserRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
-use App\Transformers\User\ItemTransformer as UserItemTransformer;
+use App\Transformers\User\BasicTransformer as UserBasicTransformer;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -16,13 +16,15 @@ class ListTransformer extends TransformerAbstract
     public function transform(Employee $employee): array
     {
         $employeeUserHydrated = App::make(UserRepository::class)->hydrateItem([
+            'id' => $employee->user_id,
             'name' => $employee->user_name,
             'email' => $employee->user_email,
-            'email_verified_at' => $employee->user_email_verified_at,
             'status' => $employee->user_status,
+            'email_verified_at' => $employee->user_email_verified_at,
+            'timezone' => $employee->user_timezone
         ]);
 
-        $employeeUser = Fractal::item($employeeUserHydrated, UserItemTransformer::class);
+        $employeeUser = Fractal::item($employeeUserHydrated, UserBasicTransformer::class);
 
         $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
             'id' => $employee->employment_profile_id,
