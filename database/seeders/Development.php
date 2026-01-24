@@ -150,7 +150,8 @@ class Development extends Seeder
         $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
         $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
         $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $user05 = User::query()->firstOrCreate(['name' => 'user.5'],[...User::factory()->definition(), 'name' => 'user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User05 = User::query()->firstOrCreate(['name' => '1002.user.5'],[...User::factory()->definition(), 'name' => '1002.user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $user11 = User::query()->firstOrCreate(['name' => 'user.11'],[...User::factory()->definition(), 'name' => 'user.11', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
         //Company 1002-C Shifts
         //Regular no lunch out/in
@@ -384,6 +385,10 @@ class Development extends Seeder
         //Assign 1002User04 to Company 1002-D as Admin
         $account1002User04->companies()->syncWithoutDetaching([$company1002D->id => ['assignment_type' => CompanyUserAssignmentType::ADMIN]]);
 
+        //Assign 1002User05 to Company 1002-C as Employee
+        $account1002User05->companies()->detach();
+        $account1002User05->companies()->syncWithoutDetaching([$company1002C->id => ['assignment_type' => CompanyUserAssignmentType::DEFAULT]]);
+
         //Assign Admin role of account 1001 and 1002 to 1002User01
         if($account1002User01->roles->isEmpty()){
             $account1002User01->syncRoles([$account1001AdminRole, $account1002AdminRole]);
@@ -476,42 +481,42 @@ class Development extends Seeder
         /**************************************************************************************************************************************************************************************************************/
 
         //Create Departments to Company 1002-B
-        $company1002B->departments()->firstOrCreate(['name' => 'Executive']);
-        $company1002B->departments()->firstOrCreate(['name' => 'HR']);
-        $company1002BHrDepartment = $company1002B->departments()->where('name', 'HR')->first();
-        $company1002B->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002BHrDepartment->id]);
-        $company1002B->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002BHrDepartment->id]);
-        $company1002B->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
-        $company1002BFinanceAndAccountingDepartment = $company1002B->departments()->where('name', 'Finance & Accounting')->first();
-        $company1002B->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
-        $company1002B->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+        $company1002BExecutiveDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Executive']);
+        $company1002BHrDepartment = $company1002B->departments()->firstOrCreate(['name' => 'HR']);
+        $company1002BPayrollDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002BTrainingAndDevelopmentDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002BHrDepartment->id]);
+        $company1002BFinanceAndAccountingDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
+        $company1002BAccountsPayableDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
+        $company1002BInternalAuditDepartment = $company1002B->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002BFinanceAndAccountingDepartment->id]);
 
         //Create Departments to Company 1002-C
-        $company1002C->departments()->firstOrCreate(['name' => 'Executive']);
-        $company1002C->departments()->firstOrCreate(['name' => 'HR']);
-        $company1002CHrDepartment = $company1002C->departments()->where('name', 'HR')->first();
-        $company1002C->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002CHrDepartment->id]);
-        $company1002C->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002CHrDepartment->id]);
-        $company1002C->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
-        $company1002CFinanceAndAccountingDepartment = $company1002C->departments()->where('name', 'Finance & Accounting')->first();
-        $company1002C->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
-        $company1002C->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+        $company1002CExecutiveDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Executive']);
+        $company1002CHrDepartment = $company1002C->departments()->firstOrCreate(['name' => 'HR']);
+        $company1002CPayrollDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Payroll'], ['name' => 'Payroll', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002CTrainingAndDevelopmentDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Training & Development'], ['name' => 'Training & Development', 'parent_id' => $company1002CHrDepartment->id]);
+        $company1002CFinanceAndAccountingDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Finance & Accounting']);
+        $company1002CAccountsPayableDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Accounts Payable'], ['name' => 'Accounts Payable', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
+        $company1002CInternalAuditDepartment = $company1002C->departments()->firstOrCreate(['name' => 'Internal Audit'], ['name' => 'Internal Audit', 'parent_id' => $company1002CFinanceAndAccountingDepartment->id]);
 
         /**************************************************************************************************************************************************************************************************************/
 
         //Create Designations to Company 1002-B
         $company1002B->designations()->firstOrCreate(['name' => 'CEO']);
-        $company1002B->designations()->firstOrCreate(['name' => 'HR Manager']);
-        $company1002B->designations()->firstOrCreate(['name' => 'HR Assistant']);
-        $company1002B->designations()->firstOrCreate(['name' => 'Account Manager']);
-        $company1002B->designations()->firstOrCreate(['name' => 'Accounting Staff']);
+        $company1002BHrManager = $company1002B->designations()->firstOrCreate(['name' => 'HR Manager']);
+        $company1002BHrAssistant = $company1002B->designations()->firstOrCreate(['name' => 'HR Assistant']);
+        $company1002BAccountManager = $company1002B->designations()->firstOrCreate(['name' => 'Account Manager']);
+        $company1002BPayrollManager = $company1002C->designations()->firstOrCreate(['name' => 'Payroll Manager']);
+        $company1002BPayrollAssistant = $company1002C->designations()->firstOrCreate(['name' => 'Payroll Assistant']);
+        $company1002BAccountingStaff = $company1002B->designations()->firstOrCreate(['name' => 'Accounting Staff']);
 
         //Create Designations to Company 1002-C
         $company1002C->designations()->firstOrCreate(['name' => 'CEO']);
-        $company1002C->designations()->firstOrCreate(['name' => 'HR Manager']);
-        $company1002C->designations()->firstOrCreate(['name' => 'HR Assistant']);
-        $company1002C->designations()->firstOrCreate(['name' => 'Account Manager']);
-        $company1002C->designations()->firstOrCreate(['name' => 'Accounting Staff']);
+        $company1002CHrManager = $company1002C->designations()->firstOrCreate(['name' => 'HR Manager']);
+        $company1002CHrAssistant = $company1002C->designations()->firstOrCreate(['name' => 'HR Assistant']);
+        $company1002CAccountManager = $company1002C->designations()->firstOrCreate(['name' => 'Account Manager']);
+        $company1002CPayrollManager = $company1002C->designations()->firstOrCreate(['name' => 'Payroll Manager']);
+        $company1002CPayrollAssistant = $company1002C->designations()->firstOrCreate(['name' => 'Payroll Assistant']);
+        $company1002CAccountingStaff = $company1002C->designations()->firstOrCreate(['name' => 'Accounting Staff']);
 
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee A1001 Info, Contact and Employment Profile to Company 1002-A
@@ -521,31 +526,34 @@ class Development extends Seeder
             null,
             null,
             null,
+            null,
             'A1001', 'Maëlle', 'A', 'Le Bris');
-        $this->createEmployeeContact($employeeA1001, 'a1001.01@officemail.com', 'a1001.01@personalmail.com', '+639123456789', '+639123456789');
+        $this->createEmployeeContact($employeeA1001);
         $this->createEmploymentProfile($employeeA1001);
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee B1001 Info, Contact and Employment Profile
         $employeeB1001 = $this->createEmployee(
             $company1002B,
             $account1002User02,
-            null,
-            null,
+            $company1002BHrDepartment,
+            DepartmentEmployeeAssignmentType::HEAD,
+            $company1002BHrManager,
             null,
             'B1001',
             'Dubois', 'B', 'Anaïs');
-        $this->createEmployeeContact($employeeB1001, 'b1001.01@officemail.com');
+        $this->createEmployeeContact($employeeB1001);
         $this->createEmploymentProfile($employeeB1001);
         /**************************************************************************************************************************************************************************************************************/
         //Create Employee C1001 Info, Contact, Employment Profile, Shift and Leave assignment
         $employeeC1001 = $this->createEmployee(
             $company1002C,
             $account1002User01,
-            $company1002C->departments()->where('name', 'HR')->first(),
-            $company1002C->designations()->where('name', 'HR Manager')->first(),
+            $company1002CHrDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CHrAssistant,
             null,
             'C1001', 'Amanda', 'N', 'Nõrth');
-        $this->createEmployeeContact($employeeC1001, 'c1001.01@officemail.com', 'c1001.01@personalmail.com');
+        $this->createEmployeeContact($employeeC1001);
         $this->createEmploymentProfile($employeeC1001);
         $employeeC1001->shifts()->detach();
         $employeeC1001->shifts()->syncWithoutDetaching([$shift1002C1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
@@ -559,11 +567,12 @@ class Development extends Seeder
         $employeeC1002 = $this->createEmployee(
             $company1002C,
             $account1002User02,
-            $company1002C->departments()->where('name', 'Accounts Payable')->first(),
-            $company1002C->designations()->where('name', 'Accounting Staff')->first(),
-            null,
+            $company1002CFinanceAndAccountingDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CAccountingStaff,
+            $employeeC1001,
             'C1002', 'Palamuérta', 'C', 'Scañtily');
-        $this->createEmployeeContact($employeeC1002, 'c1002.01@officemail.com', 'c1002.01@personalmail.com', '+639122256789');
+        $this->createEmployeeContact($employeeC1002);
         $employeeC1002->employmentProfiles()->firstOrCreate([
             'status' => EmploymentStatus::ACTIVE,
             'employment_type' => EmploymentType::PROBATIONARY,
@@ -666,94 +675,104 @@ class Development extends Seeder
         //Create Employee C1003 Info, Contact, Employment Profile and Shift
         $employeeC1003 = $this->createEmployee(
             $company1002C,
-            null,
-            null,
-            null,
+            $account1002User03,
+            $company1002CFinanceAndAccountingDepartment,
+            DepartmentEmployeeAssignmentType::HEAD,
+            $company1002CAccountManager,
             null,
             'C1003', 'L’Écuyer', 'W', 'François');
-        $this->createEmployeeContact($employeeC1003, 'c1003.01@officemail.com', '', '', '+639122111789');
-        $this->createEmploymentProfile($employeeC1003);
+        $this->createEmployeeContact($employeeC1003);
+        $this->createEmploymentProfile($employeeC1003, EmploymentType::CONTRACT);
         $employeeC1003->shifts()->detach();
         $employeeC1003->shifts()->syncWithoutDetaching([$shift1002C3->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
 
         //Create Employee C1004 Info, Contact, Employment Profile
         $employeeC1004 = $this->createEmployee(
             $company1002C,
-            null,
-            null,
-            null,
+            $account1002User04,
+            $company1002CHrDepartment,
+            DepartmentEmployeeAssignmentType::HEAD,
+            $company1002CHrManager,
             null,
             'C1004', 'José María', 'E', 'Fernández-López');
+        $this->createEmploymentProfile($employeeC1004, EmploymentType::CONTRACT);
+
+        //Create Inactive Employee
+        $this->createEmployee(
+            $company1002C,
+            null,
+            $company1002CTrainingAndDevelopmentDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            null,
+            null,
+            'C1004-1', 'Ángel', 'J', 'Niño-Ramírez');
 
         //Create Employee C1005 Info, Contact, Employment Profile
         $employeeC1005 = $this->createEmployee(
             $company1002C,
-            null,
-            null,
-            null,
-            null,
+            $account1002User05,
+            $company1002CPayrollDepartment,
+            DepartmentEmployeeAssignmentType::HEAD,
+            $company1002CPayrollManager,
+            $employeeC1004,
             'C1005', 'Jürgen', 'C', 'Müller');
+        $this->createEmploymentProfile($employeeC1005, EmploymentType::CONTRACT);
 
         //Create Employee C1006 Info, Contact, Employment Profile
         $employeeC1006 = $this->createEmployee(
             $company1002C,
             null,
-            null,
-            null,
+            $company1002CPayrollDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CPayrollAssistant,
             null,
             'C1006', 'Renée', 'S', 'O’Connor');
+        $this->createEmploymentProfile($employeeC1006, EmploymentType::OJT);
 
         //Create Employee C1007 Info, Contact, Employment Profile
         $employeeC1007 = $this->createEmployee(
             $company1002C,
             null,
-            null,
-            null,
+            $company1002CPayrollDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CPayrollAssistant,
             null,
             'C1007', 'Søren', 'M', 'Bjørnsen');
+        $this->createEmploymentProfile($employeeC1007, EmploymentType::PART_TIME);
 
         //Create Employee C1008 Info, Contact, Employment Profile
         $employeeC1008 = $this->createEmployee(
             $company1002C,
             null,
-            null,
-            null,
+            $company1002CTrainingAndDevelopmentDepartment,
+            DepartmentEmployeeAssignmentType::HEAD,
+            $company1002CHrAssistant,
             null,
             'C1008', 'Björk', 'A', 'Guðmundsdóttir');
+        $this->createEmploymentProfile($employeeC1008, EmploymentType::PART_TIME);
 
         //Create Employee C1009 Info, Contact, Employment Profile
         $employeeC1009 = $this->createEmployee(
             $company1002C,
             null,
-            null,
-            null,
+            $company1002CInternalAuditDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CAccountManager,
             null,
             'C1009', 'Márton', 'F', 'Szőke');
+        $this->createEmploymentProfile($employeeC1009, EmploymentType::FULL_TIME);
 
         //Create Employee C1010 Info, Contact, Employment Profile
         $employeeC1010 = $this->createEmployee(
             $company1002C,
             null,
-            null,
-            null,
+            $company1002CAccountsPayableDepartment,
+            DepartmentEmployeeAssignmentType::DEFAULT,
+            $company1002CAccountManager,
             null,
             'C1010', 'İbrahiM', 'I', 'Özdemir');
+        $this->createEmploymentProfile($employeeC1010, EmploymentType::FULL_TIME);
 
-        /**************************************************************************************************************************************************************************************************************/
-
-        //Create Employee C1011 to C1020 Info, Contact, Employment Profile and Shift
-        $createIteratedEmpoyees = false;
-        if($createIteratedEmpoyees){
-            for ($i = 11; $i <= 20; $i++) {
-
-                ${"employee$i"} = $this->createEmployee(
-                    $company1002C, null, null,null,null,
-                    "C10" . sprintf('%02d', $i), "Employee " . sprintf('%02d', $i), 'C', '1002');
-                $this->createEmployeeContact(${"employee$i"}, "c100$i.01@officemail.com");
-                $this->createEmploymentProfile(${"employee$i"});
-                ${"employee$i"}->shifts()->syncWithoutDetaching([${"shift1002C$i"}->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
-            }
-        }
         /**************************************************************************************************************************************************************************************************************/
 
         //Company 1002-B Monthly Pay Frequency
@@ -973,6 +992,7 @@ class Development extends Seeder
         Company $company,
         ?User $user = null,
         ?Department $department = null,
+        ?DepartmentEmployeeAssignmentType $departmentAssignmentType = null,
         ?Designation $designation = null,
         ?Employee $manager = null,
         $number = null,
@@ -996,10 +1016,14 @@ class Development extends Seeder
             'family_name' => $familyName,
         ]);
 
+        if(!empty($department) && !empty($departmentAssignmentType)){
+            $employee->departments()->sync([$department->id => ['department_assignment_type' => $departmentAssignmentType->value]]);
+        }
+
         return $employee;
     }
 
-    public function createEmployeeContact(Employee $employee, $officeEmail = '', $personalEmail = '', $officePhone = '', $personalPhone = '')
+    public function createEmployeeContact(Employee $employee, $officeEmail = null, $personalEmail = null, $officePhone = null, $personalPhone = null)
     {
         return !empty($employee->contact)
             ? $employee->contact
