@@ -2,8 +2,23 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\Repositories\AttendanceRepository;
+use App\Enums\RequestApprovalStatus;
+use App\Exceptions\UnexpectedException;
+use App\Facades\Fractal;
+use App\Models\Attendance;
+use App\Models\RequestApprovalState;
+use App\Models\Shift;
+use App\Traits\WorkPeriod;
+use App\Transformers\AttendanceAdjustmentRequest\PatchableTransformer as AttendanceAdjustmentRequestPatchableTransformer;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
+
 class ApprovalService
 {
+    use WorkPeriod;
+
     public static array $seriesMap = [
         [
             'model_alias' => 'attendance_adjustment_request',
@@ -43,4 +58,102 @@ class ApprovalService
             ]
         ],
     ];
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function chainRequestableWorkflow(RequestApprovalStatus $action, RequestApprovalState $approvalState): array
+    {
+        $validationErrors = [];
+        $requestable = $approvalState->requestable;
+        $requestablePatchable = null;
+
+        if(empty($requestable)){
+            $validationErrors[] = 'Request not found';
+        } else {
+
+            if($action == RequestApprovalStatus::DECLINED){
+
+                return [empty($validationErrors), null];
+            }
+
+            if($action == RequestApprovalStatus::APPROVED){
+
+                if($approvalState->requestable_type == 'attendance_adjustment_request') {
+
+                    $requestablePatchable = Fractal::item($requestable, AttendanceAdjustmentRequestPatchableTransformer::class);
+
+                    //Attendance
+                    $attendance = $requestable->attendance;
+
+                    if (empty($attendance) || !$attendance instanceof Attendance) {
+                        $validationErrors[] = 'Attendance not found';
+
+                    } else {
+
+                        $attendanceDate = Carbon::parse($attendance->date);
+
+                        $shift = Shift::query()->find($attendance->shift_id);
+
+                        if(empty($shift) || !$shift instanceof Shift){
+                            $validationErrors[] = 'Shift not found';
+                        } else {
+
+                            $this->setShift($shift);
+
+                            /**
+                             * After setting up shift,
+                             * Get the shift work day by attendance date
+                             **/
+                            $this->setAttendanceSchedule($attendanceDate);
+
+                            /**
+                             * Validate attendance shift details if still match the current shift and schedule settings
+                             * */
+                            list(
+                                $currentShiftAndAttendanceShiftStillTheSame,
+                                $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
+                                ) = $this->validateAttendanceShiftDetails(
+                                $this->shift,
+                                $this->attendanceSchedule,
+                                $attendance->shiftDetail->toArray(),
+                                $attendance->shiftDetail->toArray()
+                            );
+
+                            if(!$currentShiftAndAttendanceShiftStillTheSame){
+
+                                $validationErrors[] = 'Unable to proceed, shift settings have changed';
+                            }
+
+                            if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
+
+                                $validationErrors[] = 'Unable to proceed, shift schedule settings have changed';
+                            }
+                        }
+                    }
+                }
+
+                $this->chainRequestableAction(empty($validationErrors), $requestable, $approvalState , $requestablePatchable);
+            }
+        }
+
+        return [empty($validationErrors), $validationErrors[0] ?? null];
+    }
+
+    public function chainRequestableAction($noValidationError, Model $requestable,RequestApprovalState $approvalState, $patchable): void
+    {
+        if(!$noValidationError) return;
+
+        $requestableLastApprovalState = $requestable->approvalStates->sortByDesc('order')->first();
+
+        $approvalStateIsTheLastRequestableApprovalWorkflow = ($requestableLastApprovalState->id == $approvalState->id) &&
+            ($requestableLastApprovalState->requestable_type == $approvalState->requestable_type);
+
+        if(!$approvalStateIsTheLastRequestableApprovalWorkflow) return;
+
+        if($approvalState->requestable_type == 'attendance_adjustment_request') {
+
+            App::make(AttendanceRepository::class)->update($requestable->attendance->ulid, $patchable);
+        }
+    }
 }

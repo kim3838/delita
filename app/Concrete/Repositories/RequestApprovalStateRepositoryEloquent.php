@@ -4,17 +4,24 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Concrete\ApprovalService;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\RequestApprovalStatus;
+use App\Exceptions\UnexpectedException;
 use App\Models\RequestApprovalState;
+use App\Traits\HasPolicy;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent implements RequestApprovalStateRepository
 {
+    use HasPolicy;
+
     public function model(): string
     {
         return RequestApprovalState::class;
@@ -30,8 +37,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         unset($companyUserRepositoryFilter->search);
 
         $approvedByCompanyUserRepositoryFilter = clone $filters;
-        unset($companyUserRepositoryFilter->user_ids);
-        unset($companyUserRepositoryFilter->search);
+        unset($approvedByCompanyUserRepositoryFilter->user_ids);
+        unset($approvedByCompanyUserRepositoryFilter->search);
 
         $declined = RequestApprovalStatus::DECLINED->value;
         $approved = RequestApprovalStatus::APPROVED->value;
@@ -206,5 +213,87 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function applyWorkflow($accountId, RequestApprovalStatus $action, $remarks, $approvalStates): array
+    {
+        $approvalStates = collect($approvalStates)->sortByDesc('id')->toArray();
+        $actionReadable = $action->verbLabel();
+        $results = [];
+
+        foreach($approvalStates as $approvalState){
+
+            $approvalStateId = $approvalState['id'];
+            $requestableNumber = $approvalState['number'];
+
+            $approvalState = RequestApprovalState::query()->find($approvalStateId);
+
+            if(empty($approvalState)){
+                $results[] = [
+                    'number' => $requestableNumber,
+                    'resolved' => false,
+                    'error' => 'Approval state not found.'
+                ];
+
+                continue;
+            }
+
+            if(!empty($approvalState->approved_by)){
+                $results[] = [
+                    'number' => $requestableNumber,
+                    'resolved' => false,
+                    'error' => 'Approval state already exist.'
+                ];
+
+                continue;
+            }
+
+            $userIsTheApprover = $approvalState->approver_id == Auth::id();
+            $userHasPermissionToApplyWorkFlow = match($action){
+                RequestApprovalStatus::APPROVED => $this->hasPermission(Auth::user(), 'approve-any-request', $accountId),
+                RequestApprovalStatus::DECLINED => $this->hasPermission(Auth::user(), 'decline-any-request', $accountId),
+                default => false,
+            };
+
+            if(!$userIsTheApprover && !$userHasPermissionToApplyWorkFlow){
+                $results[] = [
+                    'number' => $requestableNumber,
+                    'resolved' => false,
+                    'error' => 'You are not authorized to ' . strtolower($actionReadable) . ' this request.'
+                ];
+
+                continue;
+            }
+
+            $approvalService = new ApprovalService();
+
+            list(
+                $noValidationError,
+                $validationError
+            ) = $approvalService->chainRequestableWorkflow($action, $approvalState);
+
+            /**
+             * If no validation error, update approval state
+             * */
+            if($noValidationError){
+                $this->update($approvalStateId, [
+                    'approved_by' => Auth::id(),
+                    'remarks' => $remarks,
+                    'status' => $action->value,
+                    'approved_at' => Carbon::now()->toDateTimeString()
+                ]);
+            }
+
+            $results[] = [
+                'number' => $requestableNumber,
+                'resolved' => $noValidationError,
+                'error' => $validationError
+            ];
+        }
+
+        return $results;
     }
 }
