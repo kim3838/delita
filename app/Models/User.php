@@ -64,7 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'ulid' => 'string',
-            'email_verified_at' => 'datetime:Y-m-d H:i:s',
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'type' => UserType::class,
             //Todo: If theres no company left assigned to a user, mark status as inactive
