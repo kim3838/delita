@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\OvertimeRepository;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
@@ -11,6 +12,7 @@ use App\Models\RequestApprovalState;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use App\Transformers\AttendanceAdjustmentRequest\PatchableTransformer as AttendanceAdjustmentRequestPatchableTransformer;
+use App\Transformers\OvertimeRequest\PatchableTransformer as OvertimeRequestPatchableTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
@@ -79,58 +81,67 @@ class ApprovalService
 
             if($action == RequestApprovalStatus::APPROVED){
 
-                if($approvalState->requestable_type == 'attendance_adjustment_request') {
+                switch($approvalState->requestable_type){
+                    case 'attendance_adjustment_request':
+                    case 'overtime_request':
 
-                    $requestablePatchable = Fractal::item($requestable, AttendanceAdjustmentRequestPatchableTransformer::class);
+                        $requestablePatchableTransformer = match($approvalState->requestable_type){
+                            'attendance_adjustment_request' => AttendanceAdjustmentRequestPatchableTransformer::class,
+                            'overtime_request' => OvertimeRequestPatchableTransformer::class,
+                        };
 
-                    //Attendance
-                    $attendance = $requestable->attendance;
+                        $requestablePatchable = Fractal::item($requestable, $requestablePatchableTransformer);
 
-                    if (empty($attendance) || !$attendance instanceof Attendance) {
-                        $validationErrors[] = 'Attendance not found';
+                        //Attendance
+                        $attendance = $requestable->attendance;
 
-                    } else {
+                        if (empty($attendance) || !$attendance instanceof Attendance) {
+                            $validationErrors[] = 'Attendance not found';
 
-                        $attendanceDate = Carbon::parse($attendance->date);
-
-                        $shift = Shift::query()->find($attendance->shift_id);
-
-                        if(empty($shift) || !$shift instanceof Shift){
-                            $validationErrors[] = 'Shift not found';
                         } else {
 
-                            $this->setShift($shift);
+                            $attendanceDate = Carbon::parse($attendance->date);
 
-                            /**
-                             * After setting up shift,
-                             * Get the shift work day by attendance date
-                             **/
-                            $this->setAttendanceSchedule($attendanceDate);
+                            $shift = Shift::query()->find($attendance->shift_id);
 
-                            /**
-                             * Validate attendance shift details if still match the current shift and schedule settings
-                             * */
-                            list(
-                                $currentShiftAndAttendanceShiftStillTheSame,
-                                $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                                ) = $this->validateAttendanceShiftDetails(
-                                $this->shift,
-                                $this->attendanceSchedule,
-                                $attendance->shiftDetail->toArray(),
-                                $attendance->shiftDetail->toArray()
-                            );
+                            if(empty($shift) || !$shift instanceof Shift){
+                                $validationErrors[] = 'Shift not found';
+                            } else {
 
-                            if(!$currentShiftAndAttendanceShiftStillTheSame){
+                                $this->setShift($shift);
 
-                                $validationErrors[] = 'Unable to proceed, shift settings have changed';
-                            }
+                                /**
+                                 * After setting up shift,
+                                 * Get the shift work day by attendance date
+                                 **/
+                                $this->setAttendanceSchedule($attendanceDate);
 
-                            if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
+                                /**
+                                 * Validate attendance shift details if still match the current shift and schedule settings
+                                 * */
+                                list(
+                                    $currentShiftAndAttendanceShiftStillTheSame,
+                                    $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
+                                    ) = $this->validateAttendanceShiftDetails(
+                                    $this->shift,
+                                    $this->attendanceSchedule,
+                                    $attendance->shiftDetail->toArray(),
+                                    $attendance->shiftDetail->toArray()
+                                );
 
-                                $validationErrors[] = 'Unable to proceed, shift schedule settings have changed';
+                                if(!$currentShiftAndAttendanceShiftStillTheSame){
+
+                                    $validationErrors[] = 'Unable to proceed, shift settings have changed';
+                                }
+
+                                if(!$currentShiftScheduleAndAttendanceShiftScheduleStillTheSame){
+
+                                    $validationErrors[] = 'Unable to proceed, shift schedule settings have changed';
+                                }
                             }
                         }
-                    }
+
+                        break;
                 }
 
                 $this->chainRequestableAction(empty($validationErrors), $requestable, $approvalState , $requestablePatchable);
@@ -151,9 +162,13 @@ class ApprovalService
 
         if(!$approvalStateIsTheLastRequestableApprovalWorkflow) return;
 
-        if($approvalState->requestable_type == 'attendance_adjustment_request') {
+        switch($approvalState->requestable_type){
 
-            App::make(AttendanceRepository::class)->update($requestable->attendance->ulid, $patchable);
+            case 'attendance_adjustment_request':
+                App::make(AttendanceRepository::class)->update($requestable->attendance->ulid, $patchable);
+                break;
+            case 'overtime_request':
+                App::make(OvertimeRepository::class)->store($patchable);
         }
     }
 }

@@ -52,21 +52,29 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("
                     CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
                         (SELECT companies.account_id FROM attendance_adjustment_requests LEFT JOIN companies ON companies.id = attendance_adjustment_requests.company_id WHERE attendance_adjustment_requests.id = requestable_id)
+                    WHEN requestable_type = 'overtime_request' THEN
+                        (SELECT companies.account_id FROM overtime_requests LEFT JOIN companies ON companies.id = overtime_requests.company_id WHERE overtime_requests.id = requestable_id)
                     ELSE '' END AS requestable_account_id
                 "),
                 DB::raw("
                     CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
                         (SELECT company_id FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'overtime_request' THEN
+                        (SELECT company_id FROM overtime_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_company_id
                 "),
                 DB::raw("
                     CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
                         (SELECT number FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'overtime_request' THEN
+                        (SELECT number FROM overtime_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_number
                 "),
                 DB::raw("
                     CASE WHEN requestable_type = 'attendance_adjustment_request' THEN
                         (SELECT date_requested FROM attendance_adjustment_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'overtime_request' THEN
+                        (SELECT date_requested FROM overtime_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_date_requested
                 "),
                 DB::raw("request_approval_states.order"),
@@ -76,9 +84,15 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 DB::raw("request_approval_states.status"),
                 DB::raw("request_approval_states.approved_at"),
                 DB::raw("request_approval_states.status = " . $pending . " AS is_pending"),
-                DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY requestable_id) AS at_least_one_declined"),
-                DB::raw("LAG(request_approval_states.status) OVER(PARTITION BY requestable_id ORDER BY request_approval_states.order) AS previous_status"),
+                DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY requestable_type, requestable_id ORDER BY requestable_type, requestable_id, `order`) AS at_least_one_declined"),
+                DB::raw("LAG(request_approval_states.status) OVER(PARTITION BY requestable_type, requestable_id ORDER BY requestable_type, requestable_id, `order`) AS previous_status"),
             ]);
+
+        $this->setOrdersOnBuilder($queryBuilder, [
+            ['field' => 'request_approval_states.requestable_type', 'direction' => 'ASC'],
+            ['field' => 'request_approval_states.requestable_id', 'direction' => 'ASC'],
+            ['field' => 'request_approval_states.order', 'direction' => 'ASC'],
+        ]);
 
         //At least one declined and previous status
         $queryBuilder = $this->queryAsSub($queryBuilder, 'sub')
@@ -192,6 +206,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
+            ['field' => 'request_approval_states_sub.requestable_date_requested', 'direction' => 'DESC'],
             ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
             ['field' => 'request_approval_states_sub.order', 'direction' => 'ASC'],
         ];
@@ -206,6 +221,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
     public function list($filters): Collection
     {
         $orders = [
+            ['field' => 'request_approval_states_sub.requestable_date_requested', 'direction' => 'DESC'],
             ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
             ['field' => 'request_approval_states_sub.order', 'direction' => 'ASC'],
         ];

@@ -22,6 +22,7 @@ use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\Overtime;
+use App\Models\OvertimeRequest;
 use App\Models\PayFrequency;
 use App\Models\Role;
 use App\Models\SalaryStatementModule;
@@ -75,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
             'leave' => Leave::class,
             'leave_balance_adjustment' => LeaveBalanceAdjustment::class,
             'attendance_adjustment_request' => AttendanceAdjustmentRequest::class,
+            'overtime_request' => OvertimeRequest::class,
         ]);
     }
 }

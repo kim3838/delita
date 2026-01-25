@@ -8,6 +8,7 @@ use App\Observers\CompanyObserver;
 use App\Observers\EmployeeObserver;
 use App\Observers\HasUlid;
 use App\Observers\OrderableObserver;
+use App\Observers\OvertimeRequestObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -66,6 +67,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     AttendanceAdjustmentRequestObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('overtime_request'),
+                ],
+                'observers' => [
+                    OvertimeRequestObserver::class,
                 ]
             ),
             array(

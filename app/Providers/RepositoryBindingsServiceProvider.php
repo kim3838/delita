@@ -41,6 +41,7 @@ use App\Blueprint\Repositories\LeaveTypeBalancePerPeriodRepository;
 use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Blueprint\Repositories\OvertimeRequestRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
@@ -92,6 +93,7 @@ use App\Concrete\Repositories\LeaveTypeBalancePerPeriodRepositoryEloquent;
 use App\Concrete\Repositories\LeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRepositoryEloquent;
+use App\Concrete\Repositories\OvertimeRequestRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
@@ -160,6 +162,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'approval_setting_approver' => ApprovalSettingApproverRepositoryEloquent::class,
         'request_approval_state' => RequestApprovalStateRepositoryEloquent::class,
         'attendance_adjustment_request' => AttendanceAdjustmentRequestRepositoryEloquent::class,
+        'overtime_request' => OvertimeRequestRepositoryEloquent::class,
         'user_filed_request' => UserFiledRequestRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
@@ -211,6 +214,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         ApprovalSettingApproverRepository::class => ApprovalSettingApproverRepositoryEloquent::class,
         RequestApprovalStateRepository::class => RequestApprovalStateRepositoryEloquent::class,
         AttendanceAdjustmentRequestRepository::class => AttendanceAdjustmentRequestRepositoryEloquent::class,
+        OvertimeRequestRepository::class => OvertimeRequestRepositoryEloquent::class,
         UserFiledRequestRepository::class => UserFiledRequestRepositoryEloquent::class,
     ];
 
@@ -267,6 +271,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'approval_setting_approver',
             'request_approval_state',
             'attendance_adjustment_request',
+            'overtime_request',
             'user_filed_request',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
@@ -318,6 +323,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             ApprovalSettingApproverRepository::class,
             RequestApprovalStateRepository::class,
             AttendanceAdjustmentRequestRepository::class,
+            OvertimeRequestRepository::class,
             UserFiledRequestRepository::class,
         ];
     }

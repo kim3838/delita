@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
 use App\Blueprint\Repositories\CompanyUserRepository;
+use App\Blueprint\Repositories\OvertimeRequestRepository;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Hydrations\User\UserFiledRequest;
@@ -69,9 +70,73 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'attendance_adjustment_request_sub.status_summary AS status_summary',
             ]);
 
-        $queryBuilder = $this->queryAsSub($attendanceAdjustmentRequestBuilder, 'attendance_adjustment_requests')
+        $overtimeRequestBuilder = App::make(OvertimeRequestRepository::class)->baseQueryBuilder($requestableFilter, []);
+
+        $overtimeRequestBuilder = $this->queryAsSub($companyUserQueryBuilder, 'company_user_sub')
+            ->joinSub($overtimeRequestBuilder, 'overtime_request_sub', function ($join) {
+                $join->on('overtime_request_sub.requested_by', '=', 'company_user_sub.user_id');
+            })
+            ->where(function ($clause) use ($filters) {
+                $clause->whereIn('overtime_request_sub.company_id', $filters->associated_companies);
+            })
             ->select([
-                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                'company_user_sub.user_id',
+                'company_user_sub.user_ulid',
+                'company_user_sub.user_username',
+                'company_user_sub.user_email',
+                'company_user_sub.user_status',
+                'company_user_sub.user_email_verified_at',
+                'company_user_sub.user_timezone',
+                'company_user_sub.company_id AS user_company_id',
+                'company_user_sub.company_name',
+                'company_user_sub.company_timezone',
+                'company_user_sub.company_assignment_type',
+                'company_user_sub.is_employee',
+                'company_user_sub.company_employee_number',
+                'company_user_sub.company_employee_family_name',
+                'company_user_sub.company_employee_middle_name',
+                'company_user_sub.company_employee_given_name',
+
+                'overtime_request_sub.company_id AS company_id',
+                DB::raw("'overtime_request' AS requestable_type"),
+                'overtime_request_sub.id AS requestable_id',
+                'overtime_request_sub.number AS number',
+                'overtime_request_sub.date_requested AS date_requested',
+                'overtime_request_sub.remarks AS remarks',
+                'overtime_request_sub.status_summary AS status_summary',
+            ]);
+
+        $overtimeRequestBuilder = $this->queryAsSub($overtimeRequestBuilder, 'overtime_requests')
+            ->select([
+                DB::raw("CONCAT(overtime_requests.requestable_type, '_', overtime_requests.requestable_id) AS id"),
+                'overtime_requests.requestable_type',
+                'overtime_requests.requestable_id',
+                'overtime_requests.number',
+                'overtime_requests.date_requested',
+                'overtime_requests.remarks',
+                'overtime_requests.status_summary',
+
+                'overtime_requests.user_id',
+                'overtime_requests.user_ulid',
+                'overtime_requests.user_username',
+                'overtime_requests.user_email',
+                'overtime_requests.user_status',
+                'overtime_requests.user_email_verified_at',
+                'overtime_requests.user_timezone',
+                'overtime_requests.company_id AS user_company_id',
+                'overtime_requests.company_name',
+                'overtime_requests.company_timezone',
+
+                'overtime_requests.company_assignment_type',
+                'overtime_requests.is_employee',
+                'overtime_requests.company_employee_number',
+                'overtime_requests.company_employee_family_name',
+                'overtime_requests.company_employee_middle_name',
+                'overtime_requests.company_employee_given_name',
+            ]);
+
+        $attendanceAdjustmentRequestBuilder = $this->queryAsSub($attendanceAdjustmentRequestBuilder, 'attendance_adjustment_requests')
+            ->select([
                 DB::raw("CONCAT(attendance_adjustment_requests.requestable_type, '_', attendance_adjustment_requests.requestable_id) AS id"),
                 'attendance_adjustment_requests.requestable_type',
                 'attendance_adjustment_requests.requestable_id',
@@ -97,6 +162,15 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'attendance_adjustment_requests.company_employee_family_name',
                 'attendance_adjustment_requests.company_employee_middle_name',
                 'attendance_adjustment_requests.company_employee_given_name',
+            ]);
+
+        $queryBuilder = $attendanceAdjustmentRequestBuilder
+            ->unionAll($overtimeRequestBuilder);
+
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'user_filed_requests')
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                'user_filed_requests.*'
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

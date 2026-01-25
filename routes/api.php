@@ -39,6 +39,7 @@ use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmpl
 use App\Http\Controllers\EmployeePortal\LeaveBalanceAdjustmentController as EmployeePortalLeaveBalanceAdjustmentController;
 use App\Http\Controllers\EmployeePortal\LeaveController as EmployeePortalLeaveController;
 use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
+use App\Http\Controllers\EmployeePortal\OvertimeRequestController as EmployeePortalOvertimeRequestController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -67,6 +68,7 @@ use App\Http\Controllers\NonEmployeeUserController;
 use App\Http\Controllers\OrderableController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\OvertimeImportTemplateController;
+use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\PayrollComponentController;
 use App\Http\Controllers\PermissionController;
@@ -423,6 +425,16 @@ Route::group([
     Route::post('overtime-import-save', [OvertimeImportController::class, 'save']);
 
     Route::get('employee-portal-overtimes', [EmployeePortalOvertimeController::class, 'index']);
+
+    //Overtime Request
+    Route::get('overtime-requests', [OvertimeRequestController::class, 'index']);
+    Route::get('overtime-request/{requestNumber}', [OvertimeRequestController::class, 'show']);
+    Route::post('overtime-request', [OvertimeRequestController::class, 'store']);
+    Route::delete('overtime-requests', [OvertimeRequestController::class, 'batchDestroy']);
+
+    Route::get('employee-portal-overtime-requests', [EmployeePortalOvertimeRequestController::class, 'index']);
+    Route::post('employee-portal-overtime-request', [EmployeePortalOvertimeRequestController::class, 'store']);
+    Route::delete('employee-portal-overtime-requests', [EmployeePortalOvertimeRequestController::class, 'batchDestroy']);
 
     //Holiday
     Route::get('holidays', [HolidayController::class, 'index']);
