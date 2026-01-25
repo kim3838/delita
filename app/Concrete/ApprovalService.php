@@ -168,7 +168,18 @@ class ApprovalService
                 App::make(AttendanceRepository::class)->update($requestable->attendance->ulid, $patchable);
                 break;
             case 'overtime_request':
-                App::make(OvertimeRepository::class)->store($patchable);
+                $overtimeRepository = App::make(OvertimeRepository::class);
+
+                $overtime = $overtimeRepository->model()::query()
+                    ->where('attendance_id', $patchable['attendance_id'])
+                    ->first();
+
+                if(empty($overtime)){
+                    $overtimeRepository->store($patchable);
+                } else {
+                    $overtimeRepository->update($overtime->ulid, $patchable);
+                }
+
         }
     }
 }

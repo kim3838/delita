@@ -236,7 +236,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
      */
     public function applyWorkflow($accountId, RequestApprovalStatus $action, $remarks, $approvalStates): array
     {
-        $approvalStates = collect($approvalStates)->sortByDesc('id')->toArray();
+        $approvalStates = collect($approvalStates)->sortBy('id')->toArray();
         $actionReadable = $action->verbLabel();
         $results = [];
 
