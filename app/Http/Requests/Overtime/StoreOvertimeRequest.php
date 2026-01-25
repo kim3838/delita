@@ -4,6 +4,7 @@ namespace App\Http\Requests\Overtime;
 
 use App\Models\Attendance;
 use App\Models\Overtime;
+use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 
@@ -19,25 +20,31 @@ class StoreOvertimeRequest extends ImportOvertime
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'attendance_id' => 'required|numeric|integer|exists:attendances,id',
             'company_id' => 'required|numeric|integer',
-            'date' => [
+            'attendance_id' => [
                 'required',
-                'date_format:Y-m-d',
+                'numeric',
+                'integer',
                 function ($attribute, $value, $fail) {
 
-                    $date = Carbon::parse($value);
-                    $attendanceId = $this->input('attendance_id');
+                    $attendance = Attendance::query()->find($value);
+
                     $overtimeStart = Carbon::parse($this->input('start'));
                     $overtimeEnd = Carbon::parse($this->input('end'));
 
-                    $attendance = Attendance::query()->find($attendanceId);
+                    $date = Carbon::parse($attendance->date);
 
                     if (!$attendance) {
                         $fail('Attendance not found');
                     } else {
 
-                        $this->setShift($attendance->shift_id);
+                        $shift = Shift::query()->find($attendance->shift_id);
+
+                        if(!$shift instanceof Shift){
+                            $fail('Shift not found');
+                        }
+
+                        $this->setShift($shift);
                         $this->setAttendanceSchedule($date);
 
                         /**

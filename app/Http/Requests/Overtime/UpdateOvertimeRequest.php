@@ -21,19 +21,19 @@ class UpdateOvertimeRequest extends ImportOvertime
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'attendance_id' => 'required|numeric|integer',
             'company_id' => 'required|numeric|integer',
-            'date' => [
+            'attendance_id' => [
                 'required',
-                'date_format:Y-m-d',
+                'numeric',
+                'integer',
                 function ($attribute, $value, $fail) {
 
-                    $date = Carbon::parse($value);
-                    $attendanceId = $this->input('attendance_id');
+                    $attendance = Attendance::query()->find($value);
+
                     $overtimeStart = Carbon::parse($this->input('start'));
                     $overtimeEnd = Carbon::parse($this->input('end'));
 
-                    $attendance = Attendance::query()->find($attendanceId);
+                    $date = Carbon::parse($attendance->date);
 
                     if (!$attendance) {
                         $fail('Attendance not found');
