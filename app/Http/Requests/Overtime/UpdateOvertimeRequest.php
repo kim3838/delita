@@ -4,6 +4,7 @@ namespace App\Http\Requests\Overtime;
 
 use App\Models\Attendance;
 use App\Models\Overtime;
+use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 
@@ -39,7 +40,13 @@ class UpdateOvertimeRequest extends ImportOvertime
                         $fail('Attendance not found');
                     } else {
 
-                        $this->setShift($attendance->shift_id);
+                        $shift = Shift::query()->find($attendance->shift_id);
+
+                        if(!$shift instanceof Shift){
+                            $fail('Shift not found');
+                        }
+
+                        $this->setShift($shift);
                         $this->setAttendanceSchedule($date);
 
                         /**
