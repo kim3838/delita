@@ -58,6 +58,7 @@ use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\LeaveBalanceAdjustmentController;
+use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LeaveRunningBalanceByTypeController;
 use App\Http\Controllers\LeaveRunningBalanceController;
 use App\Http\Controllers\LeaveRunningBalancePeriodSeriesController;
@@ -495,6 +496,12 @@ Route::group([
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
     Route::get('employee-portal-leaves', [EmployeePortalLeaveController::class, 'index']);
+
+    //Leave Request
+    Route::get('leave-requests', [LeaveRequestController::class, 'index']);
+    Route::get('leave-request/{requestNumber}', [LeaveRequestController::class, 'show']);
+    Route::post('leave-request', [LeaveRequestController::class, 'store']);
+    Route::delete('leave-requests', [LeaveRequestController::class, 'batchDestroy']);
 
     //Leave balance adjustment
     Route::get('leave-balance-adjustments', [LeaveBalanceAdjustmentController::class, 'index']);
