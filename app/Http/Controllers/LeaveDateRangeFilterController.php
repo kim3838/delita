@@ -49,7 +49,9 @@ class LeaveDateRangeFilterController extends Controller
                 $isAttendanceDateIsHoliday = !empty($this->getCompanyHolidayByDate($date->toDateString(), $companyId));
 
                 $dayOff = $this->attendanceScheduleIsDayOff;
-                $dayOffOrHoliday = $dayOff || ($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+                $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+                $dayOffOrHoliday = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
+
                 $hasLeave = $leaves->where('date', $date->toDateString())->isNotEmpty();
 
                 return !$dayOffOrHoliday && !$hasLeave;

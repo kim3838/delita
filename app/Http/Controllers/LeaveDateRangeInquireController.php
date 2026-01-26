@@ -49,10 +49,11 @@ class LeaveDateRangeInquireController extends Controller
                 $isAttendanceDateIsHoliday = !empty($this->getCompanyHolidayByDate($date->toDateString(), $companyId));
 
                 $dayOff = $this->attendanceScheduleIsDayOff;
-                $dayOffOrHoliday = $dayOff || ($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+                $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+                $dayOffOrHoliday = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
                 $hasLeave = $leaves->where('date', $date->toDateString())->isNotEmpty();
 
-                $inquiryMessage = $dayOff ? 'Day off' : ($isAttendanceDateIsHoliday ? 'Holiday' : ($hasLeave ? 'Leave claimed' : 'Claimable'));
+                $inquiryMessage = $dayOff ? 'Day off' : ($attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff ? 'Holiday' : ($hasLeave ? 'Leave claimed' : 'Claimable'));
 
                 return [
                     'date' => $date->toDateString(),
