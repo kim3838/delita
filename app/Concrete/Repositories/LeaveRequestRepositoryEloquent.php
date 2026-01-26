@@ -41,7 +41,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
             ->joinSub($this->statusQueryBuilder(), 'status_sub', function ($join) {
                 $join->on('status_sub.id', '=', 'leave_requests.id');
             })
-            ->join('companies', 'attendance_sub.employee_company_id', '=', 'companies.id')
+            ->join('companies', 'leave_requests.company_id', '=', 'companies.id')
             ->join('leave_types', 'leave_types.id', '=', 'leave_requests.leave_type_id')
             ->when(!empty($filters->requested_by_ids) && is_array($filters->requested_by_ids), function ($builder) use ($filters) {
                 $builder->whereIn('leave_requests.requested_by', $filters->requested_by_ids);
