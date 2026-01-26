@@ -63,7 +63,6 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 /**
                  * Employee
                  **/
-                "employee_sub.id AS employee_id",
                 "employee_sub.number AS employee_number",
                 "employee_sub.family_name AS employee_family_name",
                 "employee_sub.middle_name AS employee_middle_name",
@@ -72,7 +71,6 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 /**
                  * Leave
                  **/
-                "leave_types.id AS leave_type_id",
                 "leave_types.code AS leave_type_code",
                 "leave_types.name AS leave_type_name",
 
