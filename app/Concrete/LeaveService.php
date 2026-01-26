@@ -229,6 +229,7 @@ class LeaveService
             ->select([
                 DB::raw("epbds.*"),
                 DB::raw("leave_types.period_type"),
+                DB::raw("leave_types.period_calendar_span_value"),
                 DB::raw("leave_types.period_interval_span_type"),
                 DB::raw("leave_types.carry_over_balance_per_new_period"),
                 DB::raw("leave_types.carry_over_balance_type"),
@@ -313,7 +314,8 @@ class LeaveService
                                 CEIL(eltsbp.sequence_by_period_type / eltsbp.period_span_value)
                             WHEN eltsbp.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
                                 THEN
-                                    1+SUM(
+                                    (IF(eltsbp.period_calendar_span_value = MONTH(eltsbp.eligibility_date_start), 0, 1))
+                                    + SUM(
                                         IF(
                                             CONCAT(YEAR(eltsbp.date_series),LPAD(MONTH(eltsbp.date_series), 2, '0'),LPAD(DAY(eltsbp.date_series), 2, '0')) = CONCAT(eltsbp.year, LPAD(eltsbp.period_span_value, 2, '0'), '01')
                                             AND eltsbp.eligibility_started > 0,
