@@ -71,6 +71,13 @@ class ImportOvertime extends FormRequest
             $errors[] = 'Overtime start should not be lesser than the schedule end';
         }
 
+        /**
+         * Overtime start and end should not be equal
+         **/
+        if($overtimeStart->eq($overtimeEnd)){
+            $errors[] = 'Overtime start and end should not be equal';
+        }
+
         return $errors;
     }
 }
