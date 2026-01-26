@@ -58,6 +58,7 @@ use App\Http\Controllers\Internal\UtilityController;
 use App\Http\Controllers\JsonController;
 use App\Http\Controllers\JsonPresetController;
 use App\Http\Controllers\LeaveBalanceAdjustmentController;
+use App\Http\Controllers\LeaveDateRangeInquireController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LeaveRunningBalanceByTypeController;
 use App\Http\Controllers\LeaveRunningBalanceController;
@@ -520,6 +521,8 @@ Route::group([
 
     //Leave date range filter
     Route::post('leave-date-range-filter', [LeaveDateRangeFilterController::class, 'index']);
+    //Leave date range inquire
+    Route::post('leave-date-range-inquire', [LeaveDateRangeInquireController::class, 'index']);
 });
 
 Route::group([
