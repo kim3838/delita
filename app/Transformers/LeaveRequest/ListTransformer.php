@@ -7,6 +7,7 @@ use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
+use App\Models\Shift;
 use App\Traits\HasTime;
 use App\Transformers\LeaveType\ItemTransformer as LeaveTypeItemTransformer;
 use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
@@ -26,6 +27,8 @@ class ListTransformer extends TransformerAbstract
         $leaveType = LeaveType::query()->find($leaveRequest->leave_type_id);
 
         $leaveType = $leaveType ? Fractal::item($leaveType, LeaveTypeItemTransformer::class) : $leaveType;
+
+        $shift = Shift::query()->find($leaveRequest->shift_id);
 
         $filters = json_decode(request()->get('filters'));
 
@@ -51,6 +54,12 @@ class ListTransformer extends TransformerAbstract
                 'full_name' => $employee->full_name,
                 'department' => $employee->departments->first(),
                 'designation' => $employee->designation,
+            ],
+
+            'shift' => [
+                'id' => $shift->id,
+                'number' => $shift->code,
+                'name' => $shift->name,
             ],
 
             'leave_type' => $leaveType,

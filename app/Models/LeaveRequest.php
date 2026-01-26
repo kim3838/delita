@@ -15,6 +15,7 @@ class LeaveRequest extends Model
         'requested_by',
         'date_requested',
         'employee_id',
+        'shift_id',
         'leave_type_id',
         'date_from',
         'date_to',
@@ -27,6 +28,7 @@ class LeaveRequest extends Model
         'requested_by' => 'int',
         'date_requested' => 'datetime',
         'employee_id' => 'int',
+        'shift_id' => 'int',
         'leave_type_id' => 'int',
         'date_from' => 'date',
         'date_to' => 'date',
@@ -52,6 +54,11 @@ class LeaveRequest extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function shift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class);
     }
 
     public function leaveType(): BelongsTo

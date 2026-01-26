@@ -9,8 +9,8 @@ use App\Http\Requests\LeaveRequest\BatchDestroyLeaveRequestRequest;
 use App\Http\Requests\LeaveRequest\ListLeaveRequestRequest;
 use App\Http\Requests\LeaveRequest\StoreLeaveRequestRequest;
 use App\Http\Requests\LeaveRequest\ViewLeaveRequestRequest;
-use App\Transformers\AttendanceAdjustmentRequest\ItemTransformer;
-use App\Transformers\AttendanceAdjustmentRequest\ListTransformer;
+use App\Transformers\LeaveRequest\ItemTransformer;
+use App\Transformers\LeaveRequest\ListTransformer;
 use Carbon\Carbon;
 
 class LeaveRequestController extends Controller

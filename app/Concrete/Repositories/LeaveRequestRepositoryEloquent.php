@@ -86,6 +86,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 DB::raw("CONVERT_TZ(leave_requests.date_requested, 'UTC', companies.timezone) AS date_requested"),
                 'companies.timezone AS company_timezone',
                 'leave_requests.employee_id AS employee_id',
+                'leave_requests.shift_id AS shift_id',
                 'leave_requests.leave_type_id AS leave_type_id',
                 'leave_requests.date_from AS date_from',
                 'leave_requests.date_to AS date_to',

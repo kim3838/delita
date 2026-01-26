@@ -17,8 +17,9 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
             $table->foreignId('requested_by')->constrained('users')->cascadeOnDelete();
             $table->dateTime('date_requested');
-            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
+            $table->foreignId('shift_id')->constrained('shifts')->cascadeOnDelete();
+            $table->foreignId('leave_type_id')->constrained('leave_types')->cascadeOnDelete();
             $table->date('date_from');
             $table->date('date_to');
             $table->string('remarks')->nullable();

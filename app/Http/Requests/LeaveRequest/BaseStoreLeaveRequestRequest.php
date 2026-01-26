@@ -22,6 +22,7 @@ class BaseStoreLeaveRequestRequest extends FormRequest
         return [
             'company_id' => 'required|numeric|integer|exists:companies,id',
             'employee_id' => 'required|numeric|exists:employees,id',
+            'shift_id' => 'required|numeric|integer|exists:shifts,id',
             'leave_type_id' => [
                 'required',
                 'numeric',
