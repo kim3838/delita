@@ -20,6 +20,7 @@ use App\Models\IncomeTax;
 use App\Models\JsonPreset;
 use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
+use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\Overtime;
 use App\Models\OvertimeRequest;
@@ -77,6 +78,7 @@ class AppServiceProvider extends ServiceProvider
             'leave_balance_adjustment' => LeaveBalanceAdjustment::class,
             'attendance_adjustment_request' => AttendanceAdjustmentRequest::class,
             'overtime_request' => OvertimeRequest::class,
+            'leave_request' => LeaveRequest::class,
         ]);
     }
 }

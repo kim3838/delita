@@ -7,6 +7,7 @@ use App\Observers\AttendanceAdjustmentRequestObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\EmployeeObserver;
 use App\Observers\HasUlid;
+use App\Observers\LeaveRequestObserver;
 use App\Observers\OrderableObserver;
 use App\Observers\OvertimeRequestObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -75,6 +76,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     OvertimeRequestObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('leave_request'),
+                ],
+                'observers' => [
+                    LeaveRequestObserver::class,
                 ]
             ),
             array(
