@@ -92,8 +92,6 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 'status_sub.status_summary AS status_summary',
             ]);
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         return $queryBuilder;
     }
 
