@@ -362,7 +362,7 @@ class LeaveService
 
     public function getPeriodByDateSeries(Employee $employee, LeaveType $leaveType, $upToDate): array
     {
-        _clear_debug();
+        $debugEnabled = false;
 
         $periodByDateSeriesQueryBuilder = $this->periodByDateSeriesQueryBuilder($employee, $leaveType, $upToDate);
 
@@ -434,12 +434,14 @@ class LeaveService
             }
         }
 
-        _debug([
-            'date_by_series' => [
-                'up_to_date' => $upToDate,
-                'claims' => $claimsAndDeductionsByPeriodCollection
-            ]
-        ]);
+        if($debugEnabled){
+            _debug([
+                'date_by_series' => [
+                    'up_to_date' => $upToDate,
+                    'claims' => $claimsAndDeductionsByPeriodCollection
+                ]
+            ]);
+        }
 
         /**
          * If carry over not enabled, deduct balance only on its period
