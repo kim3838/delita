@@ -87,7 +87,7 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
         $results = collect($attributes['dates'])->map(function($date) use ($employee, $leaveType, &$createdCount, $attributes) {
 
             $irregularity = '';
-
+            $successful = false;
             $resultLabel = 'Not found';
             $resultType = 'default';
 
@@ -99,7 +99,7 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
             $irregularity = match(true){
                 !$dateSeries['eligible'] => 'Not eligible',
                 (float)$dateSeries['running_balance'] < $wholeDayLeaveMinimumBalanceToRequest => 'Insufficient balance',
-                $limitReached => 'Limit reached',
+                $limitReached => 'Claim limit reached',
                 default => $irregularity,
             };
 
@@ -112,6 +112,7 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
                 ])){
                     $resultLabel = 'Leave created';
                     $resultType = 'success';
+                    $successful = true;
                     $createdCount += 1;
                 } else {
                     $resultLabel = 'Failed';
@@ -124,6 +125,7 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
 
             return [
                 'date' => $date,
+                'successful' => $successful,
                 'result' => [
                     'label' => $resultLabel,
                     'type' => $resultType,
