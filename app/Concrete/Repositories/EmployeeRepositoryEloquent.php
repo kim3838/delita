@@ -113,7 +113,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 $builder->where(function ($clause) use ($value) {
                     $clause->where('employees.number', 'LIKE', "%$value%")
                         ->orWhere('employees.family_name', 'LIKE', "%$value%")
-                        ->orWhere('employees.given_name', 'LIKE', "%$value%");
+                        ->orWhere('employees.given_name', 'LIKE', "%$value%")
+                        ->orWhere(DB::raw("CONCAT(employees.family_name, ' ', employees.given_name)"), 'LIKE', "%$value%")
+                        ->orWhere(DB::raw("CONCAT(employees.family_name, ' ', employees.given_name, ' ', employees.middle_name)"), 'LIKE', "%$value%");
                 });
             })
             ->select([
