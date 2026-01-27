@@ -25,8 +25,8 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
     {
         $attendanceRepositoryFilter = clone $filters;
 
+        unset($attendanceRepositoryFilter->search);
         if(isset($attendanceRepositoryFilter->attendance_search)){
-            unset($attendanceRepositoryFilter->search);
             $attendanceRepositoryFilter->search = $attendanceRepositoryFilter->attendance_search;
         }
         if(isset($attendanceRepositoryFilter->attendance_date_from)){

@@ -25,6 +25,8 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
     public function baseQueryBuilder($filters, $orders = []): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
+
+        unset($employeeRepositoryFilter->search);
         if(isset($employeeRepositoryFilter->employee_search)){
             $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
         }
