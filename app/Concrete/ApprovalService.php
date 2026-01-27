@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
@@ -10,16 +11,18 @@ use App\Facades\Fractal;
 use App\Models\Attendance;
 use App\Models\RequestApprovalState;
 use App\Models\Shift;
-use App\Traits\WorkPeriod;
+use App\Traits\HasLeave;
 use App\Transformers\AttendanceAdjustmentRequest\PatchableTransformer as AttendanceAdjustmentRequestPatchableTransformer;
+use App\Transformers\LeaveRequest\PatchableTransformer as LeaveRequestPatchableTransformer;
 use App\Transformers\OvertimeRequest\PatchableTransformer as OvertimeRequestPatchableTransformer;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
 class ApprovalService
 {
-    use WorkPeriod;
+    use HasLeave;
 
     public static array $seriesMap = [
         [
@@ -62,6 +65,11 @@ class ApprovalService
     ];
 
     /**
+     *
+     * Respond with a validation error if there's any
+     * otherwise, create requestable patchable
+     * then use it on requestable final approval action
+     *
      * @throws UnexpectedException
      */
     public function chainRequestableWorkflow(RequestApprovalStatus $action, RequestApprovalState $approvalState): array
@@ -142,6 +150,8 @@ class ApprovalService
                         }
 
                         break;
+                    case 'leave_request':
+                        $requestablePatchable = Fractal::item($requestable, LeaveRequestPatchableTransformer::class);
                 }
 
                 $this->chainRequestableAction(empty($validationErrors), $requestable, $approvalState , $requestablePatchable);
@@ -151,7 +161,10 @@ class ApprovalService
         return [empty($validationErrors), $validationErrors[0] ?? null];
     }
 
-    public function chainRequestableAction($noValidationError, Model $requestable,RequestApprovalState $approvalState, $patchable): void
+    /**
+     * @throws UnexpectedException
+     */
+    public function chainRequestableAction($noValidationError, Model $requestable, RequestApprovalState $approvalState, $patchable): void
     {
         if(!$noValidationError) return;
 
@@ -179,6 +192,36 @@ class ApprovalService
                 } else {
                     $overtimeRepository->update($overtime->ulid, $patchable);
                 }
+                break;
+            case 'leave_request':
+
+                $leaveDatePeriod = CarbonPeriod::create($patchable['date_from'], $patchable['date_to']);
+
+                $filteredDates = $this->filterLeaveDateRange(
+                    $patchable['company_id'],
+                    $patchable['employee_id'],
+                    $patchable['shift_id'],
+                    $patchable['leave_type_id'],
+                    $leaveDatePeriod
+                );
+
+                $leaveStoreResults = App::make(LeaveRepository::class)->store([
+                    'employee_id' => $patchable['employee_id'],
+                    'leave_type_id' => $patchable['leave_type_id'],
+                    'dates' => $filteredDates,
+                ]);
+
+                $results = $leaveStoreResults['results'];
+
+                $mappedResults = array_map(function($result){
+                    return [
+                        'date' => $result['date'],
+                        'successful' => $result['successful'],
+                        'remarks'=> $result['result']['label'] ?? 'Remarks not provided.',
+                    ];
+                }, $results);
+
+                $requestable->results()->createMany($mappedResults);
 
         }
     }
