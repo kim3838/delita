@@ -9,6 +9,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\Shift;
 use App\Traits\HasTime;
+use App\Transformers\LeaveRequestResult\ListTransformer as LeaveRequestResultListTransformer;
 use App\Transformers\LeaveType\ItemTransformer as LeaveTypeItemTransformer;
 use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
 use Carbon\Carbon;
@@ -45,6 +46,8 @@ class ListTransformer extends TransformerAbstract
             RequestApprovalStateListTransformer::class
         )['data'];
 
+        $results = Fractal::collection($leaveRequest->results, LeaveRequestResultListTransformer::class)['data'];
+
         return [
             'row_number' => $leaveRequest->row_number,
 
@@ -78,7 +81,9 @@ class ListTransformer extends TransformerAbstract
             'remarks' => $leaveRequest->remarks,
             'status_summary' => $leaveRequest->status_summary?->toArray(),
 
-            'approval_states' => $approvalStates
+            'approval_states' => $approvalStates,
+
+            'results' => $results,
         ];
     }
 }

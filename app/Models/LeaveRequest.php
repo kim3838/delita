@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\RequestApprovalStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class LeaveRequest extends Model
@@ -69,5 +70,10 @@ class LeaveRequest extends Model
     public function approvalStates(): MorphMany
     {
         return $this->morphMany(RequestApprovalState::class, 'requestable');
+    }
+
+    public function results(): HasMany
+    {
+        return $this->hasMany(LeaveRequestResult::class);
     }
 }
