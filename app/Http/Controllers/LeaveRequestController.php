@@ -40,14 +40,14 @@ class LeaveRequestController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
-            $attendanceAdjustment = $this->repository->showFromFilters($filters);
+            $leaveRequest = $this->repository->showFromFilters($filters);
 
-            $attendanceAdjustment = $attendanceAdjustment ? Fractal::item($attendanceAdjustment, ItemTransformer::class) : $attendanceAdjustment;
+            $leaveRequest = $leaveRequest ? Fractal::item($leaveRequest, ItemTransformer::class) : $leaveRequest;
 
-            if(empty($attendanceAdjustment)){
+            if(empty($leaveRequest)){
                 return ResponseJson::notFoundResponse();
             } else {
-                return ResponseJson::successfulResponse($attendanceAdjustment);
+                return ResponseJson::successfulResponse($leaveRequest);
             }
         }
 
