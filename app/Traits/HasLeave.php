@@ -17,7 +17,7 @@ trait HasLeave
     /**
      * @throws UnexpectedException
      */
-    public function filterDateRange($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): Collection
+    public function filterLeaveDateRange($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): array
     {
         $this->setShift($shiftId);
 
@@ -25,10 +25,14 @@ trait HasLeave
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
-        return $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'filter');
+        $filteredDates = $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'filter');
+
+        return collect($filteredDates)->map(function ($date){
+            return $date->toDateString();
+        })->values()->toArray();
     }
 
-    public function inquiryMap($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): array
+    public function leaveInquiryMap($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): array
     {
         $this->setShift($shiftId);
 
@@ -36,7 +40,7 @@ trait HasLeave
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
-        return $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'map')->toArray();
+        return $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'map');
     }
 
     private function getEmployeeLeaves($employeeId, $leaveTypeId, CarbonPeriod $datePeriod): Collection
@@ -50,7 +54,7 @@ trait HasLeave
         return collect(Fractal::collection($leaves, LeaveBasicTransformer::class)['data']);
     }
 
-    private function processDatePeriod(CarbonPeriod $datePeriod, Collection $leaves, $companyId, bool $shiftHolidayPolicyIsDayOff, string $operation): Collection
+    private function processDatePeriod(CarbonPeriod $datePeriod, Collection $leaves, $companyId, bool $shiftHolidayPolicyIsDayOff, string $operation): array
     {
         return collect($datePeriod)
             ->when($operation === 'filter',
@@ -64,7 +68,7 @@ trait HasLeave
                     }
                 ),
 
-                fn($collection) => $collection->map(function ($date) use ($leaves, $companyId, $shiftHolidayPolicyIsDayOff) {
+                fn($collection) => collect($collection->map(function ($date) use ($leaves, $companyId, $shiftHolidayPolicyIsDayOff) {
 
                     $dateEvaluation = $this->evaluateDate($date, $leaves, $companyId, $shiftHolidayPolicyIsDayOff);
 
@@ -73,8 +77,8 @@ trait HasLeave
                         'message' => $dateEvaluation['message'],
                         'is_claimable' => $dateEvaluation['is_claimable'],
                     ];
-                })
-        );
+                }))
+        )->toArray();
     }
 
     /**

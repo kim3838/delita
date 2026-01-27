@@ -28,7 +28,7 @@ class LeaveDateRangeInquireController extends Controller
 
             $datePeriod = CarbonPeriod::create($dateFrom, $dateTo);
 
-            $inquiredDates = $this->inquiryMap(
+            $inquiredDates = $this->leaveInquiryMap(
                 $companyId,
                 $employeeId,
                 $shiftId,

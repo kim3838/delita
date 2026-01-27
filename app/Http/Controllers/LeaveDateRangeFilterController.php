@@ -28,7 +28,7 @@ class LeaveDateRangeFilterController extends Controller
 
             $datePeriod = CarbonPeriod::create($dateFrom, $dateTo);
 
-            $filteredDates = $this->filterDateRange(
+            $filteredDates = $this->filterLeaveDateRange(
                 $companyId,
                 $employeeId,
                 $shiftId,
@@ -37,9 +37,7 @@ class LeaveDateRangeFilterController extends Controller
             );
 
             return ResponseJson::successfulResponse([
-                'dates' => $filteredDates->map(function ($date){
-                    return $date->toDateString();
-                })->values()->all()
+                'dates' => $filteredDates
             ]);
         }
 
