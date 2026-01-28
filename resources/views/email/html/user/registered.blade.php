@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>User Account Verification</title>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+    </style>
 </head>
-<body style="font-family: sans-serif; background-color: #f9f9f9; padding: 30px;">
+<body style="background-color: #f9f9f9; padding: 30px;">
 <table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; padding: 20px;">
     <tr>
         <td>
@@ -25,8 +30,6 @@
             <p>Please log in and change your password at your earliest convenience.</p>
 
             <p>Once again, welcome aboard! We’re excited to have you with us.</p>
-
-            <p style="margin-top: 40px;">Warm regards<br>
         </td>
     </tr>
 </table>
