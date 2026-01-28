@@ -38,6 +38,7 @@ use App\Http\Controllers\EmployeePortal\AttendanceController as EmployeePortalAt
 use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmployeeController;
 use App\Http\Controllers\EmployeePortal\LeaveBalanceAdjustmentController as EmployeePortalLeaveBalanceAdjustmentController;
 use App\Http\Controllers\EmployeePortal\LeaveController as EmployeePortalLeaveController;
+use App\Http\Controllers\EmployeePortal\LeaveRequestController as EmployeePortalLeaveRequestController;
 use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
 use App\Http\Controllers\EmployeePortal\OvertimeRequestController as EmployeePortalOvertimeRequestController;
 use App\Http\Controllers\EmployeeShiftController;
@@ -497,6 +498,10 @@ Route::group([
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
 
     Route::get('employee-portal-leaves', [EmployeePortalLeaveController::class, 'index']);
+
+    Route::get('employee-portal-leave-requests', [EmployeePortalLeaveRequestController::class, 'index']);
+    Route::post('employee-portal-leave-request', [EmployeePortalLeaveRequestController::class, 'store']);
+    Route::delete('employee-portal-leave-requests', [EmployeePortalLeaveRequestController::class, 'batchDestroy']);
 
     //Leave Request
     Route::get('leave-requests', [LeaveRequestController::class, 'index']);
