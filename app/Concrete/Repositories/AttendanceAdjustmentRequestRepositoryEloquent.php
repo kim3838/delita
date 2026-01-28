@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\RequestApprovalStatus;
 use App\Models\AttendanceAdjustmentRequest;
@@ -40,7 +41,20 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
         unset($filters->attendance_date_from);
         unset($filters->attendance_date_to);
 
+        $requestedByCompanyUserRepositoryFilter = clone $filters;
+        if(isset(request()->account_id)){
+            $requestedByCompanyUserRepositoryFilter->account_id = request()->account_id;
+        }
+        if(isset($filters->company_id)){
+            $requestedByCompanyUserRepositoryFilter->associated_companies = [$filters->company_id];
+        }
+        unset($requestedByCompanyUserRepositoryFilter->company_id);
+        unset($requestedByCompanyUserRepositoryFilter->user_ids);
+        unset($requestedByCompanyUserRepositoryFilter->search);
+
         $attendanceQueryBuilder = App::make(AttendanceRepository::class)->baseQueryBuilder($attendanceRepositoryFilter, []);
+
+        $requestedByCompanyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($requestedByCompanyUserRepositoryFilter, []);
 
         $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($attendanceQueryBuilder, 'attendance_sub', function ($join) {
@@ -48,6 +62,9 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
             })
             ->joinSub($this->statusQueryBuilder(), 'status_sub', function ($join) {
                 $join->on('status_sub.id', '=', 'attendance_adjustment_requests.id');
+            })
+            ->leftJoinSub($requestedByCompanyUserQueryBuilder, 'requested_by_company_user_sub', function ($join) {
+                $join->on('requested_by_company_user_sub.user_id', '=', 'attendance_adjustment_requests.requested_by');
             })
             ->join('companies', 'attendance_sub.employee_company_id', '=', 'companies.id')
             ->when(!empty($filters->requested_by_ids) && is_array($filters->requested_by_ids), function ($builder) use ($filters) {
@@ -129,6 +146,18 @@ class AttendanceAdjustmentRequestRepositoryEloquent extends BaseRepositoryEloque
                 'attendance_adjustment_requests.last_out AS last_out',
                 'attendance_adjustment_requests.remarks AS remarks',
                 'status_sub.status_summary AS status_summary',
+
+                /**
+                 * Requested by
+                 **/
+                'requested_by_company_user_sub.company_timezone AS requested_by_user_company_timezone',
+                'requested_by_company_user_sub.user_id AS requested_by_user_id',
+                'requested_by_company_user_sub.user_username AS requested_by_user_username',
+                'requested_by_company_user_sub.is_employee AS requested_by_user_is_employee',
+                'requested_by_company_user_sub.company_employee_number AS requested_by_user_company_employee_number',
+                'requested_by_company_user_sub.company_employee_family_name AS requested_by_user_company_employee_family_name',
+                'requested_by_company_user_sub.company_employee_middle_name AS requested_by_user_company_employee_middle_name',
+                'requested_by_company_user_sub.company_employee_given_name AS requested_by_user_company_employee_given_name',
             ]);
 
         return $queryBuilder;

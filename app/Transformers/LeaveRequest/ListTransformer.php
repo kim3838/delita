@@ -2,6 +2,7 @@
 
 namespace App\Transformers\LeaveRequest;
 
+use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
@@ -41,6 +42,25 @@ class ListTransformer extends TransformerAbstract
             'show_only_current_state' => false
         ];
 
+        $companyUserRequestedByHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
+            'company_timezone' => $leaveRequest->requested_by_user_company_timezone,
+            'is_employee' => $leaveRequest->requested_by_user_is_employee,
+            'company_employee_number' => $leaveRequest->requested_by_user_company_employee_number,
+            'company_employee_family_name' => $leaveRequest->requested_by_user_company_employee_family_name,
+            'company_employee_middle_name' => $leaveRequest->requested_by_user_company_employee_middle_name,
+            'company_employee_given_name' => $leaveRequest->requested_by_user_company_employee_given_name,
+
+            'user_id' => $leaveRequest->requested_by_user_id,
+            'user_username' => $leaveRequest->requested_by_user_username,
+        ]);
+
+        $companyUserRequestedByEmployeeFullName = implode(' ', array_filter([
+            $companyUserRequestedByHydrated->company_employee_family_name,
+            $companyUserRequestedByHydrated->company_employee_given_name,
+            $companyUserRequestedByHydrated->company_employee_middle_name
+        ]));
+        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee ? $companyUserRequestedByEmployeeFullName : null;
+
         $approvalStates = Fractal::collection(
             App::make(RequestApprovalStateRepository::class)->list($approvalStateFilters),
             RequestApprovalStateListTransformer::class
@@ -69,7 +89,12 @@ class ListTransformer extends TransformerAbstract
 
             'id' => $leaveRequest->id,
             'number' => $leaveRequest->number,
-            'requested_by' => $leaveRequest->requestedBy,
+            'requested_by' => [
+                'company_employee_number' => $companyUserRequestedByHydrated->company_employee_number,
+                'company_employee_full_name' => $companyUserRequestedByEmployeeFullName,
+
+                'username' => $companyUserRequestedByHydrated->user_username,
+            ],
             'date_requested_diff' => $this->diffForHumans(
                 $leaveRequest->date_requested->shiftTimezone($leaveRequest->company_timezone),
                 Carbon::now($leaveRequest->company_timezone)

@@ -3,6 +3,7 @@
 namespace App\Transformers\OvertimeRequest;
 
 use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
@@ -72,6 +73,25 @@ class ListTransformer extends TransformerAbstract
             'show_only_current_state' => false
         ];
 
+        $companyUserRequestedByHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
+            'company_timezone' => $overtimeRequest->requested_by_user_company_timezone,
+            'is_employee' => $overtimeRequest->requested_by_user_is_employee,
+            'company_employee_number' => $overtimeRequest->requested_by_user_company_employee_number,
+            'company_employee_family_name' => $overtimeRequest->requested_by_user_company_employee_family_name,
+            'company_employee_middle_name' => $overtimeRequest->requested_by_user_company_employee_middle_name,
+            'company_employee_given_name' => $overtimeRequest->requested_by_user_company_employee_given_name,
+
+            'user_id' => $overtimeRequest->requested_by_user_id,
+            'user_username' => $overtimeRequest->requested_by_user_username,
+        ]);
+
+        $companyUserRequestedByEmployeeFullName = implode(' ', array_filter([
+            $companyUserRequestedByHydrated->company_employee_family_name,
+            $companyUserRequestedByHydrated->company_employee_given_name,
+            $companyUserRequestedByHydrated->company_employee_middle_name
+        ]));
+        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee ? $companyUserRequestedByEmployeeFullName : null;
+
         $approvalStates = Fractal::collection(
             App::make(RequestApprovalStateRepository::class)->list($approvalStateFilters),
             RequestApprovalStateListTransformer::class
@@ -84,7 +104,12 @@ class ListTransformer extends TransformerAbstract
 
             'id' => $overtimeRequest->id,
             'number' => $overtimeRequest->number,
-            'requested_by' => $overtimeRequest->requestedBy,
+            'requested_by' => [
+                'company_employee_number' => $companyUserRequestedByHydrated->company_employee_number,
+                'company_employee_full_name' => $companyUserRequestedByEmployeeFullName,
+
+                'username' => $companyUserRequestedByHydrated->user_username,
+            ],
             'date_requested_diff' => $this->diffForHumans(
                 $overtimeRequest->date_requested->shiftTimezone($overtimeRequest->company_timezone),
                 Carbon::now($overtimeRequest->company_timezone)

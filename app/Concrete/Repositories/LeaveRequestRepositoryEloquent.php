@@ -2,7 +2,7 @@
 
 namespace App\Concrete\Repositories;
 
-use App\Blueprint\Repositories\AttendanceRepository;
+use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\LeaveRequestRepository;
 use App\Concrete\BaseRepositoryEloquent;
@@ -34,7 +34,20 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         unset($employeeRepositoryFilter->employee_search);
         unset($employeeRepositoryFilter->associated_companies);
 
+        $requestedByCompanyUserRepositoryFilter = clone $filters;
+        if(isset(request()->account_id)){
+            $requestedByCompanyUserRepositoryFilter->account_id = request()->account_id;
+        }
+        if(isset($filters->company_id)){
+            $requestedByCompanyUserRepositoryFilter->associated_companies = [$filters->company_id];
+        }
+        unset($requestedByCompanyUserRepositoryFilter->company_id);
+        unset($requestedByCompanyUserRepositoryFilter->user_ids);
+        unset($requestedByCompanyUserRepositoryFilter->search);
+
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
+
+        $requestedByCompanyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($requestedByCompanyUserRepositoryFilter, []);
 
         $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
@@ -42,6 +55,9 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
             })
             ->joinSub($this->statusQueryBuilder(), 'status_sub', function ($join) {
                 $join->on('status_sub.id', '=', 'leave_requests.id');
+            })
+            ->leftJoinSub($requestedByCompanyUserQueryBuilder, 'requested_by_company_user_sub', function ($join) {
+                $join->on('requested_by_company_user_sub.user_id', '=', 'leave_requests.requested_by');
             })
             ->join('companies', 'leave_requests.company_id', '=', 'companies.id')
             ->join('leave_types', 'leave_types.id', '=', 'leave_requests.leave_type_id')
@@ -92,6 +108,18 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 'leave_requests.date_to AS date_to',
                 'leave_requests.remarks AS remarks',
                 'status_sub.status_summary AS status_summary',
+
+                /**
+                 * Requested by
+                 **/
+                'requested_by_company_user_sub.company_timezone AS requested_by_user_company_timezone',
+                'requested_by_company_user_sub.user_id AS requested_by_user_id',
+                'requested_by_company_user_sub.user_username AS requested_by_user_username',
+                'requested_by_company_user_sub.is_employee AS requested_by_user_is_employee',
+                'requested_by_company_user_sub.company_employee_number AS requested_by_user_company_employee_number',
+                'requested_by_company_user_sub.company_employee_family_name AS requested_by_user_company_employee_family_name',
+                'requested_by_company_user_sub.company_employee_middle_name AS requested_by_user_company_employee_middle_name',
+                'requested_by_company_user_sub.company_employee_given_name AS requested_by_user_company_employee_given_name',
             ]);
 
         return $queryBuilder;
