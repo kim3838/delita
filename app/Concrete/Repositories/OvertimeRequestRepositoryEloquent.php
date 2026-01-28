@@ -10,6 +10,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Models\OvertimeRequest;
 use App\Models\RequestApprovalState;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;

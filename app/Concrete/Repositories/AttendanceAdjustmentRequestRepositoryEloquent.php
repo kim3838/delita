@@ -9,6 +9,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\RequestApprovalStatus;
 use App\Models\AttendanceAdjustmentRequest;
 use App\Models\RequestApprovalState;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
