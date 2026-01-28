@@ -13,11 +13,8 @@ return [
     |
     */
 
-    'failed' => 'These credentials do not match our records.',
     'inactive' => 'Your account is currently inactive.',
-    'password' => 'The provided password is incorrect.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-    'email.verified' => 'Email verified',
+    'email.verified' => 'Email verified.',
     'email.already.verified' => 'Email already verified',
     'email.verification.sent' => 'Verification link sent to :email',
     'email.verification.error' => 'Verification confirmation/check neither verified nor marked as verified',
