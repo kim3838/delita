@@ -141,6 +141,7 @@ class OvertimeRequestRepositoryEloquent extends BaseRepositoryEloquent implement
         $pending = RequestApprovalStatus::PENDING->value;
 
         $queryBuilder = RequestApprovalState::query()->getQuery()
+            ->where('requestable_type', Relation::getMorphAlias($this->model()))
             ->select([
                 DB::raw("request_approval_states.requestable_id"),
                 DB::raw("COUNT(*) OVER(PARTITION BY request_approval_states.requestable_id) AS total_approvers"),
