@@ -287,6 +287,11 @@ class LeaveService
             ->select([
                 DB::raw("elteds.*"),
                 DB::raw("
+                    CASE WHEN elteds.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
+                        THEN CONCAT(YEAR(elteds.eligibility_date_start), '-', LPAD(elteds.period_calendar_span_value, 2, '0'),'-01')
+                    END AS `calendar_span_value_date_start`
+                "),
+                DB::raw("
                     CASE
                         WHEN
                             (elteds.period_type = ".LeavePeriodType::INTERVAL->value." AND (elteds.period_interval_span_type = ".LeaveIntervalSpanType::MONTH->value." OR elteds.period_interval_span_type = ".LeaveIntervalSpanType::YEAR->value."))
@@ -314,7 +319,12 @@ class LeaveService
                                 CEIL(eltsbp.sequence_by_period_type / eltsbp.period_span_value)
                             WHEN eltsbp.period_type = ".LeavePeriodType::CALENDAR_YEAR->value."
                                 THEN
-                                    (IF(eltsbp.period_calendar_span_value = MONTH(eltsbp.eligibility_date_start), 0, 1))
+                                    (
+                                        IF(eltsbp.period_calendar_span_value = MONTH(eltsbp.eligibility_date_start),
+                                           (IF(eltsbp.eligibility_date_start > eltsbp.calendar_span_value_date_start, 1, 0)),
+                                            1
+                                        )
+                                    )
                                     + SUM(
                                         IF(
                                             CONCAT(YEAR(eltsbp.date_series),LPAD(MONTH(eltsbp.date_series), 2, '0'),LPAD(DAY(eltsbp.date_series), 2, '0')) = CONCAT(eltsbp.year, LPAD(eltsbp.period_span_value, 2, '0'), '01')
