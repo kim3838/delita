@@ -42,6 +42,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                         ->where('current_employment_profile.row_number', 1);
                 });
             })
+            ->when(in_array('shift', $relations), function ($builder) use($filters) {
+                $builder->leftJoin('employee_shift', 'employee_shift.employee_id', '=', 'employees.id');
+            })
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
             })
@@ -142,15 +145,23 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                     DB::raw("current_employment_profile.start_date AS current_employment_start_date"),
                     DB::raw("current_employment_profile.end_of_service_type AS current_employment_end_of_service_type"),
                     DB::raw("current_employment_profile.end_date AS current_employment_end_date"),
-                ] : [])
+                ] : []),
+
+                ...(in_array('shift', $relations) ? [
+                    'employee_shift.id AS employee_shift_id',
+                    'employee_shift.shift_id AS shift_id',
+                    'employee_shift.start_date AS shift_start_date',
+                    'employee_shift.stated_shift_end_date AS shift_stated_shift_end_date',
+                    'employee_shift.end_date AS shift_end_date',
+                ] : []),
             ]);
 
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function paginate($filters, $relations = ['user', 'current_employment_profile']): LengthAwarePaginator
     {
-        $queryBuilder = $this->baseQueryBuilder($filters, $this->defaultOrders, ['user', 'current_employment_profile']);
+        $queryBuilder = $this->baseQueryBuilder($filters, $this->defaultOrders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $this->defaultOrders);
 
