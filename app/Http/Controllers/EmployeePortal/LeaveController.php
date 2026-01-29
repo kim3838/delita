@@ -21,9 +21,13 @@ class LeaveController extends Controller
         if(request()->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
+            $relations = [];
+            $orders = [
+                ['field' => 'leaves.date', 'direction' => 'DESC'],
+            ];
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters),
+                $this->repository->paginate($filters, $relations, $orders),
                 ListTransformer::class
             ));
         }

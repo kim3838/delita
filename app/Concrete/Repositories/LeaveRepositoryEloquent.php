@@ -61,12 +61,12 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function paginate($filters, $relations = [], $orders = []): LengthAwarePaginator
     {
-        $orders = [
+        $orders = empty($orders) ? [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
             ['field' => 'leaves.date', 'direction' => 'ASC'],
-        ];
+        ]: $orders;
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 

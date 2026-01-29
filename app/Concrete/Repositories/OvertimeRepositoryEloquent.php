@@ -70,12 +70,12 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function paginate($filters, $relations = [], $orders = []): LengthAwarePaginator
     {
-        $orders = [
+        $orders = empty($orders) ? [
             ['field' => 'attendance_sub.employee_number', 'direction' => 'ASC'],
             ['field' => 'date', 'direction' => 'ASC'],
-        ];
+        ]: $orders;
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
 
