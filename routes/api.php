@@ -39,6 +39,7 @@ use App\Http\Controllers\EmployeePortal\EmployeeController as EmployeePortalEmpl
 use App\Http\Controllers\EmployeePortal\LeaveBalanceAdjustmentController as EmployeePortalLeaveBalanceAdjustmentController;
 use App\Http\Controllers\EmployeePortal\LeaveController as EmployeePortalLeaveController;
 use App\Http\Controllers\EmployeePortal\LeaveRequestController as EmployeePortalLeaveRequestController;
+use App\Http\Controllers\EmployeePortal\LeaveRunningBalanceByTypeController as EmployeePortalLeaveRunningBalanceByTypeController;
 use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
 use App\Http\Controllers\EmployeePortal\OvertimeRequestController as EmployeePortalOvertimeRequestController;
 use App\Http\Controllers\EmployeeShiftController;
@@ -523,6 +524,8 @@ Route::group([
     Route::get('leave-running-balance-period-series', [LeaveRunningBalancePeriodSeriesController::class, 'index']);
     Route::post('leave-running-balance-period-series-minimum-date', [LeaveRunningBalancePeriodSeriesController::class, 'minimumDate']);
     Route::get('leave-running-balance-by-type', [LeaveRunningBalanceByTypeController::class, 'index']);
+
+    Route::get('employee-portal-leave-running-balance-by-type', [EmployeePortalLeaveRunningBalanceByTypeController::class, 'index']);
 
     //Leave date range filter
     Route::post('leave-date-range-filter', [LeaveDateRangeFilterController::class, 'index']);

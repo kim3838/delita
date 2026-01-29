@@ -13,6 +13,7 @@ class BasicTransformer extends TransformerAbstract
             'id' => $leave->id,
             'ulid' => $leave->ulid,
             'code' => $leave->code,
+            'name' => $leave->name,
         ];
     }
 }
