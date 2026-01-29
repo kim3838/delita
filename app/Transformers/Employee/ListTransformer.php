@@ -2,11 +2,17 @@
 
 namespace App\Transformers\Employee;
 
+use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
+use App\Blueprint\Repositories\ShiftRepository;
+use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
+use App\Transformers\EmployeeShift\ItemTransformer as EmployeeShiftItemTransformer;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
+use App\Transformers\Shift\ItemTransformer as ShiftItemTransformer;
+use App\Transformers\ShiftSchedule\ListTransformer as ShiftScheduleListTransformer;
 use App\Transformers\User\BasicTransformer as UserBasicTransformer;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
@@ -39,6 +45,30 @@ class ListTransformer extends TransformerAbstract
 
         $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
 
+        $employeeModelHasEmployeeShiftId = $employee->employee_shift_id ?? null;
+
+        if($employeeModelHasEmployeeShiftId){
+
+            $employeeShiftHydrated = App::make(EmployeeShiftRepository::class)->hydrateItem([
+                'start_date' => $employee->shift_start_date,
+                'stated_shift_end_date' => $employee->shift_stated_shift_end_date,
+                'end_date' => $employee->shift_end_date,
+            ]);
+
+            $employeeShiftAssignment = Fractal::item($employeeShiftHydrated, EmployeeShiftItemTransformer::class);
+
+            $shift = App::make(ShiftRepository::class)->model()::query()->find($employee->shift_id);
+            $shiftScheduleFilters = (object)[
+                'shift_id' => $shift->id
+            ];
+            $shiftSchedules = App::make(ShiftScheduleRepository::class)->list($shiftScheduleFilters);
+            $shiftSchedules = Fractal::collection($shiftSchedules, ShiftScheduleListTransformer::class)['data'];
+
+            $shift = $shift ? Fractal::item($shift, ShiftItemTransformer::class) : $shift;
+        }
+
+
+
         return [
             'id' => $employee->id,
             'ulid' => $employee->ulid,
@@ -52,7 +82,13 @@ class ListTransformer extends TransformerAbstract
             'manager' => $employee->manager,
             'contact' => $employee->contact,
             'current_employment_profile' => $currentEmploymentProfile,
-            'user' => $employeeUser
+            'user' => $employeeUser,
+            'has_shift' => boolval($employeeModelHasEmployeeShiftId),
+            ...($employeeModelHasEmployeeShiftId ? [
+                'shift' => $shift,
+                'shift_schedules' => $shiftSchedules,
+                'shift_assignment' => $employeeShiftAssignment
+            ] : [])
         ];
     }
 }

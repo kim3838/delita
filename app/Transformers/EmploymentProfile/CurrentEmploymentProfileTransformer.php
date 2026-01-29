@@ -18,6 +18,9 @@ class CurrentEmploymentProfileTransformer extends TransformerAbstract
             'start_date' => $model->start_date?->format('Y-m-d'),
             'end_of_service_type' => $model->end_of_service_type?->toArray(),
             'end_date' => $model->end_date?->format('Y-m-d'),
+            'readable_date_range' => $model->end_of_service_type
+                ? $model->start_date?->format('Y-m-d') . " to " . $model->end_date?->format('Y-m-d')
+                : $model->start_date?->format('Y-m-d') . " onwards."
         ];
     }
 }
