@@ -40,21 +40,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
             })
             ->when(!empty($filters->not_assigned_shift_ids) && is_array($filters->not_assigned_shift_ids), function ($builder) use ($filters) {
                 $builder->whereNotIn('employee_shift.shift_id', $filters->not_assigned_shift_ids);
-            });
-
-        return $queryBuilder;
-    }
-
-    public function paginate($filters): LengthAwarePaginator
-    {
-        $orders = [
-            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
-            ['field' => 'shifts.code', 'direction' => 'ASC'],
-        ];
-
-        $queryBuilder = $this->baseQueryBuilder($filters)
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 'employee_shift.id AS id',
@@ -75,6 +61,20 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
                 'employee_shift.stated_shift_end_date AS shift_stated_shift_end_date',
                 'employee_shift.end_date AS shift_end_date',
             ]);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+            ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
+            ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
+            ['field' => 'shifts.code', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
