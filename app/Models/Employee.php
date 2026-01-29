@@ -25,6 +25,7 @@ class Employee extends Model
         'company_id',
         'designation_id',
         'manager_id',
+        'pay_frequency_id',
         'number',
         'given_name',
         'middle_name',
@@ -44,6 +45,11 @@ class Employee extends Model
     protected $casts = [
         'id' => 'int',
         'ulid' => 'string',
+        'user_id' => 'int',
+        'company_id' => 'int',
+        'designation_id' => 'int',
+        'manager_id' => 'int',
+        'pay_frequency_id' => 'int',
         'number' => 'string',
         'gender' => Gender::class,
         'marital_status' => MaritalStatus::class,
@@ -146,6 +152,11 @@ class Employee extends Model
     public function subordinates(): HasMany
     {
         return $this->hasMany(Employee::class, 'manager_id');
+    }
+
+    public function payFrequency(): BelongsTo
+    {
+        return $this->belongsTo(PayFrequency::class);
     }
 
     public function payrollComponents(): HasMany

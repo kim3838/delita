@@ -34,6 +34,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\Formula;
+use App\Models\PayFrequency;
 use App\Models\Prototype;
 use App\Models\Shift;
 use App\Models\User;
@@ -440,6 +441,11 @@ class Development extends Seeder
             $company1002D->payFrequencies()->firstOrCreate(['code' => $payFrequency['code']], ['ulid' => Str::ulid(), ...$payFrequency]);
         }
 
+        //Company 1002-B Monthly Pay Frequency
+        $company1002BMonthlyPayFrequency = $company1002B->payFrequencies()->where('code', 'MONTHLY')->first();
+        //Company 1002-C Monthly Pay Frequency
+        $company1002CMonthlyPayFrequency = $company1002C->payFrequencies()->where('code', 'MONTHLY')->first();
+
         //Company 1002-B, 1002-C Pre-create Compensations
         $compensationsPresets = [
             ['code' => 'BASICSALARY', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Basic-Salary'],
@@ -527,6 +533,7 @@ class Development extends Seeder
             null,
             null,
             null,
+            null,
             'A1001', 'Maëlle', 'A', 'Le Bris');
         $this->createEmployeeContact($employeeA1001);
         $this->createEmploymentProfile($employeeA1001);
@@ -539,6 +546,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::HEAD,
             $company1002BHrManager,
             null,
+            $company1002BMonthlyPayFrequency,
             'B1001',
             'Dubois', 'B', 'Anaïs');
         $this->createEmployeeContact($employeeB1001);
@@ -552,6 +560,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CHrAssistant,
             null,
+            $company1002CMonthlyPayFrequency,
             'C1001', 'Amanda', 'N', 'Nõrth');
         $this->createEmployeeContact($employeeC1001);
         $this->createEmploymentProfile($employeeC1001);
@@ -571,6 +580,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CAccountingStaff,
             $employeeC1001,
+            $company1002CMonthlyPayFrequency,
             'C1002', 'Palamuérta', 'C', 'Scañtily');
         $this->createEmployeeContact($employeeC1002);
         $employeeC1002->employmentProfiles()->firstOrCreate([
@@ -680,6 +690,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::HEAD,
             $company1002CAccountManager,
             null,
+            $company1002CMonthlyPayFrequency,
             'C1003', 'L’Écuyer', 'W', 'François');
         $this->createEmployeeContact($employeeC1003);
         $this->createEmploymentProfile($employeeC1003, EmploymentType::CONTRACT);
@@ -694,6 +705,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::HEAD,
             $company1002CHrManager,
             null,
+            null,
             'C1004', 'José María', 'E', 'Fernández-López');
         $this->createEmploymentProfile($employeeC1004, EmploymentType::CONTRACT);
 
@@ -703,6 +715,7 @@ class Development extends Seeder
             null,
             $company1002CTrainingAndDevelopmentDepartment,
             DepartmentEmployeeAssignmentType::DEFAULT,
+            null,
             null,
             null,
             'C1004-1', 'Ángel', 'J', 'Niño-Ramírez');
@@ -715,6 +728,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::HEAD,
             $company1002CPayrollManager,
             $employeeC1004,
+            null,
             'C1005', 'Jürgen', 'C', 'Müller');
         $this->createEmploymentProfile($employeeC1005, EmploymentType::CONTRACT);
 
@@ -725,6 +739,7 @@ class Development extends Seeder
             $company1002CPayrollDepartment,
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CPayrollAssistant,
+            null,
             null,
             'C1006', 'Renée', 'S', 'O’Connor');
         $this->createEmploymentProfile($employeeC1006, EmploymentType::OJT);
@@ -737,6 +752,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CPayrollAssistant,
             null,
+            null,
             'C1007', 'Søren', 'M', 'Bjørnsen');
         $this->createEmploymentProfile($employeeC1007, EmploymentType::PART_TIME);
 
@@ -747,6 +763,7 @@ class Development extends Seeder
             $company1002CTrainingAndDevelopmentDepartment,
             DepartmentEmployeeAssignmentType::HEAD,
             $company1002CHrAssistant,
+            null,
             null,
             'C1008', 'Björk', 'A', 'Guðmundsdóttir');
         $this->createEmploymentProfile($employeeC1008, EmploymentType::PART_TIME);
@@ -759,6 +776,7 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CAccountManager,
             null,
+            null,
             'C1009', 'Márton', 'F', 'Szőke');
         $this->createEmploymentProfile($employeeC1009, EmploymentType::FULL_TIME);
 
@@ -770,13 +788,11 @@ class Development extends Seeder
             DepartmentEmployeeAssignmentType::DEFAULT,
             $company1002CAccountManager,
             null,
+            null,
             'C1010', 'İbrahiM', 'I', 'Özdemir');
         $this->createEmploymentProfile($employeeC1010, EmploymentType::FULL_TIME);
 
         /**************************************************************************************************************************************************************************************************************/
-
-        //Company 1002-B Monthly Pay Frequency
-        $company1002BMonthlyPayFrequency = $company1002B->payFrequencies()->where('code', 'MONTHLY')->first();
 
         //Company 1002-B Compensations
         $company1002BBasicSalary = $company1002B->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
@@ -795,11 +811,11 @@ class Development extends Seeder
         //Create Compensations for Employee B1001
         $employeeB1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14','currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeB1001->pay_frequency_id]
         );
         $employeeB1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002BMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeB1001->pay_frequency_id]
         );
         $employeeB1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002BOvertime->id, 'payroll_componentable_type' => 'compensation'],
@@ -812,9 +828,6 @@ class Development extends Seeder
         $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::DEDUCTIONS , 'payroll_componentable_id' => $company1002BSSSEmployed->id, 'payroll_componentable_type' => 'deduction']);
         //Create Income Tax for Employee B1001
         $employeeB1001->payrollComponents()->firstOrCreate(['formulable_type' => Formulable::INCOME_TAX , 'payroll_componentable_id' => $company1002BCompensationTax->id, 'payroll_componentable_type' => 'income_tax']);
-
-        //Company 1002-C Monthly Pay Frequency
-        $company1002CMonthlyPayFrequency = $company1002C->payFrequencies()->where('code', 'MONTHLY')->first();
 
         //Company 1002-C Compensations
         $company1002CBasicSalary = $company1002C->compensations->where('name', 'Basic Salary')->where('type', Compensation::BASIC_SALARY)->first();
@@ -833,11 +846,11 @@ class Development extends Seeder
         //Create Compensations for Employee C1001
         $employeeC1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1001->pay_frequency_id]
         );
         $employeeC1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1001->pay_frequency_id]
         );
         $employeeC1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
@@ -854,11 +867,11 @@ class Development extends Seeder
         //Create Compensations for Employee C1002
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1002->pay_frequency_id]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1002->pay_frequency_id]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
@@ -875,11 +888,11 @@ class Development extends Seeder
         //Create Compensations for Employee C1003
         $employeeC1003->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '420', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1003->pay_frequency_id]
         );
         $employeeC1003->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $company1002CMonthlyPayFrequency->id]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '20', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE, 'pay_frequency_id' => $employeeC1003->pay_frequency_id]
         );
         $employeeC1003->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
@@ -995,6 +1008,7 @@ class Development extends Seeder
         ?DepartmentEmployeeAssignmentType $departmentAssignmentType = null,
         ?Designation $designation = null,
         ?Employee $manager = null,
+        ?PayFrequency $payFrequency = null,
         $number = null,
         $givenName = null,
         $middleName = null,
@@ -1010,6 +1024,7 @@ class Development extends Seeder
             'company_id' => $company->id,
             'designation_id' => $designation?->id,
             'manager_id' => $manager?->id,
+            'pay_frequency_id' => $payFrequency?->id,
             'number' => $number,
             'given_name' => $givenName,
             'middle_name' => $middleName,
