@@ -13,7 +13,7 @@ class ItemTransformer extends TransformerAbstract
             'start_date' => $model->start_date?->format('Y-m-d'),
             'stated_shift_end_date' => intval($model->stated_shift_end_date),
             'end_date' => $model->end_date?->format('Y-m-d'),
-            'readable' => $model->stated_shift_end_date
+            'readable_date_range' => $model->stated_shift_end_date
                 ? $model->start_date?->format('Y-m-d') . " to " . $model->end_date?->format('Y-m-d')
                 : $model->start_date?->format('Y-m-d') . " onwards."
         ];
