@@ -6,6 +6,7 @@ use App\Blueprint\Imports\EmployeeImport;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseImportConcrete;
+use App\Enums\CompanyUserAssignmentType;
 use App\Enums\CreationType;
 use App\Enums\RegexValidation;
 use App\Exports\BlankEmployeeTemplateExport;
@@ -82,9 +83,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 $validationErrors[] = 'Given name is required.';
             }
 
-            if (empty($row['payroll_group'])) {
-                $validationErrors[] = 'Payroll group is required.';
-            } else {
+            if (!empty($row['payroll_group'])) {
 
                 $payFrequency = PayFrequency::query()
                     ->where('company_id', $companyId)
@@ -177,7 +176,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 'number' => $row['number'],
                 'family_name' => $row['family_name'],
                 'given_name' => $row['given_name'],
-                'pay_frequency_id' => $row['pay_frequency_id'],
+                'pay_frequency_id' => $row['pay_frequency_id'] ?? null,
                 'creation_type' => CreationType::IMPORT,
             ];
 
