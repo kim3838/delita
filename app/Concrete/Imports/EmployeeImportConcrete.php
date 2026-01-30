@@ -11,6 +11,7 @@ use App\Enums\RegexValidation;
 use App\Exports\BlankEmployeeTemplateExport;
 use App\Http\Requests\EmployeeContact\StoreEmployeeContactRequest;
 use App\Models\Employee;
+use App\Models\PayFrequency;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -81,6 +82,23 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 $validationErrors[] = 'Given name is required.';
             }
 
+            if (empty($row['payroll_group'])) {
+                $validationErrors[] = 'Payroll group is required.';
+            } else {
+
+                $payFrequency = PayFrequency::query()
+                    ->where('company_id', $companyId)
+                    ->where('code', $row['payroll_group'])
+                    ->first();
+
+                if (empty($payFrequency)) {
+                    $validationErrors[] = 'Payroll group not found.';
+                } else {
+
+                    $row['pay_frequency_id'] = $payFrequency->id;
+                }
+            }
+
             if (!empty($row['office_email'])) {
 
                 $officeEmailValidation = Validator::make($row,[
@@ -96,7 +114,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                     'office_email.unique' => 'Email has already been taken.',
                 ]);
 
-                if($this->isEmailTakenAsEmployeeContact($row['office_email'])) {
+                if(App::environment('production') && $this->isEmailTakenAsEmployeeContact($row['office_email'])) {
                     $validationErrors[] = 'Email has already been taken.';
                 }
 
@@ -159,6 +177,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 'number' => $row['number'],
                 'family_name' => $row['family_name'],
                 'given_name' => $row['given_name'],
+                'pay_frequency_id' => $row['pay_frequency_id'],
                 'creation_type' => CreationType::IMPORT,
             ];
 
