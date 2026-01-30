@@ -31,7 +31,7 @@ use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeeLeaveTypeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
-use App\Http\Controllers\EmployeePayrollComponentImportTemplateController;
+use App\Http\Controllers\EmployeePayItemsImportTemplateController;
 use App\Http\Controllers\EmployeePayrollInfoController;
 use App\Http\Controllers\EmployeePortal\AttendanceAdjustmentRequestController as EmployeePortalAttendanceAdjustmentRequestController;
 use App\Http\Controllers\EmployeePortal\AttendanceController as EmployeePortalAttendanceController;
@@ -52,7 +52,7 @@ use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
-use App\Http\Controllers\Imports\EmployeePayrollComponentController as EmployeePayrollComponentImportController;
+use App\Http\Controllers\Imports\EmployeePayItemsController as EmployeePayItemsImportController;
 use App\Http\Controllers\Imports\EmploymentProfileController as EmploymentProfileImportController;
 use App\Http\Controllers\Imports\OvertimeController as OvertimeImportController;
 use App\Http\Controllers\IncomeTaxController;
@@ -110,7 +110,7 @@ Route::get('currency-selections', [WorldController::class, 'currencySelection'])
 //Import templates
 Route::get('employee-import-template', [EmployeeImportTemplateController::class, 'index']);
 Route::get('employment-profile-import-template', [EmploymentProfileImportTemplateController::class, 'index']);
-Route::get('employee-payroll-component-import-template', [EmployeePayrollComponentImportTemplateController::class, 'index']);
+Route::get('employee-pay-items-import-template', [EmployeePayItemsImportTemplateController::class, 'index']);
 Route::get('attendance-import-template', [AttendanceImportTemplateController::class, 'index']);
 Route::get('overtime-import-template', [OvertimeImportTemplateController::class, 'index']);
 
@@ -387,9 +387,9 @@ Route::group([
     Route::patch('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'update']);
     Route::delete('employee-payroll-component/{employeePayrollComponentId}', [EmployeePayrollComponentController::class, 'destroy']);
     Route::delete('employee-payroll-components', [EmployeePayrollComponentController::class, 'batchDestroy']);
-    Route::post('employee-payroll-component-import-validate', [EmployeePayrollComponentImportController::class, 'read']);
-    Route::post('employee-payroll-component-import-re-validate', [EmployeePayrollComponentImportController::class, 'reValidate']);
-    Route::post('employee-payroll-component-import-save', [EmployeePayrollComponentImportController::class, 'save']);
+    Route::post('employee-pay-items-import-validate', [EmployeePayItemsImportController::class, 'read']);
+    Route::post('employee-pay-items-import-re-validate', [EmployeePayItemsImportController::class, 'reValidate']);
+    Route::post('employee-pay-items-import-save', [EmployeePayItemsImportController::class, 'save']);
 
     Route::get('employee-payroll-info/{employeeUlid}/compensations', [EmployeePayrollInfoController::class, 'compensations']);
     Route::get('employee-payroll-info/{employeeUlid}/deductions', [EmployeePayrollInfoController::class, 'deductions']);

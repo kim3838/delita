@@ -9,7 +9,7 @@ use App\Enums\Compensation as CompensationEnum;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
-use App\Exports\BlankEmployeePayrollComponentTemplateExport;
+use App\Exports\BlankEmployeePayItemsTemplateExport;
 use App\Http\Requests\PolymorphicEmployeePayrollComponent\BasePolymorphicEmployeePayrollComponentRequest;
 use App\Models\Company;
 use App\Models\Compensation;
@@ -17,7 +17,6 @@ use App\Models\Deduction;
 use App\Models\Employee;
 use App\Models\EmployeePayrollComponent;
 use App\Models\IncomeTax;
-use App\Models\PayFrequency;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +30,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
 
     public function exportTemplate(): string
     {
-        return BlankEmployeePayrollComponentTemplateExport::class;
+        return BlankEmployeePayItemsTemplateExport::class;
     }
 
     public function validateData($data, $companyId): array
@@ -163,23 +162,6 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     }
                 }
 
-                if (empty($row['pay_frequency'])) {
-                    $validationErrors[] = 'Pay frequency is required.';
-                } else {
-
-                    $payFrequency = PayFrequency::query()
-                        ->where('company_id', $companyId)
-                        ->where('code', $row['pay_frequency'])
-                        ->first();
-
-                    if (empty($payFrequency)) {
-                        $validationErrors[] = 'Pay frequency not found.';
-                    } else {
-
-                        $row['pay_frequency_id'] = $payFrequency->id;
-                    }
-                }
-
                 if(!empty($payPeriod) && !empty($payFrequency)){
 
                     $payPeriodIsSemimonthlyOrMonthly = in_array($payPeriod, [
@@ -230,7 +212,6 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     'currency' => $company->currency,
                     'pay_period' => PayPeriod::{$row['pay_period']},
                     'pay_type' => PayType::{$row['pay_type']},
-                    'pay_frequency_id' => $row['pay_frequency_id'],
                 ] : [])
             ];
 

@@ -7,7 +7,7 @@ use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class EmployeePayrollComponentController extends Controller
+class EmployeePayItemsController extends Controller
 {
     public function __construct(
         protected EmployeePayrollComponentImport $import
