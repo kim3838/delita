@@ -14,6 +14,7 @@ class BaseEmployeeRequest extends FormRequest
             'department_id' => 'nullable|numeric|integer',
             'designation_id' => 'nullable|numeric|integer',
             'manager_id' => 'nullable|numeric|integer',
+            'pay_frequency_id' => 'nullable|numeric|integer',
             'family_name' => 'required|string|max:255',
             'given_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',

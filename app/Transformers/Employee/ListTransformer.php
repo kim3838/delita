@@ -11,6 +11,7 @@ use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Transformers\EmployeeShift\ItemTransformer as EmployeeShiftItemTransformer;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
+use App\Transformers\PayFrequency\ItemTransformer as PayFrequencyItemTransformer;
 use App\Transformers\Shift\ItemTransformer as ShiftItemTransformer;
 use App\Transformers\ShiftSchedule\ListTransformer as ShiftScheduleListTransformer;
 use App\Transformers\User\BasicTransformer as UserBasicTransformer;
@@ -67,7 +68,7 @@ class ListTransformer extends TransformerAbstract
             $shift = $shift ? Fractal::item($shift, ShiftItemTransformer::class) : $shift;
         }
 
-
+        $payrollGroup = $employee->payFrequency ? Fractal::item($employee->payFrequency, PayFrequencyItemTransformer::class) : null;
 
         return [
             'id' => $employee->id,
@@ -80,6 +81,8 @@ class ListTransformer extends TransformerAbstract
             'department' => $employee->departments->first(),
             'designation' => $employee->designation,
             'manager' => $employee->manager,
+            'pay_frequency_id' => $employee->pay_frequency_id,
+            'payroll_group' => $payrollGroup,
             'contact' => $employee->contact,
             'current_employment_profile' => $currentEmploymentProfile,
             'user' => $employeeUser,

@@ -5,6 +5,7 @@ namespace App\Transformers\Employee;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Transformers\EmploymentProfile\ListTransformer as EmploymentProfileListTransformer;
+use App\Transformers\PayFrequency\ItemTransformer as PayFrequencyItemTransformer;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
@@ -12,6 +13,8 @@ class ItemTransformer extends TransformerAbstract
 {
     public function transform(Employee $employee): array
     {
+        $payrollGroup = $employee->payFrequency ? Fractal::item($employee->payFrequency, PayFrequencyItemTransformer::class) : null;
+
         return [
             'id' => $employee->id,
             'ulid' => $employee->ulid,
@@ -21,6 +24,8 @@ class ItemTransformer extends TransformerAbstract
             'designation' => $employee->designation,
             'designation_id' => $employee->designation_id,
             'manager_id' => $employee->manager_id,
+            'pay_frequency_id' => $employee->pay_frequency_id,
+            'payroll_group' => $payrollGroup,
             'number' => $employee->number,
             'full_name' => $employee->full_name,
             'given_name' => $employee->given_name,
