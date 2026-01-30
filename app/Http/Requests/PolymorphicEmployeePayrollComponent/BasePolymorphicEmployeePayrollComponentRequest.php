@@ -21,7 +21,6 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'currency' => 'sometimes|string',
             'pay_period' => 'sometimes|required|numeric|integer',
             'pay_type' => 'sometimes|required|numeric|integer',
-            'pay_frequency_id' => 'sometimes|required|numeric|integer',
 
             'amountable_start' => 'sometimes|required|numeric|integer',
             'amountable_end' => 'sometimes|required|numeric|integer',
@@ -46,9 +45,8 @@ class BasePolymorphicEmployeePayrollComponentRequest extends FormRequest
             'payroll_componentable_id.required' => 'Payroll component is required',
             'amount.required' => 'Amount is required',
             'amount.regex' => 'Amount must be a valid number with up to 12 digits and maximum 6 decimal places',
-            'pay_period.required' => 'Pay period is required',
+            'pay_period.required' => 'Amount pay period is required',
             'pay_type.required' => 'Pay type is required',
-            'pay_frequency_id.required' => 'Pay frequency is required',
             'amountable_start.required' => 'Date start is required',
             'start_date.date_format' => 'Start date must match the format Y-m-d e.g.(2000-12-31)',
             'amountable_end.required' => 'Date end is required',

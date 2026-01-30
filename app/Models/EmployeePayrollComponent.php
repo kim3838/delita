@@ -22,7 +22,6 @@ class EmployeePayrollComponent extends Model
         'currency',
         'pay_period',
         'pay_type',
-        'pay_frequency_id',
         'amountable_start',
         'start_date',
         'amountable_end',
@@ -38,7 +37,6 @@ class EmployeePayrollComponent extends Model
         'currency' => 'string',
         'pay_period' => PayPeriod::class,
         'pay_type' => PayType::class,
-        'pay_frequency_id' => 'int',
         'amountable_start' => AmountablePayrollComponentStart::class,
         'start_date' => 'date',
         'amountable_end' => AmountablePayrollComponentEnd::class,
@@ -53,10 +51,5 @@ class EmployeePayrollComponent extends Model
     public function payrollComponentable(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function payFrequency(): BelongsTo
-    {
-        return $this->belongsTo(PayFrequency::class);
     }
 }

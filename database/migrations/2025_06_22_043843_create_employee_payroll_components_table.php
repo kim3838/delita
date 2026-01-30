@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('currency')->nullable();
             $table->smallInteger('pay_period')->nullable();
             $table->smallInteger('pay_type')->nullable();
-            $table->foreignId('pay_frequency_id')->nullable()->constrained('pay_frequencies')->nullOnDelete();
             $table->smallInteger('amountable_start')->default(AmountablePayrollComponentStart::NOT_SPECIFIED);
             $table->date('start_date')->nullable();
             $table->smallInteger('amountable_end')->default(AmountablePayrollComponentEnd::NOT_SPECIFIED);

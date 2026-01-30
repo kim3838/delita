@@ -18,6 +18,8 @@ class ListTransformer extends TransformerAbstract
             ? Fractal::item($model->payFrequency, PayFrequencyItemTransformer::class)
             : null;
 
+        $payrollGroup = $employee->payFrequency ? Fractal::item($employee->payFrequency, PayFrequencyItemTransformer::class) : null;
+
         return [
             'row_number' => $model->row_number,
             'id' => $model->id ? (int)$model->id : null,
@@ -48,6 +50,7 @@ class ListTransformer extends TransformerAbstract
                 'full_name' => $employee->full_name,
                 'department' => $employee->departments->first(),
                 'designation' => $employee->designation,
+                'payroll_group' => $payrollGroup,
             ],
         ];
     }
