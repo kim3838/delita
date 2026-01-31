@@ -333,6 +333,7 @@ Route::group([
     Route::post('employee-validate', [EmployeeController::class, 'validate']);
     Route::post('employee', [EmployeeController::class, 'store']);
     Route::patch('employee/{employeeId}', [EmployeeController::class, 'update']);
+    Route::patch('employees', [EmployeeController::class, 'batchUpdate']);
     Route::get('employee-selections', [EmployeeController::class, 'selection']);
     Route::get('employee/{ulid}', [EmployeeController::class, 'show']);
     Route::get('employee-gate/{ulid}', [EmployeeController::class, 'showGate']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Employee\BatchUpdateEmployeeRequest;
 use App\Http\Requests\Employee\ListEmployeeRequest;
 use App\Http\Requests\Employee\StoreEmployeeRequest;
 use App\Http\Requests\Employee\UpdateEmployeeRequest;
@@ -81,6 +82,23 @@ class EmployeeController extends Controller
                     App::make(EmployeeRepository::class)->update($employeeId, $request->validated()),
                     ItemTransformer::class
                 )
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function batchUpdate(BatchUpdateEmployeeRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $employeeIdentifiers = data_get($request->validated(), 'employee_identifiers', []);
+            $attributes = collect($request->validated())->except(['employee_identifiers'])->toArray();
+
+            $batchUpdateErrors = App::make(EmployeeRepository::class)->batchUpdate($employeeIdentifiers, $attributes);
+
+            return ResponseJson::successfulResponse([
+                'batch_update_errors' => $batchUpdateErrors
             ]);
         }
 

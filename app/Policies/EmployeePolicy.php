@@ -46,4 +46,14 @@ class EmployeePolicy extends BasePolicy
         return $this->userIsAdminInCompany($user, request()->input('company_id'))
             && $this->hasPermission($user, 'update-employee');
     }
+
+    public function batchUpdate(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-employee');
+    }
 }

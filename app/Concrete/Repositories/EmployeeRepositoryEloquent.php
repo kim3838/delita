@@ -2,11 +2,17 @@
 
 namespace App\Concrete\Repositories;
 
+use App\Blueprint\Repositories\DepartmentRepository;
+use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
+use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Enums\EmploymentStatus;
+use App\Enums\Formulable;
+use App\Enums\PayFrequency;
+use App\Enums\PayPeriod;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -228,6 +234,88 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         $model->update($attributes);
 
         return $model;
+    }
+
+    public function batchUpdate($employeeIdentifiers, $attributes): array
+    {
+        $errors = [];
+
+        foreach($employeeIdentifiers as $identifier){
+
+            $employee = $this->model::query()->findOrfail($identifier);
+
+            if(!$attributes['keep_department'] && $attributes['department_assignment_type'] == DepartmentEmployeeAssignmentType::HEAD->value){
+
+                $departmentHead = App::make(DepartmentRepository::class)->model()::query()
+                    ->find($attributes['department_id'])->employees()
+                    ->wherePivot('department_assignment_type', DepartmentEmployeeAssignmentType::HEAD->value)->first();
+
+                if(!empty($departmentHead)){
+                    $attributes['department_assignment_type'] = DepartmentEmployeeAssignmentType::DEFAULT->value;
+                }
+            }
+
+            if(!$attributes['keep_department']){
+
+                $this->syncDepartments($employee, [
+                    'department_id' => $attributes['department_id'] ?? null,
+                    'department_assignment_type' => $attributes['department_assignment_type']
+                ]);
+            }
+
+            $updateAttributes = [
+
+                ...(!$attributes['keep_designation'] ? [
+                    'designation_id' => $attributes['designation_id'] ?? null,
+                ] : []),
+
+                ...((!$attributes['keep_manager'] && $identifier!== $attributes['manager_id']) ? [
+                    'manager_id' => $attributes['manager_id'] ?? null,
+                ] : [])
+            ];
+
+            $employee->update($updateAttributes);
+
+            if(!$attributes['keep_pay_frequency']){
+
+                $newPayFrequency = $attributes['pay_frequency_id'] ?? null;
+                $removePayFrequency = empty($attributes['pay_frequency_id']);
+                $employeeAmountableCompensationsAreValidWithNewPayFrequency = true;
+
+                if(!empty($newPayFrequency)){
+
+                    $payFrequency = App::make(PayFrequencyRepository::class)->model()::query()->find($newPayFrequency);
+
+                    $payFrequencyIsWeekly = $payFrequency?->type == PayFrequency::WEEKLY;
+
+                    if($payFrequencyIsWeekly){
+
+                        $employeeAmountableSemiMonthlyOrMonthlyCompensation = App::make(EmployeePayrollComponentRepository::class)->model()::query()
+                            ->where('employee_id', $employee->id)
+                            ->where('payroll_componentable_type', 'compensation')
+                            ->where('formulable_type', Formulable::EARNINGS->value)
+                            ->whereIn('pay_period', [PayPeriod::SEMI_MONTHLY->value, PayPeriod::MONTHLY->value])
+                            ->get()->toArray();
+
+                        if(!empty($employeeAmountableSemiMonthlyOrMonthlyCompensation)){
+
+                            $employeeAmountableCompensationsAreValidWithNewPayFrequency = false;
+                            $errors[] = [
+                                'employee_number' => $employee->number,
+                                'employee_full_name' => $employee->fullName,
+                                'error' => 'Unable to apply weekly payroll group if employee has semi-monthly or monthly compensation amount pay period.'
+                            ];
+                        }
+                    }
+                }
+
+                if($removePayFrequency || $employeeAmountableCompensationsAreValidWithNewPayFrequency){
+                    $employee->update(['pay_frequency_id' => $newPayFrequency]);
+                }
+            }
+        }
+
+        return $errors;
     }
 
     public function syncDepartments($model, $attributes): void
