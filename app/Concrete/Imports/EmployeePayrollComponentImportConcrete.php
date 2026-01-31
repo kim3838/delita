@@ -62,6 +62,10 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
 
                     $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
                     continue;
+
+                } else {
+
+                    $payFrequency = $employee->payFrequency;
                 }
             }
 
@@ -169,11 +173,11 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                         PayPeriod::MONTHLY
                     ]);
 
-                    $payFrequencyIsDailyOrWeekly = in_array($payFrequency->type, [
+                    $employeePayFrequencyIsDailyOrWeekly = in_array($payFrequency->type, [
                         PayFrequencyEnum::WEEKLY
                     ]);
 
-                    if($payPeriodIsSemimonthlyOrMonthly && $payFrequencyIsDailyOrWeekly){
+                    if($payPeriodIsSemimonthlyOrMonthly && $employeePayFrequencyIsDailyOrWeekly){
                         $validationErrors[] = 'Semi-monthly/Monthly pay period are not allowed for Weekly frequencies.';
                     }
                 }
