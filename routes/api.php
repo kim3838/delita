@@ -352,7 +352,6 @@ Route::group([
     Route::get('employee-groups', [EmployeeGroupController::class, 'index']);
     Route::get('employee-groups-gate', [EmployeeGroupController::class, 'indexGate']);
     Route::get('employee-group-selections', [EmployeeGroupController::class, 'selection']);
-    Route::get('employee-group/{ulid}', [EmployeeGroupController::class, 'show']);
     Route::post('employee-group', [EmployeeGroupController::class, 'store']);
     Route::patch('employee-group/{ulid}', [EmployeeGroupController::class, 'update']);
 
