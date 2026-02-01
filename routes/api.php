@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\BulkOrganizationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyUserController;
 use App\Http\Controllers\CompanyUserRolePermissionController;
@@ -223,6 +224,8 @@ Route::group([
     Route::get('company-gate/{ulid}', [CompanyController::class, 'showGate']);
     Route::post('company', [CompanyController::class, 'store']);
     Route::patch('company/{companyId}', [CompanyController::class, 'update']);
+
+    Route::get('organization-selections', [BulkOrganizationController::class, 'index']);
 
     //Company Formula
     Route::get('company-formula-selections', [CompanyFormulaController::class, 'selection']);
