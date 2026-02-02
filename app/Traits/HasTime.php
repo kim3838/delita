@@ -62,4 +62,29 @@ trait HasTime
 
         return $diffForHumans;
     }
+
+    protected function getPreviousWeekDay(Carbon $date, int $weekday, int $nth = 1): Carbon
+    {
+        return $date->copy()
+            ->previous($weekday)
+            ->subWeeks($nth - 1);
+    }
+
+    protected function getPreviousNthIncludingCurrent(Carbon $date, int $nth = 1): Carbon
+    {
+        $date = $date->copy();
+
+        return $date->day >= $nth
+            ? $date->day($nth)
+            : $date->subMonth()->day($nth);
+    }
+
+    protected function getNextNthIncludingCurrent(Carbon $date, int $nth = 1): Carbon
+    {
+        $date = $date->copy();
+
+        return $date->day <= $nth
+            ? $date->day($nth)
+            : $date->addMonth()->day($nth);
+    }
 }
