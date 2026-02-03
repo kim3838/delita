@@ -3,14 +3,20 @@
 namespace App\Concrete;
 
 use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\Repositories\PayrollPayloadRepository;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\SemiMonthlySequence;
+use App\Facades\Fractal;
 use App\Models\Company;
+use App\Models\Hydrations\Payroll\PayrollPayload;
 use App\Models\PayFrequency as PayFrequencyModel;
 use App\Traits\HasPayroll;
 use App\Traits\HasTime;
+use App\Transformers\PayrollPayload\BasicTransformer;
 use Carbon\Carbon;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 
 class PayrollServiceConcrete implements PayrollServiceInterface
 {
@@ -50,7 +56,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $payFrequencyRecentPayrolls = [];
 
             $payFrequencyLatestPayroll = $this->getPayrollPayload($payFrequency);
-            $chainStartDate = $payFrequencyLatestPayroll['start']->copy();
+            $chainStartDate = $payFrequencyLatestPayroll->start->copy();
 
             while(count($payFrequencyRecentPayrolls) < $recentCount){
 
@@ -58,7 +64,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 $recent = $this->getPayrollPayload($payFrequency);
 
-                $chainStartDate = $recent['start']->copy();
+                $chainStartDate = $recent->start->copy();
 
                 array_unshift($payFrequencyRecentPayrolls, $recent);
             }
@@ -73,17 +79,17 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
 
         return [
-            'recent' => $recentPayrolls,
-            'latest' => $latestPayrolls,
+            'recent' => collect($recentPayrolls),
+            'latest' => collect($latestPayrolls),
         ];
     }
 
-    public function getPayrollPayload($payFrequencyEnumValue = null): array
+    public function getPayrollPayload($payFrequencyEnumValue = null): ?PayrollPayload
     {
         $debugEnabled = false;
 
         if(empty($this->company)){
-            return [];
+            return null;
         }
 
         if($debugEnabled){
@@ -95,26 +101,27 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $semimonthlyFrequency = $this->payFrequencies->where('type', $semimonthly->value)->first();
             $monthlyFrequency = $this->payFrequencies->where('type', $monthly->value)->first();
 
-            $latestWeeklyFrequency = $this->getFrequencyDateRange($weeklyFrequency);
-            $monthlyFrequencyLatestDateRange = $this->getFrequencyDateRange($monthlyFrequency);
-            $semimonthlyFrequencyLatestDateRange = $this->getFrequencyDateRange($semimonthlyFrequency);
+            $latestWeekly = $this->getPayrollPayloadByFrequency($weeklyFrequency);
+            $latestMonthlyFrequency = $this->getPayrollPayloadByFrequency($monthlyFrequency);
+            $latestSemimonthlyFrequency = $this->getPayrollPayloadByFrequency($semimonthlyFrequency);
 
             _debug([
-                '@currentPayrolls' => [
-                    'date' => $this->date->toDateString(),
-                    'weekly' => $this->transformPayrollPayload($latestWeeklyFrequency),
-                    'monthly' => $this->transformPayrollPayload($monthlyFrequencyLatestDateRange),
-                    'semimonthly' => $this->transformPayrollPayload($semimonthlyFrequencyLatestDateRange),
-                ],
+                'date' => $this->date->toDateString(),
+                'weekly' => Fractal::item($latestWeekly, BasicTransformer::class),
+                'monthly' => Fractal::item($latestMonthlyFrequency, BasicTransformer::class),
+                'semimonthly' => Fractal::item($latestSemimonthlyFrequency, BasicTransformer::class),
             ]);
         }
 
-        $payrollPayload = $this->getFrequencyDateRange($this->payFrequencies->where('type', $payFrequencyEnumValue)->first());
+        $payrollPayload = $this->getPayrollPayloadByFrequency($this->payFrequencies->where('type', $payFrequencyEnumValue)->first());
 
         return $payrollPayload;
     }
 
-    private function getFrequencyDateRange(?PayFrequencyModel $frequency): array
+    /**
+     * @throws BindingResolutionException
+     */
+    private function getPayrollPayloadByFrequency(?PayFrequencyModel $frequency): PayrollPayload
     {
         $payrollYear = null;
         $payrollMonth = null;
@@ -231,13 +238,13 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             }
         }
 
-        return [
+        return App::make(PayrollPayloadRepository::class)->hydrateItem([
             'year' => $payrollYear,
             'month' => $payrollMonth,
-            'pay_frequency' => $frequency->type,
-            'frequency_sequence' => $frequencySequence,
+            'pay_frequency' => $frequency->type->value,
+            'frequency_sequence' => $frequencySequence?->value,
             'start' => $startDate,
             'end' => $endDate,
-        ];
+        ]);
     }
 }
