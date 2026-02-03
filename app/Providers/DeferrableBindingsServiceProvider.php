@@ -13,7 +13,7 @@ use App\Models\Company;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class BindingsServiceProvider extends ServiceProvider implements DeferrableProvider
+class DeferrableBindingsServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public $bindings = [
         'enum' => EnumConcrete::class,
