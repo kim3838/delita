@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 class PayrollServiceConcrete implements PayrollServiceInterface
 {
     protected string $timezone = 'UTC';
-    protected Carbon $date;
+    public Carbon $date;
     protected Collection $payFrequencies;
 
     use HasTime, HasPayroll;
@@ -28,38 +28,59 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         $this->payFrequencies = $company?->payFrequencies ?? collect();
     }
 
+    public function resetDate(): void
+    {
+        $this->date = Carbon::now()->timezone($this->timezone);
+    }
+
     public function setCustomDate(Carbon $date): void
     {
         $this->date = $date;
     }
 
-    public function getLatestWithRecent($payFrequencyEnumValue = null, $recentCount = 1): array
+    public function getLatestWithRecent($payFrequencyEnumValue = [], $recentCount = 1): array
     {
         $recentPayrolls = [];
+        $latestPayrolls = [];
 
-        $latestPayroll = $this->getPayrollPayload($payFrequencyEnumValue);
-        $chainStartDate = $latestPayroll['start']->copy();
+        sort($payFrequencyEnumValue);
 
-        while(count($recentPayrolls) < $recentCount){
+        foreach($payFrequencyEnumValue as $payFrequency){
 
-            $this->setCustomDate($chainStartDate->subDay());
+            $payFrequencyRecentPayrolls = [];
 
-            $recent = $this->getPayrollPayload($payFrequencyEnumValue);
+            $payFrequencyLatestPayroll = $this->getPayrollPayload($payFrequency);
+            $chainStartDate = $payFrequencyLatestPayroll['start']->copy();
 
-            $chainStartDate = $recent['start']->copy();
+            while(count($payFrequencyRecentPayrolls) < $recentCount){
 
-            array_unshift($recentPayrolls, $recent);
+                $this->setCustomDate($chainStartDate->subDay());
+
+                $recent = $this->getPayrollPayload($payFrequency);
+
+                $chainStartDate = $recent['start']->copy();
+
+                array_unshift($payFrequencyRecentPayrolls, $recent);
+            }
+
+            $latestPayrolls[] = $payFrequencyLatestPayroll;
+
+            foreach($payFrequencyRecentPayrolls as $payFrequencyRecentPayroll){
+                $recentPayrolls[] = $payFrequencyRecentPayroll;
+            }
+
+            $this->resetDate();
         }
 
         return [
             'recent' => $recentPayrolls,
-            'latest' => $latestPayroll,
+            'latest' => $latestPayrolls,
         ];
     }
 
     public function getPayrollPayload($payFrequencyEnumValue = null): array
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
 
         if(empty($this->company)){
             return [];
@@ -97,7 +118,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     {
         $payrollYear = null;
         $payrollMonth = null;
-        $payrollMonthSequence = null;
+        $frequencySequence = null;
         $startDate = null;
         $endDate = null;
 
@@ -159,11 +180,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 if($this->date->day >= $secondHalfStartDay){
                     $startDate = $this->date->copy()->day($secondHalfStartDay);
                     $endDate = $this->date->copy()->day($secondHalfEndDay);
-                    $payrollMonthSequence = SemiMonthlySequence::SECOND_HALF;
+                    $frequencySequence = SemiMonthlySequence::SECOND_HALF;
                 } else {
                     $startDate = $this->date->copy()->day($firstHalfStartDay);
                     $endDate = $this->date->copy()->day($firstHalfEndDay);
-                    $payrollMonthSequence = SemiMonthlySequence::FIRST_HALF;
+                    $frequencySequence = SemiMonthlySequence::FIRST_HALF;
                 }
 
                 $payrollYear = $startDate->year;
@@ -181,11 +202,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     if($this->date->day >= $firstHalfStartDay && $this->date->day <= $firstHalfEndDay){
                         $startDate = $this->getPreviousNthIncludingCurrent($this->date, $firstHalfStartDay);
                         $endDate = $this->getNextNthIncludingCurrent($startDate, $firstHalfEndDay);
-                        $payrollMonthSequence = SemiMonthlySequence::FIRST_HALF;
+                        $frequencySequence = SemiMonthlySequence::FIRST_HALF;
                     } else {
                         $startDate = $this->getPreviousNthIncludingCurrent($this->date, $secondHalfStartDay);
                         $endDate = $this->getNextNthIncludingCurrent($startDate, $secondHalfEndDay);
-                        $payrollMonthSequence = SemiMonthlySequence::SECOND_HALF;
+                        $frequencySequence = SemiMonthlySequence::SECOND_HALF;
                     }
 
                     $payrollYear = $startDate->year;
@@ -197,11 +218,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     if($this->date->day >= $secondHalfStartDay && $this->date->day <= $secondHalfEndDay){
                         $startDate = $this->getPreviousNthIncludingCurrent($this->date, $secondHalfStartDay);
                         $endDate = $this->getNextNthIncludingCurrent($startDate, $secondHalfEndDay);
-                        $payrollMonthSequence = SemiMonthlySequence::SECOND_HALF;
+                        $frequencySequence = SemiMonthlySequence::SECOND_HALF;
                     } else {
                         $startDate = $this->getPreviousNthIncludingCurrent($this->date, $firstHalfStartDay);
                         $endDate = $this->getNextNthIncludingCurrent($startDate, $firstHalfEndDay);
-                        $payrollMonthSequence = SemiMonthlySequence::FIRST_HALF;
+                        $frequencySequence = SemiMonthlySequence::FIRST_HALF;
                     }
 
                     $payrollYear = $endDate->year;
@@ -213,7 +234,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         return [
             'year' => $payrollYear,
             'month' => $payrollMonth,
-            'month_sequence' => $payrollMonthSequence,
+            'pay_frequency' => $frequency->type,
+            'frequency_sequence' => $frequencySequence,
             'start' => $startDate,
             'end' => $endDate,
         ];
