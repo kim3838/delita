@@ -931,6 +931,78 @@ class Development extends Seeder
             'active' => true,
             'effective_date' => '2000-01-11',
         ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 9th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 9th Legal holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-09',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-09',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 10th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 10th Legal holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-10',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-10',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 11th Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 11th Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-11',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-11',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 12th Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 12th Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-12',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-12',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 17th Paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 17th Paid Special holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-17',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-17',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 18th Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 18th Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-18',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-18',
+        ]);
     }
 
     public function createPayrollComponent(Model $company, $index, $formulableType, $component, $attributes): void
