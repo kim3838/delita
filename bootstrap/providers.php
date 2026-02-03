@@ -3,6 +3,7 @@
 return [
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
+    App\Providers\BindingsServiceProvider::class,
     App\Providers\DeferrableBindingsServiceProvider::class,
     App\Providers\ImportBindingsServiceProvider::class,
     App\Providers\ObserverServiceProvider::class,
