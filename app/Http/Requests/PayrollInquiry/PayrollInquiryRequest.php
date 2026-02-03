@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\PayrollInquiry;
 
-use App\Enums\PayFrequency;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class PayrollInquiryRequest extends FormRequest
 {
