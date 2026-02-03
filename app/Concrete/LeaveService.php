@@ -621,7 +621,7 @@ class LeaveService
                 return [
                     'year'  => $yearMonth['year'],
                     'month' => $yearMonth['month'],
-                    'month_readable' => Carbon::createFromFormat('m', $yearMonth['month'])->format('F'),
+                    'month_readable' => Carbon::createFromDate(null, $yearMonth['month'], 1)->format('F'),
                     'value' => $mappedYearMonthCollection->values()->all()
                 ];
             });
