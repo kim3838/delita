@@ -13,31 +13,42 @@ class ListTransformer extends TransformerAbstract
     {
         $year = $payload->year;
         $month = str_pad($payload->month, 2, '0', STR_PAD_LEFT);
-        $payFrequencyLabel = strtoupper($payload->pay_frequency?->label());
+        $monthReadable = Carbon::createFromDate(null, $payload->month, 1)->format('F');
+        $payFrequencyLabel = $payload->pay_frequency?->label();
+        $payFrequencyLabelUppercase = strtoupper($payload->pay_frequency?->label());
+        $frequencySequenceReadable = null;
         $frequencySequenceFlag = null;
 
         if($payload->frequency_sequence){
             switch($payload->frequency_sequence){
-                case SemiMonthlySequence::FIRST_HALF : $frequencySequenceFlag = 1; break;
-                case SemiMonthlySequence::SECOND_HALF : $frequencySequenceFlag = 2; break;
+                case SemiMonthlySequence::FIRST_HALF :
+                    $frequencySequenceReadable = SemiMonthlySequence::FIRST_HALF->label();
+                    $frequencySequenceFlag = 1;
+                    break;
+                case SemiMonthlySequence::SECOND_HALF :
+                    $frequencySequenceReadable = SemiMonthlySequence::SECOND_HALF->label();
+                    $frequencySequenceFlag = 2;
+                    break;
             }
         }
 
         $startDate = $payload->start->format('Ymd');
         $endDate = $payload->end->format('Ymd');
+        $dateRangeReadable = $payload->start->format('F j, Y') . ' - ' . $payload->end->format('F j, Y');
 
         return [
-            'id' => "{$year}-{$month}-{$payFrequencyLabel}" . ($frequencySequenceFlag ? "-{$frequencySequenceFlag}" : '') . ("-{$startDate}-{$endDate}"),
+            'id' => "{$year}-{$month}-{$payFrequencyLabelUppercase}" . ($frequencySequenceFlag ? "-{$frequencySequenceFlag}" : '') . ("-{$startDate}-{$endDate}"),
+            'summary' => "{$payFrequencyLabel} - {$year} {$monthReadable} " . ($frequencySequenceReadable ? "({$frequencySequenceReadable}) " : ''),
             'year' => $payload->year,
             'month' => $payload->month,
-            'month_readable' => Carbon::createFromDate(null, $payload->month, 1)->format('F'),
+            'month_readable' => $monthReadable,
             'pay_frequency' => $payload->pay_frequency?->toArray(),
             'pay_frequency_readable' => $payload->pay_frequency?->label(),
             'frequency_sequence' => $payload->frequency_sequence?->toArray(),
             'frequency_sequence_readable' => $payload->frequency_sequence?->label(),
             'start' => $payload->start?->toDateString(),
             'end' => $payload->end?->toDateString(),
-            'date_range_readable' => $payload->start->format('F j, Y') . ' - ' . $payload->end->format('F j, Y'),
+            'date_range_readable' => $dateRangeReadable,
             'remarks' => ''
         ];
     }
