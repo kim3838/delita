@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\LazyCollection;
 
 class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements EmployeeRepository
 {
@@ -65,6 +66,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             })
             ->when(!empty($filters->employment_type) && is_array($filters->employment_type), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("current_employment_profile.employment_type"), $filters->employment_type);
+            })
+            ->when(!empty($filters->pay_frequency_ids) && is_array($filters->pay_frequency_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("employees.pay_frequency_id"), $filters->pay_frequency_ids);
             })
             ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
@@ -174,6 +178,13 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function queryBuilderCursor($filters): LazyCollection
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters, $this->defaultOrders);
+
+        return $queryBuilder->cursor();
     }
 
     public function selection($filters): LengthAwarePaginator
