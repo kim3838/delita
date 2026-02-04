@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('leave_request_id')->constrained('leave_requests')->onDelete('cascade');
             $table->date('date');
             $table->boolean('successful')->default(false);
-            $table->string('remarks');
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }
