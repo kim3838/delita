@@ -2,13 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Concrete\LeaveService;
+use App\Facades\Fractal;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveType;
+use App\Transformers\PayrollPayload\ListTransformer;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 
 class Debug extends Command
 {
@@ -31,7 +36,19 @@ class Debug extends Command
      */
     public function handle()
     {
+        $this->payroll();
+    }
 
+    private function payroll()
+    {
+        $payrollService = App::make(PayrollServiceInterface::class, [Company::find(4)]);
+
+        $latestWithRecent = $payrollService->getLatestWithRecent([200], 2);
+
+        _debug([
+            'recent' => Fractal::collection($latestWithRecent['recent'], ListTransformer::class)['data'],
+            'latest' => Fractal::collection($latestWithRecent['latest'], ListTransformer::class)['data'],
+        ]);
     }
 
     private function userFiledRequest()
