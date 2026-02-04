@@ -106,6 +106,10 @@ class PermissionService
                     'key' => 'payroll-frequency',
                     'readable_name' => 'Payroll frequency',
                     'actions' => ['view', 'update']
+                ],[
+                    'key' => 'payroll',
+                    'readable_name' => 'Payroll',
+                    'actions' => ['view', 'create', 'delete']
                 ],
             ]
         ],

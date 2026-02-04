@@ -126,4 +126,9 @@ class Company extends Model
     {
         return $this->hasMany(ApprovalSetting::class);
     }
+
+    public function payrolls(): HasMany
+    {
+        return $this->hasMany(Payroll::class);
+    }
 }

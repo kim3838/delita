@@ -44,6 +44,8 @@ use App\Blueprint\Repositories\NonEmployeeUserRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\Repositories\OvertimeRequestRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Blueprint\Repositories\PayrollPayloadRepository;
+use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
@@ -97,6 +99,8 @@ use App\Concrete\Repositories\NonEmployeeUserRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRepositoryEloquent;
 use App\Concrete\Repositories\OvertimeRequestRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
+use App\Concrete\Repositories\PayrollPayloadRepositoryEloquent;
+use App\Concrete\Repositories\PayrollRepositoryEloquent;
 use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\RequestApprovalStateRepositoryEloquent;
@@ -167,6 +171,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'overtime_request' => OvertimeRequestRepositoryEloquent::class,
         'leave_request' => LeaveRequestRepositoryEloquent::class,
         'user_filed_request' => UserFiledRequestRepositoryEloquent::class,
+        'payroll' => PayrollRepositoryEloquent::class,
+        'payroll_payload' => PayrollPayloadRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -220,6 +226,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         OvertimeRequestRepository::class => OvertimeRequestRepositoryEloquent::class,
         LeaveRequestRepository::class => LeaveRequestRepositoryEloquent::class,
         UserFiledRequestRepository::class => UserFiledRequestRepositoryEloquent::class,
+        PayrollRepository::class => PayrollRepositoryEloquent::class,
+        PayrollPayloadRepository::class => PayrollPayloadRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -278,6 +286,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'overtime_request',
             'leave_request',
             'user_filed_request',
+            'payroll',
+            'payroll_payload',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -331,6 +341,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             OvertimeRequestRepository::class,
             LeaveRequestRepository::class,
             UserFiledRequestRepository::class,
+            PayrollRepository::class,
+            PayrollPayloadRepository::class,
         ];
     }
 }

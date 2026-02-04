@@ -76,6 +76,7 @@ use App\Http\Controllers\OvertimeImportTemplateController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\PayFrequencyController;
 use App\Http\Controllers\PayrollComponentController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PayrollInquiryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RequestApprovalStateController;
@@ -538,6 +539,8 @@ Route::group([
 
     //Payroll
     Route::get('payroll-inquiry', [PayrollInquiryController::class, 'index']);
+
+    Route::post('payroll', [PayrollController::class, 'store']);
 });
 
 Route::group([

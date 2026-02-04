@@ -10,6 +10,7 @@ use App\Observers\HasUlid;
 use App\Observers\LeaveRequestObserver;
 use App\Observers\OrderableObserver;
 use App\Observers\OvertimeRequestObserver;
+use App\Observers\PayrollObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -84,6 +85,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     LeaveRequestObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('payroll'),
+                ],
+                'observers' => [
+                    PayrollObserver::class,
                 ]
             ),
             array(
