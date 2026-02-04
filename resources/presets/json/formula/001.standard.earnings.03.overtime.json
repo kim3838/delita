@@ -120,7 +120,7 @@
                 "value": "2.145"
             },
             {
-                "key": "legal_holiday_rate",
+                "key": "legal_holiday",
                 "label": "Legal Holiday",
                 "order": 5,
                 "type": "number",
