@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\LeaveRequest;
 
-use App\Models\Leave;
 use App\Models\LeaveRequest;
+use App\Models\LeaveType;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\FormRequest;
