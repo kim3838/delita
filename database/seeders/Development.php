@@ -981,10 +981,22 @@ class Development extends Seeder
         ]);
 
         $company1002C->holidays()->firstOrCreate([
-            'name' => 'Feb 17th Paid Special holiday',
+            'name' => 'Feb 16th  Non-paid Special holiday',
         ],[
             'ulid' => Str::ulid(),
-            'name' => 'Feb 17th Paid Special holiday',
+            'name' => 'Feb 16th  Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-16',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-16',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 17th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 17th Paid Legal holiday',
             'type' => HolidayType::LEGAL,
             'date' => '2000-02-17',
             'recurring' => true,
