@@ -83,7 +83,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             return [];
         }
 
-        $isAttendanceDateIsHoliday = !empty($this->getDateHolidayType($date->toDateString()));
+        $startingDateHolidayType = $this->getDateHolidayType($date->toDateString());
+        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+        $isAttendanceDateIsHoliday = !empty($startingDateHolidayType);
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
         /**
@@ -159,7 +161,14 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Breakdown work periods by shift breakdown split type with holiday and rest day info,
          * Separates schedule and overtime by $breakdown->schedule and $breakdown->overtime
          **/
-        list($scheduleBreakdown, $overtimeBreakdown) = $this->breakdownWorkPeriods($workPeriods);
+        list($scheduleBreakdown, $overtimeBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
+
+        if(!$test && $debug){
+            _debug([
+                '$scheduleBreakdown' => $scheduleBreakdown,
+                '$overtimeBreakdown' => $overtimeBreakdown,
+            ]);
+        }
 
         /**
          * Apply attendance on a broken down shift schedule

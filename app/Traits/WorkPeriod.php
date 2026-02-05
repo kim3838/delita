@@ -466,7 +466,7 @@ trait WorkPeriod
         return $periods;
     }
 
-    protected function breakdownWorkPeriods(array $periods): array
+    protected function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
     {
         $breakdownSequence = 1;
         $schedule = [];
@@ -475,7 +475,7 @@ trait WorkPeriod
         foreach ($periods as $period) {
 
             // Split work periods into hourly segments and categorize
-            $categorizedSplit = $this->categorizeWorkPeriod($period['split_start'], $period['split_end'], $period['split_type'], $breakdownSequence);
+            $categorizedSplit = $this->categorizeWorkPeriod($period['split_start'], $period['split_end'], $period['split_type'], $breakdownSequence, $startingDateIsRestDay, $startingDateHolidayType);
 
             if(in_array($period['split_type'], [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH]) && !empty($categorizedSplit)){
 
@@ -494,7 +494,7 @@ trait WorkPeriod
         ];
     }
 
-    protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence): array
+    protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
     {
         $breakdown = [];
         $current = $startTime->copy();
@@ -510,7 +510,7 @@ trait WorkPeriod
             $workHourType = $this->getWorkHourType($current);
 
             // Determine rate type
-            $hourlyRateType = $this->getHourlyRate($current, $workHourType, $splitType);
+            $hourlyRateType = $this->getHourlyRate($current, $workHourType, $splitType, $startingDateIsRestDay, $startingDateHolidayType);
 
             $hourlyRateMultiplier = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
 
@@ -601,13 +601,23 @@ trait WorkPeriod
         return WorkHourType::REGULAR;
     }
 
-    protected function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType): HourlyRateType
+    protected function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType, $overrideIsRestDay, ?HolidayType $overrideHolidayType): HourlyRateType
     {
-        $dateString = $date->format('Y-m-d');
+        $everySplitHaveTheirOwnHolidayType = false;//Every split have their own holiday type
+        $everySplitHaveTheirOwnDayType = false;//Every split have their own rest or regular day
 
-        $holidayType = $this->getDateHolidayType($dateString);
+        if($everySplitHaveTheirOwnHolidayType){
+            $dateString = $date->format('Y-m-d');
+            $holidayType = $this->getDateHolidayType($dateString);
+        } else {
+            $holidayType = $overrideHolidayType;
+        }
 
-        $restDay = in_array($date->dayOfWeek, $this->restDays);
+        if($everySplitHaveTheirOwnDayType){
+            $restDay = in_array($date->dayOfWeek, $this->restDays);
+        } else {
+            $restDay = $overrideIsRestDay;
+        }
 
         $workRates = [
             WorkHourType::NIGHT->value => [
