@@ -25,10 +25,6 @@ class ListTransformer extends TransformerAbstract
             'hourly_rate_type' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
                 ? $attendanceDetail->hourly_rate_type?->toArray()
                 : null,
-            'hourly_rate_multiplier' => in_array($attendanceDetail->split_type, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::OVERTIME])
-                ? $attendanceDetail->hourly_rate_multiplier
-                : null,
-            'base_rate_multiplier' => $attendanceDetail->base_rate_multiplier,
             'order' => $attendanceDetail->order,
             'actual_start' => empty($attendanceDetail->actual_start)
                 ? null
