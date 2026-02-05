@@ -6,6 +6,7 @@ use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\LeaveRepository;
+use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PayrollPayloadRepository;
 use App\Enums\AttendanceStatus;
@@ -324,12 +325,19 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
                 $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
 
-                $hasLeave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString())->isNotEmpty();
+                $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
+                $hasLeave = $leave->isNotEmpty();
+                $leaveType = null;
+
+                if($hasLeave){
+                    $leaveType = app(LeaveTypeRepository::class)->model()::find($leave->first()['leave_type']['id']);
+                }
 
                 _debug([
                     'date' => $date->toDateString(),
-                    '$attendance date status' => $attendance?->status,
+                    '$attendance status' => $attendance?->status?->label(),
                     '$hasLeave' => $hasLeave,
+                    '$leaveType is_paid' => $leaveType?->is_paid,
                 ]);
 
                 $this->setShift($employeeShift);
@@ -353,7 +361,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 } else if(empty($attendance) && !$hasLeave) {
                     $payrollAttendanceStatus = PayrollAttendanceStatus::ABSENT;
                 } else if ($hasLeave){
-                    $payrollAttendanceStatus = PayrollAttendanceStatus::LEAVE;
+                    $payrollAttendanceStatus = match($leaveType?->is_paid){
+                        true => PayrollAttendanceStatus::LEAVE_WITH_PAY,
+                        false => PayrollAttendanceStatus::LEAVE_WITHOUT_PAY,
+                        null => PayrollAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
+                    };
                 } else {
                     $payrollAttendanceStatus = match($attendance->status){
                         AttendanceStatus::FULL_PRESENT => PayrollAttendanceStatus::FULL_PRESENT,

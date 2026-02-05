@@ -8,8 +8,10 @@ enum PayrollAttendanceStatus: int implements BaseEnum
     case FULL_PRESENT = 100;
     case PRESENT_WITH_IRREGULARITIES = 103;
     case DAY_OFF = 200;
-    case LEAVE = 300;
-    case ABSENT = 301;
+    case LEAVE_WITHOUT_PAY = 300;
+    case LEAVE_WITH_PAY = 301;
+    case LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT = 302;
+    case ABSENT = 401;
 
     public function label(): string
     {
@@ -18,7 +20,9 @@ enum PayrollAttendanceStatus: int implements BaseEnum
             self::FULL_PRESENT => 'Full present',
             self::PRESENT_WITH_IRREGULARITIES => 'Present with irregularities',
             self::DAY_OFF => 'Day off',
-            self::LEAVE => 'Leave',
+            self::LEAVE_WITHOUT_PAY => 'Leave without pay',
+            self::LEAVE_WITH_PAY => 'Leave with pay',
+            self::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT => "Leave but can't identify if paid or not",
             self::ABSENT => 'Absent',
         };
     }
