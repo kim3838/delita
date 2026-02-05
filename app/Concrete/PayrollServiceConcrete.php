@@ -33,7 +33,6 @@ use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\LazyCollection;
 
 class PayrollServiceConcrete implements PayrollServiceInterface
 {
@@ -281,120 +280,131 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             'pay_frequency_ids' => [$payFrequency->id],
         ];
 
+        //Employee payroll frequency group
         $employees = app(EmployeeRepository::class)->queryBuilderCursor($filters);
 
-        $this->generatePayrollAttendances($payroll, $employees);
+        foreach($employees as $employee){
+
+            $salaryStatementAttendances = $this->buildEmployeeSalaryStatementAttendances($payroll, $employee);
+
+            $salaryStatement = $payroll->salaryStatements()->firstOrCreate([
+                'payroll_id' => $payroll->id,
+                'employee_id' => $employee->id,
+            ]);
+        }
     }
 
     /**
      * @throws UnexpectedException
      */
-    public function generatePayrollAttendances(Payroll $payroll, LazyCollection $employees): array
+    public function buildEmployeeSalaryStatementAttendances(Payroll $payroll, $employee): array
     {
+        //Payroll date period
         $datePeriod = CarbonPeriod::create($payroll->start_date, $payroll->end_date);
 
-        $payrollAttendances = [];
+        //Build employee's salary attendance
+        $salaryStatementAttendances = [];
 
-        foreach($employees as $employee){
+        $employee = app(EmployeeRepository::class)->hydrateItem($employee);
+        $employeeShift = $employee->shifts->first();
+        $employeeDatePeriodAttendances = app(AttendanceRepository::class)
+            ->model()::where('employee_id', $employee->id)
+            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
+            ->get();
+        $employeeDatePeriodLeaves = app(LeaveRepository::class)
+            ->model()::where('employee_id', $employee->id)
+            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
+            ->get();
 
-            $employee = app(EmployeeRepository::class)->hydrateItem($employee);
-            $employeeShift = $employee->shifts->first();
-            $employeeDatePeriodAttendances = app(AttendanceRepository::class)
-                ->model()::where('employee_id', $employee->id)
-                ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
-                ->get();
-            $employeeDatePeriodLeaves = app(LeaveRepository::class)
-                ->model()::where('employee_id', $employee->id)
-                ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
-                ->get();
+        $employeeDatePeriodAttendances = Fractal::collection(
+            $employeeDatePeriodAttendances,
+            AttendancePatchableTransformer::class
+        )['data'];
 
-            $employeeDatePeriodAttendances = Fractal::collection(
-                $employeeDatePeriodAttendances,
-                AttendancePatchableTransformer::class
-            )['data'];
+        $employeeDatePeriodLeaves = Fractal::collection(
+            $employeeDatePeriodLeaves,
+            LeaveBasicTransformer::class
+        )['data'];
 
-            $employeeDatePeriodLeaves = Fractal::collection(
-                $employeeDatePeriodLeaves,
-                LeaveBasicTransformer::class
-            )['data'];
+        foreach($datePeriod as $date){
 
-            foreach($datePeriod as $date){
+            if(empty($employeeShift)) continue;
 
-                if(empty($employeeShift)) continue;
+            $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
+            $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
 
-                $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
-                $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
+            if(!in_array($date->toDateString(), ['2026-01-26', '2026-01-31', '2026-02-09'])) continue;
 
-                $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
-                $hasLeave = $leave->isNotEmpty();
-                $leaveType = null;
+            $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
+            $hasLeave = $leave->isNotEmpty();
+            $leaveType = null;
 
-                if($hasLeave){
-                    $leaveType = app(LeaveTypeRepository::class)->model()::find($leave->first()['leave_type']['id']);
-                }
-
-                _debug([
-                    'date' => $date->toDateString(),
-                    '$attendance status' => $attendance?->status?->label(),
-                    '$hasLeave' => $hasLeave,
-                    '$leaveType is_paid' => $leaveType?->is_paid,
-                ]);
-
-                $this->setShift($employeeShift);
-                $this->setAttendanceSchedule($date);
-                $dayOff = $this->attendanceScheduleIsDayOff;
-                $holidayType = $this->getDateHolidayType($date->toDateString());
-                $isDateIsHoliday = !empty($holidayType);
-                $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
-                $dayOffOrHoliday = $dayOff || ($shiftHolidayPolicyIsDayOff && $isDateIsHoliday);
-
-                $dayType = $dayOffOrHoliday ? PayrollAttendanceDayType::DAY_OFF : PayrollAttendanceDayType::WORKING_DAY;
-                $dayType = $isDateIsHoliday
-                    ? match($holidayType){
-                        HolidayType::SPECIAL => PayrollAttendanceDayType::SPECIAL_HOLIDAY,
-                        HolidayType::LEGAL => PayrollAttendanceDayType::LEGAL_HOLIDAY,
-                        HolidayType::DOUBLE => PayrollAttendanceDayType::DOUBLE_HOLIDAY,
-                    } : $dayType;
-
-                if(empty($attendance) && $dayOffOrHoliday){
-                    $payrollAttendanceStatus = PayrollAttendanceStatus::DAY_OFF;
-                } else if(empty($attendance) && !$hasLeave) {
-                    $payrollAttendanceStatus = PayrollAttendanceStatus::ABSENT;
-                } else if ($hasLeave){
-                    $payrollAttendanceStatus = match($leaveType?->is_paid){
-                        true => PayrollAttendanceStatus::LEAVE_WITH_PAY,
-                        false => PayrollAttendanceStatus::LEAVE_WITHOUT_PAY,
-                        null => PayrollAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
-                    };
-                } else {
-                    $payrollAttendanceStatus = match($attendance->status){
-                        AttendanceStatus::FULL_PRESENT => PayrollAttendanceStatus::FULL_PRESENT,
-                        AttendanceStatus::PRESENT_WITH_IRREGULARITIES => PayrollAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
-                        AttendanceStatus::ABSENT => PayrollAttendanceStatus::ABSENT,
-                        null => PayrollAttendanceStatus::TO_BE_DETERMINED,
-                    };
-                }
-
-                $payrollAttendance = [
-                    ...(false ? [
-                        '_employee_id' => $employee->id,
-                        '_is_day_off' => $dayOff,
-                        '_is_holiday' => $isDateIsHoliday,
-                        '_is_day_off_and_holiday_day_off' => $dayOffOrHoliday,
-                        '_holiday_type' => $holidayType,
-                        '_shift_holiday_policy_is_day_off' => $shiftHolidayPolicyIsDayOff,
-                    ] : []),
-                    'date' => $date->toDateString(),
-                    'status' => $payrollAttendanceStatus->label(),
-                    'day_type' => $dayType->label()
-                ];
-
-                _debug([
-                    '$payrollAttendance' => $payrollAttendance,
-                ]);
+            if($hasLeave){
+                $leaveType = app(LeaveTypeRepository::class)->model()::find($leave->first()['leave_type']['id']);
             }
+
+            _debug([
+                'date' => $date->toDateString(),
+                '$attendance status' => $attendance?->status?->label(),
+                '$hasLeave' => $hasLeave,
+                '$leaveType is_paid' => $leaveType?->is_paid,
+            ]);
+
+            $this->setShift($employeeShift);
+            $this->setAttendanceSchedule($date);
+            $dayOff = $this->attendanceScheduleIsDayOff;
+            $holidayType = $this->getDateHolidayType($date->toDateString());
+            $isDateIsHoliday = !empty($holidayType);
+            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+            $dayOffOrHoliday = $dayOff || ($shiftHolidayPolicyIsDayOff && $isDateIsHoliday);
+
+            $dayType = $dayOffOrHoliday ? PayrollAttendanceDayType::DAY_OFF : PayrollAttendanceDayType::WORKING_DAY;
+            $dayType = $isDateIsHoliday
+                ? match($holidayType){
+                    HolidayType::SPECIAL => PayrollAttendanceDayType::SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL => PayrollAttendanceDayType::LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE => PayrollAttendanceDayType::DOUBLE_HOLIDAY,
+                } : $dayType;
+
+            if(empty($attendance) && $dayOffOrHoliday){
+                $payrollAttendanceStatus = PayrollAttendanceStatus::DAY_OFF;
+            } else if(empty($attendance) && !$hasLeave) {
+                $payrollAttendanceStatus = PayrollAttendanceStatus::ABSENT;
+            } else if ($hasLeave){
+                $payrollAttendanceStatus = match($leaveType?->is_paid){
+                    true => PayrollAttendanceStatus::LEAVE_WITH_PAY,
+                    false => PayrollAttendanceStatus::LEAVE_WITHOUT_PAY,
+                    null => PayrollAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
+                };
+            } else {
+                $payrollAttendanceStatus = match($attendance->status){
+                    AttendanceStatus::FULL_PRESENT => PayrollAttendanceStatus::FULL_PRESENT,
+                    AttendanceStatus::PRESENT_WITH_IRREGULARITIES => PayrollAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
+                    AttendanceStatus::ABSENT => PayrollAttendanceStatus::ABSENT,
+                    null => PayrollAttendanceStatus::TO_BE_DETERMINED,
+                };
+            }
+
+            $salaryStatementAttendance = [
+                ...(false ? [
+                    '_employee_id' => $employee->id,
+                    '_is_day_off' => $dayOff,
+                    '_is_holiday' => $isDateIsHoliday,
+                    '_is_day_off_and_holiday_day_off' => $dayOffOrHoliday,
+                    '_holiday_type' => $holidayType,
+                    '_shift_holiday_policy_is_day_off' => $shiftHolidayPolicyIsDayOff,
+                ] : []),
+                'attendance_id' => $attendance?->id ?? null,
+                'date' => $date->toDateString(),
+                'status' => $payrollAttendanceStatus->label(),
+                'day_type' => $dayType->label(),
+            ];
+
+            _debug([
+                '$salaryStatementAttendance' => $salaryStatementAttendance,
+            ]);
         }
 
-        return $payrollAttendances;
+        return $salaryStatementAttendances;
     }
 }
