@@ -12,8 +12,8 @@ use App\Blueprint\Repositories\PayrollPayloadRepository;
 use App\Enums\AttendanceStatus;
 use App\Enums\HolidayType;
 use App\Enums\PayFrequency as PayFrequencyEnum;
-use App\Enums\PayrollAttendanceDayType;
-use App\Enums\PayrollAttendanceStatus;
+use App\Enums\SalaryStatementAttendanceDayType;
+use App\Enums\SalaryStatementAttendanceStatus;
 use App\Enums\SemiMonthlySequence;
 use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
@@ -358,30 +358,30 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
             $dayOffOrHoliday = $dayOff || ($shiftHolidayPolicyIsDayOff && $isDateIsHoliday);
 
-            $dayType = $dayOffOrHoliday ? PayrollAttendanceDayType::DAY_OFF : PayrollAttendanceDayType::WORKING_DAY;
+            $dayType = $dayOffOrHoliday ? SalaryStatementAttendanceDayType::DAY_OFF : SalaryStatementAttendanceDayType::WORKING_DAY;
             $dayType = $isDateIsHoliday
                 ? match($holidayType){
-                    HolidayType::SPECIAL => PayrollAttendanceDayType::SPECIAL_HOLIDAY,
-                    HolidayType::LEGAL => PayrollAttendanceDayType::LEGAL_HOLIDAY,
-                    HolidayType::DOUBLE => PayrollAttendanceDayType::DOUBLE_HOLIDAY,
+                    HolidayType::SPECIAL => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
                 } : $dayType;
 
             if(empty($attendance) && $dayOffOrHoliday){
-                $payrollAttendanceStatus = PayrollAttendanceStatus::DAY_OFF;
+                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::DAY_OFF;
             } else if(empty($attendance) && !$hasLeave) {
-                $payrollAttendanceStatus = PayrollAttendanceStatus::ABSENT;
+                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::ABSENT;
             } else if ($hasLeave){
                 $payrollAttendanceStatus = match($leaveType?->is_paid){
-                    true => PayrollAttendanceStatus::LEAVE_WITH_PAY,
-                    false => PayrollAttendanceStatus::LEAVE_WITHOUT_PAY,
-                    null => PayrollAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
+                    true => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY,
+                    false => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
+                    null => SalaryStatementAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
                 };
             } else {
                 $payrollAttendanceStatus = match($attendance->status){
-                    AttendanceStatus::FULL_PRESENT => PayrollAttendanceStatus::FULL_PRESENT,
-                    AttendanceStatus::PRESENT_WITH_IRREGULARITIES => PayrollAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
-                    AttendanceStatus::ABSENT => PayrollAttendanceStatus::ABSENT,
-                    null => PayrollAttendanceStatus::TO_BE_DETERMINED,
+                    AttendanceStatus::FULL_PRESENT => SalaryStatementAttendanceStatus::FULL_PRESENT,
+                    AttendanceStatus::PRESENT_WITH_IRREGULARITIES => SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
+                    AttendanceStatus::ABSENT => SalaryStatementAttendanceStatus::ABSENT,
+                    null => SalaryStatementAttendanceStatus::TO_BE_DETERMINED,
                 };
             }
 

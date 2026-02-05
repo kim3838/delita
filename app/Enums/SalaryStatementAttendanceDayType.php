@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum PayrollAttendanceDayType: int implements BaseEnum
+enum SalaryStatementAttendanceDayType: int implements BaseEnum
 {
     case WORKING_DAY = 100;
     case DAY_OFF = 200;

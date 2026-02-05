@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum PayrollAttendanceStatus: int implements BaseEnum
+enum SalaryStatementAttendanceStatus: int implements BaseEnum
 {
     case TO_BE_DETERMINED = 0;
     case FULL_PRESENT = 100;
