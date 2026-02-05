@@ -17,11 +17,11 @@ trait HasLeave
     /**
      * @throws UnexpectedException
      */
-    public function filterLeaveDateRange($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): array
+    public function filterLeaveDateRange($companyId, $employeeId, $shiftId, CarbonPeriod $datePeriod): array
     {
         $this->setShift($shiftId);
 
-        $leaves = $this->getEmployeeLeaves($employeeId, $leaveTypeId, $datePeriod);
+        $leaves = $this->getEmployeeLeaves($employeeId, $datePeriod);
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
@@ -32,22 +32,21 @@ trait HasLeave
         })->values()->toArray();
     }
 
-    public function leaveInquiryMap($companyId, $employeeId, $shiftId, $leaveTypeId, CarbonPeriod $datePeriod): array
+    public function leaveInquiryMap($companyId, $employeeId, $shiftId, CarbonPeriod $datePeriod): array
     {
         $this->setShift($shiftId);
 
-        $leaves = $this->getEmployeeLeaves($employeeId, $leaveTypeId, $datePeriod);
+        $leaves = $this->getEmployeeLeaves($employeeId, $datePeriod);
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
         return $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'map');
     }
 
-    private function getEmployeeLeaves($employeeId, $leaveTypeId, CarbonPeriod $datePeriod): Collection
+    private function getEmployeeLeaves($employeeId, CarbonPeriod $datePeriod): Collection
     {
         $leaves = Leave::query()
             ->where('employee_id', $employeeId)
-            ->where('leave_type_id', $leaveTypeId)
             ->whereBetween('date', [$datePeriod->getStartDate(), $datePeriod->getEndDate()])
             ->get();
 

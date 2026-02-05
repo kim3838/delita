@@ -29,7 +29,7 @@ class BaseStoreLeaveRequestRequest extends FormRequest
                 'integer',
                 function ($attribute, $value, $fail) {
 
-                    $leaveType = Leave::query()->find($value);
+                    $leaveType = LeaveType::query()->find($value);
 
                     if(!$leaveType){
                         $fail('Leave type not found');

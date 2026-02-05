@@ -201,7 +201,6 @@ class ApprovalService
                     $patchable['company_id'],
                     $patchable['employee_id'],
                     $patchable['shift_id'],
-                    $patchable['leave_type_id'],
                     $leaveDatePeriod
                 );
 

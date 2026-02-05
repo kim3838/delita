@@ -22,7 +22,6 @@ class LeaveDateRangeFilterController extends Controller
             $companyId = $request->validated()['company_id'];
             $employeeId = $request->validated()['employee_id'];
             $shiftId = $request->validated()['shift_id'];
-            $leaveTypeId = $request->validated()['leave_type_id'];
             $dateFrom = $request->validated()['date_from'];
             $dateTo = $request->validated()['date_to'];
 
@@ -32,7 +31,6 @@ class LeaveDateRangeFilterController extends Controller
                 $companyId,
                 $employeeId,
                 $shiftId,
-                $leaveTypeId,
                 $datePeriod
             );
 
