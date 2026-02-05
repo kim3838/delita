@@ -27,6 +27,7 @@ use App\Models\OvertimeRequest;
 use App\Models\PayFrequency;
 use App\Models\Payroll;
 use App\Models\Role;
+use App\Models\SalaryStatement;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
 use App\Models\ShiftSchedule;
@@ -81,6 +82,7 @@ class AppServiceProvider extends ServiceProvider
             'overtime_request' => OvertimeRequest::class,
             'leave_request' => LeaveRequest::class,
             'payroll' => Payroll::class,
+            'salary_statement' => SalaryStatement::class,
         ]);
     }
 }

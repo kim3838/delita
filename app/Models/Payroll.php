@@ -7,6 +7,7 @@ use App\Enums\PayrollStatus;
 use App\Enums\SemiMonthlySequence;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Payroll extends Model
 {
@@ -43,5 +44,10 @@ class Payroll extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function salaryStatements(): HasMany
+    {
+        return $this->hasMany(SalaryStatement::class);
     }
 }

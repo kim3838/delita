@@ -51,6 +51,7 @@ use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\Repositories\RoleRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Blueprint\Repositories\TimePeriodPresetRepository;
@@ -106,6 +107,7 @@ use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\RequestApprovalStateRepositoryEloquent;
 use App\Concrete\Repositories\RoleRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
+use App\Concrete\Repositories\SalaryStatementRepositoryEloquent;
 use App\Concrete\Repositories\ShiftRepositoryEloquent;
 use App\Concrete\Repositories\ShiftScheduleRepositoryEloquent;
 use App\Concrete\Repositories\TimePeriodPresetRepositoryEloquent;
@@ -173,6 +175,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'user_filed_request' => UserFiledRequestRepositoryEloquent::class,
         'payroll' => PayrollRepositoryEloquent::class,
         'payroll_payload' => PayrollPayloadRepositoryEloquent::class,
+        'salary_statement' => SalaryStatementRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -228,6 +231,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         UserFiledRequestRepository::class => UserFiledRequestRepositoryEloquent::class,
         PayrollRepository::class => PayrollRepositoryEloquent::class,
         PayrollPayloadRepository::class => PayrollPayloadRepositoryEloquent::class,
+        SalaryStatementRepository::class => SalaryStatementRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -288,6 +292,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'user_filed_request',
             'payroll',
             'payroll_payload',
+            'salary_statement',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -343,6 +348,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             UserFiledRequestRepository::class,
             PayrollRepository::class,
             PayrollPayloadRepository::class,
+            SalaryStatementRepository::class,
         ];
     }
 }

@@ -209,4 +209,9 @@ class Employee extends Model
     {
         return $this->hasMany(Leave::class);
     }
+
+    public function salaryStatements(): HasMany
+    {
+        return $this->hasMany(SalaryStatement::class);
+    }
 }
