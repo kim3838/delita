@@ -5331,6 +5331,44 @@ class AttendanceDetailsTests
                 ]
             ],
 
+            //Graveyard no lunch out/in first day span holiday and rest day affect whole schedule
+            /*[
+                'test_case' => 'TESTCASE-GNLO-HOLIDAY-OVERRIDE-0000',
+                'scenario'  => 'GRAVEYARD NO LUNCH OUT IN: ON TIME; REGULAR FIRST SPAN',
+                'validate'  => false || $this->validateAllNightNoLunchOutIn,
+                'shift_id'  => $this->nightNoLunchOutIn->id,
+                'date'      => '2026-02-16',
+                'first_in'  => '2026-02-16 21:00',
+                'lunch_out' => '2026-02-17 01:00',
+                'lunch_in'  => '2026-02-17 02:00',
+                'last_out'  => '2026-02-17 07:00',
+                'expected'  => []
+            ],
+            [
+                'test_case' => 'TESTCASE-GNLO-HOLIDAY-OVERRIDE-0001',
+                'scenario'  => 'GRAVEYARD NO LUNCH OUT IN: ON TIME; HOLIDAY FIRST SPAN',
+                'validate'  => false || $this->validateAllNightNoLunchOutIn,
+                'shift_id'  => $this->nightNoLunchOutIn->id,
+                'date'      => '2026-02-10',
+                'first_in'  => '2026-02-10 21:00',
+                'lunch_out' => '2026-02-11 01:00',
+                'lunch_in'  => '2026-02-11 02:00',
+                'last_out'  => '2026-02-11 07:00',
+                'expected'  => []
+            ],
+            [
+                'test_case' => 'TESTCASE-GNLO-HOLIDAY-OVERRIDE-0001',
+                'scenario'  => 'GRAVEYARD NO LUNCH OUT IN: ON TIME; REGULAR DAY FIRST SPAN',
+                'validate'  => false || $this->validateAllNightNoLunchOutIn,
+                'shift_id'  => $this->nightNoLunchOutIn->id,
+                'date'      => '2026-01-23',
+                'first_in'  => '2026-01-23 21:00',
+                'lunch_out' => '2026-02-24 01:00',
+                'lunch_in'  => '2026-02-24 02:00',
+                'last_out'  => '2026-02-24 07:00',
+                'expected'  => []
+            ],*/
+
             //Graveyard no lunch out/in
             [
                 'test_case' => 'TESTCASE-GNLO-0001',
