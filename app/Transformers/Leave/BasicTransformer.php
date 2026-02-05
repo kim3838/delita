@@ -13,6 +13,7 @@ class BasicTransformer extends TransformerAbstract
             'id' => $leave->id,
             'ulid' => $leave->ulid,
             'date' => $leave->date->toDateString(),
+            'leave_type' => $leave->leaveType?->toArray(),
         ];
     }
 }
