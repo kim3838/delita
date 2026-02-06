@@ -451,6 +451,8 @@ class Development extends Seeder
             ['code' => 'BASICSALARY', 'name' => 'Basic Salary', 'assignable' => true, 'type' => Compensation::BASIC_SALARY, 'formula' => 'Standard-Basic-Salary'],
             ['code' => 'MEAL', 'name' => 'Meal Allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Allowance'],
             ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
+            ['code' => 'LEAVE-PAY', 'name' => 'Leave Pay', 'assignable' => false, 'type' => Compensation::LEAVE_PAY, 'formula' => 'Standard-Leave-Pay'],
+            ['code' => 'HOLIDAY-PAY', 'name' => 'Holiday Pay', 'assignable' => false, 'type' => Compensation::HOLIDAY_PAY, 'formula' => 'Standard-Holiday-Pay'],
             ['code' => '13THMONTH', 'name' => '13th Month', 'assignable' => true, 'type' => Compensation::BENEFIT, 'formula' => 'Standard-13th-Month'],
         ];
 

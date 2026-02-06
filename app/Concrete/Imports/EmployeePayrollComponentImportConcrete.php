@@ -76,6 +76,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                 $payrollComponent = Compensation::query()
                     ->where('company_id', $companyId)
                     ->where('code', $row['payroll_component_code'])
+                    ->where('assignable', true)
                     ->first();
 
                 if(empty($payrollComponent)){
@@ -83,6 +84,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     $payrollComponent = Deduction::query()
                         ->where('company_id', $companyId)
                         ->where('code', $row['payroll_component_code'])
+                        ->where('assignable', true)
                         ->first();
                 }
 
@@ -91,6 +93,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     $payrollComponent = IncomeTax::query()
                         ->where('company_id', $companyId)
                         ->where('code', $row['payroll_component_code'])
+                        ->where('assignable', true)
                         ->first();
                 }
 

@@ -1,0 +1,10 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Holiday pay is compensation given to employees for work performed on, or time off during, recognized holidays, in accordance with labor laws.",
+        "value": ""
+    }
+]

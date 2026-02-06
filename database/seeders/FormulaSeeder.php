@@ -34,6 +34,12 @@ class FormulaSeeder extends Seeder
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_overtime')->first()->path)
             ],
+            ['name' => 'Standard-Leave-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::LEAVE_PAY, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_leave_pay')->first()->path)
+            ],
+            ['name' => 'Standard-Holiday-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::HOLIDAY_PAY, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_holiday_pay')->first()->path)
+            ],
             ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],

@@ -49,8 +49,28 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                         'value' => Formulable::EARNINGS,
                     ],
                 ]
-            ], [
+            ],
+            [
                 'order' => 2,
+                'name' => 'Global Compensations',
+                'formulable_type' => Formulable::EARNINGS,
+                'aggregation' => false,
+                'property' => 'company',
+                'attribute' => 'formulas',
+                'conditions' => [
+                    [
+                        'property' => 'assignable',
+                        'operator' => '=',
+                        'value' => false,
+                    ],
+                    [
+                        'property' => 'formulable_type',
+                        'operator' => '=',
+                        'value' => Formulable::EARNINGS,
+                    ],
+                ]
+            ], [
+                'order' => 3,
                 'name' => 'Assigned Deductions',
                 'formulable_type' => Formulable::DEDUCTIONS,
                 'aggregation' => false,
@@ -69,7 +89,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                     ],
                 ]
             ],[
-                'order' => 3,
+                'order' => 4,
                 'name' => 'Taxable Income',
                 'formulable_type' => Formulable::TAXABLE_INCOME,
                 'aggregation' => true,
@@ -88,7 +108,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                     ],
                 ]
             ],[
-                'order' => 4,
+                'order' => 5,
                 'name' => 'Non-Taxable Income',
                 'formulable_type' => Formulable::NONTAXABLE_INCOME,
                 'aggregation' => true,
@@ -107,7 +127,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                     ],
                 ]
             ],[
-                'order' => 5,
+                'order' => 6,
                 'name' => 'Assigned Income Taxes',
                 'formulable_type' => Formulable::INCOME_TAX,
                 'aggregation' => false,
@@ -126,7 +146,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                     ],
                 ]
             ],[
-                'order' => 6,
+                'order' => 7,
                 'name' => 'Net Income',
                 'formulable_type' => Formulable::NET_INCOME,
                 'aggregation' => true,

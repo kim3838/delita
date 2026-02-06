@@ -8,6 +8,8 @@ enum Compensation: int implements BaseEnum
     case REGULAR_ALLOWANCE = 101;
     case OVERTIME = 110;
     case BENEFIT = 120;
+    case LEAVE_PAY = 200;
+    case HOLIDAY_PAY = 300;
 
     public function label(): string
     {
@@ -16,6 +18,8 @@ enum Compensation: int implements BaseEnum
             self::OVERTIME => 'Overtime',
             self::BENEFIT => 'Benefit',
             self::REGULAR_ALLOWANCE => 'Regular Allowance',
+            self::LEAVE_PAY => 'Leave pay',
+            self::HOLIDAY_PAY => 'Holiday pay',
         };
     }
 

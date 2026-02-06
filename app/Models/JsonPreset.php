@@ -109,9 +109,19 @@ class JsonPreset extends Model
                 'file' => '001.standard.earnings.03.overtime.json',
             ],
             [
+                'key' => 'standard_leave_pay',
+                'resource_preset_path' => 'presets/json/formula',
+                'file' => '001.standard.earnings.04.leave-pay.json',
+            ],
+            [
+                'key' => 'standard_holiday_pay',
+                'resource_preset_path' => 'presets/json/formula',
+                'file' => '001.standard.earnings.05.holiday-pay.json',
+            ],
+            [
                 'key' => 'standard_13th_month',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '001.standard.earnings.04.13th-month.json',
+                'file' => '001.standard.earnings.06.13th-month.json',
             ],
             [
                 'key' => 'standard_tardiness',
