@@ -25,6 +25,7 @@ use App\Enums\LeaveType as LeaveTypeEnum;
 use App\Enums\LeaveUsageSpanType;
 use App\Enums\PayPeriod;
 use App\Enums\PayType;
+use App\Enums\ShiftHolidayPolicy;
 use App\Enums\ShiftType;
 use App\Events\Repositories\AccountCreated;
 use App\Listeners\AccountCreatedChain;
@@ -160,7 +161,7 @@ class Development extends Seeder
         $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular no lunch out/in 4.5 hours ot
-        $shift1002C2 = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5]);
+        $shift1002C2 = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5, 'holiday_policy' => ShiftHolidayPolicy::ATTENDANCE_REQUIRED]);
         $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular with lunch out/in
@@ -603,7 +604,8 @@ class Development extends Seeder
         $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         $employeeC1002->leaveTypes()->detach();
         $employeeC1002->leaveTypes()->syncWithoutDetaching([
-            $leave1002C4->id
+            $leave1002C1->id,
+            $leave1002C4->id,
         ]);
         $employeeC1002->leaveBalanceAdjustments()->delete();
         $employeeC1002->leaveBalanceAdjustments()->create([
@@ -664,8 +666,17 @@ class Development extends Seeder
             'balance' => 1,
             'effective_date' => '2027-09-21'
         ]);
+        $employeeC1002->leaveBalanceAdjustments()->create([
+            'ulid' => Str::ulid(),
+            'leave_type_id' => $leave1002C4->id,
+            'type' => LeaveBalanceAdjustmentType::ADD,
+            'balance' => 30,
+            'effective_date' => '2026-01-26'
+        ]);
 
         $employeeC1002->leaves()->delete();
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-05']);
+
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-21']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-22']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-23']);
@@ -869,11 +880,11 @@ class Development extends Seeder
         //Create Compensations for Employee C1002
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::HOURLY, 'pay_type' => PayType::BY_ATTENDANCE]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::HOURLY, 'pay_type' => PayType::BY_ATTENDANCE]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
