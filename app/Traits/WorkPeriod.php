@@ -466,7 +466,7 @@ trait WorkPeriod
         return $periods;
     }
 
-    protected function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
+    protected function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType, $splitTypes = []): array
     {
         $breakdownSequence = 1;
         $schedule = [];
@@ -477,7 +477,9 @@ trait WorkPeriod
             // Split work periods into hourly segments and categorize
             $categorizedSplit = $this->categorizeWorkPeriod($period['split_start'], $period['split_end'], $period['split_type'], $breakdownSequence, $startingDateIsRestDay, $startingDateHolidayType);
 
-            if(in_array($period['split_type'], [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH]) && !empty($categorizedSplit)){
+            $splitTypes = empty($splitTypes) ? [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH] : $splitTypes;
+
+            if(in_array($period['split_type'], $splitTypes) && !empty($categorizedSplit)){
 
                 $schedule = array_merge($schedule, $categorizedSplit);
             }
