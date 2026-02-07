@@ -27,6 +27,9 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("deductions.company_id"), $value);
             })
+            ->when(isset($filters->assignable), function ($builder) use($filters){
+                $builder->where(DB::raw("deductions.assignable"), intval($filters->assignable));
+            })
             ->select([
                 'deductions.id AS id',
                 'deductions.company_id AS company_id',

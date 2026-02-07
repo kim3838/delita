@@ -27,6 +27,9 @@ class CompanyCompensationRepositoryEloquent extends BaseRepositoryEloquent imple
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("compensations.company_id"), $value);
             })
+            ->when(isset($filters->assignable), function ($builder) use($filters){
+                $builder->where(DB::raw("compensations.assignable"), intval($filters->assignable));
+            })
             ->select([
                 'compensations.id AS id',
                 'compensations.company_id AS company_id',

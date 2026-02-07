@@ -27,6 +27,9 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("income_taxes.company_id"), $value);
             })
+            ->when(isset($filters->assignable), function ($builder) use($filters){
+                $builder->where(DB::raw("income_taxes.assignable"), intval($filters->assignable));
+            })
             ->select([
                 'income_taxes.id AS id',
                 'income_taxes.company_id AS company_id',
