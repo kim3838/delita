@@ -42,7 +42,7 @@ class CompanyCreatedChain
 
         /**
          * Sync basic formulas with default settings
-         * Standard-Basic-Salary
+         * Standard-Basic-Pay
          * Standard-Overtime
          * Standard-Taxable-Income
          * Standard-Nontaxable-Income

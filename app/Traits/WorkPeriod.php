@@ -58,10 +58,10 @@ trait WorkPeriod
     protected ?bool $attendanceScheduleIsFlexible = false;
     //Set on generate: Total work hours with breaks from attendance schedule
     protected ?int $attendanceScheduleTotalWorkHoursWithBreaks = 0;
-    protected ?Collection $companyBasicSalaryFormulaSettings = null;
+    protected ?Collection $companyBasicPayFormulaSettings = null;
     protected ?Collection $companyOvertimeFormulaSettings = null;
-    protected ?Collection $basicSalaryRegularRates = null;
-    protected ?Collection $basicSalaryNightDifferentialRates = null;
+    protected ?Collection $basicPayRegularRates = null;
+    protected ?Collection $basicPayNightDifferentialRates = null;
     protected ?Collection $overtimeRegularRates = null;
     protected ?Collection $overtimeNightDifferentialRates = null;
 
@@ -69,22 +69,22 @@ trait WorkPeriod
 
     function resolveCompanyFormulaSettings(): void
     {
-        $this->companyBasicSalaryFormulaSettings = $this->companyBasicSalaryFormulaSettings();
+        $this->companyBasicPayFormulaSettings = $this->companyBasicPayFormulaSettings();
         $this->companyOvertimeFormulaSettings = $this->companyOvertimeFormulaSettings();
-        $this->basicSalaryRegularRates = $this->getBasicSalaryRegularRates();
-        $this->basicSalaryNightDifferentialRates = $this->getBasicSalaryNightDifferentialRates();
+        $this->basicPayRegularRates = $this->getBasicPayRegularRates();
+        $this->basicPayNightDifferentialRates = $this->getBasicPayNightDifferentialRates();
         $this->overtimeRegularRates = $this->getOvertimeRegularRates();
         $this->overtimeNightDifferentialRates = $this->getOvertimeNightDifferentialRates();
     }
 
-    function resolveCompanyNightHoursFromBasicSalaryFormulaSettings(): void
+    function resolveCompanyNightHoursFromBasicPayFormulaSettings(): void
     {
-        if(empty($this->companyBasicSalaryFormulaSettings)){
+        if(empty($this->companyBasicPayFormulaSettings)){
             return;
         }
 
         $companyNightDifferentialHours = collect(
-            $this->companyBasicSalaryFormulaSettings
+            $this->companyBasicPayFormulaSettings
                 ->where('key', 'night_differential_hours')
                 ->first()
                 ->value
@@ -117,9 +117,9 @@ trait WorkPeriod
             ->sortBy('order');
     }
 
-    protected function companyBasicSalaryFormulaSettings(): ?Collection
+    protected function companyBasicPayFormulaSettings(): ?Collection
     {
-        return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::BASIC_SALARY->value);
+        return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::BASIC_PAY->value);
     }
 
     protected function companyOvertimeFormulaSettings(): ?Collection
@@ -127,20 +127,20 @@ trait WorkPeriod
         return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::OVERTIME->value);
     }
 
-    protected function getBasicSalaryRegularRates(): ?Collection
+    protected function getBasicPayRegularRates(): ?Collection
     {
-        if(empty($this->companyBasicSalaryFormulaSettings)){
+        if(empty($this->companyBasicPayFormulaSettings)){
             return null;
         }
 
-        $companyBasicSalaryRegularRates = collect(
-            $this->companyBasicSalaryFormulaSettings
+        $companyBasicPayRegularRates = collect(
+            $this->companyBasicPayFormulaSettings
                 ->where('key', 'regular_rates')
                 ->first()
                 ->value
         )->sortBy('order');
 
-        return $companyBasicSalaryRegularRates->map(function ($rate){
+        return $companyBasicPayRegularRates->map(function ($rate){
 
             $rate_type = match($rate->key){
                 'regular' => HourlyRateType::REGULAR,
@@ -162,20 +162,20 @@ trait WorkPeriod
         });
     }
 
-    protected function getBasicSalaryNightDifferentialRates(): ?Collection
+    protected function getBasicPayNightDifferentialRates(): ?Collection
     {
-        if(empty($this->companyBasicSalaryFormulaSettings)){
+        if(empty($this->companyBasicPayFormulaSettings)){
             return null;
         }
 
-        $companyBasicSalaryNightDifferentialRates = collect(
-            $this->companyBasicSalaryFormulaSettings
+        $companyBasicPayNightDifferentialRates = collect(
+            $this->companyBasicPayFormulaSettings
                 ->where('key', 'night_differential_rates')
                 ->first()
                 ->value
         )->sortBy('order');
 
-        return $companyBasicSalaryNightDifferentialRates->map(function ($rate){
+        return $companyBasicPayNightDifferentialRates->map(function ($rate){
 
             $rate_type = match($rate->key){
                 'regular' => HourlyRateType::NIGHT_REGULAR,
@@ -705,9 +705,9 @@ trait WorkPeriod
 
             if(
                 in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
-                && !empty($this->basicSalaryRegularRates)
+                && !empty($this->basicPayRegularRates)
             ){
-                $multiplier = $this->basicSalaryRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+                $multiplier = $this->basicPayRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
             if(
@@ -721,9 +721,9 @@ trait WorkPeriod
 
             if(
                 in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
-                && !empty($this->basicSalaryNightDifferentialRates)
+                && !empty($this->basicPayNightDifferentialRates)
             ){
-                $multiplier = $this->basicSalaryNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
+                $multiplier = $this->basicPayNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
             if(

@@ -94,9 +94,9 @@ class JsonPreset extends Model
     {
         return [
             [
-                'key' => 'standard_basic_salary',
+                'key' => 'standard_basic_pay',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '001.standard.earnings.01.basic-salary.json'
+                'file' => '001.standard.earnings.01.basic-pay.json'
             ],
             [
                 'key' => 'standard_allowance',

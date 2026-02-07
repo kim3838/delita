@@ -24,7 +24,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         $this->resolveCompanyFormulaSettings();
 
         //Set company night hours
-        $this->resolveCompanyNightHoursFromBasicSalaryFormulaSettings();
+        $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
     }
 
     /**

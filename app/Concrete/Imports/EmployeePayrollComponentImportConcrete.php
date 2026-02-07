@@ -115,7 +115,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                 $payrollComponentType = $payrollComponent->type;
 
                 $payrollComponentIsAmountable = in_array($payrollComponentType, [
-                    CompensationEnum::BASIC_SALARY,
+                    CompensationEnum::BASIC_PAY,
                     CompensationEnum::REGULAR_ALLOWANCE
                 ]);
             }

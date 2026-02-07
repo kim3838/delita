@@ -25,8 +25,8 @@ class FormulaSeeder extends Seeder
         //Formula Presets
         $formulaPresets = [
             //Earnings
-            ['name' => 'Standard-Basic-Salary', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_SALARY, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_salary')->first()->path)
+            ['name' => 'Standard-Basic-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_PAY, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_pay')->first()->path)
             ],
             ['name' => 'Standard-Allowance', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_allowance')->first()->path)
