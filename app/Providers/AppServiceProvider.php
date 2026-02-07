@@ -51,6 +51,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \DB::statement('SET SESSION cte_max_recursion_depth = 12000;');
+
         Relation::enforceMorphMap([
             'user' => User::class,
             'role' => Role::class,
