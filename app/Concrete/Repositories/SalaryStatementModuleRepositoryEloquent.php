@@ -56,7 +56,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'formulable_type' => Formulable::EARNINGS,
                 'aggregation' => false,
                 'property' => 'company',
-                'attribute' => 'formulas',
+                'attribute' => 'compensations',
                 'conditions' => [
                     [
                         'property' => 'assignable',
