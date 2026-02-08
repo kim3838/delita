@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('attendance_details', function (Blueprint $table) {
             $table->id();
-            $table->ulid()->unique()->index();
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->smallInteger('split_type');
@@ -22,6 +21,7 @@ return new class extends Migration
             $table->smallInteger('split_duration');
             $table->smallInteger('work_hour_type');
             $table->smallInteger('hourly_rate_type');
+            $table->decimal('regular_rate_multiplier', 8, 6)->nullable();
             $table->decimal('hourly_rate_multiplier', 8, 6);
             $table->decimal('base_rate_multiplier', 8, 6);
             $table->smallInteger('order');
@@ -46,18 +46,9 @@ return new class extends Migration
             $table->smallInteger('flexible_undertime')->default(0);
             $table->timestamps();
 
-            $table->index('date');
-            $table->index('split_type');
-            $table->index('work_hour_type');
-            $table->index('actual_start');
-            $table->index('actual_end');
-            $table->index(['attendance_id', 'date']);
-            $table->index(['attendance_id', 'order']);
-            $table->index(['date', 'split_type']);
-            $table->index(['first_in', 'last_out']);
-            $table->index(['lunch_out', 'lunch_in']);
-            $table->index(['actual_present_start', 'actual_present_end']);
+            $table->unique(['attendance_id', 'order']);
 
+            $table->index(['attendance_id', 'split_type']);
         });
     }
 

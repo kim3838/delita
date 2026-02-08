@@ -466,6 +466,9 @@ trait WorkPeriod
         return $periods;
     }
 
+    /**
+     * @throws UnexpectedException
+     */
     protected function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType, $splitTypes = []): array
     {
         $breakdownSequence = 1;
@@ -496,6 +499,9 @@ trait WorkPeriod
         ];
     }
 
+    /**
+     * @throws UnexpectedException
+     */
     protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
     {
         $breakdown = [];
@@ -514,7 +520,8 @@ trait WorkPeriod
             // Determine rate type
             $hourlyRateType = $this->getHourlyRate($current, $workHourType, $splitType, $startingDateIsRestDay, $startingDateHolidayType);
 
-            $hourlyRateMultiplier = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
+            // Include regular rate if rate is night multiplier
+            list($regularMultiplier, $multiplier) = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
 
             $breakdown[] = [
                 'date' => $current->format('Y-m-d'),
@@ -525,7 +532,8 @@ trait WorkPeriod
                 '#split_duration_readable' => $this->formatDuration($current, $nextBoundary),
                 'work_hour_type' => $workHourType,
                 'hourly_rate_type' => $hourlyRateType,
-                'hourly_rate_multiplier' => $hourlyRateMultiplier,
+                'regular_rate_multiplier' => $regularMultiplier,
+                'hourly_rate_multiplier' => $multiplier,
                 'base_rate_multiplier' => 1.0,
                 'order' => $breakdownSequence++,
             ];
@@ -697,8 +705,15 @@ trait WorkPeriod
             ?? $rateMapping[$splitType->value][$workHourKey][$dayType]['default'];
     }
 
-    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType)
+    /**
+     * @throws UnexpectedException
+     */
+    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType): array
     {
+        /**
+         * If multiplier is night, include a regular multiplier by renaming the HourlyRateType by its regular version
+         **/
+        $regularMultiplier = null;
         $multiplier = 1;
 
         if($workHourType == WorkHourType::REGULAR){
@@ -723,6 +738,14 @@ trait WorkPeriod
                 in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
                 && !empty($this->basicPayNightDifferentialRates)
             ){
+                $regularRateTypeVersion = str_replace('NIGHT_', '', $hourlyRateType->name);
+
+                $regularMultiplier = $this->basicPayRegularRates->where('hourly_rate_type', HourlyRateType::{$regularRateTypeVersion})->first()?->value;
+
+                if(empty($regularMultiplier)){
+                    throw new UnexpectedException('Regular rate not found');
+                }
+
                 $multiplier = $this->basicPayNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
@@ -730,11 +753,19 @@ trait WorkPeriod
                 $splitType == ShiftBreakDownSplitType::OVERTIME
                 && !empty($this->overtimeNightDifferentialRates)
             ){
+                $regularRateTypeVersion = str_replace('_NIGHT_', '_', $hourlyRateType->name);
+
+                $regularMultiplier = $this->overtimeRegularRates->where('hourly_rate_type', HourlyRateType::{$regularRateTypeVersion})->first()?->value;
+
+                if(empty($regularMultiplier)){
+                    throw new UnexpectedException('Regular rate not found');
+                }
+
                 $multiplier = $this->overtimeNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
         }
 
-        return $multiplier;
+        return [$regularMultiplier, $multiplier];
     }
 
     protected function getDateHolidayType($date): ?HolidayType
