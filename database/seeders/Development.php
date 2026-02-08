@@ -164,6 +164,10 @@ class Development extends Seeder
         $shift1002C2 = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN 06:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 6.5, 'holiday_policy' => ShiftHolidayPolicy::ATTENDANCE_REQUIRED]);
         $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
+        //Regular no lunch out/in 10.5 hours ot
+        $shift1002C212HShift = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 04:00 AM to 04:00 PM NO LUNCH OUT/IN 10:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10.5, 'holiday_policy' => ShiftHolidayPolicy::ATTENDANCE_REQUIRED]);
+        $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT')->first(), false, ['04:00','16:00'], '12:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+
         //Regular with lunch out/in
         $shift1002C3 = $company1002C->shifts()->firstOrCreate(['code' => '002-DAYSHIFT-REG-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::query()->where('code', '002-DAYSHIFT-REG-2DOFF-WL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
@@ -601,7 +605,7 @@ class Development extends Seeder
             'end_date' => '2029-11-30'
         ]);
         $employeeC1002->shifts()->detach();
-        $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C2->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1002->shifts()->syncWithoutDetaching([$shift1002C212HShift->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
         $employeeC1002->leaveTypes()->detach();
         $employeeC1002->leaveTypes()->syncWithoutDetaching([
             $leave1002C1->id,
