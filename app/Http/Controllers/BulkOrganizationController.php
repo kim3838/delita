@@ -10,6 +10,7 @@ use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeGroupRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
+use App\Enums\Compensation as CompensationEnum;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Transformers\Compensation\SelectionAsComponentableMorphTransformer as CompensationSelectionAsComponentableMorphTransformer;
@@ -55,13 +56,17 @@ class BulkOrganizationController extends Controller
             $deductions = App::make(EnumInterface::class)->selection('deduction');
             $incomeTaxes = App::make(EnumInterface::class)->selection('income_tax');
 
+            $assignableCompensations = collect($compensations::all())->filter(function($compensation){
+               return !in_array($compensation['value'], [CompensationEnum::LEAVE_PAY->value, CompensationEnum::HOLIDAY_PAY->value]);
+            })->values()->toArray();
+
             return ResponseJson::successfulResponse([
                 'employee_groups' => $employeeGroupSelection,
                 'departments' => $departmentSelection,
                 'designations' => $designationSelection,
                 'pay_frequencies' => $payFrequencySelection,
                 'payroll_component' => [
-                    'type' => array_merge($compensations::all(), $deductions::all(), $incomeTaxes::all()),
+                    'type' => array_merge($assignableCompensations, $deductions::all(), $incomeTaxes::all()),
                     'names' => array_merge($compensationNames, $deductionNames, $incomeTaxNames)
                 ]
             ]);
