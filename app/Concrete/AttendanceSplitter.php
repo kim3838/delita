@@ -231,6 +231,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                  * Todo: update attendance details test first to adapt the new `regular_rate_multiplier`
                  * uncomment the code below to test temporarily
                  * unset($item['regular_rate_multiplier']);
+                 * unset($item['non_rest_rate_multiplier']);
                  **/
 
                 return [

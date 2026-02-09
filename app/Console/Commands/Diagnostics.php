@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Concrete\Tests\AttendanceDetailsTests;
+use App\Concrete\Tests\AttendanceSplitterTests;
 use App\Models\Company;
 use Illuminate\Console\Command;
 
@@ -33,7 +33,7 @@ class Diagnostics extends Command
         $this->newLine();
         $this->line('Running tests');
 
-        $this->info('Attendance Splitter: ' . new AttendanceDetailsTests($company)->run());
+        $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
 
         $this->newLine();
         $this->line('Done');

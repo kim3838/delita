@@ -8,7 +8,7 @@ use App\Enums\AttendanceStatus;
 use App\Models\Company;
 use App\Models\Shift;
 
-class AttendanceDetailsTests
+class AttendanceSplitterTests
 {
     public static $caseGroup = [
         'regular_no_lunch_out_in',
