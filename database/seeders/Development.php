@@ -165,8 +165,8 @@ class Development extends Seeder
         $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-6.5MOT')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
         //Regular no lunch out/in 10.5 hours ot
-        $shift1002C212HShift = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 04:00 AM to 04:00 PM NO LUNCH OUT/IN 10:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10.5, 'holiday_policy' => ShiftHolidayPolicy::ATTENDANCE_REQUIRED]);
-        $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I-10.5MOT')->first(), false, ['04:00','16:00'], '12:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+        $shift1002C212HShift = $company1002C->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-1DOFF-NL0/I-10.5MOT'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-1DOFF-NL0/I-10.5MOT', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 04:00 AM to 04:00 PM NO LUNCH OUT/IN 10:30 MAX OT', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 10.5, 'holiday_policy' => ShiftHolidayPolicy::ATTENDANCE_REQUIRED]);
+        $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-1DOFF-NL0/I-10.5MOT')->first(), false, ['04:00','16:00'], '12:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY]);
 
         //Regular with lunch out/in
         $shift1002C3 = $company1002C->shifts()->firstOrCreate(['code' => '002-DAYSHIFT-REG-2DOFF-WL0/I'],['ulid' => Str::ulid(), 'code' => '002-DAYSHIFT-REG-2DOFF-WL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM WITH LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => true, 'lunch_start_grace_time' => 10, 'max_overtime' => 0]);
@@ -947,6 +947,18 @@ class Development extends Seeder
             'recurring' => true,
             'active' => true,
             'effective_date' => '2000-01-11',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 7th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 7th Legal holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-07',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-07',
         ]);
 
         $company1002C->holidays()->firstOrCreate([
