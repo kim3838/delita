@@ -520,8 +520,13 @@ trait WorkPeriod
             // Determine rate type
             $hourlyRateType = $this->getHourlyRate($current, $workHourType, $splitType, $startingDateIsRestDay, $startingDateHolidayType);
 
-            // Include regular rate if rate is night multiplier
-            list($regularMultiplier, $multiplier) = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
+            /**
+             * Include regular rate if rate is night multiplier
+             * Include non rest rate multiplier if rate is rest multiplier
+             * */
+            list($regularMultiplier, $nonRestRateMultiplier, $multiplier) = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
+
+            $baseMultiplier = $this->getSplitTypeBaseMultiplier($splitType);
 
             $breakdown[] = [
                 'date' => $current->format('Y-m-d'),
@@ -533,8 +538,9 @@ trait WorkPeriod
                 'work_hour_type' => $workHourType,
                 'hourly_rate_type' => $hourlyRateType,
                 'regular_rate_multiplier' => $regularMultiplier,
+                'non_rest_rate_multiplier' => $nonRestRateMultiplier,
                 'hourly_rate_multiplier' => $multiplier,
-                'base_rate_multiplier' => 1.0,
+                'base_rate_multiplier' => $baseMultiplier,
                 'order' => $breakdownSequence++,
             ];
 
@@ -714,6 +720,21 @@ trait WorkPeriod
          * If multiplier is night, include a regular multiplier by renaming the HourlyRateType by its regular version
          **/
         $regularMultiplier = null;
+        /**
+         * If multiplier is from a rest day, get its non-rest version
+         **/
+        $hourlyRateIsRest = str_contains($hourlyRateType->name, 'REST');
+        $nonRestMultiplier = null;
+        $nonRestHourlyRate = null;
+
+        if($hourlyRateIsRest){
+            $nonRestHourlyRate = HourlyRateType::tryFrom($hourlyRateType->value - 1);
+
+            if(empty($nonRestHourlyRate)){
+                throw new UnexpectedException('Non-rest rate not found');
+            }
+        }
+
         $multiplier = 1;
 
         if($workHourType == WorkHourType::REGULAR){
@@ -722,6 +743,10 @@ trait WorkPeriod
                 in_array($splitType, [ShiftBreakDownSplitType::WORK, ShiftBreakDownSplitType::LUNCH])
                 && !empty($this->basicPayRegularRates)
             ){
+                if ($hourlyRateIsRest) {
+                    $nonRestMultiplier = $this->basicPayRegularRates->where('hourly_rate_type', $nonRestHourlyRate)->first()->value;
+                }
+
                 $multiplier = $this->basicPayRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
@@ -729,6 +754,10 @@ trait WorkPeriod
                 $splitType == ShiftBreakDownSplitType::OVERTIME
                 && !empty($this->overtimeRegularRates)
             ){
+                if ($hourlyRateIsRest) {
+                    $nonRestMultiplier = $this->overtimeRegularRates->where('hourly_rate_type', $nonRestHourlyRate)->first()->value;
+                }
+
                 $multiplier = $this->overtimeRegularRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
@@ -746,6 +775,10 @@ trait WorkPeriod
                     throw new UnexpectedException('Regular rate not found');
                 }
 
+                if ($hourlyRateIsRest) {
+                    $nonRestMultiplier = $this->basicPayNightDifferentialRates->where('hourly_rate_type', $nonRestHourlyRate)->first()->value;
+                }
+
                 $multiplier = $this->basicPayNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
 
@@ -761,11 +794,26 @@ trait WorkPeriod
                     throw new UnexpectedException('Regular rate not found');
                 }
 
+                if ($hourlyRateIsRest) {
+                    $nonRestMultiplier = $this->overtimeNightDifferentialRates->where('hourly_rate_type', $nonRestHourlyRate)->first()->value;
+                }
+
                 $multiplier = $this->overtimeNightDifferentialRates->where('hourly_rate_type', $hourlyRateType)->first()->value;
             }
         }
 
-        return [$regularMultiplier, $multiplier];
+        return [$regularMultiplier, $nonRestMultiplier, $multiplier];
+    }
+
+    protected function getSplitTypeBaseMultiplier(ShiftBreakDownSplitType $splitType): float
+    {
+        $baseMultiplier = match($splitType){
+            ShiftBreakDownSplitType::WORK => $this->basicPayRegularRates->where('hourly_rate_type', HourlyRateType::REGULAR)->first()?->value ?? 1.0,
+            ShiftBreakDownSplitType::OVERTIME => $this->overtimeRegularRates->where('hourly_rate_type', HourlyRateType::OVERTIME_REGULAR)->first()?->value ?? 1.0,
+            default => 1.0,
+        };
+
+        return (float)$baseMultiplier;
     }
 
     protected function getDateHolidayType($date): ?HolidayType
