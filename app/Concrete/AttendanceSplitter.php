@@ -228,11 +228,12 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             $mappedAttendanceDetails = array_map(function ($item) {
 
                 /**
-                 * Todo: update attendance details test first to adapt the new `regular_rate_multiplier`
-                 * uncomment the code below to test temporarily
-                 * unset($item['regular_rate_multiplier']);
-                 * unset($item['non_rest_rate_multiplier']);
+                 * Todo: update attendance splitter test first
+                 * to adapt the new `regular_rate_multiplier` and `non_rest_rate_multiplier`
+                 * and remove the lines below so ot wont show false fail test
                  **/
+                unset($item['regular_rate_multiplier']);
+                unset($item['non_rest_rate_multiplier']);
 
                 return [
                     ...$item,
