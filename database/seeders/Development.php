@@ -679,7 +679,17 @@ class Development extends Seeder
         ]);
 
         $employeeC1002->leaves()->delete();
-        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-05']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-01-28']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-01-29']);
+
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-02']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-03']);
+
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-05']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-06']);
+
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-19']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-20']);
 
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-21']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-22']);
@@ -884,11 +894,11 @@ class Development extends Seeder
         //Create Compensations for Employee C1002
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '100', 'currency' => 'PHP', 'pay_period' => PayPeriod::HOURLY, 'pay_type' => PayType::BY_ATTENDANCE]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1100', 'currency' => 'PHP', 'pay_period' => PayPeriod::DAILY, 'pay_type' => PayType::BY_ATTENDANCE]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '10', 'currency' => 'PHP', 'pay_period' => PayPeriod::HOURLY, 'pay_type' => PayType::BY_ATTENDANCE]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002CMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1100', 'currency' => 'PHP', 'pay_period' => PayPeriod::DAILY, 'pay_type' => PayType::BY_ATTENDANCE]
         );
         $employeeC1002->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $company1002COvertime->id, 'payroll_componentable_type' => 'compensation'],
@@ -947,6 +957,54 @@ class Development extends Seeder
             'recurring' => true,
             'active' => true,
             'effective_date' => '2000-01-11',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 2nd Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 2nd Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-02',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-02',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 3rd Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 3rd Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-03',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-03',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 5th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 5th Paid Legal holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-05',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-05',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 6th Paid Legal holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 6th Paid Legal holiday',
+            'type' => HolidayType::LEGAL,
+            'date' => '2000-02-06',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-06',
         ]);
 
         $company1002C->holidays()->firstOrCreate([
@@ -1010,6 +1068,18 @@ class Development extends Seeder
         ]);
 
         $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 14th Paid Double holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 14th Paid Double holiday',
+            'type' => HolidayType::DOUBLE,
+            'date' => '2000-02-14',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-14',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
             'name' => 'Feb 16th  Non-paid Special holiday',
         ],[
             'ulid' => Str::ulid(),
@@ -1043,6 +1113,66 @@ class Development extends Seeder
             'recurring' => true,
             'active' => true,
             'effective_date' => '2000-02-18',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 19th Paid Double holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 19th Paid Double holiday',
+            'type' => HolidayType::DOUBLE,
+            'date' => '2000-02-19',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-19',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 20th Paid Double holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 20th Paid Double holiday',
+            'type' => HolidayType::DOUBLE,
+            'date' => '2000-02-20',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-20',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 21st Non-paid Special holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 21st Non-paid Special holiday',
+            'type' => HolidayType::SPECIAL,
+            'date' => '2000-02-21',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-21',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 24th Paid Double holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 24th Paid Double holiday',
+            'type' => HolidayType::DOUBLE,
+            'date' => '2000-02-24',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-24',
+        ]);
+
+        $company1002C->holidays()->firstOrCreate([
+            'name' => 'Feb 25th Paid Double holiday',
+        ],[
+            'ulid' => Str::ulid(),
+            'name' => 'Feb 25th Paid Double holiday',
+            'type' => HolidayType::DOUBLE,
+            'date' => '2000-02-25',
+            'recurring' => true,
+            'active' => true,
+            'effective_date' => '2000-02-25',
         ]);
     }
 
