@@ -38,7 +38,7 @@ class Diagnostics extends Command
             $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
         }
 
-        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true));
+        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, true));
 
         $this->newLine();
         $this->line('Done');
