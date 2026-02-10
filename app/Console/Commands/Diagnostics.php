@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Concrete\Tests\AttendancePayItemsTests;
 use App\Concrete\Tests\AttendanceSplitterTests;
 use App\Models\Company;
 use Illuminate\Console\Command;
@@ -13,7 +14,7 @@ class Diagnostics extends Command
      *
      * @var string
      */
-    protected $signature = 'app:diagnostics {company}';
+    protected $signature = 'app:diagnostics {company?}';
 
     /**
      * The console command description.
@@ -27,13 +28,17 @@ class Diagnostics extends Command
      */
     public function handle(): void
     {
-        $company = Company::query()->findOrFail($this->argument('company'));
+        $company = Company::query()->find($this->argument('company'));
 
         $this->line('Diagnostics command executed');
         $this->newLine();
         $this->line('Running tests');
 
-        $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
+        if($company){
+            $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
+        }
+
+        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true));
 
         $this->newLine();
         $this->line('Done');
