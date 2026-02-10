@@ -47,7 +47,8 @@ trait HasPayableDay
             ]);
         }
 
-        list($isPresent, $isLeave, $isHoliday, $isRegularWorkingDay, $isLegalHoliday, $isSpecialHoliday, $leaveWithoutPay, $leaveWithPay, $leaveWithoutPayAndIsLegalHoliday, $isAbsentAndLegalHoliday, $payableNoneAttendance) = $this->listSalaryStatementAttendanceStatusAndDayTypes($salaryStatementAttendance);
+        list($isPresent, $isLeave, $isHoliday, $isDoubleHoliday, $isRegularWorkingDay, $isLegalHoliday, $isSpecialHoliday, $leaveWithoutPay, $leaveWithPay, $leaveWithoutPayAndIsLegalHoliday, $isAbsentAndLegalHoliday, $payableNoneAttendance)
+            = $this->listSalaryStatementAttendanceStatusAndDayTypes($salaryStatementAttendance);
         $isRestDay = in_array($salaryStatementAttendance->date->dayOfWeek, $this->restDays);
 
         if($isPresent){
@@ -226,7 +227,8 @@ trait HasPayableDay
                     $splitNonRestMultiplier = $workSplit['non_rest_rate_multiplier'];
 
                     $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
-                    $splitBaseMultiplier = $workSplit['base_rate_multiplier'];
+                    //If double holiday, replace the base rate by 2
+                    $splitBaseMultiplier = $isDoubleHoliday ? 2 : $workSplit['base_rate_multiplier'];
                     $splitActualPresent = $workSplit['actual_present'];
 
                     $regularPay = 0;$nightPay = 0;$holidayPay = 0;$restPay = 0;$hours = ($splitActualPresent / 60);
@@ -425,15 +427,27 @@ trait HasPayableDay
 
                 $splitWorkHourType = $workSplit['work_hour_type'];
                 $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
-                $splitBaseMultiplier = $workSplit['base_rate_multiplier'];
+//              //If double holiday, replace the base rate by 2
+                $splitBaseMultiplier = $isDoubleHoliday ? 2 : $workSplit['base_rate_multiplier'];
                 $splitSplitDuration = $workSplit['split_duration'];
                 $splitActualPresent = $workSplit['actual_present'];
-                $hourlyRate = $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['hourly_rate'] ?? 0;
+                $basicPayHourlyRate = $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] ?? 0;
 
-                $regularPay = (($splitSplitDuration / 60) * $hourlyRate) * $splitBaseMultiplier;
+                $regularPay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
+                $leavePay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
 
-                if(isset($globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value])){
-                    $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['regular_pay'] += $regularPay;
+                if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
+                    $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
+
+                    $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] =
+                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'];
+                }
+
+                if(isset($globalEarningsPayload[CompensationEnum::LEAVE_PAY->value])){
+                    $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $leavePay;
+
+                    $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['total'] =
+                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'];
                 }
 
                 if($test || $debug){
@@ -472,6 +486,7 @@ trait HasPayableDay
         $isPresent = in_array($salaryStatementAttendance->status, [SalaryStatementAttendanceStatus::FULL_PRESENT, SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES]);
         $isLeave = in_array($salaryStatementAttendance->status, [SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY, SalaryStatementAttendanceStatus::LEAVE_WITH_PAY]);
         $isHoliday = in_array($salaryStatementAttendance->day_type, [SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY, SalaryStatementAttendanceDayType::LEGAL_HOLIDAY, SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY]);
+        $isDoubleHoliday = $salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY;
 
         $isRegularWorkingDay = $salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::WORKING_DAY;
         $isLegalHoliday = in_array($salaryStatementAttendance->day_type, [SalaryStatementAttendanceDayType::LEGAL_HOLIDAY, SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,]);
@@ -488,6 +503,7 @@ trait HasPayableDay
             $isPresent,
             $isLeave,
             $isHoliday,
+            $isDoubleHoliday,
 
             $isRegularWorkingDay,
             $isLegalHoliday,
