@@ -104,7 +104,7 @@ trait HasPayableDay
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate) * $splitBaseMultiplier;
+                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
 
                     if(isset($assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value])){
 
@@ -283,7 +283,7 @@ trait HasPayableDay
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate) * $splitBaseMultiplier;
+                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
 
                     if(isset($assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value])){
 
