@@ -122,7 +122,6 @@ class ObserverServiceProvider extends ServiceProvider
                     Relation::getMorphedModel('formula'),
                     Relation::getMorphedModel('group'),
                     Relation::getMorphedModel('attendance'),
-                    Relation::getMorphedModel('attendance_detail'),
                     Relation::getMorphedModel('overtime'),
                     Relation::getMorphedModel('holiday'),
                     Relation::getMorphedModel('leave_type'),
