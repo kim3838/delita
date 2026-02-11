@@ -26,6 +26,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['employee_id', 'shift_id', 'date']);
+
+            $table->index(['employee_id', 'date']);
         });
     }
 
