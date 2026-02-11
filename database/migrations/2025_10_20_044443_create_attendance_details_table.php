@@ -50,7 +50,6 @@ return new class extends Migration
             $table->decimal('night_differential_pay', 21, 6)->default(0);
             $table->decimal('rest_day_pay', 21, 6)->default(0);
             $table->decimal('holiday_pay', 21, 6)->default(0);
-            $table->boolean('holiday_pay_forfeited')->nullable();
 
             $table->timestamps();
 

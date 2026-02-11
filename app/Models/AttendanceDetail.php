@@ -48,7 +48,6 @@ class AttendanceDetail extends Model
         'night_differential_pay',
         'rest_day_pay',
         'holiday_pay',
-        'holiday_pay_forfeited',
     ];
 
     protected $hidden = [
@@ -94,7 +93,6 @@ class AttendanceDetail extends Model
         'night_differential_pay' => 'decimal:6',
         'rest_day_pay' => 'decimal:6',
         'holiday_pay' => 'decimal:6',
-        'holiday_pay_forfeited' => 'boolean'
     ];
 
     public function attendance(): BelongsTo
