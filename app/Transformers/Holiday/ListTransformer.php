@@ -15,6 +15,7 @@ class ListTransformer extends TransformerAbstract
             'ulid' => $model->ulid,
             'name' => $model->name,
             'type' => $model->type?->toArray(),
+            'holiday_pay_forfeiture' => $model->holiday_pay_forfeiture,
             'date' => $model->date->toDateString(),
             'recurring' => intval($model->recurring),
             'active' => intval($model->active),

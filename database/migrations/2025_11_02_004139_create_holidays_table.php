@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('name');
             $table->smallInteger('type');
+            $table->boolean('holiday_pay_forfeiture')->default(true);
             $table->date('date');
             $table->boolean('recurring');
             $table->boolean('active');

@@ -16,6 +16,7 @@ class BaseStoreAndUpdateHolidayRequest extends FormRequest
             'active' => 'required|boolean',
             'name' => 'required|string|max:255',
             'type' => 'required|numeric|integer',
+            'holiday_pay_forfeiture' => 'required|boolean',
             'recurring' => [
                 'required',
                 'boolean',
