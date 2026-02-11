@@ -681,15 +681,16 @@ class Development extends Seeder
         $employeeC1002->leaves()->delete();
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-01-28']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-01-29']);
-
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-02']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-03']);
-
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-05']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-06']);
-
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-02-19']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-02-20']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-03-05']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-03-11']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2026-03-13']);
+        $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C1->id, 'date' => '2026-03-23']);
 
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-21']);
         $employeeC1002->leaves()->create(['ulid' => Str::ulid(), 'leave_type_id' => $leave1002C4->id, 'date' => '2027-05-22']);
@@ -1174,6 +1175,24 @@ class Development extends Seeder
             'active' => true,
             'effective_date' => '2000-02-25',
         ]);
+
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-02-26 Legal',],['ulid' => Str::ulid(), 'name' => '2026-02-26 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-02-26', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-02-27 Legal',],['ulid' => Str::ulid(), 'name' => '2026-02-27 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-02-27', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-04 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-04 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-04', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-05 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-05 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-05', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-07 Special',],['ulid' => Str::ulid(), 'name' => '2026-03-07 Special', 'type' => HolidayType::SPECIAL, 'date' => '2026-03-07', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-09 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-09 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-09', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-11 Special',],['ulid' => Str::ulid(), 'name' => '2026-03-11 Special', 'type' => HolidayType::SPECIAL, 'date' => '2026-03-11', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-12 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-12 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-12', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-13 Special',],['ulid' => Str::ulid(), 'name' => '2026-03-13 Special', 'type' => HolidayType::SPECIAL, 'date' => '2026-03-13', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-14 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-14 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-14', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-16 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-16 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-16', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-17 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-17 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-17', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-18 Double',],['ulid' => Str::ulid(), 'name' => '2026-03-18 Double', 'type' => HolidayType::DOUBLE, 'date' => '2026-03-18', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-20 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-20 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-20', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-21 Double',],['ulid' => Str::ulid(), 'name' => '2026-03-21 Double', 'type' => HolidayType::DOUBLE, 'date' => '2026-03-21', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-24 Legal',],['ulid' => Str::ulid(), 'name' => '2026-03-24 Legal', 'type' => HolidayType::LEGAL, 'date' => '2026-03-24', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
+        $company1002C->holidays()->firstOrCreate(['name' => '2026-03-25 Double',],['ulid' => Str::ulid(), 'name' => '2026-03-25 Double', 'type' => HolidayType::DOUBLE, 'date' => '2026-03-25', 'recurring' => false, 'active' => true, 'effective_date' => '2000-01-01',]);
     }
 
     public function createPayrollComponent(Model $company, $index, $formulableType, $component, $attributes): void
