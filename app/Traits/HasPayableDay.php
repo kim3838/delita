@@ -13,16 +13,18 @@ use App\Models\SalaryStatementAttendance;
 
 trait HasPayableDay
 {
+    public bool $holidayPayForfeiture = false;
     public array $workSplits = [];
     public array $overtimeSplits = [];
 
-    public function setSatementDateAmountOnEarningsPayload(
+    public function statementAttendanceSetAmountableOnSplits(
         SalaryStatementAttendance $salaryStatementAttendance,
         &$assignedEarningsPayload,
         &$globalEarningsPayload,
         $test = false,
         $debug = false,
-    ){
+    ): array{
+
         $splitResults = [
             'work_splits' => [],
             'overtime_splits' => [],
@@ -40,6 +42,7 @@ trait HasPayableDay
                     'status' => $salaryStatementAttendanceArray['status'],
                     'day_type' => $salaryStatementAttendanceArray['day_type']
                 ],
+                'holidayPayForfeiture' => $this->holidayPayForfeiture,
                 'assignedEarningsPayload' => $assignedEarningsPayload,
                 'globalEarningsPayload' => $globalEarningsPayload,
                 'workSplits' => $this->workSplits,
@@ -422,13 +425,23 @@ trait HasPayableDay
 
         if(!$isPresent && $payableNoneAttendance){
 
+            /**
+             * If the date is holiday, leave without pay, and holiday setting has holiday pay forfeiture enabled,
+             * Chain into preceding work days to identify if holiday pay has to be forfeited
+             **/
+            $forfeitHolidayPay = $isLegalHoliday && !$leaveWithPay &&
+                $this->holidayPayForfeiture &&
+                $this->isHolidayPayShouldBeForfeited($salaryStatementAttendance);
+
             foreach($this->workSplits as $workSplit){
                 if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
 
                 $splitWorkHourType = $workSplit['work_hour_type'];
                 $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
-//              //If double holiday, replace the base rate by 2
+                //If double holiday, replace the base rate by 2
                 $splitBaseMultiplier = $isDoubleHoliday ? 2 : $workSplit['base_rate_multiplier'];
+                //If holiday pay forfeited, replace the base rate by 0
+                $splitBaseMultiplier = $forfeitHolidayPay ? 0 : $splitBaseMultiplier;
                 $splitSplitDuration = $workSplit['split_duration'];
                 $splitActualPresent = $workSplit['actual_present'];
                 $basicPayHourlyRate = $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] ?? 0;
@@ -436,18 +449,23 @@ trait HasPayableDay
                 $regularPay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
                 $leavePay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
 
-                if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
-                    $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
+                if($isLegalHoliday){
 
-                    $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] =
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'];
+                    if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
+                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
+
+                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] =
+                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'];
+                    }
                 }
 
-                if(isset($globalEarningsPayload[CompensationEnum::LEAVE_PAY->value])){
-                    $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $leavePay;
+                if($leaveWithPay && !$isLegalHoliday){
+                    if(isset($globalEarningsPayload[CompensationEnum::LEAVE_PAY->value])){
+                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $leavePay;
 
-                    $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['total'] =
-                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'];
+                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['total'] =
+                            $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'];
+                    }
                 }
 
                 if($test || $debug){
@@ -479,6 +497,46 @@ trait HasPayableDay
         }
 
         return $splitResults;
+    }
+
+    public function isHolidayPayShouldBeForfeited(SalaryStatementAttendance $salaryStatementAttendance): bool
+    {
+        $debugEnabled = false;
+
+        $precedingAttendanceEloquentQueryBuilder = SalaryStatementAttendance::query()
+            ->whereHas('salaryStatement', function ($query) use ($salaryStatementAttendance) {
+                $query->where('employee_id', $salaryStatementAttendance->salaryStatement->employee_id);
+            })
+            ->where('date', '<', $salaryStatementAttendance->date->toDateString())
+            ->whereNotIn('status', [
+                SalaryStatementAttendanceStatus::DAY_OFF,
+            ])
+            ->whereNotIn('day_type', [
+                SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
+                SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
+            ])
+            ->orderByDesc('date');
+
+        $precedingAttendance = $precedingAttendanceEloquentQueryBuilder->first();
+
+        if (!$precedingAttendance) {
+            return false;
+        }
+
+        if($debugEnabled){
+            _debug([
+                'Preceding attendance' => [
+                    'date' => $precedingAttendance->date->toDateString(),
+                    'status' => $precedingAttendance->status?->label(),
+                    'day_type' => $precedingAttendance->day_type?->label(),
+                ],
+            ]);
+        }
+
+        return in_array($precedingAttendance->status, [
+            SalaryStatementAttendanceStatus::ABSENT,
+            SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
+        ]);
     }
 
     public function listSalaryStatementAttendanceStatusAndDayTypes(SalaryStatementAttendance $salaryStatementAttendance): array
