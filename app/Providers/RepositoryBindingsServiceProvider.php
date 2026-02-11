@@ -50,6 +50,8 @@ use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\Repositories\RoleRepository;
+use App\Blueprint\Repositories\SalaryStatementAttendanceDetailRepository;
+use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Blueprint\Repositories\ShiftRepository;
@@ -106,6 +108,8 @@ use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\RequestApprovalStateRepositoryEloquent;
 use App\Concrete\Repositories\RoleRepositoryEloquent;
+use App\Concrete\Repositories\SalaryStatementAttendanceDetailRepositoryEloquent;
+use App\Concrete\Repositories\SalaryStatementAttendanceRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementModuleRepositoryEloquent;
 use App\Concrete\Repositories\SalaryStatementRepositoryEloquent;
 use App\Concrete\Repositories\ShiftRepositoryEloquent;
@@ -176,6 +180,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'payroll' => PayrollRepositoryEloquent::class,
         'payroll_payload' => PayrollPayloadRepositoryEloquent::class,
         'salary_statement' => SalaryStatementRepositoryEloquent::class,
+        'salary_statement_attendance' => SalaryStatementAttendanceRepositoryEloquent::class,
+        'salary_statement_attendance_detail' => SalaryStatementAttendanceDetailRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -232,6 +238,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         PayrollRepository::class => PayrollRepositoryEloquent::class,
         PayrollPayloadRepository::class => PayrollPayloadRepositoryEloquent::class,
         SalaryStatementRepository::class => SalaryStatementRepositoryEloquent::class,
+        SalaryStatementAttendanceRepository::class => SalaryStatementAttendanceRepositoryEloquent::class,
+        SalaryStatementAttendanceDetailRepository::class => SalaryStatementAttendanceDetailRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -293,6 +301,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'payroll',
             'payroll_payload',
             'salary_statement',
+            'salary_statement_attendance',
+            'salary_statement_attendance_detail',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -349,6 +359,8 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             PayrollRepository::class,
             PayrollPayloadRepository::class,
             SalaryStatementRepository::class,
+            SalaryStatementAttendanceRepository::class,
+            SalaryStatementAttendanceDetailRepository::class,
         ];
     }
 }

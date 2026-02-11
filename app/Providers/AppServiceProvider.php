@@ -28,6 +28,8 @@ use App\Models\PayFrequency;
 use App\Models\Payroll;
 use App\Models\Role;
 use App\Models\SalaryStatement;
+use App\Models\SalaryStatementAttendance;
+use App\Models\SalaryStatementAttendanceDetail;
 use App\Models\SalaryStatementModule;
 use App\Models\Shift;
 use App\Models\ShiftSchedule;
@@ -85,6 +87,8 @@ class AppServiceProvider extends ServiceProvider
             'leave_request' => LeaveRequest::class,
             'payroll' => Payroll::class,
             'salary_statement' => SalaryStatement::class,
+            'salary_statement_attendance' => SalaryStatementAttendance::class,
+            'salary_statement_attendance_detail' => SalaryStatementAttendanceDetail::class
         ]);
     }
 }

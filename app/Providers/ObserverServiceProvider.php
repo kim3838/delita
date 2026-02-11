@@ -11,6 +11,7 @@ use App\Observers\LeaveRequestObserver;
 use App\Observers\OrderableObserver;
 use App\Observers\OvertimeRequestObserver;
 use App\Observers\PayrollObserver;
+use App\Observers\SalaryStatementAttendanceObserver;
 use App\Observers\SalaryStatementObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -102,6 +103,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     SalaryStatementObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('salary_statement_attendance'),
+                ],
+                'observers' => [
+                    SalaryStatementAttendanceObserver::class,
                 ]
             ),
             array(
