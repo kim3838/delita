@@ -27,7 +27,7 @@ class PayrollObserver
         $frequencySequenceFlag = null;
 
         if($payroll->frequency_sequence){
-            switch($payroll->frequency_sequence->type){
+            switch($payroll->frequency_sequence){
                 case SemiMonthlySequence::FIRST_HALF : $frequencySequenceFlag = 1; break;
                 case SemiMonthlySequence::SECOND_HALF : $frequencySequenceFlag = 2; break;
             }
