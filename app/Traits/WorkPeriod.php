@@ -823,6 +823,13 @@ trait WorkPeriod
         return !empty($holiday) ? $holiday->type : null;
     }
 
+    protected function getDateHolidayPayForfeiture($date): ?bool
+    {
+        $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+
+        return !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
+    }
+
     protected function getCompanyHolidayByDate(string $date, $companyId = null): ?Holiday
     {
         if(empty($companyId)){
