@@ -56,6 +56,9 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
                     END AS payroll_componentable_morph_to_type
                 "),
                 "employee_payroll_components.*",
+                ...(isset($filters->payroll_componentable_date) ? [
+                    DB::raw("'".$filters->payroll_componentable_date."' AS payroll_attendance_date"),
+                ] : []),
             ]);
 
         $queryBuilder = $this->queryAsSub($queryBuilder, 'payroll_component_sub')
@@ -71,7 +74,23 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "payroll_component_sub.*",
-            ]);
+            ])->when(isset($filters->payroll_componentable_date), function ($builder) use($filters) {
+                $builder->where(function ($query) {
+                        $query->whereNull('payroll_component_sub.start_date')->whereNull('payroll_component_sub.end_date');
+                    })
+                    ->orWhere(function ($query) {
+                        $query->whereNull('payroll_component_sub.start_date')->whereNotNull('payroll_component_sub.end_date')
+                            ->where('payroll_component_sub.end_date', '>=', DB::raw("payroll_component_sub.payroll_attendance_date"));
+                    })
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('payroll_component_sub.start_date')->whereNull('payroll_component_sub.end_date')
+                            ->where('payroll_component_sub.start_date', '<=', DB::raw("payroll_component_sub.payroll_attendance_date"));
+                    })
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('payroll_component_sub.start_date')->whereNotNull('payroll_component_sub.end_date')
+                            ->whereBetween('payroll_component_sub.payroll_attendance_date', [DB::raw("payroll_component_sub.start_date"), DB::raw("payroll_component_sub.end_date")]);
+                    });
+            });
 
         return $queryBuilder;
     }
