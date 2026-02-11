@@ -20,6 +20,7 @@ class AttendanceDetail extends Model
         'work_hour_type',
         'hourly_rate_type',
         'regular_rate_multiplier',
+        'non_rest_rate_multiplier',
         'hourly_rate_multiplier',
         'base_rate_multiplier',
         'order',
@@ -42,6 +43,12 @@ class AttendanceDetail extends Model
         'late',
         'undertime',
         'flexible_undertime',
+
+        'regular_pay',
+        'night_differential_pay',
+        'rest_day_pay',
+        'holiday_pay',
+        'holiday_pay_forfeited',
     ];
 
     protected $hidden = [
@@ -59,6 +66,7 @@ class AttendanceDetail extends Model
         'work_hour_type' => WorkHourType::class,
         'hourly_rate_type' => HourlyRateType::class,
         'regular_rate_multiplier' => 'decimal:6',
+        'non_rest_rate_multiplier' => 'decimal:6',
         'hourly_rate_multiplier' => 'decimal:6',
         'base_rate_multiplier' => 'decimal:6',
         'order' => 'int',
@@ -81,6 +89,12 @@ class AttendanceDetail extends Model
         'late' => 'int',
         'undertime' => 'int',
         'flexible_undertime' => 'int',
+
+        'regular_pay' => 'decimal:6',
+        'night_differential_pay' => 'decimal:6',
+        'rest_day_pay' => 'decimal:6',
+        'holiday_pay' => 'decimal:6',
+        'holiday_pay_forfeited' => 'boolean'
     ];
 
     public function attendance(): BelongsTo

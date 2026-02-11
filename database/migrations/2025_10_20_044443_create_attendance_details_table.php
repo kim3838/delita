@@ -22,6 +22,7 @@ return new class extends Migration
             $table->smallInteger('work_hour_type');
             $table->smallInteger('hourly_rate_type');
             $table->decimal('regular_rate_multiplier', 8, 6)->nullable();
+            $table->decimal('non_rest_rate_multiplier', 8, 6)->nullable();
             $table->decimal('hourly_rate_multiplier', 8, 6);
             $table->decimal('base_rate_multiplier', 8, 6);
             $table->smallInteger('order');
@@ -44,6 +45,13 @@ return new class extends Migration
             $table->smallInteger('late')->default(0);
             $table->smallInteger('undertime')->default(0);
             $table->smallInteger('flexible_undertime')->default(0);
+
+            $table->decimal('regular_pay', 21, 6)->default(0);
+            $table->decimal('night_differential_pay', 21, 6)->default(0);
+            $table->decimal('rest_day_pay', 21, 6)->default(0);
+            $table->decimal('holiday_pay', 21, 6)->default(0);
+            $table->boolean('holiday_pay_forfeited')->nullable();
+
             $table->timestamps();
 
             $table->unique(['attendance_id', 'order']);
