@@ -403,7 +403,7 @@ class AttendancePayItemsTests
             //LWP REGULAR DAY
             [
                 'test_case' => 'LWP REGULAR DAY',
-                'test' => false || $this->testAll,
+                'test' => true || $this->testAll,
                 'salary_statement_attendance' => SalaryStatementAttendance::hydrate([[
                     'date' => '2026-01-28',
                     'status' => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY->value,
@@ -475,7 +475,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 200.0,
+                                'LEAVE_PAY' => 200.0,
                             ),
                             array (
                                 'date' => '2026-01-28 Working day non-rest day',
@@ -484,7 +484,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 600.0,
+                                'LEAVE_PAY' => 600.0,
                             ),
                             array (
                                 'date' => '2026-01-28 Working day non-rest day',
@@ -493,7 +493,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 300.0,
+                                'LEAVE_PAY' => 300.0,
                             ),
                         ]
                     ],
@@ -1365,7 +1365,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 200.0,
+                                'LEAVE_PAY' => 200.0,
                             ),
                             array (
                                 'date' => '2026-02-02 Special holiday non-rest day',
@@ -1374,7 +1374,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 600.0,
+                                'LEAVE_PAY' => 600.0,
                             ),
                             array (
                                 'date' => '2026-02-02 Special holiday non-rest day',
@@ -1383,7 +1383,7 @@ class AttendancePayItemsTests
                                 'BASE_RA_MULTIPLIER' => 1.0,
                                 'actual_present' => 0.0,
                                 '=>' => '=>',
-                                'REGULAR_PAY' => 300.0,
+                                'LEAVE_PAY' => 300.0,
                             ),
                         ]
                     ],
@@ -3302,6 +3302,10 @@ class AttendancePayItemsTests
                 $passed++;
             } else {
                 $failed++;
+
+                _debug([
+                    'Test case failed' => $testCase['test_case'],
+                ]);
             }
         }
 
