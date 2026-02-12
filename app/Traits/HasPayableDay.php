@@ -25,6 +25,8 @@ trait HasPayableDay
         $debug = false,
     ): array{
 
+        $debugDetailProxyModelUpdate = false;
+
         $splitResults = [
             'work_splits' => [],
             'overtime_splits' => [],
@@ -62,7 +64,8 @@ trait HasPayableDay
             if($isRegularWorkingDay){
 
                 foreach($this->workSplits as $workSplit){
-                    if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
+                    $proxyId = null;$proxyModel = null;
+                    if(!$test){$proxyId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
 
                     $splitWorkHourType = $workSplit['work_hour_type'];
                     $splitRegularMultiplier = $workSplit['regular_rate_multiplier'];
@@ -124,8 +127,6 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            //'detail_id' => $detailId,
-                            //'proxy_model' => $proxyModel,
                             'ACTUAL_PRESENT' => $splitActualPresent,
                             'WORKED HOURS' => $hours,
                             'REGULAR MULTIPLIER' => $splitRegularMultiplier,
@@ -144,12 +145,31 @@ trait HasPayableDay
                     }
 
                     if(!$test){
+                        $updateProxyModelDetail = [
+                            'hourly_rate' => $basicPayHourlyRate,
+                            'regular_pay' => $regularPay,
+                            'allowance' => $allowanceValue,
+                            'night_differential_pay' => $nightPay,
+                            'rest_day_pay' => $restPay,
+                        ];
+
+                        if($debugDetailProxyModelUpdate){
+                            _debug([
+                                'origin' => 'Regular work day work split',
+                                'proxy_id' => $proxyId,
+                                'proxy_model' => $proxyModel,
+                                'update' => $updateProxyModelDetail
+                            ]);
+                        }
+
                         //Update detail proxy model
+                        app($proxyModel)->model()::find($proxyId)->update($updateProxyModelDetail);
                     }
                 }
 
                 foreach($this->overtimeSplits as $overtimeSplit){
-                    if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
+                    $proxyId = null;$proxyModel = null;
+                    if(!$test){$proxyId = $overtimeSplit['id'];$proxyModel = $overtimeSplit['proxy_model'];}
 
                     $splitWorkHourType = $overtimeSplit['work_hour_type'];
                     $splitRegularMultiplier = $overtimeSplit['regular_rate_multiplier'];
@@ -197,8 +217,6 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            //'detail_id' => $detailId,
-                            //'proxy_model' => $proxyModel,
                             'ACTUAL_PRESENT' => $splitActualPresent,
                             'WORKED HOURS' => $hours,
                             'REGULAR MULTIPLIER' => $splitRegularMultiplier,
@@ -216,7 +234,24 @@ trait HasPayableDay
                     }
 
                     if(!$test){
+                        $updateProxyModelDetail = [
+                            'hourly_rate' => $basicPayHourlyRate,
+                            'regular_pay' => $regularPay,
+                            'night_differential_pay' => $nightPay,
+                            'rest_day_pay' => $restPay,
+                        ];
+
+                        if($debugDetailProxyModelUpdate){
+                            _debug([
+                                'origin' => 'Regular work day overtime split',
+                                'proxy_id' => $proxyId,
+                                'proxy_model' => $proxyModel,
+                                'update' => $updateProxyModelDetail
+                            ]);
+                        }
+
                         //Update detail proxy model
+                        app($proxyModel)->model()::find($proxyId)->update($updateProxyModelDetail);
                     }
                 }
             }
@@ -224,7 +259,9 @@ trait HasPayableDay
             if($isHoliday){
 
                 foreach($this->workSplits as $workSplit){
-                    if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
+                    $proxyId = null;
+                    $proxyModel = null;
+                    if(!$test){$proxyId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
 
                     $splitWorkHourType = $workSplit['work_hour_type'];
                     $splitRegularMultiplier = $workSplit['regular_rate_multiplier'];
@@ -305,8 +342,6 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            //'detail_id' => $detailId,
-                            //'proxy_model' => $proxyModel,
                             'ACTUAL_PRESENT' => $splitActualPresent,
                             'WORKED HOURS' => $hours,
                             'REGULAR MULTIPLIER' => $splitRegularMultiplier,
@@ -327,12 +362,32 @@ trait HasPayableDay
                     }
 
                     if(!$test){
+                        $updateProxyModelDetail = [
+                            'hourly_rate' => $basicPayHourlyRate,
+                            'regular_pay' => $regularPay,
+                            'allowance' => $allowanceValue,
+                            'night_differential_pay' => $nightPay,
+                            'rest_day_pay' => $restPay,
+                            'holiday_pay' => $holidayPay,
+                        ];
+
+                        if($debugDetailProxyModelUpdate){
+                            _debug([
+                                'origin' => 'Holiday work split',
+                                'proxy_id' => $proxyId,
+                                'proxy_model' => $proxyModel,
+                                'update' => $updateProxyModelDetail
+                            ]);
+                        }
+
                         //Update detail proxy model
+                        app($proxyModel)->model()::find($proxyId)->update($updateProxyModelDetail);
                     }
                 }
 
                 foreach($this->overtimeSplits as $overtimeSplit){
-                    if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
+                    $proxyId = null;$proxyModel = null;
+                    if(!$test){$proxyId = $overtimeSplit['id'];$proxyModel = $overtimeSplit['proxy_model'];}
 
                     $splitWorkHourType = $overtimeSplit['work_hour_type'];
                     $splitRegularMultiplier = $overtimeSplit['regular_rate_multiplier'];
@@ -398,8 +453,6 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            //'detail_id' => $detailId,
-                            //'proxy_model' => $proxyModel,
                             'ACTUAL_PRESENT' => $splitActualPresent,
                             'WORKED HOURS' => $hours,
                             'REGULAR MULTIPLIER' => $splitRegularMultiplier,
@@ -419,7 +472,25 @@ trait HasPayableDay
                     }
 
                     if(!$test){
+                        $updateProxyModelDetail = [
+                            'hourly_rate' => $basicPayHourlyRate,
+                            'regular_pay' => $regularPay,
+                            'night_differential_pay' => $nightPay,
+                            'rest_day_pay' => $restPay,
+                            'holiday_pay' => $holidayPay,
+                        ];
+
+                        if($debugDetailProxyModelUpdate){
+                            _debug([
+                                'origin' => 'Holiday overtime split',
+                                'proxy_id' => $proxyId,
+                                'proxy_model' => $proxyModel,
+                                'update' => $updateProxyModelDetail
+                            ]);
+                        }
+
                         //Update detail proxy model
+                        app($proxyModel)->model()::find($proxyId)->update($updateProxyModelDetail);
                     }
                 }
             }
@@ -436,7 +507,8 @@ trait HasPayableDay
                 $this->isHolidayPayShouldBeForfeited($salaryStatementAttendance);
 
             foreach($this->workSplits as $workSplit){
-                if(!$test){$detailId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
+                $proxyId = null;$proxyModel = null;
+                if(!$test){$proxyId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
 
                 $splitWorkHourType = $workSplit['work_hour_type'];
                 $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
@@ -448,46 +520,75 @@ trait HasPayableDay
                 $splitActualPresent = $workSplit['actual_present'];
                 $basicPayHourlyRate = $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] ?? 0;
 
+                /**
+                 * Pay is regular pay when legal holiday, otherwise leave pay
+                 **/
                 $regularPay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
-                $leavePay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
 
                 if($isLegalHoliday){
-
                     if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
                         $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
 
                         $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] =
                             $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'];
                     }
+
                 }
 
                 if($leaveWithPay && !$isLegalHoliday){
                     if(isset($globalEarningsPayload[CompensationEnum::LEAVE_PAY->value])){
-                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $leavePay;
+                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $regularPay;
 
                         $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['total'] =
                             $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'];
                     }
                 }
 
+                $payableNonAttendance = [];
+                $updateProxyModelDetail = [
+                    'hourly_rate' => $basicPayHourlyRate,
+                    ...($holidayPayForfeitureEnabled ? [
+                        'holiday_pay_forfeited' => $forfeitHolidayPay
+                    ] : [])
+                ];
+
+                if($isLegalHoliday){
+                    $payableNonAttendance['REGULAR_PAY'] = $regularPay;
+                    $updateProxyModelDetail['regular_pay'] = $regularPay;
+                }
+
+                if($leaveWithPay && !$isLegalHoliday){
+                    $payableNonAttendance['LEAVE_PAY'] = $regularPay;
+                    $updateProxyModelDetail['leave_pay'] = $regularPay;
+                }
+
                 if($test || $debug){
+
                     $splitResults['payable_non_attendance_work_splits'][] = [
                         'date' => $salaryStatementAttendance->date->toDateString() . ' ' .
                             $salaryStatementAttendance->day_type->label() . ' ' .
                             ($isRestDay ? 'rest day' : 'non-rest day'),
                         'work_hour_type' => $splitWorkHourType->label(),
-                        //'detail_id' => $detailId,
-                        //'proxy_model' => $proxyModel,
                         'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
                         'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
                         'actual_present' => $splitActualPresent,
                         '=>' => '=>',
-                        'REGULAR_PAY' => $regularPay,
+                        ...$payableNonAttendance
                     ];
                 }
 
                 if(!$test){
+                    if($debugDetailProxyModelUpdate){
+                        _debug([
+                            'origin' => 'Holiday work payable non-attendance split',
+                            'proxy_id' => $proxyId,
+                            'proxy_model' => $proxyModel,
+                            'update' => $updateProxyModelDetail
+                        ]);
+                    }
+
                     //Update detail proxy model
+                    app($proxyModel)->model()::find($proxyId)->update($updateProxyModelDetail);
                 }
             }
         }
