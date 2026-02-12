@@ -15,6 +15,7 @@ use App\Http\Requests\Attendance\ImportAttendance;
 use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Leave;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
 use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
@@ -111,6 +112,17 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 $date = Carbon::parse($row['date']);
 
                 $row['date'] = $date->toDateString();
+            }
+
+            /**
+             * Validate date if leave exists
+             **/
+            $leaveExists = Leave::query()->where('employee_id', $row['employee_id'])
+                ->where('date', $date->toDateString())
+                ->exists();
+
+            if($leaveExists){
+                $validationErrors[] = 'Employee is on leave.';
             }
 
             /**
