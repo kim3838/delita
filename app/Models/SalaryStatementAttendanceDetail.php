@@ -26,10 +26,12 @@ class SalaryStatementAttendanceDetail extends Model
         'base_rate_multiplier',
         'order',
 
+        'hourly_rate',
         'regular_pay',
         'allowance',
         'night_differential_pay',
         'rest_day_pay',
+        'leave_pay',
         'holiday_pay',
         'holiday_pay_forfeited',
     ];
@@ -53,10 +55,12 @@ class SalaryStatementAttendanceDetail extends Model
         'base_rate_multiplier' => 'decimal:6',
         'order' => 'int',
 
+        'hourly_rate' => 'decimal:6',
         'regular_pay' => 'decimal:6',
         'allowance' => 'decimal:6',
         'night_differential_pay' => 'decimal:6',
         'rest_day_pay' => 'decimal:6',
+        'leave_pay' => 'decimal:6',
         'holiday_pay' => 'decimal:6',
         'holiday_pay_forfeited' => 'boolean'
     ];

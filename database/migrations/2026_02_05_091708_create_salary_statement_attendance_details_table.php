@@ -32,10 +32,14 @@ return new class extends Migration
             $table->decimal('base_rate_multiplier', 8, 6);
             $table->smallInteger('order');
 
+            $table->decimal('hourly_rate', 21, 6)->default(0);
             $table->decimal('regular_pay', 21, 6)->default(0);
             $table->decimal('allowance', 21, 6)->default(0);
             $table->decimal('night_differential_pay', 21, 6)->default(0);
             $table->decimal('rest_day_pay', 21, 6)->default(0);
+            $table->decimal('leave_pay', 21, 6)->default(0);
+
+            //Might be needed in the future if an employee has fixed pay, date is non-attendance and is a legal holiday
             $table->decimal('holiday_pay', 21, 6)->default(0);
             $table->boolean('holiday_pay_forfeited')->nullable();
             $table->timestamps();
