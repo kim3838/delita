@@ -45,6 +45,9 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
             ->when(!empty($filters->payroll_componentable_type) && is_array($filters->payroll_componentable_type), function ($builder) use ($filters) {
                 $builder->whereIn('employee_payroll_components.payroll_componentable_type', $filters->payroll_componentable_type);
             })
+            ->when(!empty($filters->pay_types) && is_array($filters->pay_types), function ($builder) use ($filters) {
+                $builder->whereIn('employee_payroll_components.pay_type', $filters->pay_types);
+            })
             ->select([
                 "employee_sub.number AS employee_number",
                 DB::raw("CONCAT(employee_payroll_components.payroll_componentable_id, '.', employee_payroll_components.payroll_componentable_type) AS payroll_componentable_morph"),
