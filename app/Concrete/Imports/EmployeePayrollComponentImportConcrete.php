@@ -158,14 +158,18 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     }
                 }
 
-                if (empty($row['pay_type'])) {
-                    $validationErrors[] = 'Pay type is required.';
-                } else {
+                $payTypeEnabled = false;
 
-                    $payTypeValid = isNameInEnum(PayType::class, $row['pay_type']);
+                if($payTypeEnabled){
+                    if (empty($row['pay_type'])) {
+                        $validationErrors[] = 'Pay type is required.';
+                    } else {
 
-                    if(!$payTypeValid){
-                        $validationErrors[] = 'Pay type invalid.';
+                        $payTypeValid = isNameInEnum(PayType::class, $row['pay_type']);
+
+                        if(!$payTypeValid){
+                            $validationErrors[] = 'Pay type invalid.';
+                        }
                     }
                 }
 
@@ -218,7 +222,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                     'amount' => $row['amount'],
                     'currency' => $company->currency,
                     'pay_period' => PayPeriod::{$row['pay_period']},
-                    'pay_type' => PayType::{$row['pay_type']},
+                    'pay_type' => PayType::BY_ATTENDANCE,
                 ] : [])
             ];
 

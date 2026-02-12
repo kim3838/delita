@@ -14,6 +14,6 @@ class BlankEmployeePayItemsTemplateExport implements FromArray, WithHeadings
 
     public function headings(): array
     {
-        return ['Employee Number', 'Payroll Component Code', 'Amount', 'Pay Period', 'Pay Type'];
+        return ['Employee Number', 'Payroll Component Code', 'Amount', 'Pay Period'];
     }
 }
