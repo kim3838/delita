@@ -45,6 +45,7 @@ class AttendanceDetail extends Model
         'flexible_undertime',
 
         'regular_pay',
+        'allowance',
         'night_differential_pay',
         'rest_day_pay',
         'holiday_pay',
@@ -90,6 +91,7 @@ class AttendanceDetail extends Model
         'flexible_undertime' => 'int',
 
         'regular_pay' => 'decimal:6',
+        'allowance' => 'decimal:6',
         'night_differential_pay' => 'decimal:6',
         'rest_day_pay' => 'decimal:6',
         'holiday_pay' => 'decimal:6',

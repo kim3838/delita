@@ -47,6 +47,7 @@ return new class extends Migration
             $table->smallInteger('flexible_undertime')->default(0);
 
             $table->decimal('regular_pay', 21, 6)->default(0);
+            $table->decimal('allowance', 21, 6)->default(0);
             $table->decimal('night_differential_pay', 21, 6)->default(0);
             $table->decimal('rest_day_pay', 21, 6)->default(0);
             $table->decimal('holiday_pay', 21, 6)->default(0);
