@@ -431,8 +431,8 @@ trait HasPayableDay
              * If the date is holiday, leave without pay, and holiday setting has holiday pay forfeiture enabled,
              * Chain into preceding work days to identify if holiday pay has to be forfeited
              **/
-            $forfeitHolidayPay = $isLegalHoliday && !$leaveWithPay &&
-                $this->holidayPayForfeiture &&
+            $holidayPayForfeitureEnabled = $isLegalHoliday && !$leaveWithPay && $this->holidayPayForfeiture;
+            $forfeitHolidayPay =  $holidayPayForfeitureEnabled &&
                 $this->isHolidayPayShouldBeForfeited($salaryStatementAttendance);
 
             foreach($this->workSplits as $workSplit){
@@ -512,10 +512,6 @@ trait HasPayableDay
             ->where('date', '<', $salaryStatementAttendance->date->toDateString())
             ->whereNotIn('status', [
                 SalaryStatementAttendanceStatus::DAY_OFF,
-            ])
-            ->whereNotIn('day_type', [
-                SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
-                SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
             ])
             ->orderByDesc('date');
 
