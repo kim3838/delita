@@ -137,6 +137,7 @@ trait HasPayableDay
                             ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
                             '=>' => '=>',
                             'REGULAR_PAY' => $regularPay,
+                            'ALLOWANCE' => $allowanceValue,
                             'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
                             'REST_DAY_PAY' => $restPay,
                         ];
@@ -318,6 +319,7 @@ trait HasPayableDay
                             'HOLIDAY MULTIPLIER' => $holidayMultiplier,
                             '=>' => '=>',
                             'REGULAR_PAY' => $regularPay,
+                            'ALLOWANCE' => $allowanceValue,
                             'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
                             'REST_DAY_PAY' => $restPay,
                             'HOLIDAY_PAY' => $holidayPay
