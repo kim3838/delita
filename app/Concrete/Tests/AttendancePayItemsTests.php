@@ -32,7 +32,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::WORKING_DAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -40,7 +42,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -48,7 +52,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => null,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -216,6 +222,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 20.000000000000018,
@@ -225,6 +232,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -234,6 +242,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 964.5833333333333,
                             'night_differential_pay' => 21.458333333333332,
@@ -253,7 +262,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::WORKING_DAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -261,7 +272,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -269,7 +282,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -373,6 +388,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 20.000000000000018,
@@ -382,6 +398,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -391,6 +408,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -403,14 +421,16 @@ class AttendancePayItemsTests
             //LWP REGULAR DAY
             [
                 'test_case' => 'LWP REGULAR DAY',
-                'test' => true || $this->testAll,
+                'test' => false || $this->testAll,
                 'salary_statement_attendance' => SalaryStatementAttendance::hydrate([[
                     'date' => '2026-01-28',
                     'status' => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY->value,
                     'day_type' => SalaryStatementAttendanceDayType::WORKING_DAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -420,7 +440,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -501,6 +523,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -510,6 +533,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -529,7 +553,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::WORKING_DAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -537,7 +563,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -545,7 +573,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -723,6 +753,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 25.99999999999998,
@@ -732,6 +763,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -741,6 +773,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 964.5833333333333,
                             'night_differential_pay' => 29.01166666666667,
@@ -760,7 +793,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -770,7 +805,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -778,7 +815,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -859,6 +898,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -868,6 +908,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -877,6 +918,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -896,7 +938,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -906,7 +950,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -914,7 +960,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -995,6 +1043,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -1004,6 +1053,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -1013,6 +1063,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -1032,7 +1083,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1040,7 +1093,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1048,7 +1103,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1058,7 +1115,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1246,6 +1305,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 51.99999999999996,
@@ -1255,6 +1315,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -1264,6 +1325,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 964.5833333333333,
                             'night_differential_pay' => 58.02333333333334,
@@ -1273,6 +1335,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2116.36,
                             'night_differential_pay' => 0,
@@ -1292,7 +1355,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1302,7 +1367,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1310,7 +1377,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1391,6 +1460,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -1400,6 +1470,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -1409,6 +1480,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -1428,7 +1500,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1438,7 +1512,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1519,6 +1595,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -1528,6 +1605,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -1547,7 +1625,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1555,7 +1635,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1563,7 +1645,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1573,7 +1657,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1755,6 +1841,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 40.000000000000036,
@@ -1764,6 +1851,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -1773,6 +1861,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 1312.5,
                             'night_differential_pay' => 116.9999999999999,
@@ -1782,6 +1871,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2517.5,
                             'night_differential_pay' => 0,
@@ -1801,7 +1891,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1809,7 +1901,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1817,7 +1911,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -1827,7 +1923,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2009,6 +2107,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 25.99999999999998,
@@ -2018,6 +2117,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -2027,6 +2127,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 1250.0,
                             'night_differential_pay' => 67.60000000000002,
@@ -2036,6 +2137,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 770.0,
                             'night_differential_pay' => 0,
@@ -2055,7 +2157,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2063,7 +2167,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2071,7 +2177,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2081,7 +2189,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2269,6 +2379,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2200.0,
                             'night_differential_pay' => 78.00000000000003,
@@ -2278,6 +2389,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -2287,6 +2399,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 1250.0,
                             'night_differential_pay' => 202.79999999999987,
@@ -2296,6 +2409,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 3685.2,
                             'night_differential_pay' => 0,
@@ -2315,7 +2429,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2325,7 +2441,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2333,7 +2451,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2414,6 +2534,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2200.0,
                             'night_differential_pay' => 0,
@@ -2423,6 +2544,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -2432,6 +2554,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -2451,7 +2574,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2461,7 +2586,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::LEAVE_PAY->value => [
+                    'LEAVE-PAY' => [
+                        'component_type' => 200,
+                        'component_name' => 'Leave Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2469,7 +2596,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2550,6 +2679,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2200.0,
                             'night_differential_pay' => 0,
@@ -2559,6 +2689,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 200,
+                            'component_name' => 'Leave Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -2568,6 +2699,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -2587,7 +2719,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2595,7 +2729,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2603,7 +2739,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2613,7 +2751,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2801,6 +2941,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 29.999999999999982,
@@ -2810,6 +2951,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -2819,6 +2961,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 1250.0,
                             'night_differential_pay' => 78.00000000000003,
@@ -2828,6 +2971,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 755.5999999999999,
                             'night_differential_pay' => 0,
@@ -2847,7 +2991,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2855,7 +3001,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
+                        'component_type' => 101,
+                        'component_name' => 'Meal Allowance',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2863,7 +3011,9 @@ class AttendancePayItemsTests
                         'rest_day_pay' => 0,
                         'total' => 0,
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
+                        'component_type' => 110,
+                        'component_name' => 'Overtime',
                         'hourly_rate' => NULL,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -2873,7 +3023,9 @@ class AttendancePayItemsTests
                     ],
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -3055,6 +3207,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2200.0,
                             'night_differential_pay' => 59.999999999999964,
@@ -3064,6 +3217,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 101,
+                            'component_name' => 'Meal Allowance',
                             'work_hour_type' => 100,
                             'regular_pay' => 1100.0,
                             'night_differential_pay' => 0,
@@ -3073,6 +3227,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 110,
+                            'component_name' => 'Overtime',
                             'work_hour_type' => 100,
                             'regular_pay' => 1250.0,
                             'night_differential_pay' => 156.00000000000006,
@@ -3082,6 +3237,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 3750.0,
                             'night_differential_pay' => 0,
@@ -3101,7 +3257,9 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
+                        'component_type' => 100,
+                        'component_name' => 'Basic Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -3111,7 +3269,9 @@ class AttendancePayItemsTests
                     ]
                 ],
                 'global_earnings' => [
-                    Compensation::HOLIDAY_PAY->value => [
+                    'HOLIDAY-PAY' => [
+                        'component_type' => 300,
+                        'component_name' => 'Holiday Pay',
                         'hourly_rate' => 100.0,
                         'work_hour_type' => 100,
                         'regular_pay' => 0,
@@ -3192,6 +3352,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 100,
+                            'component_name' => 'Basic Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 2200.0,
                             'night_differential_pay' => 0,
@@ -3201,6 +3362,7 @@ class AttendancePayItemsTests
                         array (
                             'formulable_type' => 100,
                             'component_type' => 300,
+                            'component_name' => 'Holiday Pay',
                             'work_hour_type' => 100,
                             'regular_pay' => 0,
                             'night_differential_pay' => 0,
@@ -3221,11 +3383,11 @@ class AttendancePayItemsTests
                     'day_type' => SalaryStatementAttendanceDayType::WORKING_DAY->value,
                 ]])->first(),
                 'assigned_earnings' => [
-                    Compensation::BASIC_PAY->value => [
+                    'BASICPAY' => [
                     ],
-                    Compensation::REGULAR_ALLOWANCE->value => [
+                    'MEAL' => [
                     ],
-                    Compensation::OVERTIME->value => [
+                    'OVERTIME' => [
                     ],
                 ],
                 'global_earnings' => [
@@ -3260,6 +3422,13 @@ class AttendancePayItemsTests
 
             if(!$testCase['test'])continue;
 
+            $payloadMap = [
+                Compensation::BASIC_PAY->value => 'BASICPAY',
+                Compensation::REGULAR_ALLOWANCE->value => ['MEAL'],
+                Compensation::OVERTIME->value => 'OVERTIME',
+                Compensation::LEAVE_PAY->value => 'LEAVE-PAY',
+                Compensation::HOLIDAY_PAY->value => 'HOLIDAY-PAY',
+            ];
             $assignedEarningsPayload = $testCase['assigned_earnings'];
             $globalEarningsPayload = $testCase['global_earnings'];
 
@@ -3269,6 +3438,7 @@ class AttendancePayItemsTests
 
             $splitResults = $this->statementAttendanceSetAmountableOnSplits(
                 $testCase['salary_statement_attendance'],
+                $payloadMap,
                 $assignedEarningsPayload,
                 $globalEarningsPayload,
                 true,
@@ -3277,7 +3447,8 @@ class AttendancePayItemsTests
 
             $assignedCompensationsPatchable = collect($assignedEarningsPayload)->map(fn($value, $key) => [
                 'formulable_type' => Formulable::EARNINGS->value,
-                'component_type' => $key,
+                'component_type' => $value['component_type'],
+                'component_name' => $value['component_name'],
                 'work_hour_type' => $value['work_hour_type'],
                 'regular_pay' => $value['regular_pay'],
                 'night_differential_pay' => $value['night_differential_pay'],
@@ -3286,7 +3457,8 @@ class AttendancePayItemsTests
             ])->values()->toArray();
             $globalCompensationsPatchable = collect($globalEarningsPayload)->map(fn($value, $key) => [
                 'formulable_type' => Formulable::EARNINGS->value,
-                'component_type' => $key,
+                'component_type' => $value['component_type'],
+                'component_name' => $value['component_name'],
                 'work_hour_type' => $value['work_hour_type'],
                 'regular_pay' => $value['regular_pay'],
                 'night_differential_pay' => $value['night_differential_pay'],
