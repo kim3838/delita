@@ -363,25 +363,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             }
         }
 
-        /**
-         * Company per day-able compensations: (Basic pay, Allowance, Overtime)
-         **/
-        $companyPerDayAbleEarnings = $this->company->compensations->where('assignable', true)
-            ->where('formulable_type', Formulable::EARNINGS->value)
-            ->whereIn('type', [CompensationEnum::BASIC_PAY, CompensationEnum::REGULAR_ALLOWANCE, CompensationEnum::OVERTIME]);
-        $companyPerDayAbleEarningsMorphFilterSlugs = $companyPerDayAbleEarnings
-            ->map(fn($companyPerDayEarning) => $companyPerDayEarning->id . '.compensation')
-            ->values()
-            ->toArray();
-
-        /**
-         * Company global compensations: (Leave pay, Holiday pay)
-         **/
-        $companyPerDayAbleGlobalCompensations = $this->company->compensations
-            ->where('assignable', false)
-            ->where('formulable_type', Formulable::EARNINGS->value)
-            ->whereIn('type', [CompensationEnum::HOLIDAY_PAY, CompensationEnum::LEAVE_PAY])
-            ->sortBy('order');
+        $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($this->company);
+        $companyPerDayAbleEarningsMorphFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsMorphFilterSlugs();
+        $companyPerDayAbleGlobalCompensations = $salaryStatementModuleService->companyPerDayAbleGlobalCompensations();
 
         foreach($payroll->salaryStatements()->cursor() as $salaryStatement) {
 
@@ -401,6 +385,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                  **/
                 if($debugEnabled && !in_array($salaryStatementAttendance->date->toDateString(), static::datePresets())) continue;
 
+                /**
+                 * Employee assigned compensations: (Basic pay, Regular allowances, Overtime)
+                 * Filtered by company per day-able and salary statement date
+                 **/
                 $employeePayrollComponentFilters = (object)[
                     'employee_ids' => [$employee->id],
                     'payroll_componentable_type' => [Relation::getMorphAlias(Compensation::class)],
