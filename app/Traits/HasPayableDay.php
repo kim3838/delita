@@ -19,6 +19,7 @@ trait HasPayableDay
 
     public function statementAttendanceSetAmountableOnSplits(
         SalaryStatementAttendance $salaryStatementAttendance,
+        $payloadMap,
         &$assignedEarningsPayload,
         &$globalEarningsPayload,
         $test = false,
@@ -26,6 +27,12 @@ trait HasPayableDay
     ): array{
 
         $debugDetailProxyModelUpdate = false;
+
+        $basicPayPayloadKey = $payloadMap[CompensationEnum::BASIC_PAY->value] ?? null;
+        $allowancePayloadKeys = $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value] ?? null;
+        $overtimePayPayloadKey = $payloadMap[CompensationEnum::OVERTIME->value] ?? null;
+        $leavePayPayloadKey = $payloadMap[CompensationEnum::LEAVE_PAY->value] ?? null;
+        $holidayPayPayloadKey = $payloadMap[CompensationEnum::HOLIDAY_PAY->value] ?? null;
 
         $splitResults = [
             'work_splits' => [],
@@ -58,8 +65,7 @@ trait HasPayableDay
 
         if($isPresent){
 
-            $basicPayHourlyRate = $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] ?? 0;
-            $allowanceHourlyRate = $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['hourly_rate'] ?? 0;
+            $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? 0;
 
             if($isRegularWorkingDay){
 
@@ -96,29 +102,36 @@ trait HasPayableDay
                         if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
                     }
 
-                    if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['rest_day_pay'] += $restPay;
+                    if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] += $nightPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] += $restPay;
 
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] = (
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['night_differential_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['rest_day_pay']
+                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = (
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] +
+                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] +
+                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']
                         );
                     }
 
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
+                    $splitTotalAllowance = 0;
 
-                    if(isset($assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value])){
+                    foreach($allowancePayloadKeys as $allowancePayloadKey){
 
-                        $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['regular_pay'] += $allowanceValue;
+                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? 0;
+                        $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
 
-                        $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['total'] =
-                            $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['regular_pay'];
+                        if(isset($assignedEarningsPayload[$allowancePayloadKey])){
+
+                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] += $allowanceValue;
+                            $splitTotalAllowance += $allowanceValue;
+
+                            $assignedEarningsPayload[$allowancePayloadKey]['total'] =
+                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
+                        }
                     }
 
                     if($test || $debug){
@@ -138,7 +151,7 @@ trait HasPayableDay
                             ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
                             '=>' => '=>',
                             'REGULAR_PAY' => $regularPay,
-                            'ALLOWANCE' => $allowanceValue,
+                            'ALLOWANCE' => $splitTotalAllowance,
                             'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
                             'REST_DAY_PAY' => $restPay,
                         ];
@@ -148,7 +161,7 @@ trait HasPayableDay
                         $updateProxyModelDetail = [
                             'hourly_rate' => $basicPayHourlyRate,
                             'regular_pay' => $regularPay,
-                            'allowance' => $allowanceValue,
+                            'allowance' => $splitTotalAllowance,
                             'night_differential_pay' => $nightPay,
                             'rest_day_pay' => $restPay,
                         ];
@@ -199,15 +212,15 @@ trait HasPayableDay
                         if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
                     }
 
-                    if(isset($assignedEarningsPayload[CompensationEnum::OVERTIME->value])){
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['rest_day_pay'] += $restPay;
+                    if(isset($assignedEarningsPayload[$overtimePayPayloadKey])){
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] += $regularPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] += $nightPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] += $restPay;
 
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['total'] = (
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['regular_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['night_differential_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['rest_day_pay']
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = (
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] +
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] +
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']
                         );
                     }
 
@@ -259,8 +272,7 @@ trait HasPayableDay
             if($isHoliday){
 
                 foreach($this->workSplits as $workSplit){
-                    $proxyId = null;
-                    $proxyModel = null;
+                    $proxyId = null;$proxyModel = null;
                     if(!$test){$proxyId = $workSplit['id'];$proxyModel = $workSplit['proxy_model'];}
 
                     $splitWorkHourType = $workSplit['work_hour_type'];
@@ -299,41 +311,48 @@ trait HasPayableDay
                     }
 
                     //Basic pay
-                    if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
+                    if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
 
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['rest_day_pay'] += $restPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] += $nightPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] += $restPay;
 
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] = (
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['night_differential_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['rest_day_pay']
+                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = (
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] +
+                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] +
+                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']
                         );
                     }
 
                     //Holiday pay
-                    if(isset($globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value])){
+                    if(isset($globalEarningsPayload[$holidayPayPayloadKey])){
 
-                        $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['regular_pay'] += $holidayPay;
+                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] += $holidayPay;
 
-                        $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['total'] = (
-                            $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['regular_pay'] +
-                            $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['night_differential_pay']
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = (
+                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] +
+                            $globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']
                         );
                     }
 
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
+                    $splitTotalAllowance = 0;
 
-                    if(isset($assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value])){
+                    foreach($allowancePayloadKeys as $allowancePayloadKey){
 
-                        $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['regular_pay'] += $allowanceValue;
+                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? 0;
+                        $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
 
-                        $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['total'] =
-                            $assignedEarningsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['regular_pay'];
+                        if(isset($assignedEarningsPayload[$allowancePayloadKey])){
+
+                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] += $allowanceValue;
+                            $splitTotalAllowance += $allowanceValue;
+
+                            $assignedEarningsPayload[$allowancePayloadKey]['total'] =
+                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
+                        }
                     }
 
                     if($test || $debug){
@@ -354,7 +373,7 @@ trait HasPayableDay
                             'HOLIDAY MULTIPLIER' => $holidayMultiplier,
                             '=>' => '=>',
                             'REGULAR_PAY' => $regularPay,
-                            'ALLOWANCE' => $allowanceValue,
+                            'ALLOWANCE' => $splitTotalAllowance,
                             'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
                             'REST_DAY_PAY' => $restPay,
                             'HOLIDAY_PAY' => $holidayPay
@@ -365,7 +384,7 @@ trait HasPayableDay
                         $updateProxyModelDetail = [
                             'hourly_rate' => $basicPayHourlyRate,
                             'regular_pay' => $regularPay,
-                            'allowance' => $allowanceValue,
+                            'allowance' => $splitTotalAllowance,
                             'night_differential_pay' => $nightPay,
                             'rest_day_pay' => $restPay,
                             'holiday_pay' => $holidayPay,
@@ -423,27 +442,27 @@ trait HasPayableDay
                     }
 
                     //Overtime pay
-                    if(isset($assignedEarningsPayload[CompensationEnum::OVERTIME->value])){
+                    if(isset($assignedEarningsPayload[$overtimePayPayloadKey])){
 
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['rest_day_pay'] += $restPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] += $regularPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] += $nightPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] += $restPay;
 
-                        $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['total'] = (
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['regular_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['night_differential_pay'] +
-                            $assignedEarningsPayload[CompensationEnum::OVERTIME->value]['rest_day_pay']
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = (
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] +
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] +
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']
                         );
                     }
 
                     //Holiday pay
-                    if(isset($globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value])){
+                    if(isset($globalEarningsPayload[$holidayPayPayloadKey])){
 
-                        $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['regular_pay'] += $holidayPay;
+                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] += $holidayPay;
 
-                        $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['total'] = (
-                            $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['regular_pay'] +
-                            $globalEarningsPayload[CompensationEnum::HOLIDAY_PAY->value]['night_differential_pay']
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = (
+                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] +
+                            $globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']
                         );
                     }
 
@@ -518,7 +537,7 @@ trait HasPayableDay
                 $splitBaseMultiplier = $forfeitHolidayPay ? 0 : $splitBaseMultiplier;
                 $splitSplitDuration = $workSplit['split_duration'];
                 $splitActualPresent = $workSplit['actual_present'];
-                $basicPayHourlyRate = $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] ?? 0;
+                $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? 0;
 
                 /**
                  * Pay is regular pay when legal holiday, otherwise leave pay
@@ -526,21 +545,21 @@ trait HasPayableDay
                 $regularPay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
 
                 if($isLegalHoliday){
-                    if(isset($assignedEarningsPayload[CompensationEnum::BASIC_PAY->value])){
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'] += $regularPay;
+                    if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
 
-                        $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['total'] =
-                            $assignedEarningsPayload[CompensationEnum::BASIC_PAY->value]['regular_pay'];
+                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'];
                     }
 
                 }
 
                 if($leaveWithPay && !$isLegalHoliday){
-                    if(isset($globalEarningsPayload[CompensationEnum::LEAVE_PAY->value])){
-                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'] += $regularPay;
+                    if(isset($globalEarningsPayload[$leavePayPayloadKey])){
+                        $globalEarningsPayload[$leavePayPayloadKey]['regular_pay'] += $regularPay;
 
-                        $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['total'] =
-                            $globalEarningsPayload[CompensationEnum::LEAVE_PAY->value]['regular_pay'];
+                        $globalEarningsPayload[$leavePayPayloadKey]['total'] =
+                            $globalEarningsPayload[$leavePayPayloadKey]['regular_pay'];
                     }
                 }
 
