@@ -11,6 +11,7 @@ class SalaryStatementModule extends Model
     protected $fillable = [
         'company_id',
         'order',
+        'key',
         'name',
         'formulable_type',
         'aggregation',
@@ -23,6 +24,7 @@ class SalaryStatementModule extends Model
         'company_id' => 'int',
         'order' => 'int',
         'formulable_type' => Formulable::class,
+        'key' => 'string',
         'name' => 'string',
         'aggregation' => 'boolean',
         'property' => 'string',

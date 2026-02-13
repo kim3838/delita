@@ -12,6 +12,7 @@ class BasicTransformer extends TransformerAbstract
         return [
             'id' => (int)$model->id,
             'order' => $model->order,
+            'key' => $model->key,
             'name' => $model->name,
             'formulable_type_name' => $model->formulable_type?->label(),
         ];

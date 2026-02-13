@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->smallInteger('order');
+            $table->string('key');
             $table->string('name');
             $table->smallInteger('formulable_type');
             $table->boolean('aggregation');

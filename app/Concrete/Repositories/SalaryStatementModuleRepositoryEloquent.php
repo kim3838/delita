@@ -32,46 +32,28 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
         return [
             [
                 'order' => 1,
-                'name' => 'Assigned Compensations',
+                'key' => 'basic_pay_allowances_and_overtime',
+                'name' => 'Basic pay, allowances, and overtime',
                 'formulable_type' => Formulable::EARNINGS,
                 'aggregation' => false,
                 'property' => 'employee',
                 'attribute' => 'compensations',
-                'conditions' => [
-                    [
-                        'property' => 'payroll_componentable_type',
-                        'operator' => '=',
-                        'value' => 'compensation',
-                    ],
-                    [
-                        'property' => 'formulable_type',
-                        'operator' => '=',
-                        'value' => Formulable::EARNINGS,
-                    ],
-                ]
+                'conditions' => null
             ],
             [
                 'order' => 2,
-                'name' => 'Global Compensations',
+                'key' => 'other_earnings',
+                'name' => 'Other earnings',
                 'formulable_type' => Formulable::EARNINGS,
                 'aggregation' => false,
                 'property' => 'company',
                 'attribute' => 'compensations',
-                'conditions' => [
-                    [
-                        'property' => 'assignable',
-                        'operator' => '=',
-                        'value' => false,
-                    ],
-                    [
-                        'property' => 'formulable_type',
-                        'operator' => '=',
-                        'value' => Formulable::EARNINGS,
-                    ],
-                ]
-            ], [
+                'conditions' => null
+            ],
+            [
                 'order' => 3,
-                'name' => 'Assigned Deductions',
+                'key' => 'assigned_deductions',
+                'name' => 'Assigned deductions',
                 'formulable_type' => Formulable::DEDUCTIONS,
                 'aggregation' => false,
                 'property' => 'employee',
@@ -90,7 +72,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],[
                 'order' => 4,
-                'name' => 'Taxable Income',
+                'key' => 'taxable_income',
+                'name' => 'Taxable income',
                 'formulable_type' => Formulable::TAXABLE_INCOME,
                 'aggregation' => true,
                 'property' => 'company',
@@ -109,7 +92,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],[
                 'order' => 5,
-                'name' => 'Non-Taxable Income',
+                'key' => 'non_taxable_income',
+                'name' => 'Non-taxable income',
                 'formulable_type' => Formulable::NONTAXABLE_INCOME,
                 'aggregation' => true,
                 'property' => 'company',
@@ -128,7 +112,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],[
                 'order' => 6,
-                'name' => 'Assigned Income Taxes',
+                'key' => 'assigned_income_taxes',
+                'name' => 'Assigned income taxes',
                 'formulable_type' => Formulable::INCOME_TAX,
                 'aggregation' => false,
                 'property' => 'employee',
@@ -147,7 +132,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],[
                 'order' => 7,
-                'name' => 'Net Income',
+                'key' => 'net_income',
+                'name' => 'Net income',
                 'formulable_type' => Formulable::NET_INCOME,
                 'aggregation' => true,
                 'property' => 'company',

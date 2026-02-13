@@ -13,6 +13,7 @@ class ItemTransformer extends TransformerAbstract
             'id' => (int)$model->id,
             'company_id' => (int)$model->company_id,
             'order' => $model->order,
+            'key' => $model->key,
             'name' => $model->name,
             'formulable_type' => $model->formulable_type?->toArray(),
             'aggregation' => $model->aggregation,

@@ -12,6 +12,7 @@ class PatchableTransformer extends TransformerAbstract
         return [
             'id' => (int)$model->id,
             'company_id' => (int)$model->company_id,
+            'key' => $model->key,
             'name' => $model->name,
             'formulable_type' => $model->formulable_type?->value,
             'aggregation' => $model->aggregation,
