@@ -447,7 +447,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             //'2026-02-12',//FULL PRESENT REGULAR DAY SPECIAL HOLIDAY WITH OT
             //'2026-02-13',//ABSENT REGULAR DAY
             //'2026-02-14',//FULL PRESENT REST DAY DOUBLE HOLIDAY WITH OT
-            //'2026-02-17',//ABSENT LEGAL HOLIDAY
+            //'2026-02-17',//ABSENT LEGAL HOLIDAY FORFEITED DUE TO 2026-02-16 NOT PAID (ABSENT OR LWOP)
 
             //'2026-02-19',//LWP DOUBLE HOLIDAY
             //'2026-02-20',//LWOP DOUBLE HOLIDAY
@@ -458,7 +458,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             //Cut off 2026-02-26-2026-03-25
             //'2026-02-26',//ABSENT LEGAL HOLIDAY
-            //'2026-02-27',//ABSENT LEGAL HOLIDAY
+            //'2026-02-27',//ABSENT LEGAL HOLIDAY FORFEITED
             //'2026-02-28',//FULL PRESENT REST DAY REGULAR DAY
             //'2026-03-02',//ABSENT REGULAR DAY
             //'2026-03-03',//ABSENT REGULAR DAY
@@ -470,8 +470,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             //'2026-03-11',//LWP SPECIAL HOLIDAY
             //'2026-03-12',//ABSENT LEGAL HOLIDAY
-            //'2026-03-13',//LWP SPECIAL HOLIDAY
-            //'2026-03-14',//ABSENT LEGAL HOLIDAY
+            //'2026-03-13',//LWOP SPECIAL HOLIDAY
+            //'2026-03-14',//ABSENT LEGAL HOLIDAY FORFEITED
             //'2026-03-16',//ABSENT LEGAL HOLIDAY FORFEITED
             //'2026-03-17',//ABSENT LEGAL HOLIDAY FORFEITED
             //'2026-03-18',//ABSENT DOUBLE HOLIDAY FORFEITED
@@ -480,7 +480,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             //'2026-03-21',//ABSENT DOUBLE HOLIDAY FORFEITED
             //'2026-03-23',//LWP REGULAR DAY
             //'2026-03-24',//ABSENT LEGAL HOLIDAY
-            //'2026-03-25',//ABSENT DOUBLE HOLIDAY
+            //'2026-03-25',//ABSENT DOUBLE HOLIDAY FORFEITED
         ];
     }
 
@@ -525,6 +525,56 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ]);
             }
 
+            $payloadMap = [
+                CompensationEnum::REGULAR_ALLOWANCE->value => []
+            ];
+
+            /**
+             * Assigned compensations payload mapper
+             **/
+            foreach ($employeePerDayableCompensations as $employeePerDayableCompensation){
+
+                $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
+
+                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::BASIC_PAY &&
+                    !isset($payloadMap[CompensationEnum::BASIC_PAY->value])
+                ){
+                    $payloadMap[CompensationEnum::BASIC_PAY->value] = $componentableMorph;
+                }
+
+                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::REGULAR_ALLOWANCE &&
+                    !in_array($componentableMorph, $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value])
+                ){
+                    $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value][] = $componentableMorph;
+                }
+
+                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::OVERTIME &&
+                    !isset($payloadMap[CompensationEnum::OVERTIME->value])
+                ){
+                    $payloadMap[CompensationEnum::OVERTIME->value] = $componentableMorph;
+                }
+            }
+
+            /**
+             * Global compensations payload mapper
+             **/
+            foreach ($companyPerDayAbleGlobalCompensations as $companyPerDayAbleGlobalCompensation){
+
+                $key = $companyPerDayAbleGlobalCompensation->id . '.global.compensation';
+
+                if($companyPerDayAbleGlobalCompensation->type == CompensationEnum::LEAVE_PAY &&
+                    !isset($payloadMap[CompensationEnum::LEAVE_PAY->value])
+                ){
+                    $payloadMap[CompensationEnum::LEAVE_PAY->value] = $key;
+                }
+
+                if($companyPerDayAbleGlobalCompensation->type == CompensationEnum::HOLIDAY_PAY &&
+                    !isset($payloadMap[CompensationEnum::HOLIDAY_PAY->value])
+                ){
+                    $payloadMap[CompensationEnum::HOLIDAY_PAY->value] = $key;
+                }
+            }
+
             /**
              * Employee assigned compensations (by attendance if amountable)
              **/
@@ -552,7 +602,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              **/
             $employeePerDayableCompensationsPayload = $employeePerDayableCompensations
                 ->mapWithKeys(fn ($compensation) => [
-                    $compensation->payrollComponentable->type->value => [
+                    $compensation->payroll_componentable_morph => [
+                        'component_type' => $compensation->payrollComponentable->type->value,
+                        'component_name' => $compensation->payrollComponentable->name,
                         'hourly_rate' => null,
                         'work_hour_type' => WorkHourType::REGULAR->value,
                         'regular_pay' => 0,
@@ -572,7 +624,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         ($isHoliday && $globalCompensation->type == CompensationEnum::HOLIDAY_PAY);
                 })
                 ->mapWithKeys(fn ($globalCompensation) => [
-                    $globalCompensation->type->value => [
+                    $globalCompensation->id . '.global.compensation' => [
+                        'component_type' => $globalCompensation->type->value,
+                        'component_name' => $globalCompensation->name,
                         'hourly_rate' => null,
                         'work_hour_type' => WorkHourType::REGULAR->value,
                         'regular_pay' => 0,
@@ -585,12 +639,18 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             if($debugEnabled){
                 _debug([
-                    'employee per dayable compensations' => $employeePerDayableCompensations->toArray(),
-                    'employee per dayable compensations payload' => $employeePerDayableCompensationsPayload,
-                    'global per dayable compensations payload' => $companyPerDayAbleGlobalCompensationsPayload,
+                    'payload map' => $payloadMap,
+                    'employee compensations' => $employeePerDayableCompensations->toArray(),
+                    'global compensations' => $companyPerDayAbleGlobalCompensations->toArray(),
+                    'employee compensations payload' => $employeePerDayableCompensationsPayload,
+                    'global compensations payload' => $companyPerDayAbleGlobalCompensationsPayload,
                 ]);
             }
 
+            /**
+             * Get all amountable hourly rates from basic pay and allowance
+             *
+             **/
             foreach($employeePerDayableCompensations as $employeePerDayableCompensation){
 
                 if($this->frequencyWorkingDayCount < 1){
@@ -606,60 +666,40 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     CompensationEnum::REGULAR_ALLOWANCE
                 ]);
 
-                if($debugEnabled){
-                    _debug([
-                        'class' => get_class($employeePerDayableCompensation),
-                        'formulable_type' => $employeePerDayableCompensation->formulable_type?->label(),
-                        'payroll componentable type' => $employeePerDayableCompensation->payrollComponentable->type?->label(),
-                        'payroll componentable amountable' => $payrollComponentIsAmountable,
-                        'amount' => $employeePerDayableCompensation->amount,
-                        'pay period' => $employeePerDayableCompensation->pay_period,
-                    ]);
-                }
-
-                /**
-                 * Get all amountable hourly rates from basic pay and allowance
-                 **/
                 if($payrollComponentIsAmountable){
+
+                    $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
+
                     switch($employeePerDayableCompensation->payrollComponentable->type){
+
                         case CompensationEnum::BASIC_PAY:
-                            if(isset($employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value])){
-                                $employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'] +=
-                                    $this->getAssignedPayrollComponentHourlyRate($payrollFrequency, $employeePerDayableCompensation, $totalWorkMinutes);
+
+                            if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
+                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] += $this->getAssignedPayrollComponentHourlyRate(
+                                    $payrollFrequency,
+                                    $employeePerDayableCompensation,
+                                    $totalWorkMinutes
+                                );
                             }break;
+
                         case CompensationEnum::REGULAR_ALLOWANCE:
-                            if(isset($employeePerDayableCompensationsPayload[CompensationEnum::REGULAR_ALLOWANCE->value])){
-                                $employeePerDayableCompensationsPayload[CompensationEnum::REGULAR_ALLOWANCE->value]['hourly_rate'] +=
-                                    $this->getAssignedPayrollComponentHourlyRate($payrollFrequency, $employeePerDayableCompensation, $totalWorkMinutes);
+
+                            if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
+                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] += $this->getAssignedPayrollComponentHourlyRate(
+                                    $payrollFrequency,
+                                    $employeePerDayableCompensation,
+                                    $totalWorkMinutes
+                                );
                             }
                     }
                 }
             }
 
-            /**
-             * Set basic pay hourly rate as global amountable hourly rate
-             **/
-            foreach($companyPerDayAbleGlobalCompensations as $companyPerDayAbleGlobalCompensation){
-                switch($companyPerDayAbleGlobalCompensation->type){
-                    case CompensationEnum::LEAVE_PAY:
-                        if($isLeave &&
-                            isset($employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate']) &&
-                            isset($companyPerDayAbleGlobalCompensationsPayload[CompensationEnum::LEAVE_PAY->value])
-                        ){
-                            $companyPerDayAbleGlobalCompensationsPayload[CompensationEnum::LEAVE_PAY->value]['hourly_rate'] =
-                                $employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'];
-                        }
-                        break;
-                    case CompensationEnum::HOLIDAY_PAY:
-                        if($isHoliday &&
-                            isset($employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate']) &&
-                            isset($companyPerDayAbleGlobalCompensationsPayload[CompensationEnum::HOLIDAY_PAY->value])
-                        ){
-                            $companyPerDayAbleGlobalCompensationsPayload[CompensationEnum::HOLIDAY_PAY->value]['hourly_rate'] =
-                                $employeePerDayableCompensationsPayload[CompensationEnum::BASIC_PAY->value]['hourly_rate'];
-                        }
-                        break;
-                }
+            if($debugEnabled){
+                _debug([
+                    'Earnings payload' => $employeePerDayableCompensationsPayload,
+                    'Global earnings payload' => $companyPerDayAbleGlobalCompensationsPayload,
+                ]);
             }
 
             $workSplitCollection = $attendanceDetails->where('split_type', ShiftBreakDownSplitType::WORK->value);
@@ -674,40 +714,45 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $this->statementAttendanceSetAmountableOnSplits(
                 $salaryStatementAttendance,
+                $payloadMap,
                 $employeePerDayableCompensationsPayload,
                 $companyPerDayAbleGlobalCompensationsPayload,
                 false,
-                true
+                false
             );
 
             /**
              * Create pay items
              **/
-            $employeePerDayableByAttendanceCompensationsPatchable = collect($employeePerDayableCompensationsPayload)->map(fn($value, $key) => [
-                'formulable_type' => Formulable::EARNINGS->value,
-                'component_type' => $key,
-                'work_hour_type' => $value['work_hour_type'],
-                'regular_pay' => $value['regular_pay'],
-                'night_differential_pay' => $value['night_differential_pay'],
-                'rest_day_pay' => $value['rest_day_pay'],
-                'total' => $value['total'],
-            ])->values()->toArray();
+            $employeePerDayableByAttendanceCompensationsPatchable = collect($employeePerDayableCompensationsPayload)
+                ->filter(fn($value, $key) =>!empty($value['total']))
+                ->map(fn($value, $key) => [
+                    'formulable_type' => Formulable::EARNINGS->value,
+                    'component_type' => $value['component_type'],
+                    'component_name' => $value['component_name'],
+                    'regular_pay' => $value['regular_pay'],
+                    'night_differential_pay' => $value['night_differential_pay'],
+                    'rest_day_pay' => $value['rest_day_pay'],
+                    'total' => $value['total'],
+                    ])
+                ->values()
+                ->toArray();
 
-            $companyPerDayAbleGlobalCompensationsPatchable = collect($companyPerDayAbleGlobalCompensationsPayload)->map(fn($value, $key) => [
-                'formulable_type' => Formulable::EARNINGS->value,
-                'component_type' => $key,
-                'work_hour_type' => $value['work_hour_type'],
-                'regular_pay' => $value['regular_pay'],
-                'night_differential_pay' => $value['night_differential_pay'],
-                'rest_day_pay' => $value['rest_day_pay'],
-                'total' => $value['total'],
-            ])->values()->toArray();
+            $companyPerDayAbleGlobalCompensationsPatchable = collect($companyPerDayAbleGlobalCompensationsPayload)
+                ->filter(fn($value, $key) =>!empty($value['total']))
+                ->map(fn($value, $key) => [
+                    'formulable_type' => Formulable::EARNINGS->value,
+                    'component_type' => $value['component_type'],
+                    'component_name' => $value['component_name'],
+                    'regular_pay' => $value['regular_pay'],
+                    'night_differential_pay' => $value['night_differential_pay'],
+                    'rest_day_pay' => $value['rest_day_pay'],
+                    'total' => $value['total'],
+                    ])
+                ->values()
+                ->toArray();
 
             $attendancePayItemsPatchable = array_merge($employeePerDayableByAttendanceCompensationsPatchable, $companyPerDayAbleGlobalCompensationsPatchable);
-
-            _debug([
-                'Attendance pay items' => $attendancePayItemsPatchable,
-            ]);
 
             foreach($attendancePayItemsPatchable as $attendancePayItem){
                 $salaryStatementAttendance->payrollComponents()->create($attendancePayItem);
@@ -793,6 +838,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
             $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
 
+            /**
+             * Todo: Check if attendance already belongs from another salary statement, and payroll is not in draft status
+             * marks as payroll already generated
+             * SalaryStatementAttendanceStatus::PAYROLL_ALREADY_GENERATED->value
+             **/
+
             $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
             $hasLeave = $leave->isNotEmpty();
             $leaveType = null;
@@ -836,8 +887,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             } else if ($hasLeave){
                 $payrollAttendanceStatus = match($leaveType?->is_paid){
                     true => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY,
-                    false => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
-                    null => SalaryStatementAttendanceStatus::LEAVE_BUT_CANT_IDENTIFY_IF_PAID_OR_NOT,
+                    false, null => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
                 };
             } else {
                 $payrollAttendanceStatus = match($attendance->status){
