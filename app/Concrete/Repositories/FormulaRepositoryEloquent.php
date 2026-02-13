@@ -83,9 +83,10 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
         return $this->model::query()
             ->whereIn('name', [
                 'Standard-Basic-Pay',
+                'Standard-Allowance',
+                'Standard-Overtime',
                 'Standard-Leave-Pay',
                 'Standard-Holiday-Pay',
-                'Standard-Overtime',
                 'Standard-Taxable-Income',
                 'Standard-Nontaxable-Income',
                 'Standard-Compensation-Tax',
