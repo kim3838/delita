@@ -296,7 +296,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
      */
     public function generateSalaryStatements(Payroll $payroll)
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
 
         $this->payroll = $payroll;
 
@@ -332,7 +332,14 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $employee = app(EmployeeRepository::class)->hydrateItem($employee);
             $employeeShift = $employee->shifts->first();
 
-            $salaryStatementAttendancesArray = $this->buildEmployeeSalaryStatementAttendances($employee, $employeeShift);
+            list(
+                $periodDaysSummary, $salaryStatementAttendancesArray
+            ) = $this->buildEmployeeSalaryStatementAttendances($employee, $employeeShift);
+
+            /**
+             * Set salary statement period days summary
+             **/
+            $salaryStatement->update($periodDaysSummary);
 
             foreach($salaryStatementAttendancesArray as $salaryStatementAttendanceArray){
 
@@ -794,12 +801,32 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     /**
      * @throws UnexpectedException
      */
-    public function buildEmployeeSalaryStatementAttendances( Employee $employee, ?Shift $employeeShift): array
+    public function buildEmployeeSalaryStatementAttendances(Employee $employee, ?Shift $employeeShift): array
     {
         $debugEnabled = false;
 
+        $periodDaysSummary = [
+            'total_days' => 0,
+            'total_day_offs' => 0,
+
+            'total_working_days' => 0,
+            'total_regular_work_days' => 0,
+            'total_working_rest_days' => 0,
+
+            'total_special_holidays' => 0,
+            'total_legal_holidays' => 0,
+
+            'total_full_present' => 0,
+            'total_present_with_irregularity' => 0,
+
+            'total_leave_without_pay' => 0,
+            'total_leave_with_pay' => 0,
+            'total_absent' => 0,
+        ];
+
         //Payroll date period
         $datePeriod = CarbonPeriod::create($this->payroll->start_date, $this->payroll->end_date);
+        $periodDaysSummary['total_days'] = $datePeriod->count();
 
         //Build employee's salary attendance
         $salaryStatementAttendances = [];
@@ -859,12 +886,20 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
             $holidayType = !empty($holiday) ? $holiday->type : null;
             $this->holidayPayForfeiture = !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
+            $isRestDay = in_array($date->dayOfWeek, $this->restDays);
 
             $isDateIsHoliday = !empty($holidayType);
             $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
             $dayOffOrHoliday = $dayOff || ($shiftHolidayPolicyIsDayOff && $isDateIsHoliday);
 
             $dayType = $dayOffOrHoliday ? SalaryStatementAttendanceDayType::DAY_OFF : SalaryStatementAttendanceDayType::WORKING_DAY;
+
+            if($dayType == SalaryStatementAttendanceDayType::WORKING_DAY){
+
+                $periodDaysSummary['total_working_days'] += 1;
+                $periodDaysSummary['total_working_rest_days'] += $isRestDay ? 1 : 0;
+            }
+
             $dayType = $isDateIsHoliday
                 ? match($holidayType){
                     HolidayType::SPECIAL => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY,
@@ -888,6 +923,22 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     AttendanceStatus::ABSENT => SalaryStatementAttendanceStatus::ABSENT,
                     null => SalaryStatementAttendanceStatus::TO_BE_DETERMINED,
                 };
+            }
+
+            switch($dayType){
+                case SalaryStatementAttendanceDayType::WORKING_DAY: $periodDaysSummary['total_regular_work_days']++; break;
+                case SalaryStatementAttendanceDayType::DAY_OFF: $periodDaysSummary['total_day_offs']++; break;
+                case SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY: $periodDaysSummary['total_special_holidays']++; break;
+                case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY:
+                case SalaryStatementAttendanceDayType::LEGAL_HOLIDAY: $periodDaysSummary['total_legal_holidays']++; break;
+            }
+
+            switch($payrollAttendanceStatus){
+                case SalaryStatementAttendanceStatus::FULL_PRESENT: $periodDaysSummary['total_full_present']++; break;
+                case SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES: $periodDaysSummary['total_present_with_irregularity']++; break;
+                case SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY: $periodDaysSummary['total_leave_without_pay']++; break;
+                case SalaryStatementAttendanceStatus::LEAVE_WITH_PAY: $periodDaysSummary['total_leave_with_pay']++; break;
+                case SalaryStatementAttendanceStatus::ABSENT: $periodDaysSummary['total_absent']++; break;
             }
 
             $salaryStatementAttendance = [
@@ -919,6 +970,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $salaryStatementAttendances[] = $salaryStatementAttendance;
         }
 
-        return $salaryStatementAttendances;
+        return [
+            $periodDaysSummary,
+            $salaryStatementAttendances
+        ];
     }
 }
