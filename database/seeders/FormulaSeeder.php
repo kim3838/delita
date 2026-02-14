@@ -60,8 +60,8 @@ class FormulaSeeder extends Seeder
             ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
             ],
-            ['name' => 'Standard-Pagibig-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pagibig_contribution')->first()->path)
+            ['name' => 'Standard-Pag-IBIG-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pag_ibig_contribution')->first()->path)
             ],
 
             //Taxable Income

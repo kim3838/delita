@@ -149,9 +149,9 @@ class JsonPreset extends Model
                 'file' => '002.standard.deductions.05.philhealth.json',
             ],
             [
-                'key' => 'standard_pagibig_contribution',
+                'key' => 'standard_pag_ibig_contribution',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '002.standard.deductions.06.pagibig.json',
+                'file' => '002.standard.deductions.06.pag-ibig.json',
             ],
             [
                 'key' => 'standard_compensation_tax',
