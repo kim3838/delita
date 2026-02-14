@@ -592,6 +592,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->mapWithKeys(fn ($compensation) => [
                     $compensation->payroll_componentable_morph => [
                         'component_type' => $compensation->payrollComponentable->type->value,
+                        'component_key' => $compensation->payroll_componentable_morph,
                         'component_name' => $compensation->payrollComponentable->name,
                         'hourly_rate' => null,
                         'work_hour_type' => WorkHourType::REGULAR->value,
@@ -614,6 +615,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->mapWithKeys(fn ($globalCompensation) => [
                     $globalCompensation->id . '.global.compensation' => [
                         'component_type' => $globalCompensation->type->value,
+                        'component_key' => $globalCompensation->id . '.global.compensation',
                         'component_name' => $globalCompensation->name,
                         'hourly_rate' => null,
                         'work_hour_type' => WorkHourType::REGULAR->value,
@@ -717,6 +719,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
+                    'component_key' => $value['component_key'],
                     'component_name' => $value['component_name'],
                     'regular_pay' => $value['regular_pay'],
                     'night_differential_pay' => $value['night_differential_pay'],
@@ -731,6 +734,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
+                    'component_key' => $value['component_key'],
                     'component_name' => $value['component_name'],
                     'regular_pay' => $value['regular_pay'],
                     'night_differential_pay' => $value['night_differential_pay'],
