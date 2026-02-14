@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('key');
             $table->string('name');
             $table->smallInteger('formulable_type');
+            $table->boolean('statement_level');
             $table->boolean('aggregation');
             $table->string('property');
             $table->string('attribute');
