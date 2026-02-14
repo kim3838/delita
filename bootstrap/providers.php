@@ -5,6 +5,7 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\BindingsServiceProvider::class,
     App\Providers\DeferrableBindingsServiceProvider::class,
+    App\Providers\FormulaBindingsServiceProvider::class,
     App\Providers\ImportBindingsServiceProvider::class,
     App\Providers\ObserverServiceProvider::class,
     App\Providers\RepositoryBindingsServiceProvider::class,
