@@ -6,7 +6,6 @@ use App\Casts\FormulaComponentType;
 use App\Enums\Formulable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class SalaryStatementAttendancePayrollComponent extends Model
 {
@@ -14,6 +13,7 @@ class SalaryStatementAttendancePayrollComponent extends Model
         'salary_statement_attendance_id',
         'formulable_type',
         'component_type',
+        'component_key',
         'component_name',
         'regular_pay',
         'night_differential_pay',
@@ -30,6 +30,7 @@ class SalaryStatementAttendancePayrollComponent extends Model
         'salary_statement_attendance_id' => 'int',
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
+        'component_key' => 'string',
         'component_name' => 'string',
         'regular_pay' => 'decimal:6',
         'night_differential_pay' => 'decimal:6',
