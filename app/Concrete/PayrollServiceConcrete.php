@@ -370,22 +370,27 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             }
         }
 
-        $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($this->company);
+        /**
+         * Instantiate Salary Statement Module Service
+         **/
+        $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($this->payroll, $this->company);
         $companyPerDayAbleEarningsMorphFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsMorphFilterSlugs();
         $companyPerDayAbleGlobalCompensations = $salaryStatementModuleService->companyPerDayAbleGlobalCompensations();
 
-        foreach($payroll->salaryStatements()->cursor() as $salaryStatement) {
+        foreach($payroll->salaryStatements()->cursor() as $salaryStatementCursor) {
 
             /**
-             * Count all working days from salary statement attendance
+             * Count all working days from salary statement attendance,
+             * every employee might have a unique shift that exempts some holidays,
+             * and each of them might have different working days
              **/
-            $this->frequencyWorkingDayCount = $salaryStatement->salaryStatementAttendances
+            $this->frequencyWorkingDayCount = $salaryStatementCursor->salaryStatementAttendances
                 ->where('status', '!==', SalaryStatementAttendanceStatus::DAY_OFF->value)
                 ->count();
 
-            $employee = $salaryStatement->employee;
+            $employee = $salaryStatementCursor->employee;
 
-            foreach($salaryStatement->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
+            foreach($salaryStatementCursor->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
 
                 /**
                  * In debug mode, limit date/s using date presets
