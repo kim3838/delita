@@ -21,6 +21,7 @@ return new class extends Migration
 
             $table->smallInteger('formulable_type');
             $table->smallInteger('component_type');
+            $table->string('component_key');
             $table->string('component_name');
             $table->decimal('regular_pay', 21, 6)->default(0);
             $table->decimal('night_differential_pay', 21, 6)->default(0);
