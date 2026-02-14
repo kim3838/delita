@@ -4,19 +4,24 @@ namespace App\Concrete;
 
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
+use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Formula;
+use App\Models\Payroll;
+use App\Models\SalaryStatement;
+use App\Transformers\SalaryStatementDetail\PipelineChainableTransformer;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Pipeline;
 
 class SalaryStatementModuleServiceConcrete
 {
-    public array $moduleKeyMap = [];
-
     public Employee $employee;
 
     public Collection $salaryStatementModules;
 
     public function __construct(
+        protected Payroll $payroll,
         protected Company $company,
     ){
         $this->salaryStatementModules = $this->company->salaryStatementModules;
@@ -56,5 +61,97 @@ class SalaryStatementModuleServiceConcrete
             ->where('formulable_type', Formulable::EARNINGS->value)
             ->whereIn('type', [CompensationEnum::HOLIDAY_PAY, CompensationEnum::LEAVE_PAY])
             ->sortBy('order');
+    }
+
+    public function statementLevelPipeline(SalaryStatement $salaryStatement)
+    {
+        $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
+
+        $pipelinePayload = [];
+
+        foreach ($statementLevelModules as $statementLevelModule) {
+
+            if(
+                empty($statementLevelModule->conditions) ||
+                empty($statementLevelModule->property) ||
+                empty($statementLevelModule->attribute)
+            ) continue;
+
+            $moduleProperty = clone $this->{$statementLevelModule->property};
+
+            $moduleComponents = $moduleProperty->{$statementLevelModule->attribute};
+
+            foreach($statementLevelModule->conditions as $condition)
+            {
+                $condition = (object)$condition;
+
+                if ($condition->operator == '=') {
+                    $moduleComponents = $moduleComponents->where($condition->property, $condition->value);
+                }
+            }
+
+            switch($statementLevelModule->property)
+            {
+                case 'employee':
+
+                    foreach($moduleComponents as $moduleComponent)
+                    {
+                        $payrollComponent = $moduleComponent->payrollComponentable;
+                        $companyFormula = $payrollComponent->companyFormula;
+                        $formula = $companyFormula->formula;
+
+                        $pipelinePayload[] = [
+                            'formulable_model' => $payrollComponent,
+                            'formula' => $formula,
+                            'formula_slug' => strtolower($formula->name)
+                        ];
+                    }
+
+                    break;
+
+                case 'company':
+
+                    foreach($moduleComponents as $moduleComponent)
+                    {
+                        /**
+                         * Aggregation formulas doesnt have formula settings
+                         **/
+                        if($moduleComponent instanceof Formula && $moduleComponent->aggregation){
+
+                            $formula = $moduleComponent;
+
+                            $pipelinePayload[] = [
+                                'formulable_model' => null,
+                                'formula' => $formula,
+                                'formula_slug' => strtolower($formula->name)
+                            ];
+                        }
+
+                    }
+
+                    break;
+            }
+        }
+
+        $pipelinePayload = collect($pipelinePayload);
+        $pipeline = $pipelinePayload->map(fn($payload) => app($payload['formula_slug']))->values()->toArray();
+        $statementDetails = Fractal::collection($salaryStatement->details, PipelineChainableTransformer::class)['data'];
+
+        $pipelineContext = new SalaryStatementContext(
+            $this->company,
+            $this->payroll,
+            $salaryStatement,
+            $this->employee,
+            $pipelinePayload,
+            $statementDetails
+        );
+
+        $pipelineResult = Pipeline::send($pipelineContext)
+            ->through($pipeline)
+            ->thenReturn();
+
+        _debug([
+            'New statement details' => $pipelineResult->statementDetails,
+        ]);
     }
 }
