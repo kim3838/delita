@@ -17,17 +17,12 @@ class SalaryStatementDetail extends Model
 
         'component_values',
 
-        'regular_pay',
-        'night_differential_pay',
-        'rest_day_pay',
-
         'taxable',
         'nontaxable',
         'deduction',
         'contribution',
         'withholding_tax',
         'net',
-        'employer_contribution',
     ];
 
     protected $hidden = [
@@ -43,17 +38,12 @@ class SalaryStatementDetail extends Model
 
         'component_values' => 'array',
 
-        'regular_pay' => 'decimal:6',
-        'night_differential_pay' => 'decimal:6',
-        'rest_day_pay' => 'decimal:6',
-
         'taxable' => 'decimal:6',
         'nontaxable' => 'decimal:6',
         'deduction' => 'decimal:6',
         'contribution' => 'decimal:6',
         'withholding_tax' => 'decimal:6',
         'net' => 'decimal:6',
-        'employer_contribution' => 'decimal:6',
     ];
 
     public function salaryStatement(): BelongsTo
