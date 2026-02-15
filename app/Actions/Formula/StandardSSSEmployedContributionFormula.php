@@ -3,6 +3,7 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use Brick\Math\BigDecimal;
 
 class StandardSSSEmployedContributionFormula
 {
@@ -57,12 +58,12 @@ class StandardSSSEmployedContributionFormula
         $employerShare = collect($rates)->where('key', 'employer_share')->first();
         $employerMpf = collect($rates)->where('key', 'employer_mpf')->first();
 
-        $employeeShareValue = (float)$employeeShare->value;
-        $employeeMpfEligibilityValue = (float)$employeeMpfEligibility->value;
-        $employeeMpfValue = (float)$employeeMpf->value;
+        $employeeShareValue = BigDecimal::of($employeeShare->value);
+        $employeeMpfEligibilityValue = BigDecimal::of($employeeMpfEligibility->value);
+        $employeeMpfValue = BigDecimal::of($employeeMpf->value);
 
-        $employerShareValue = (float)$employerShare->value;
-        $employerMpfValue = (float)$employerMpf->value;
+        $employerShareValue = BigDecimal::of($employerShare->value);
+        $employerMpfValue = BigDecimal::of($employerMpf->value);
 
         /**
          * Employer EC
@@ -72,9 +73,9 @@ class StandardSSSEmployedContributionFormula
         $employerEcThreshold = collect($employerEc)->where('key', 'employer_ec_threshold')->first();
         $employerEcAfterThreshold = collect($employerEc)->where('key', 'employer_ec_after_threshold')->first();
 
-        $employerEcBeforeThresholdValue = (float)$employerEcBeforeThreshold->value;
-        $employerEcThresholdValue = (float)$employerEcThreshold->value;
-        $employerEcAfterThresholdValue = (float)$employerEcAfterThreshold->value;
+        $employerEcBeforeThresholdValue = BigDecimal::of($employerEcBeforeThreshold->value);
+        $employerEcThresholdValue = BigDecimal::of($employerEcThreshold->value);
+        $employerEcAfterThresholdValue = BigDecimal::of($employerEcAfterThreshold->value);
 
         /**
          * Compensation range
@@ -85,10 +86,10 @@ class StandardSSSEmployedContributionFormula
         $mscInterval = collect($compensationRange)->where('key', 'msc_interval')->first();
         $maxMsc = collect($compensationRange)->where('key', 'max_msc')->first();
 
-        $startingCompensationRangeValue = (float)$startingCompensationRange->value;
-        $startingMscValue = (float)$startingMsc->value;
-        $mscIntervalValue = (float)$mscInterval->value;
-        $maxMscValue = (float)$maxMsc->value;
+        $startingCompensationRangeValue = BigDecimal::of($startingCompensationRange->value);
+        $startingMscValue = BigDecimal::of($startingMsc->value);
+        $mscIntervalValue = BigDecimal::of($mscInterval->value);
+        $maxMscValue = BigDecimal::of($maxMsc->value);
 
         $result = [
             'employee_share' => [
@@ -107,34 +108,34 @@ class StandardSSSEmployedContributionFormula
 
         $compensationMscBoundary = $startingCompensationRangeValue;
         $msc = $startingMscValue;
-        $monthlyCompensation = (float)$monthlyCompensation;
+        $monthlyCompensation = BigDecimal::of($monthlyCompensation);
 
-        while($monthlyCompensation > $compensationMscBoundary && $msc < $maxMscValue){
-            $msc += $mscIntervalValue;
-            $compensationMscBoundary = round($compensationMscBoundary + $mscIntervalValue, 2);
+        while($monthlyCompensation->isGreaterThan($compensationMscBoundary) && $msc->isLessThan($maxMscValue)){
+            $msc = $msc->plus($mscIntervalValue);
+            $compensationMscBoundary = $compensationMscBoundary->plus($mscIntervalValue);
         }
 
-        $mscExcessOverMpfThreshold = $msc - $employeeMpfEligibilityValue;
+        $mscExcessOverMpfThreshold = $msc->minus($employeeMpfEligibilityValue);
 
-        $employeeShareTemp = $msc * $employeeShareValue;
-        $employeeMpf = ($msc > $employeeMpfEligibilityValue) ? ($mscExcessOverMpfThreshold * $employeeMpfValue) : 0;
+        $employeeShareTemp = $msc->multipliedBy($employeeShareValue);
+        $employeeMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employeeMpfValue)) : BigDecimal::zero();
 
-        $result['employee_share']['regular'] = $employeeShareTemp - $employeeMpf;
-        $result['employee_share']['mpf'] = $employeeMpf;
-        $result['employee_share']['total'] = $employeeShareTemp;
+        $result['employee_share']['regular'] = (string)$employeeShareTemp->minus($employeeMpf);
+        $result['employee_share']['mpf'] = (string)$employeeMpf;
+        $result['employee_share']['total'] = (string)$employeeShareTemp;
 
-        $employerShareTemp = $msc * $employerShareValue;
-        $employerMpf = ($msc > $employeeMpfEligibilityValue) ? ($mscExcessOverMpfThreshold * $employerMpfValue) : 0;
-        $employerEc = $msc < $employerEcThresholdValue ? $employerEcBeforeThresholdValue : $employerEcAfterThresholdValue;
+        $employerShareTemp = $msc->multipliedBy($employerShareValue);
+        $employerMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employerMpfValue)) : BigDecimal::zero();
+        $employerEc = $msc->isLessThan($employerEcThresholdValue) ? $employerEcBeforeThresholdValue : $employerEcAfterThresholdValue;
 
-        $employerTotalShare = $employerShareTemp + $employerEc;
+        $employerTotalShare = $employerShareTemp->plus($employerEc);
 
-        $result['employer_share']['regular'] = $employerShareTemp - $employerMpf;
-        $result['employer_share']['mpf'] = $employerMpf;
-        $result['employer_share']['ec'] = $employerEc;
-        $result['employer_share']['total'] = $employerTotalShare;
+        $result['employer_share']['regular'] = (string)$employerShareTemp->minus($employerMpf);
+        $result['employer_share']['mpf'] = (string)$employerMpf;
+        $result['employer_share']['ec'] = (string)$employerEc;
+        $result['employer_share']['total'] = (string)$employerTotalShare;
 
-        $result['total'] = $employeeShareTemp + $employerTotalShare;
+        $result['total'] = (string)$employeeShareTemp->plus($employerTotalShare);
 
         return $result;
     }
