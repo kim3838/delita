@@ -442,28 +442,26 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                             'formulable_type' => $payrollComponent->formulable_type->value,
                             'component_type' => $payrollComponent->component_type->value,
                             'component_name' => $payrollComponent->component_name,
-                            'regular_pay' => 0,
-                            'night_differential_pay' => 0,
-                            'rest_day_pay' => 0,
+                            'component_values' => [
+                                'regular_pay' => 0,
+                                'night_differential_pay' => 0,
+                                'rest_day_pay' => 0,
+                                'total' => 0,
+                            ],
                             'taxable' => 0,
                         ];
                     }
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['regular_pay'] += $payrollComponent->regular_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['night_differential_pay'] += $payrollComponent->night_differential_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['rest_day_pay'] += $payrollComponent->rest_day_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] += $payrollComponent->total;
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['regular_pay'] += $payrollComponent->regular_pay;
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['night_differential_pay'] += $payrollComponent->night_differential_pay;
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['rest_day_pay'] += $payrollComponent->rest_day_pay;
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'] += $payrollComponent->total;
+
+                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
                 }
             }
 
             foreach($salaryStatementDetails as $salaryStatementDetail){
-
-                $salaryStatementDetail['component_values'] = [
-                    'regular_pay' => $salaryStatementDetail['regular_pay'],
-                    'night_differential_pay' => $salaryStatementDetail['night_differential_pay'],
-                    'rest_day_pay' => $salaryStatementDetail['rest_day_pay'],
-                    'total' => $salaryStatementDetail['taxable'],
-                ];
 
                 $salaryStatementCursor->details()->create($salaryStatementDetail);
             }
