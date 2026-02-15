@@ -41,6 +41,7 @@ use App\Transformers\AttendanceDetail\PayableSplitTransformer as AttendanceDetai
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use App\Transformers\PayrollPayload\BasicTransformer;
 use App\Transformers\SalaryStatementAttendanceDetail\PayableSplitTransformer as SalaryStatementAttendanceDetailPayableSplitTransformer;
+use Brick\Math\BigDecimal;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -443,27 +444,38 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                             'component_type' => $payrollComponent->component_type->value,
                             'component_name' => $payrollComponent->component_name,
                             'component_values' => [
-                                'regular_pay' => 0,
-                                'night_differential_pay' => 0,
-                                'rest_day_pay' => 0,
-                                'total' => 0,
+                                'regular_pay' => new MutableBigDecimal(),
+                                'night_differential_pay' => new MutableBigDecimal(),
+                                'rest_day_pay' => new MutableBigDecimal(),
+                                'total' => new MutableBigDecimal(),
                             ],
-                            'taxable' => 0,
+                            'taxable' => new MutableBigDecimal(),
                         ];
                     }
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['regular_pay'] += $payrollComponent->regular_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['night_differential_pay'] += $payrollComponent->night_differential_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['rest_day_pay'] += $payrollComponent->rest_day_pay;
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'] += $payrollComponent->total;
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
+                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
+                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = (string)$salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
                 }
             }
 
             foreach($salaryStatementDetails as $salaryStatementDetail){
 
-                $salaryStatementCursor->details()->create($salaryStatementDetail);
+                $salaryStatementCursor->details()->create([
+                    'formulable_type' => $salaryStatementDetail['formulable_type'],
+                    'component_type' => $salaryStatementDetail['component_type'],
+                    'component_name' => $salaryStatementDetail['component_name'],
+                    'component_values' => [
+                        'regular_pay' => (string)$salaryStatementDetail['component_values']['regular_pay'],
+                        'night_differential_pay' => (string)$salaryStatementDetail['component_values']['night_differential_pay'],
+                        'rest_day_pay' => (string)$salaryStatementDetail['component_values']['rest_day_pay'],
+                        'total' => (string)$salaryStatementDetail['component_values']['total'],
+                    ],
+                    'taxable' => (string)$salaryStatementDetail['taxable']
+                ]);
             }
         }
 
