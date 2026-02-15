@@ -36,8 +36,6 @@ return new class extends Migration
             $table->decimal('contribution', 21, 6)->default(0);
             $table->decimal('withholding_tax', 21, 6)->default(0);
             $table->decimal('net', 21, 6)->default(0);
-
-            $table->decimal('employer_contribution', 21, 6)->default(0);
             $table->timestamps();
         });
     }

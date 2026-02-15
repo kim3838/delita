@@ -25,17 +25,12 @@ return new class extends Migration
 
             $table->json('component_values')->nullable();
 
-            $table->decimal('regular_pay', 21, 6)->default(0);
-            $table->decimal('night_differential_pay', 21, 6)->default(0);
-            $table->decimal('rest_day_pay', 21, 6)->default(0);
-
             $table->decimal('taxable', 21, 6)->default(0);
             $table->decimal('nontaxable', 21, 6)->default(0);
             $table->decimal('deduction', 21, 6)->default(0);
             $table->decimal('contribution', 21, 6)->default(0);
             $table->decimal('withholding_tax', 21, 6)->default(0);
             $table->decimal('net', 21, 6)->default(0);
-            $table->decimal('employer_contribution', 21, 6)->default(0);
             $table->timestamps();
         });
     }
