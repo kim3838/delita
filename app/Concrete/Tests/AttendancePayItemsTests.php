@@ -3442,7 +3442,7 @@ class AttendancePayItemsTests
                 $assignedEarningsPayload,
                 $globalEarningsPayload,
                 true,
-                true
+                false
             );
 
             $assignedCompensationsPatchable = collect($assignedEarningsPayload)->map(fn($value, $key) => [
