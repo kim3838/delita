@@ -63,7 +63,7 @@ class SalaryStatementModuleServiceConcrete
             ->sortBy('order');
     }
 
-    public function statementLevelPipeline(SalaryStatement $salaryStatement)
+    public function statementLevelPipeline(SalaryStatement $salaryStatement): void
     {
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
@@ -146,12 +146,22 @@ class SalaryStatementModuleServiceConcrete
             $statementDetails
         );
 
-        $pipelineResult = Pipeline::send($pipelineContext)
+        array_unshift($pipeline, app('initialize-salary-statement'));
+
+        $salaryStatementContext = Pipeline::send($pipelineContext)
             ->through($pipeline)
             ->thenReturn();
 
-        _debug([
-            'New statement details' => $pipelineResult->statementDetails,
-        ]);
+        foreach($salaryStatementContext->statementDetails as $statementDetail){
+
+            _debug([
+                'Statement details' => $statementDetail,
+            ]);
+
+            if(empty($statementDetail['id'])){
+
+                $salaryStatement->details()->create($statementDetail);
+            }
+        }
     }
 }
