@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Actions\Formula\InitializeSalaryStatementFormula;
 use App\Actions\Formula\StandardAllowanceFormula;
 use App\Actions\Formula\StandardBasicPayFormula;
 use App\Actions\Formula\StandardCompensationTaxFormula;
@@ -17,6 +18,8 @@ use Illuminate\Support\ServiceProvider;
 class FormulaBindingsServiceProvider extends ServiceProvider
 {
     public $bindings = [
+        'initialize-salary-statement' => InitializeSalaryStatementFormula::class,
+
         'standard-basic-pay' => StandardBasicPayFormula::class,
         'standard-allowance' => StandardAllowanceFormula::class,
         'standard-overtime' => StandardOvertimeFormula::class,
