@@ -5,7 +5,7 @@
         "order": 0,
         "type": "text",
         "readable": "Pay deduction for number of work hours an employee fails to render by leaving before the scheduled end of their shift.",
-        "value": ""
+        "value": null
     },
     {
         "key": "sub_description",
@@ -13,6 +13,6 @@
         "order": 1,
         "type": "text",
         "readable": "Deduction = (Hours Worked * Hourly Rate) * (Undertime Hours / Shift Total Work Hours)",
-        "value": ""
+        "value": null
     }
 ]

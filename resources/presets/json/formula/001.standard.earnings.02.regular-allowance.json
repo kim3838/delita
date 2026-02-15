@@ -5,6 +5,6 @@
         "order": 0,
         "type": "text",
         "readable": "A fixed recurring benefit provided to employees on top of their basic salary",
-        "value": ""
+        "value": null
     }
 ]

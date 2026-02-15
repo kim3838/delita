@@ -5,7 +5,7 @@
         "order": 0,
         "type": "text",
         "readable": "Overtime is the extra pay employees earn for working beyond their regular working hours,\nusually at a higher rate than basic pay.",
-        "value": ""
+        "value": null
     },
     {
         "key": "regular_rates",
