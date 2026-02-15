@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('component_name');
 
             $table->json('component_values')->nullable();
-            $table->json('pipeline_chain')->nullable();
 
             $table->decimal('regular_pay', 21, 6)->default(0);
             $table->decimal('night_differential_pay', 21, 6)->default(0);

@@ -16,7 +16,6 @@ class SalaryStatementDetail extends Model
         'component_name',
 
         'component_values',
-        'pipeline_chain',
 
         'regular_pay',
         'night_differential_pay',
@@ -43,7 +42,6 @@ class SalaryStatementDetail extends Model
         'component_name' => 'string',
 
         'component_values' => 'array',
-        'pipeline_chain' => 'array',
 
         'regular_pay' => 'decimal:6',
         'night_differential_pay' => 'decimal:6',
