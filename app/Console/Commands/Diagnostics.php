@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Concrete\Tests\AttendancePayItemsTests;
 use App\Concrete\Tests\AttendanceSplitterTests;
+use App\Concrete\Tests\StandardSSSEmployedContributionTests;
 use App\Models\Company;
 use Illuminate\Console\Command;
 
@@ -39,6 +40,8 @@ class Diagnostics extends Command
         }
 
         $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, true));
+
+        $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(true, true));
 
         $this->newLine();
         $this->line('Done');
