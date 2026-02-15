@@ -20,7 +20,6 @@ class PipelineChainableTransformer extends TransformerAbstract
             'contribution' => (float)$model->contribution,
             'withholding_tax' => (float)$model->withholding_tax,
             'net' => (float)$model->net,
-            'employer_contribution' => (float)$model->employer_contribution,
         ];
     }
 }
