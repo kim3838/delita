@@ -17,5 +17,6 @@ class SalaryStatementContext
         public Employee $employee,
         public Collection $pipelinePayload,
         public array $statementDetails,
+        public array $shared = [],
     ){}
 }
