@@ -31,7 +31,6 @@ class SalaryStatement extends Model
         'contribution',
         'withholding_tax',
         'net',
-        'employer_contribution',
     ];
 
     protected $hidden = [
@@ -63,8 +62,6 @@ class SalaryStatement extends Model
         'contribution' => 'decimal:6',
         'withholding_tax' => 'decimal:6',
         'net' => 'decimal:6',
-
-        'employer_contribution' => 'decimal:6',
     ];
 
     public function payroll(): BelongsTo
