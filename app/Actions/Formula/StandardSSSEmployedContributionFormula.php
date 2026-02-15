@@ -4,6 +4,7 @@ namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
 use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 
 class StandardSSSEmployedContributionFormula
 {
@@ -120,9 +121,9 @@ class StandardSSSEmployedContributionFormula
         $employeeShareTemp = $msc->multipliedBy($employeeShareValue);
         $employeeMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employeeMpfValue)) : BigDecimal::zero();
 
-        $result['employee_share']['regular'] = (string)$employeeShareTemp->minus($employeeMpf);
-        $result['employee_share']['mpf'] = (string)$employeeMpf;
-        $result['employee_share']['total'] = (string)$employeeShareTemp;
+        $result['employee_share']['regular'] = (string)$employeeShareTemp->minus($employeeMpf)->toScale(6, RoundingMode::HalfUp);
+        $result['employee_share']['mpf'] = (string)$employeeMpf->toScale(6, RoundingMode::HalfUp);
+        $result['employee_share']['total'] = (string)$employeeShareTemp->toScale(6, RoundingMode::HalfUp);
 
         $employerShareTemp = $msc->multipliedBy($employerShareValue);
         $employerMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employerMpfValue)) : BigDecimal::zero();
@@ -130,12 +131,12 @@ class StandardSSSEmployedContributionFormula
 
         $employerTotalShare = $employerShareTemp->plus($employerEc);
 
-        $result['employer_share']['regular'] = (string)$employerShareTemp->minus($employerMpf);
-        $result['employer_share']['mpf'] = (string)$employerMpf;
-        $result['employer_share']['ec'] = (string)$employerEc;
-        $result['employer_share']['total'] = (string)$employerTotalShare;
+        $result['employer_share']['regular'] = (string)$employerShareTemp->minus($employerMpf)->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['mpf'] = (string)$employerMpf->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['ec'] = (string)$employerEc->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['total'] = (string)$employerTotalShare->toScale(6, RoundingMode::HalfUp);
 
-        $result['total'] = (string)$employeeShareTemp->plus($employerTotalShare);
+        $result['total'] = (string)$employeeShareTemp->plus($employerTotalShare)->toScale(6, RoundingMode::HalfUp);
 
         return $result;
     }
