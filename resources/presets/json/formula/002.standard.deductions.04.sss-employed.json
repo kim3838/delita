@@ -131,11 +131,11 @@
         ]
     },
     {
-        "key": "contribution",
-        "label": "Contribution",
+        "key": "",
+        "label": "",
         "order": 3,
         "type": "table",
-        "readable": "Contribution.",
+        "readable": "",
         "value": {
             "sub_headers": [
                 {"text": "Salary Range", "col_span": 1},
