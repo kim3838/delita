@@ -39,9 +39,9 @@ class Diagnostics extends Command
             $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
         }
 
-        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, true));
+        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, false));
 
-        $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(true, true));
+        $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(true, false));
 
         $this->newLine();
         $this->line('Done');
