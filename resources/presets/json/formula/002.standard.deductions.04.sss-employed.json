@@ -5,6 +5,181 @@
         "order": 0,
         "type": "text",
         "readable": "Monthly deduction shared by the employee and employer, paid to the Social Security System.\nIt helps provide benefits like sickness, maternity, retirement, and other financial assistance when needed.",
-        "value": ""
+        "value": null
+    },
+    {
+        "key": "rates",
+        "label": "Rates",
+        "order": 1,
+        "type": "array",
+        "readable": "Rates",
+        "value": [
+            {
+                "key": "employee_share",
+                "label": "Employee Share",
+                "order": 0,
+                "type": "number",
+                "readable": "5% of Monthly Salary Credit (MSC)",
+                "value": "0.05"
+            },
+            {
+                "key": "employee_mpf_eligibility",
+                "label": "Employee MPF eligibility",
+                "order": 1,
+                "type": "number",
+                "readable": "MSC of over ₱20,000.00",
+                "value": "20000.00"
+            },
+            {
+                "key": "employee_mpf",
+                "label": "Employee MPF",
+                "order": 2,
+                "type": "number",
+                "readable": "5% of excess over MSC threshold",
+                "value": "0.05"
+            },
+            {
+                "key": "employer_share",
+                "label": "Employer Share",
+                "order": 3,
+                "type": "number",
+                "readable": "10% of Monthly Salary Credit (MSC)",
+                "value": "0.1"
+            },
+            {
+                "key": "employer_mpf",
+                "label": "Employer MPF",
+                "order": 4,
+                "type": "number",
+                "readable": "10% of excess over MSC threshold",
+                "value": "0.1"
+            }
+        ]
+    },
+    {
+        "key": "employer_ec",
+        "label": "Employer EC",
+        "order": 2,
+        "type": "array",
+        "readable": "Employer EC",
+        "value": [
+            {
+                "key": "employer_ec_before_threshold",
+                "label": "MSC of below threshold",
+                "order": 0,
+                "type": "number",
+                "readable": "₱10.00",
+                "value": "10.00"
+            },
+            {
+                "key": "employer_ec_threshold",
+                "label": "Employee EC Threshold",
+                "order": 1,
+                "type": "number",
+                "readable": "₱15,000.00",
+                "value": "15000.00"
+            },
+            {
+                "key": "employer_ec_after_threshold",
+                "label": "MSC of threshold and above",
+                "order": 2,
+                "type": "number",
+                "readable": "₱30.00",
+                "value": "30.00"
+            }
+        ]
+    },
+    {
+        "key": "compensation_range",
+        "label": "Compensation Range",
+        "order": 3,
+        "type": "array",
+        "readable": "Compensation Range",
+        "value": [
+            {
+                "key": "starting_compensation_range",
+                "label": "Starting compensation range",
+                "order": 0,
+                "type": "number",
+                "readable": "₱5,249.99",
+                "value": "5249.99"
+            },
+            {
+                "key": "starting_msc",
+                "label": "Starting MSC",
+                "order": 1,
+                "type": "number",
+                "readable": "₱5,000.00",
+                "value": "5000.00"
+            },
+            {
+                "key": "msc_interval",
+                "label": "MSC Interval",
+                "order": 2,
+                "type": "number",
+                "readable": "₱500.00",
+                "value": "500.00"
+            },
+            {
+                "key": "max_msc",
+                "label": "Max MSC",
+                "order": 3,
+                "type": "number",
+                "readable": "₱35,000.00",
+                "value": "35000.00"
+            }
+        ]
+    },
+    {
+        "key": "contribution",
+        "label": "Contribution",
+        "order": 3,
+        "type": "table",
+        "readable": "Contribution.",
+        "value": {
+            "sub_headers": [
+                {"text": "Salary Range", "col_span": 1},
+                {"text": "MSC", "col_span": 1},
+
+                {"text": "Employee contribution", "col_span": 3},
+
+                {"text": "Employer contribution", "col_span": 4},
+
+                {"text": "Monthly Total", "col_span": 1}
+            ],
+            "headers": [
+                {"text": "", "value": "salary_range"},
+                {"text": "", "value": "msc"},
+
+                {"text": "Regular", "value": "employee_regular"},
+                {"text": "MPF", "value": "employee_mpf"},
+                {"text": "Total", "value": "employee_total"},
+
+                {"text": "Regular", "value": "employer_regular"},
+                {"text": "MPF", "value": "employer_mpf"},
+                {"text": "EC", "value": "employer_ec"},
+                {"text": "Total", "value": "employer_total"},
+
+                {"text": "", "value": "monthly_total"}
+            ],
+            "rows": [
+                {
+                    "salary_range": {   "readable": "₱0.00 - ₱5,249.99","range": [{"min": "0", "max": "5249.99"}]},
+                    "msc": { "readable": "₱5,000.00", "value": "5000.00"},
+                    "employee": {
+                        "regular": {"readable": ""},
+                        "mpf": {"readable": "", "value": "0"},
+                        "total": {"readable": ""}
+                    },
+                    "employer": {
+                        "regular": {"readable": ""},
+                        "mpf": {"readable": "", "value": "0"},
+                        "ec": {"readable": "₱10.00", "value": "10.00"},
+                        "total": {"readable": ""}
+                    },
+                    "monthly_total": ""
+                }
+            ]
+        }
     }
 ]
