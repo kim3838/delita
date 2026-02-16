@@ -829,32 +829,32 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              * Create pay items
              **/
             $employeePerDayableByAttendanceCompensationsPatchable = collect($employeePerDayableCompensationsPayload)
-                ->filter(fn($value, $key) =>!empty($value['total']))
+                ->filter(fn($value, $key) => !empty((string)$value['total']))
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
                     'component_key' => $value['component_key'],
                     'component_name' => $value['component_name'],
-                    'regular_pay' => $value['regular_pay'],
-                    'night_differential_pay' => $value['night_differential_pay'],
-                    'rest_day_pay' => $value['rest_day_pay'],
-                    'total' => $value['total'],
-                    ])
+                    'regular_pay' => (string)$value['regular_pay'],
+                    'night_differential_pay' => (string)$value['night_differential_pay'],
+                    'rest_day_pay' => (string)$value['rest_day_pay'],
+                    'total' => (string)$value['total'],
+                ])
                 ->values()
                 ->toArray();
 
             $companyPerDayAbleGlobalCompensationsPatchable = collect($companyPerDayAbleGlobalCompensationsPayload)
-                ->filter(fn($value, $key) =>!empty($value['total']))
+                ->filter(fn($value, $key) => !empty((string)$value['total']))
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
                     'component_key' => $value['component_key'],
                     'component_name' => $value['component_name'],
-                    'regular_pay' => $value['regular_pay'],
-                    'night_differential_pay' => $value['night_differential_pay'],
-                    'rest_day_pay' => $value['rest_day_pay'],
-                    'total' => $value['total'],
-                    ])
+                    'regular_pay' => (string)$value['regular_pay'],
+                    'night_differential_pay' => (string)$value['night_differential_pay'],
+                    'rest_day_pay' => (string)$value['rest_day_pay'],
+                    'total' => (string)$value['total'],
+                ])
                 ->values()
                 ->toArray();
 
