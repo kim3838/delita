@@ -699,30 +699,40 @@ trait HasPayableDay
         PayFrequencyEnum $payrollFrequency,
         EmployeePayrollComponent $amountablePayrollComponent,
         $totalWorkMinutes
-    ){
-        $hourlyRate = 0;
+    ): BigNumber {
+
+        $hourlyRate = BigDecimal::zero();
+        $payrollComponentAmount = BigDecimal::of($amountablePayrollComponent->amount);
 
         if($payrollFrequency === PayFrequencyEnum::MONTHLY){
 
             $hourlyRate = match($amountablePayrollComponent->pay_period){
-                PayPeriod::MONTHLY => ((float)$amountablePayrollComponent->amount / $this->frequencyWorkingDayCount) / ($totalWorkMinutes / 60),
-                PayPeriod::SEMI_MONTHLY => (((float)$amountablePayrollComponent->amount * 2) / $this->frequencyWorkingDayCount) / ($totalWorkMinutes / 60),
-                PayPeriod::DAILY => (float)$amountablePayrollComponent->amount / ($totalWorkMinutes / 60),
+                PayPeriod::MONTHLY => ($payrollComponentAmount->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::SEMI_MONTHLY => (($payrollComponentAmount->multipliedBy(BigInteger::of('2')))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
                 //Return if hourly
-                default => $amountablePayrollComponent->amount
+                default => $payrollComponentAmount
             };
         }
 
         if($payrollFrequency === PayFrequencyEnum::SEMI_MONTHLY){
 
             $hourlyRate = match($amountablePayrollComponent->pay_period){
-                PayPeriod::MONTHLY => (((float)$amountablePayrollComponent->amount / 2) / $this->frequencyWorkingDayCount ) / ($totalWorkMinutes / 60),
-                PayPeriod::SEMI_MONTHLY => ((float)$amountablePayrollComponent->amount / $this->frequencyWorkingDayCount) / ($totalWorkMinutes / 60),
-                PayPeriod::DAILY => (float)$amountablePayrollComponent->amount / ($totalWorkMinutes / 60),
+                PayPeriod::MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('2'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::SEMI_MONTHLY => ($payrollComponentAmount->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
                 //Return if hourly
-                default => $amountablePayrollComponent->amount
+                default => $payrollComponentAmount
             };
         }
 
