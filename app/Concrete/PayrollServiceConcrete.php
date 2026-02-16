@@ -684,12 +684,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         'component_type' => $compensation->payrollComponentable->type->value,
                         'component_key' => $compensation->payroll_componentable_morph,
                         'component_name' => $compensation->payrollComponentable->name,
-                        'hourly_rate' => null,
+                        'hourly_rate' => BigDecimal::zero(),
                         'work_hour_type' => WorkHourType::REGULAR->value,
-                        'regular_pay' => 0,
-                        'night_differential_pay' => 0,
-                        'rest_day_pay' => 0,
-                        'total' => 0,
+                        'regular_pay' => BigDecimal::zero(),
+                        'night_differential_pay' => BigDecimal::zero(),
+                        'rest_day_pay' => BigDecimal::zero(),
+                        'total' => BigDecimal::zero(),
                     ],
                 ])
                 ->all();
@@ -707,12 +707,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         'component_type' => $globalCompensation->type->value,
                         'component_key' => $globalCompensation->id . '.global.compensation',
                         'component_name' => $globalCompensation->name,
-                        'hourly_rate' => null,
+                        'hourly_rate' => BigDecimal::zero(),
                         'work_hour_type' => WorkHourType::REGULAR->value,
-                        'regular_pay' => 0,
-                        'night_differential_pay' => 0,
-                        'rest_day_pay' => 0,
-                        'total' => 0,
+                        'regular_pay' => BigDecimal::zero(),
+                        'night_differential_pay' => BigDecimal::zero(),
+                        'rest_day_pay' => BigDecimal::zero(),
+                        'total' => BigDecimal::zero(),
                     ],
                 ])
                 ->all();
@@ -755,21 +755,23 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         case CompensationEnum::BASIC_PAY:
 
                             if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
-                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] += $this->getAssignedPayrollComponentHourlyRate(
+                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] =
+                                    $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
                                     $payrollFrequency,
                                     $employeePerDayableCompensation,
                                     $totalWorkMinutes
-                                );
+                                ));
                             }break;
 
                         case CompensationEnum::REGULAR_ALLOWANCE:
 
                             if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
-                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] += $this->getAssignedPayrollComponentHourlyRate(
+                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] =
+                                    $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
                                     $payrollFrequency,
                                     $employeePerDayableCompensation,
                                     $totalWorkMinutes
-                                );
+                                ));
                             }
                     }
                 }
@@ -777,8 +779,30 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             if($debugEnabled){
                 _debug([
-                    'Earnings payload' => $employeePerDayableCompensationsPayload,
-                    'Global earnings payload' => $companyPerDayAbleGlobalCompensationsPayload,
+                    'Earnings payload' => array_map(function($payload){
+                        return [
+                            'component_type' => $payload['component_type'],
+                            'component_key' => $payload['component_key'],
+                            'component_name' => $payload['component_name'],
+                            'hourly_rate' => (string)$payload['hourly_rate'],
+                            'work_hour_type' => $payload['work_hour_type'],
+                            'night_differential_pay' => (string)$payload['night_differential_pay'],
+                            'rest_day_pay' => (string)$payload['rest_day_pay'],
+                            'total' => (string)$payload['total'],
+                        ];
+                    }, $employeePerDayableCompensationsPayload),
+                    'Global earnings payload' => array_map(function($payload){
+                        return [
+                            'component_type' => $payload['component_type'],
+                            'component_key' => $payload['component_key'],
+                            'component_name' => $payload['component_name'],
+                            'hourly_rate' => (string)$payload['hourly_rate'],
+                            'work_hour_type' => $payload['work_hour_type'],
+                            'night_differential_pay' => (string)$payload['night_differential_pay'],
+                            'rest_day_pay' => (string)$payload['rest_day_pay'],
+                            'total' => (string)$payload['total'],
+                        ];
+                    }, $companyPerDayAbleGlobalCompensationsPayload),
                 ]);
             }
 

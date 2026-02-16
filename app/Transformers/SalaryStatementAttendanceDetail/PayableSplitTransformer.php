@@ -3,6 +3,7 @@
 namespace App\Transformers\SalaryStatementAttendanceDetail;
 
 use App\Models\SalaryStatementAttendanceDetail;
+use Brick\Math\BigDecimal;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use League\Fractal\TransformerAbstract;
 
@@ -13,13 +14,13 @@ class PayableSplitTransformer extends TransformerAbstract
         return [
             'id' => $salaryStatementAttendanceDetail->id,
             'proxy_model' => Relation::getMorphAlias(SalaryStatementAttendanceDetail::class),
-            'split_duration' => $salaryStatementAttendanceDetail->split_duration,
+            'split_duration' => BigDecimal::of((string)$salaryStatementAttendanceDetail->split_duration),
             'work_hour_type' => $salaryStatementAttendanceDetail->work_hour_type,
-            'regular_rate_multiplier' => (float)$salaryStatementAttendanceDetail->regular_rate_multiplier,
-            'non_rest_rate_multiplier' => (float)$salaryStatementAttendanceDetail->non_rest_rate_multiplier,
-            'hourly_rate_multiplier' => (float)$salaryStatementAttendanceDetail->hourly_rate_multiplier,
-            'base_rate_multiplier' => (float)$salaryStatementAttendanceDetail->base_rate_multiplier,
-            'actual_present' => (float)($salaryStatementAttendanceDetail->actual_present ?? 0),
+            'regular_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->regular_rate_multiplier ?? 0),
+            'non_rest_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->non_rest_rate_multiplier ?? 0),
+            'hourly_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->hourly_rate_multiplier ?? 0),
+            'base_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->base_rate_multiplier ?? 0),
+            'actual_present' => BigDecimal::of((string)($salaryStatementAttendanceDetail->actual_present ?? 0)),
         ];
     }
 }
