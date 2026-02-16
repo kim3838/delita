@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Concrete\MutableBigDecimal;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
@@ -10,6 +11,10 @@ use App\Enums\SalaryStatementAttendanceStatus;
 use App\Enums\WorkHourType;
 use App\Models\EmployeePayrollComponent;
 use App\Models\SalaryStatementAttendance;
+use Brick\Math\BigDecimal;
+use Brick\Math\BigInteger;
+use Brick\Math\BigNumber;
+use Brick\Math\RoundingMode;
 
 trait HasPayableDay
 {
@@ -65,7 +70,7 @@ trait HasPayableDay
 
         if($isPresent){
 
-            $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? 0;
+            $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? BigDecimal::zero();
 
             if($isRegularWorkingDay){
 
@@ -81,56 +86,60 @@ trait HasPayableDay
                     $splitBaseMultiplier = $workSplit['base_rate_multiplier'];
                     $splitActualPresent = $workSplit['actual_present'];
 
-                    $regularPay = 0;$nightPay = 0;$restPay = 0;$hours = ($splitActualPresent / 60);
+                    $regularPay = BigDecimal::zero();
+                    $nightPay = BigDecimal::zero();
+                    $restPay = BigDecimal::zero();
+                    $hours = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                     if($splitWorkHourType == WorkHourType::REGULAR){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
 
                     } else if($splitWorkHourType == WorkHourType::NIGHT){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $nightMultiplier = ($splitHourlyMultiplier - $splitRegularMultiplier);
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitBaseMultiplier - $nightMultiplier : 0);
+                        $nightMultiplier = $splitHourlyMultiplier->minus($splitRegularMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier) : BigDecimal::zero());
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        $nightPay = ($hours * $basicPayHourlyRate) * $nightMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        $nightPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($nightMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
                     }
 
                     if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
-                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] += $restPay;
 
-                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = (
-                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] +
-                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] +
-                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']
-                        );
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay']->plus($regularPay);
+                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay']->plus($nightPay);
+                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']->plus($restPay);
+
+                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay']
+                            ->plus($assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'])
+                            ->plus($assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']);
                     }
-
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $splitTotalAllowance = 0;
+                    $splitTotalAllowance = new MutableBigDecimal();
 
                     foreach($allowancePayloadKeys as $allowancePayloadKey){
 
-                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? 0;
-                        $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
+                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? BigDecimal::zero();
+                        $allowanceValue = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp)->multipliedBy($allowanceHourlyRate);
 
                         if(isset($assignedEarningsPayload[$allowancePayloadKey])){
 
-                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] += $allowanceValue;
-                            $splitTotalAllowance += $allowanceValue;
+                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] =
+                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay']->plus($allowanceValue);
+                            $splitTotalAllowance->plus($allowanceValue);
 
-                            $assignedEarningsPayload[$allowancePayloadKey]['total'] =
-                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
+                            $assignedEarningsPayload[$allowancePayloadKey]['total'] = $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
                         }
                     }
 
@@ -140,30 +149,30 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            'ACTUAL_PRESENT' => $splitActualPresent,
-                            'WORKED HOURS' => $hours,
-                            'REGULAR MULTIPLIER' => $splitRegularMultiplier,
-                            'NON-RESTMULTIPLIER' => $splitNonRestMultiplier,
-                            'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
-                            'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
-                            'BASIC' => ($hours * $basicPayHourlyRate),
-                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => $nightMultiplier] : []),
-                            ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
+                            'ACTUAL_PRESENT' => (string)$splitActualPresent,
+                            'WORKED HOURS' => (string)$hours,
+                            'REGULAR MULTIPLIER' => (string)$splitRegularMultiplier,
+                            'NON-RESTMULTIPLIER' => (string)$splitNonRestMultiplier,
+                            'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
+                            'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,
+                            'BASIC' => (string)($hours->multipliedBy($basicPayHourlyRate)),
+                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => (string)$nightMultiplier] : []),
+                            ...($isRestDay ? ['REST MULTIPLIER' => (string)$restMultiplier] : []),
                             '=>' => '=>',
-                            'REGULAR_PAY' => $regularPay,
-                            'ALLOWANCE' => $splitTotalAllowance,
-                            'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
-                            'REST_DAY_PAY' => $restPay,
+                            'REGULAR_PAY' => (string)$regularPay,
+                            'ALLOWANCE' => (string)$splitTotalAllowance,
+                            'NIGHT_DIFFERENTIAL_PAY' => (string)$nightPay,
+                            'REST_DAY_PAY' => (string)$restPay,
                         ];
                     }
 
                     if(!$test){
                         $updateProxyModelDetail = [
-                            'hourly_rate' => $basicPayHourlyRate,
-                            'regular_pay' => $regularPay,
-                            'allowance' => $splitTotalAllowance,
-                            'night_differential_pay' => $nightPay,
-                            'rest_day_pay' => $restPay,
+                            'hourly_rate' => (string)$basicPayHourlyRate,
+                            'regular_pay' => (string)$regularPay,
+                            'allowance' => (string)$splitTotalAllowance,
+                            'night_differential_pay' => (string)$nightPay,
+                            'rest_day_pay' => (string)$restPay,
                         ];
 
                         if($debugDetailProxyModelUpdate){
@@ -192,36 +201,41 @@ trait HasPayableDay
                     $splitBaseMultiplier = $overtimeSplit['base_rate_multiplier'];
                     $splitActualPresent = $overtimeSplit['actual_present'];
 
-                    $regularPay = 0;$nightPay = 0;$restPay = 0;$hours = ($splitActualPresent / 60);
+                    $regularPay = BigDecimal::zero();
+                    $nightPay = BigDecimal::zero();
+                    $restPay = BigDecimal::zero();
+                    $hours = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                     if($splitWorkHourType == WorkHourType::REGULAR){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
 
                     } else if($splitWorkHourType == WorkHourType::NIGHT){
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $splitBaseMultiplier;
-                        $nightMultiplier = ($splitHourlyMultiplier - $splitRegularMultiplier);
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitBaseMultiplier - $nightMultiplier : 0);
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($splitBaseMultiplier);
 
-                        $nightPay = ($hours * $basicPayHourlyRate) * $nightMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $nightMultiplier = $splitHourlyMultiplier->minus($splitRegularMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier) : BigDecimal::zero());
+
+                        $nightPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($nightMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
                     }
 
                     if(isset($assignedEarningsPayload[$overtimePayPayloadKey])){
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] += $restPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay']->plus($regularPay);
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay']->plus($nightPay);
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']->plus($restPay);
 
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = (
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] +
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] +
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']
-                        );
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay']
+                            ->plus($assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'])
+                            ->plus($assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']);
                     }
 
                     if($test || $debug){
@@ -230,28 +244,28 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            'ACTUAL_PRESENT' => $splitActualPresent,
-                            'WORKED HOURS' => $hours,
-                            'REGULAR MULTIPLIER' => $splitRegularMultiplier,
-                            'NON-RESTMULTIPLIER' => $splitNonRestMultiplier,
-                            'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
-                            'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
-                            'BASIC' => ($hours * $basicPayHourlyRate),
-                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => $nightMultiplier] : []),
-                            ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
+                            'ACTUAL_PRESENT' => (string)$splitActualPresent,
+                            'WORKED HOURS' => (string)$hours,
+                            'REGULAR MULTIPLIER' => (string)$splitRegularMultiplier,
+                            'NON-RESTMULTIPLIER' => (string)$splitNonRestMultiplier,
+                            'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
+                            'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,
+                            'BASIC' => (string)($hours->multipliedBy($basicPayHourlyRate)),
+                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => (string)$nightMultiplier] : []),
+                            ...($isRestDay ? ['REST MULTIPLIER' => (string)$restMultiplier] : []),
                             '=>' => '=>',
-                            'REGULAR_PAY' => $regularPay,
-                            'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
-                            'REST_DAY_PAY' => $restPay,
+                            'REGULAR_PAY' => (string)$regularPay,
+                            'NIGHT_DIFFERENTIAL_PAY' => (string)$nightPay,
+                            'REST_DAY_PAY' => (string)$restPay,
                         ];
                     }
 
                     if(!$test){
                         $updateProxyModelDetail = [
-                            'hourly_rate' => $basicPayHourlyRate,
-                            'regular_pay' => $regularPay,
-                            'night_differential_pay' => $nightPay,
-                            'rest_day_pay' => $restPay,
+                            'hourly_rate' => (string)$basicPayHourlyRate,
+                            'regular_pay' => (string)$regularPay,
+                            'night_differential_pay' => (string)$nightPay,
+                            'rest_day_pay' => (string)$restPay,
                         ];
 
                         if($debugDetailProxyModelUpdate){
@@ -281,77 +295,80 @@ trait HasPayableDay
 
                     $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
                     //If double holiday, replace the base rate by 2
-                    $splitBaseMultiplier = $isDoubleHoliday ? 2 : $workSplit['base_rate_multiplier'];
+                    $splitBaseMultiplier = $isDoubleHoliday ? BigDecimal::of('2') : $workSplit['base_rate_multiplier'];
                     $splitActualPresent = $workSplit['actual_present'];
 
-                    $regularPay = 0;$nightPay = 0;$holidayPay = 0;$restPay = 0;$hours = ($splitActualPresent / 60);
+                    $regularPay = BigDecimal::zero();
+                    $nightPay = BigDecimal::zero();
+                    $holidayPay = BigDecimal::zero();
+                    $restPay = BigDecimal::zero();
+                    $hours = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                     if($splitWorkHourType == WorkHourType::REGULAR){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
-                        $holidayMultiplier = ($splitHourlyMultiplier - $splitBaseMultiplier - $restMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
+                        $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($restMultiplier);
 
-
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        $holidayPay = ($hours * $basicPayHourlyRate) * $holidayMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        $holidayPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($holidayMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
 
                     } else if($splitWorkHourType == WorkHourType::NIGHT){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $nightMultiplier = ($splitHourlyMultiplier - $splitRegularMultiplier);
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
-                        $holidayMultiplier = ($splitHourlyMultiplier - $splitBaseMultiplier - $nightMultiplier - $restMultiplier);
+                        $nightMultiplier = $splitHourlyMultiplier->minus($splitRegularMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
+                        $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier)->minus($restMultiplier);
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        $holidayPay = ($hours * $basicPayHourlyRate) * $holidayMultiplier;
-                        $nightPay = ($hours * $basicPayHourlyRate) * $nightMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        $holidayPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($holidayMultiplier);
+                        $nightPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($nightMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
                     }
 
                     //Basic pay
                     if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
 
-                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] += $restPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay']->plus($regularPay);
+                        $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay']->plus($nightPay);
+                        $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']->plus($restPay);
 
-                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = (
-                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] +
-                            $assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'] +
-                            $assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']
-                        );
+                        $assignedEarningsPayload[$basicPayPayloadKey]['total'] = $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay']
+                            ->plus($assignedEarningsPayload[$basicPayPayloadKey]['night_differential_pay'])
+                            ->plus($assignedEarningsPayload[$basicPayPayloadKey]['rest_day_pay']);
                     }
 
                     //Holiday pay
                     if(isset($globalEarningsPayload[$holidayPayPayloadKey])){
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] += $holidayPay;
+                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] =
+                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']->plus($holidayPay);
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = (
-                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] +
-                            $globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']
-                        );
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']
+                            ->plus($globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']);
                     }
 
                     /**
                      * Allowance is always available as long as there is a working hour
                      **/
-                    $splitTotalAllowance = 0;
+                    $splitTotalAllowance = new MutableBigDecimal();
 
                     foreach($allowancePayloadKeys as $allowancePayloadKey){
 
-                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? 0;
-                        $allowanceValue = (($splitActualPresent / 60) * $allowanceHourlyRate);
+                        $allowanceHourlyRate = $assignedEarningsPayload[$allowancePayloadKey]['hourly_rate'] ?? BigDecimal::zero();
+                        $allowanceValue = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp)->multipliedBy($allowanceHourlyRate);
 
                         if(isset($assignedEarningsPayload[$allowancePayloadKey])){
 
-                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] += $allowanceValue;
-                            $splitTotalAllowance += $allowanceValue;
+                            $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'] =
+                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay']->plus($allowanceValue);
+                            $splitTotalAllowance->plus($allowanceValue);
 
-                            $assignedEarningsPayload[$allowancePayloadKey]['total'] =
-                                $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
+                            $assignedEarningsPayload[$allowancePayloadKey]['total'] = $assignedEarningsPayload[$allowancePayloadKey]['regular_pay'];
                         }
                     }
 
@@ -361,33 +378,33 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            'ACTUAL_PRESENT' => $splitActualPresent,
-                            'WORKED HOURS' => $hours,
-                            'REGULAR MULTIPLIER' => $splitRegularMultiplier,
-                            'NON-RESTMULTIPLIER' => $splitNonRestMultiplier,
-                            'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
-                            'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
-                            'BASIC' => ($hours * $basicPayHourlyRate),
-                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => $nightMultiplier] : []),
-                            ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
-                            'HOLIDAY MULTIPLIER' => $holidayMultiplier,
+                            'ACTUAL_PRESENT' => (string)$splitActualPresent,
+                            'WORKED HOURS' => (string)$hours,
+                            'REGULAR MULTIPLIER' => (string)$splitRegularMultiplier,
+                            'NON-RESTMULTIPLIER' => (string)$splitNonRestMultiplier,
+                            'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
+                            'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,
+                            'BASIC' => (string)($hours->multipliedBy($basicPayHourlyRate)),
+                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => (string)$nightMultiplier] : []),
+                            ...($isRestDay ? ['REST MULTIPLIER' => (string)$restMultiplier] : []),
+                            'HOLIDAY MULTIPLIER' => (string)$holidayMultiplier,
                             '=>' => '=>',
-                            'REGULAR_PAY' => $regularPay,
-                            'ALLOWANCE' => $splitTotalAllowance,
-                            'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
-                            'REST_DAY_PAY' => $restPay,
-                            'HOLIDAY_PAY' => $holidayPay
+                            'REGULAR_PAY' => (string)$regularPay,
+                            'ALLOWANCE' => (string)$splitTotalAllowance,
+                            'NIGHT_DIFFERENTIAL_PAY' => (string)$nightPay,
+                            'REST_DAY_PAY' => (string)$restPay,
+                            'HOLIDAY_PAY' => (string)$holidayPay
                         ];
                     }
 
                     if(!$test){
                         $updateProxyModelDetail = [
-                            'hourly_rate' => $basicPayHourlyRate,
-                            'regular_pay' => $regularPay,
-                            'allowance' => $splitTotalAllowance,
-                            'night_differential_pay' => $nightPay,
-                            'rest_day_pay' => $restPay,
-                            'holiday_pay' => $holidayPay,
+                            'hourly_rate' => (string)$basicPayHourlyRate,
+                            'regular_pay' => (string)$regularPay,
+                            'allowance' => (string)$splitTotalAllowance,
+                            'night_differential_pay' => (string)$nightPay,
+                            'rest_day_pay' => (string)$restPay,
+                            'holiday_pay' => (string)$holidayPay,
                         ];
 
                         if($debugDetailProxyModelUpdate){
@@ -416,54 +433,58 @@ trait HasPayableDay
                     $splitBaseMultiplier = $overtimeSplit['base_rate_multiplier'];
                     $splitActualPresent = $overtimeSplit['actual_present'];
 
-                    $regularPay = 0;$nightPay = 0;$holidayPay = 0;$restPay = 0;$hours = ($splitActualPresent / 60);
+                    $regularPay = BigDecimal::zero();
+                    $nightPay = BigDecimal::zero();
+                    $holidayPay = BigDecimal::zero();
+                    $restPay = BigDecimal::zero();
+                    $hours = $splitActualPresent->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                     if($splitWorkHourType == WorkHourType::REGULAR){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
-                        $holidayMultiplier = ($splitHourlyMultiplier - $splitBaseMultiplier - $restMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
+                        $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($restMultiplier);
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        $holidayPay = ($hours * $basicPayHourlyRate) * $holidayMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        $holidayPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($holidayMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
 
                     } else if($splitWorkHourType == WorkHourType::NIGHT){
 
                         $regularMultiplier = $splitBaseMultiplier;
-                        $nightMultiplier = ($splitHourlyMultiplier - $splitRegularMultiplier);
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier - $splitNonRestMultiplier : 0);
-                        $holidayMultiplier = ($splitHourlyMultiplier - $splitBaseMultiplier - $nightMultiplier - $restMultiplier);
+                        $nightMultiplier = $splitHourlyMultiplier->minus($splitRegularMultiplier);
+                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
+                        $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier)->minus($restMultiplier);
 
-                        $regularPay = ($hours * $basicPayHourlyRate) * $regularMultiplier;
-                        $holidayPay = ($hours * $basicPayHourlyRate) * $holidayMultiplier;
-                        $nightPay = ($hours * $basicPayHourlyRate) * $nightMultiplier;
-                        if($isRestDay){$restPay = ($hours * $basicPayHourlyRate) * $restMultiplier;}
+                        $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
+                        $holidayPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($holidayMultiplier);
+                        $nightPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($nightMultiplier);
+                        if($isRestDay){$restPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($restMultiplier);}
                     }
 
                     //Overtime pay
                     if(isset($assignedEarningsPayload[$overtimePayPayloadKey])){
 
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] += $regularPay;
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] += $nightPay;
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] += $restPay;
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay']->plus($regularPay);
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay']->plus($nightPay);
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay'] =
+                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']->plus($restPay);
 
-                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = (
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay'] +
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'] +
-                            $assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']
-                        );
+                        $assignedEarningsPayload[$overtimePayPayloadKey]['total'] = $assignedEarningsPayload[$overtimePayPayloadKey]['regular_pay']
+                            ->plus($assignedEarningsPayload[$overtimePayPayloadKey]['night_differential_pay'])
+                            ->plus($assignedEarningsPayload[$overtimePayPayloadKey]['rest_day_pay']);
                     }
 
                     //Holiday pay
                     if(isset($globalEarningsPayload[$holidayPayPayloadKey])){
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] += $holidayPay;
+                        $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] =
+                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']->plus($holidayPay);
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = (
-                            $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] +
-                            $globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']
-                        );
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']
+                            ->plus($globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']);
                     }
 
                     if($test || $debug){
@@ -472,31 +493,31 @@ trait HasPayableDay
                                 $splitWorkHourType->label() . ' ' .
                                 $salaryStatementAttendance->day_type->label() . ' ' .
                                 ($isRestDay ? 'rest day' : 'non-rest day'),
-                            'ACTUAL_PRESENT' => $splitActualPresent,
-                            'WORKED HOURS' => $hours,
-                            'REGULAR MULTIPLIER' => $splitRegularMultiplier,
-                            'NON-RESTMULTIPLIER' => $splitNonRestMultiplier,
-                            'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
-                            'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
-                            'BASIC' => ($hours * $basicPayHourlyRate),
-                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => $nightMultiplier] : []),
-                            ...($isRestDay ? ['REST MULTIPLIER' => $restMultiplier] : []),
-                            'HOLIDAY MULTIPLIER' => $holidayMultiplier,
+                            'ACTUAL_PRESENT' => (string)$splitActualPresent,
+                            'WORKED HOURS' => (string)$hours,
+                            'REGULAR MULTIPLIER' => (string)$splitRegularMultiplier,
+                            'NON-RESTMULTIPLIER' => (string)$splitNonRestMultiplier,
+                            'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
+                            'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,
+                            'BASIC' => (string)($hours->multipliedBy($basicPayHourlyRate)),
+                            ...($splitWorkHourType == WorkHourType::NIGHT ? ['NIGHT MULTIPLIER' => (string)$nightMultiplier] : []),
+                            ...($isRestDay ? ['REST MULTIPLIER' => (string)$restMultiplier] : []),
+                            'HOLIDAY MULTIPLIER' => (string)$holidayMultiplier,
                             '=>' => '=>',
-                            'REGULAR_PAY' => $regularPay,
-                            'NIGHT_DIFFERENTIAL_PAY' => $nightPay,
-                            'REST_DAY_PAY' => $restPay,
-                            'HOLIDAY_PAY' => $holidayPay
+                            'REGULAR_PAY' => (string)$regularPay,
+                            'NIGHT_DIFFERENTIAL_PAY' => (string)$nightPay,
+                            'REST_DAY_PAY' => (string)$restPay,
+                            'HOLIDAY_PAY' => (string)$holidayPay
                         ];
                     }
 
                     if(!$test){
                         $updateProxyModelDetail = [
-                            'hourly_rate' => $basicPayHourlyRate,
-                            'regular_pay' => $regularPay,
-                            'night_differential_pay' => $nightPay,
-                            'rest_day_pay' => $restPay,
-                            'holiday_pay' => $holidayPay,
+                            'hourly_rate' => (string)$basicPayHourlyRate,
+                            'regular_pay' => (string)$regularPay,
+                            'night_differential_pay' => (string)$nightPay,
+                            'rest_day_pay' => (string)$restPay,
+                            'holiday_pay' => (string)$holidayPay,
                         ];
 
                         if($debugDetailProxyModelUpdate){
@@ -517,6 +538,8 @@ trait HasPayableDay
 
         if(!$isPresent && $payableNoneAttendance){
 
+            $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? BigDecimal::zero();
+
             /**
              * If the date is holiday, leave without pay, and holiday setting has holiday pay forfeiture enabled,
              * Chain into preceding work days to identify if holiday pay has to be forfeited
@@ -532,31 +555,33 @@ trait HasPayableDay
                 $splitWorkHourType = $workSplit['work_hour_type'];
                 $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
                 //If double holiday, replace the base rate by 2
-                $splitBaseMultiplier = $isDoubleHoliday ? 2 : $workSplit['base_rate_multiplier'];
+                $splitBaseMultiplier = $isDoubleHoliday ? BigDecimal::of('2') : $workSplit['base_rate_multiplier'];
                 //If holiday pay forfeited, replace the base rate by 0
-                $splitBaseMultiplier = $forfeitHolidayPay ? 0 : $splitBaseMultiplier;
+                $splitBaseMultiplier = $forfeitHolidayPay ? BigDecimal::zero() : $splitBaseMultiplier;
                 $splitSplitDuration = $workSplit['split_duration'];
                 $splitActualPresent = $workSplit['actual_present'];
-                $basicPayHourlyRate = $assignedEarningsPayload[$basicPayPayloadKey]['hourly_rate'] ?? 0;
+
+                $hours = $splitSplitDuration->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                 /**
                  * Pay is regular pay when legal holiday, otherwise leave pay
                  **/
-                $regularPay = (($splitSplitDuration / 60) * $basicPayHourlyRate) * $splitBaseMultiplier;
+                $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($splitBaseMultiplier);
 
                 if($isLegalHoliday){
                     if(isset($assignedEarningsPayload[$basicPayPayloadKey])){
-                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] += $regularPay;
+                        $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'] =
+                            $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay']->plus($regularPay);
 
                         $assignedEarningsPayload[$basicPayPayloadKey]['total'] =
                             $assignedEarningsPayload[$basicPayPayloadKey]['regular_pay'];
                     }
-
                 }
 
                 if($leaveWithPay && !$isLegalHoliday){
                     if(isset($globalEarningsPayload[$leavePayPayloadKey])){
-                        $globalEarningsPayload[$leavePayPayloadKey]['regular_pay'] += $regularPay;
+                        $globalEarningsPayload[$leavePayPayloadKey]['regular_pay'] =
+                            $globalEarningsPayload[$leavePayPayloadKey]['regular_pay']->plus($regularPay);
 
                         $globalEarningsPayload[$leavePayPayloadKey]['total'] =
                             $globalEarningsPayload[$leavePayPayloadKey]['regular_pay'];
@@ -565,20 +590,20 @@ trait HasPayableDay
 
                 $payableNonAttendance = [];
                 $updateProxyModelDetail = [
-                    'hourly_rate' => $basicPayHourlyRate,
+                    'hourly_rate' => (string)$basicPayHourlyRate,
                     ...($holidayPayForfeitureEnabled ? [
                         'holiday_pay_forfeited' => $forfeitHolidayPay
                     ] : [])
                 ];
 
                 if($isLegalHoliday){
-                    $payableNonAttendance['REGULAR_PAY'] = $regularPay;
-                    $updateProxyModelDetail['regular_pay'] = $regularPay;
+                    $payableNonAttendance['REGULAR_PAY'] = (string)$regularPay;
+                    $updateProxyModelDetail['regular_pay'] = (string)$regularPay;
                 }
 
                 if($leaveWithPay && !$isLegalHoliday){
-                    $payableNonAttendance['LEAVE_PAY'] = $regularPay;
-                    $updateProxyModelDetail['leave_pay'] = $regularPay;
+                    $payableNonAttendance['LEAVE_PAY'] = (string)$regularPay;
+                    $updateProxyModelDetail['leave_pay'] = (string)$regularPay;
                 }
 
                 if($test || $debug){
@@ -588,9 +613,11 @@ trait HasPayableDay
                             $salaryStatementAttendance->day_type->label() . ' ' .
                             ($isRestDay ? 'rest day' : 'non-rest day'),
                         'work_hour_type' => $splitWorkHourType->label(),
-                        'HOURLYR_MULTIPLIER' => $splitHourlyMultiplier,
-                        'BASE_RA_MULTIPLIER' => $splitBaseMultiplier,
-                        'actual_present' => $splitActualPresent,
+                        'ACTUAL_PRESENT' => (string)$splitActualPresent,
+                        'SPLIT_DURATION' => (string)$splitSplitDuration,
+                        'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
+                        'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,
+                        'BASIC' => (string)($hours->multipliedBy($basicPayHourlyRate)),
                         '=>' => '=>',
                         ...$payableNonAttendance
                     ];
