@@ -3,6 +3,7 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use App\Enums\PayFrequency;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -18,28 +19,39 @@ class StandardSSSEmployedContributionFormula
         $formulaSettings = $companyFormula->settings;
         $formula = $pipelinePayload['formula'];
 
-        $totalTaxable = $context->shared['total_taxable'];
+        if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
-        $statementDetail = [
-            'id' => null,
-            'formulable_type' => $formula->formulable_type->value,
-            'component_type' => $formula->component_type->value,
-            'component_name' => $formulableModel->name,
-            'component_values' => null,
-            'taxable' => 0.0,
-            'nontaxable' => 0.0,
-            'deduction' => 0.0,
-            'contribution' => 0.0,
-            'withholding_tax' => 0.0,
-            'net' => 0.0,
-        ];
+            $totalTaxable = $context->shared['total_taxable'];
 
-        $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable);
+            $statementDetail = [
+                'id' => null,
+                'formulable_type' => $formula->formulable_type->value,
+                'component_type' => $formula->component_type->value,
+                'component_name' => $formulableModel->name,
+                'component_values' => null,
+                'taxable' => 0.0,
+                'nontaxable' => 0.0,
+                'deduction' => 0.0,
+                'contribution' => 0.0,
+                'withholding_tax' => 0.0,
+                'net' => 0.0,
+            ];
 
-        $statementDetail['component_values'] = $contribution;
-        $statementDetail['contribution'] = $contribution['employee_share']['total'];
+            $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable);
+            $componentValues = [
+                ...$contribution,
+                'pay_frequency' => $context->payroll->pay_frequency?->label(),
+                'coverage' => [
+                    'start_date' => $context->payroll->start_date?->toDateString(),
+                    'end_date' => $context->payroll->end_date?->toDateString(),
+                ]
+            ];
 
-        $context->statementDetails[] = $statementDetail;
+            $statementDetail['component_values'] = $componentValues;
+            $statementDetail['contribution'] = $contribution['employee_share']['total'];
+
+            $context->statementDetails[] = $statementDetail;
+        }
 
         return $next($context);
     }
