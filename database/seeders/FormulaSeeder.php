@@ -54,20 +54,20 @@ class FormulaSeeder extends Seeder
             ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_absence')->first()->path)
             ],
-            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
+            ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_sss_employed_contribution')->first()->path)
             ],
-            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
+            ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
             ],
-            ['name' => 'Standard-Pag-IBIG-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::CONTRIBUTION, 'aggregation' => false,
+            ['name' => 'Standard-Pag-IBIG-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pag_ibig_contribution')->first()->path)
             ],
 
             //Taxable Income
             ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
-            //Non-taxable Income
+            //Nonyaxable Income
             ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
             //Income Tax

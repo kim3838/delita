@@ -24,7 +24,7 @@ class SalaryStatementModuleServiceConcrete
         protected Payroll $payroll,
         protected Company $company,
     ){
-        $this->salaryStatementModules = $this->company->salaryStatementModules;
+        $this->salaryStatementModules = $this->company->salaryStatementModules->sortBy('order');
     }
 
     public function setEmployee(Employee $employee): static
@@ -81,12 +81,24 @@ class SalaryStatementModuleServiceConcrete
 
             $moduleComponents = $moduleProperty->{$statementLevelModule->attribute};
 
-            foreach($statementLevelModule->conditions as $condition)
+            $conditionsArray = collect($statementLevelModule->conditions)->sortBy('order')->toArray();
+
+            foreach($conditionsArray as $condition)
             {
                 $condition = (object)$condition;
 
                 if ($condition->operator == '=') {
-                    $moduleComponents = $moduleComponents->where($condition->property, $condition->value);
+
+                    if(is_array($condition->property)){
+
+                        $path = implode('.', $condition->property);
+
+                        $moduleComponents = $moduleComponents->where(fn($component) => data_get($component, $path) == $condition->value);
+
+                    } else {
+
+                        $moduleComponents = $moduleComponents->where($condition->property, $condition->value);
+                    }
                 }
             }
 

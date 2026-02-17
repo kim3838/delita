@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\Deduction;
 use App\Enums\Formulable;
 use App\Models\SalaryStatementModule;
 use Illuminate\Support\Collection;
@@ -54,8 +55,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 3,
-                'key' => 'assigned_deductions',
-                'name' => 'Assigned deductions',
+                'key' => 'statutory_contributions',
+                'name' => 'Statutory contributions',
                 'formulable_type' => Formulable::DEDUCTIONS,
                 'statement_level' => true,
                 'aggregation' => false,
@@ -63,17 +64,30 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'attribute' => 'deductions',
                 'conditions' => [
                     [
+                        'order' => 1,
                         'property' => 'payroll_componentable_type',
                         'operator' => '=',
                         'value' => 'deduction',
                     ],
                     [
+                        'order' => 2,
                         'property' => 'formulable_type',
                         'operator' => '=',
                         'value' => Formulable::DEDUCTIONS,
                     ],
+                    [
+                        'order' => 3,
+                        'property' => [
+                            'payrollComponentable',
+                            'type',
+                            'value'
+                        ],
+                        'operator' => '=',
+                        'value' => Deduction::STATUTORY_CONTRIBUTION,
+                    ],
                 ]
-            ],[
+            ],
+            [
                 'order' => 4,
                 'key' => 'taxable_income',
                 'name' => 'Taxable income',
@@ -84,20 +98,23 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'attribute' => 'formulas',
                 'conditions' => [
                     [
+                        'order' => 1,
                         'property' => 'aggregation',
                         'operator' => '=',
                         'value' => true,
                     ],
                     [
+                        'order' => 2,
                         'property' => 'formulable_type',
                         'operator' => '=',
                         'value' => Formulable::TAXABLE_INCOME,
                     ],
                 ]
-            ],[
+            ],
+            [
                 'order' => 5,
-                'key' => 'non_taxable_income',
-                'name' => 'Non-taxable income',
+                'key' => 'nontaxable_income',
+                'name' => 'Nontaxable income',
                 'formulable_type' => Formulable::NONTAXABLE_INCOME,
                 'statement_level' => true,
                 'aggregation' => true,
@@ -105,20 +122,23 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'attribute' => 'formulas',
                 'conditions' => [
                     [
+                        'order' => 1,
                         'property' => 'aggregation',
                         'operator' => '=',
                         'value' => true,
                     ],
                     [
+                        'order' => 2,
                         'property' => 'formulable_type',
                         'operator' => '=',
                         'value' => Formulable::NONTAXABLE_INCOME,
                     ],
                 ]
-            ],[
+            ],
+            [
                 'order' => 6,
-                'key' => 'assigned_income_taxes',
-                'name' => 'Assigned income taxes',
+                'key' => 'income_taxes',
+                'name' => 'Income taxes',
                 'formulable_type' => Formulable::INCOME_TAX,
                 'statement_level' => true,
                 'aggregation' => false,
@@ -126,18 +146,55 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'attribute' => 'incomeTaxes',
                 'conditions' => [
                     [
+                        'order' => 1,
                         'property' => 'payroll_componentable_type',
                         'operator' => '=',
                         'value' => 'income_tax',
                     ],
                     [
+                        'order' => 2,
                         'property' => 'formulable_type',
                         'operator' => '=',
                         'value' => Formulable::INCOME_TAX,
                     ],
                 ]
-            ],[
+            ],
+            [
                 'order' => 7,
+                'key' => 'nonstatutory_deductions',
+                'name' => 'Nonstatutory deductions',
+                'formulable_type' => Formulable::DEDUCTIONS,
+                'statement_level' => true,
+                'aggregation' => false,
+                'property' => 'employee',
+                'attribute' => 'deductions',
+                'conditions' => [
+                    [
+                        'order' => 1,
+                        'property' => 'payroll_componentable_type',
+                        'operator' => '=',
+                        'value' => 'deduction',
+                    ],
+                    [
+                        'order' => 2,
+                        'property' => 'formulable_type',
+                        'operator' => '=',
+                        'value' => Formulable::DEDUCTIONS,
+                    ],
+                    [
+                        'order' => 3,
+                        'property' => [
+                            'payrollComponentable',
+                            'type',
+                            'value'
+                        ],
+                        'operator' => '=',
+                        'value' => Deduction::DEDUCTION,
+                    ],
+                ]
+            ],
+            [
+                'order' => 8,
                 'key' => 'net_income',
                 'name' => 'Net income',
                 'formulable_type' => Formulable::NET_INCOME,
@@ -147,11 +204,13 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 'attribute' => 'formulas',
                 'conditions' => [
                     [
+                        'order' => 1,
                         'property' => 'aggregation',
                         'operator' => '=',
                         'value' => true,
                     ],
                     [
+                        'order' => 2,
                         'property' => 'formulable_type',
                         'operator' => '=',
                         'value' => Formulable::NET_INCOME,

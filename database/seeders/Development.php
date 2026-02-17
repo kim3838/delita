@@ -473,9 +473,9 @@ class Development extends Seeder
             ['code' => 'TARDINESS', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
             ['code' => 'UNDERTIME', 'name' => 'Undertime', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Undertime'],
             ['code' => 'ABSENCE', 'name' => 'Absence', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
-            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS Contribution', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
-            ['code' => 'PHILHEALTH', 'name' => 'Philhealth (PHIC)', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
-            ['code' => 'PAG-IBIG', 'name' => 'Pag-IBIG (HDMF)', 'assignable' => true, 'type' => Deduction::CONTRIBUTION, 'formula' => 'Standard-Pag-IBIG-Contribution'],
+            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS Contribution', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
+            ['code' => 'PHILHEALTH', 'name' => 'Philhealth (PHIC)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
+            ['code' => 'PAG-IBIG', 'name' => 'Pag-IBIG (HDMF)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Pag-IBIG-Contribution'],
         ];
 
         foreach ($deductionsPresets as $index => $deductionsPreset) {
