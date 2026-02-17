@@ -17,7 +17,7 @@ enum Formulable: int implements BaseEnum
             self::EARNINGS => 'Earnings',
             self::DEDUCTIONS => 'Deductions',
             self::TAXABLE_INCOME => 'Taxable Income',
-            self::NONTAXABLE_INCOME => 'Non-Taxable Income',
+            self::NONTAXABLE_INCOME => 'Nontaxable Income',
             self::INCOME_TAX => 'Income Tax',
             self::NET_INCOME => 'Net Income',
         };
