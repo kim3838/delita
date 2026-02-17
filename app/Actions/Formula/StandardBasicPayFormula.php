@@ -2,10 +2,22 @@
 
 namespace App\Actions\Formula;
 
+use App\Concrete\SalaryStatementContext;
+
 class StandardBasicPayFormula
 {
-    public function handle($data, $next)
+    public string $slug = 'standard-basic-pay';
+
+    public function handle(SalaryStatementContext $context, $next)
     {
-        return $next($data);
+        $debugEnabled = false;
+
+        if($debugEnabled){
+            _debug([
+                'Formula slug' => $this->slug,
+            ]);
+        }
+
+        return $next($context);
     }
 }

@@ -2,10 +2,22 @@
 
 namespace App\Actions\Formula;
 
+use App\Concrete\SalaryStatementContext;
+
 class StandardOvertimeFormula
 {
-    public function handle($data, $next)
+    public string $slug = 'standard-overtime';
+
+    public function handle(SalaryStatementContext $context, $next)
     {
-        return $next($data);
+        $debugEnabled = false;
+
+        if($debugEnabled){
+            _debug([
+                'Formula slug' => $this->slug,
+            ]);
+        }
+
+        return $next($context);
     }
 }
