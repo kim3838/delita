@@ -56,7 +56,7 @@ class StandardPagIBIGContributionTests
             ],
             [
                 'test_case' => '₱400.0',
-                'test' => true || $this->testAll,
+                'test' => false || $this->testAll,
                 'compensation' => 11500.00,
                 'expected' => [
                     'employee_share' => '200.000000',
@@ -66,7 +66,7 @@ class StandardPagIBIGContributionTests
             ],
             [
                 'test_case' => '₱400.0',
-                'test' => true || $this->testAll,
+                'test' => false || $this->testAll,
                 'compensation' => 21500.00,
                 'expected' => [
                     'employee_share' => '200.000000',
