@@ -56,7 +56,7 @@ class StandardSSSEmployedContributionFormula
         return $next($context);
     }
 
-    public function getContribution($castedCompanyFormulaSettings, $monthlyCompensation): array
+    public function getContribution($castedCompanyFormulaSettings, $compensation): array
     {
         $settings = collect($castedCompanyFormulaSettings);
 
@@ -106,24 +106,24 @@ class StandardSSSEmployedContributionFormula
 
         $result = [
             'employee_share' => [
-                'regular' => 0,
-                'mpf' => 0,
-                'total' => 0
+                'regular' => '0.000000',
+                'mpf' => '0.000000',
+                'total' => '0.000000'
             ],
             'employer_share' => [
-                'regular' => 0,
-                'mpf' => 0,
-                'ec' => 0,
-                'total' => 0
+                'regular' => '0.000000',
+                'mpf' => '0.000000',
+                'ec' => '0.000000',
+                'total' => '0.000000'
             ],
-            'total' => 0
+            'total' => '0.000000'
         ];
 
         $compensationMscBoundary = $startingCompensationRangeValue;
         $msc = $startingMscValue;
-        $monthlyCompensation = BigDecimal::of($monthlyCompensation);
+        $compensation = BigDecimal::of($compensation);
 
-        while($monthlyCompensation->isGreaterThan($compensationMscBoundary) && $msc->isLessThan($maxMscValue)){
+        while($compensation->isGreaterThan($compensationMscBoundary) && $msc->isLessThan($maxMscValue)){
             $msc = $msc->plus($mscIntervalValue);
             $compensationMscBoundary = $compensationMscBoundary->plus($mscIntervalValue);
         }
