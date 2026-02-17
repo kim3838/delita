@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->smallInteger('formulable_type');
             $table->smallInteger('component_type')->nullable();
-            $table->string('component_name');
+            $table->string('component_name')->nullable();
 
             $table->json('component_values')->nullable();
 
