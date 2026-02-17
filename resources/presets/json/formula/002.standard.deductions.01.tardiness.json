@@ -6,13 +6,5 @@
         "type": "text",
         "readable": "Pay deduction for late arrival beyond scheduled time.\nHourly Rate multiply by hours and minutes not rendered at the start of the shift.",
         "value": null
-    },
-    {
-        "key": "sub_description",
-        "label": "Per day computation",
-        "order": 1,
-        "type": "text",
-        "readable": "Deduction = Hourly Rate * Hours Late",
-        "value": null
     }
 ]
