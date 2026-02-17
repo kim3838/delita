@@ -5,13 +5,13 @@ namespace App\Enums;
 enum Deduction: int implements BaseEnum
 {
     case DEDUCTION = 200;
-    case CONTRIBUTION = 210;
+    case STATUTORY_CONTRIBUTION = 210;
 
     public function label(): string
     {
         return match ($this) {
             self::DEDUCTION => 'Deduction',
-            self::CONTRIBUTION => 'Contribution',
+            self::STATUTORY_CONTRIBUTION => 'Statutory contribution',
         };
     }
 
