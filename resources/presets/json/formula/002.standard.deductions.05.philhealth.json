@@ -6,5 +6,79 @@
         "type": "text",
         "readable": "Monthly deduction shared by the employee and employer, paid to the Philippine Health Insurance Corporation.\nIt helps cover part of your hospital, medical, and other healthcare expenses for you and your dependents.",
         "value": null
+    },
+    {
+        "key": "rates",
+        "label": "Rates",
+        "order": 1,
+        "type": "array",
+        "readable": "Rates",
+        "value": [
+            {
+                "key": "rate",
+                "label": "Rate",
+                "order": 0,
+                "type": "number",
+                "readable": "5% of monthly compensation",
+                "value": "0.05"
+            },
+            {
+                "key": "employee_share",
+                "label": "Employee share",
+                "order": 1,
+                "type": "number",
+                "readable": "50%",
+                "value": "0.5"
+            },
+            {
+                "key": "employer_share",
+                "label": "Employer share",
+                "order": 2,
+                "type": "number",
+                "readable": "50%",
+                "value": "0.5"
+            }
+        ]
+    },
+    {
+        "key": "ceiling_range",
+        "label": "Ceiling Range",
+        "order": 3,
+        "type": "array",
+        "readable": "Ceiling Range",
+        "value": [
+            {
+                "key": "starting_compensation_minimum",
+                "label": "Starting compensation minimum",
+                "order": 0,
+                "type": "number",
+                "readable": "₱10,000.00",
+                "value": "10000.00"
+            },
+            {
+                "key": "starting_contribution",
+                "label": "Starting contribution",
+                "order": 1,
+                "type": "number",
+                "readable": "₱500.00 on compensation minimum and below",
+                "value": "500.00"
+            },
+            {
+                "key": "compensation_ceiling",
+                "label": "Compensation ceiling",
+                "order": 2,
+                "type": "number",
+                "readable": "₱100,000.00",
+                "value": "100000.00"
+            },
+            {
+                "key": "max_contribution",
+                "label": "Max contribution",
+                "order": 3,
+                "type": "number",
+                "readable": "₱5,000.00 on compensation ceiling and above",
+                "value": "5000.00"
+            }
+        ]
     }
 ]

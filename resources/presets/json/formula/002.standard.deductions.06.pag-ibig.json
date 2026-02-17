@@ -6,5 +6,71 @@
         "type": "text",
         "readable": "A monthly savings contribution shared by the employee and employer, paid to the Home Development Mutual Fund (Pag-IBIG).\nIt serves as your government savings program that gives access to housing loans, multi-purpose loans, and provident savings benefits.",
         "value": null
+    },
+    {
+        "key": "rates",
+        "label": "Rates",
+        "order": 1,
+        "type": "array",
+        "readable": "Rates",
+        "value": [
+            {
+                "key": "compensation_minimum",
+                "label": "Compensation minimum",
+                "order": 0,
+                "type": "number",
+                "readable": "₱1,500.00",
+                "value": "1500.00"
+            },
+            {
+                "key": "employee_share_on_minimum_and_below",
+                "label": "Employee share on compensation minimum and below",
+                "order": 1,
+                "type": "number",
+                "readable": "1% of monthly compensation",
+                "value": "0.01"
+            },
+            {
+                "key": "employee_share_on_above_minimum",
+                "label": "Employee share on above compensation minimum",
+                "order": 2,
+                "type": "number",
+                "readable": "2% of monthly compensation",
+                "value": "0.02"
+            },
+            {
+                "key": "employer_share",
+                "label": "Employer share",
+                "order": 3,
+                "type": "number",
+                "readable": "2% of monthly compensation",
+                "value": "0.02"
+            }
+        ]
+    },
+    {
+        "key": "ceiling_range",
+        "label": "Ceiling Range",
+        "order": 2,
+        "type": "array",
+        "readable": "Ceiling Range",
+        "value": [
+            {
+                "key": "maximum_fund_salary",
+                "label": "Maximum fund salary (MFS)",
+                "order": 0,
+                "type": "number",
+                "readable": "₱10,000.00",
+                "value": "10000.00"
+            },
+            {
+                "key": "max_contribution",
+                "label": "Max contribution",
+                "order": 1,
+                "type": "number",
+                "readable": "₱400.00 (shared by employee 50% and employer 50%)",
+                "value": "400.00"
+            }
+        ]
     }
 ]

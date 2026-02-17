@@ -19,7 +19,7 @@
                 "label": "Employee Share",
                 "order": 0,
                 "type": "number",
-                "readable": "5% of Monthly Salary Credit (MSC)",
+                "readable": "5% of monthly salary credit (MSC)",
                 "value": "0.05"
             },
             {
@@ -40,7 +40,7 @@
             },
             {
                 "key": "employer_share",
-                "label": "Employer Share",
+                "label": "Employer share",
                 "order": 3,
                 "type": "number",
                 "readable": "10% of Monthly Salary Credit (MSC)",
@@ -73,7 +73,7 @@
             },
             {
                 "key": "employer_ec_threshold",
-                "label": "Employee EC Threshold",
+                "label": "Employee EC threshold",
                 "order": 1,
                 "type": "number",
                 "readable": "₱15,000.00",
@@ -114,7 +114,7 @@
             },
             {
                 "key": "msc_interval",
-                "label": "MSC Interval",
+                "label": "MSC interval",
                 "order": 2,
                 "type": "number",
                 "readable": "₱500.00",
