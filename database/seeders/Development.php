@@ -833,7 +833,7 @@ class Development extends Seeder
         $company1002BTardiness = $company1002B->deductions->where('code', 'TARDINESS')->where('type', Deduction::DEDUCTION)->first();
         $company1002BUndertime = $company1002B->deductions->where('code', 'UNDERTIME')->where('type', Deduction::DEDUCTION)->first();
         $company1002BAbsent = $company1002B->deductions->where('code', 'ABSENCE')->where('type', Deduction::DEDUCTION)->first();
-        $company1002BSSSEmployed = $company1002B->deductions->where('code', 'SSS-EMPLOYED')->where('type', Deduction::CONTRIBUTION)->first();
+        $company1002BSSSEmployed = $company1002B->deductions->where('code', 'SSS-EMPLOYED')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
 
         //Company 1002-B Income Taxes
         $company1002BCompensationTax = $company1002B->incomeTaxes->where('code', 'WTAX ')->where('type', IncomeTax::COMPENSATION_TAX)->first();
@@ -862,9 +862,9 @@ class Development extends Seeder
         $company1002COvertime = $company1002C->compensations->where('code', 'OVERTIME')->where('type', Compensation::OVERTIME)->first();
 
         //Company 1002-C Deductions
-        $company1002CSSSEmployed = $company1002C->deductions->where('code', 'SSS-EMPLOYED')->where('type', Deduction::CONTRIBUTION)->first();
-        $company1002CPhilhealth = $company1002C->deductions->where('code', 'PHILHEALTH')->where('type', Deduction::CONTRIBUTION)->first();
-        $company1002CPagIBIG = $company1002C->deductions->where('code', 'PAG-IBIG')->where('type', Deduction::CONTRIBUTION)->first();
+        $company1002CSSSEmployed = $company1002C->deductions->where('code', 'SSS-EMPLOYED')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
+        $company1002CPhilhealth = $company1002C->deductions->where('code', 'PHILHEALTH')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
+        $company1002CPagIBIG = $company1002C->deductions->where('code', 'PAG-IBIG')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
 
         //Company 1002-C Income Taxes
         $company1002CCompensationTax = $company1002C->incomeTaxes->where('code', 'WTAX ')->where('type', IncomeTax::COMPENSATION_TAX)->first();
