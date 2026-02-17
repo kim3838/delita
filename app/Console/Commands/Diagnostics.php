@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Concrete\Tests\AttendancePayItemsTests;
 use App\Concrete\Tests\AttendanceSplitterTests;
+use App\Concrete\Tests\StandardPagIBIGContributionTests;
+use App\Concrete\Tests\StandardPhilhealthContributionTests;
 use App\Concrete\Tests\StandardSSSEmployedContributionTests;
 use App\Models\Company;
 use Illuminate\Console\Command;
@@ -42,6 +44,10 @@ class Diagnostics extends Command
         $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, false));
 
         $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(true, false));
+
+        $this->info('Standard Philhealth: ' . new StandardPhilhealthContributionTests()->run(true, false));
+
+        $this->info('Standard Pag-IBIG: ' . new StandardPagIBIGContributionTests()->run(true, false));
 
         $this->newLine();
         $this->line('Done');
