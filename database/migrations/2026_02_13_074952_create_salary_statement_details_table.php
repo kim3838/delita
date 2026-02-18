@@ -27,9 +27,9 @@ return new class extends Migration
 
             $table->decimal('taxable', 21, 6)->default(0);
             $table->decimal('nontaxable', 21, 6)->default(0);
-            $table->decimal('deduction', 21, 6)->default(0);
             $table->decimal('contribution', 21, 6)->default(0);
             $table->decimal('withholding_tax', 21, 6)->default(0);
+            $table->decimal('deduction', 21, 6)->default(0);
             $table->decimal('net', 21, 6)->default(0);
             $table->timestamps();
         });

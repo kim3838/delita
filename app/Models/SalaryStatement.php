@@ -27,9 +27,9 @@ class SalaryStatement extends Model
 
         'taxable',
         'nontaxable',
-        'deduction',
         'contribution',
         'withholding_tax',
+        'deduction',
         'net',
     ];
 
@@ -58,9 +58,9 @@ class SalaryStatement extends Model
 
         'taxable' => 'decimal:6',
         'nontaxable' => 'decimal:6',
-        'deduction' => 'decimal:6',
         'contribution' => 'decimal:6',
         'withholding_tax' => 'decimal:6',
+        'deduction' => 'decimal:6',
         'net' => 'decimal:6',
     ];
 
