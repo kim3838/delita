@@ -16,5 +16,6 @@ class PayrollPayload extends Model
         'frequency_sequence' => SemiMonthlySequence::class,
         'start' => 'date',
         'end' => 'date',
+        'remarks' => 'string'
     ];
 }
