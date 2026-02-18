@@ -485,7 +485,7 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Income Taxes
         $incomeTaxesPresets = [
-            ['code' => 'WTC ', 'name' => 'Withholding tax on compensation (WTC)', 'assignable' => true, 'type' => IncomeTax::WITHHOLDING_TAX, 'formula' => 'Standard-Withholding-Tax-Compensation'],
+            ['code' => 'WTC ', 'name' => 'Compensation tax (WTC)', 'assignable' => true, 'type' => IncomeTax::WITHHOLDING_TAX, 'formula' => 'Standard-Withholding-Tax-Compensation'],
         ];
 
         foreach ($incomeTaxesPresets as $index => $incomeTaxesPreset) {
