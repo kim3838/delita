@@ -7,6 +7,7 @@ use App\Concrete\Tests\AttendanceSplitterTests;
 use App\Concrete\Tests\StandardPagIBIGContributionTests;
 use App\Concrete\Tests\StandardPhilhealthContributionTests;
 use App\Concrete\Tests\StandardSSSEmployedContributionTests;
+use App\Concrete\Tests\StandardWithholdingTaxCompensationTests;
 use App\Models\Company;
 use Illuminate\Console\Command;
 
@@ -31,6 +32,7 @@ class Diagnostics extends Command
      */
     public function handle(): void
     {
+        _clear_debug();
         $company = Company::query()->find($this->argument('company'));
 
         $this->line('Diagnostics command executed');
@@ -41,13 +43,11 @@ class Diagnostics extends Command
             $this->info('Attendance splitter: ' . new AttendanceSplitterTests($company)->run());
         }
 
-        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, false));
-
-        $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(true, false));
-
-        $this->info('Standard Philhealth: ' . new StandardPhilhealthContributionTests()->run(true, false));
-
-        $this->info('Standard Pag-IBIG: ' . new StandardPagIBIGContributionTests()->run(true, false));
+//        $this->info('Attendance pay items: ' . new AttendancePayItemsTests()->run(true, false));
+//        $this->info('Standard SSS employed: ' . new StandardSSSEmployedContributionTests()->run(false, false));
+//        $this->info('Standard Philhealth: ' . new StandardPhilhealthContributionTests()->run(false, false));
+//        $this->info('Standard Pag-IBIG: ' . new StandardPagIBIGContributionTests()->run(false, false));
+        $this->info('Standard Withholding tax Compensation: ' . new StandardWithholdingTaxCompensationTests()->run(true, false));
 
         $this->newLine();
         $this->line('Done');

@@ -45,6 +45,16 @@ class StandardPhilhealthContributionTests
                 ]
             ],
             [
+                'test_case' => '₱1,809.385',
+                'test' => false || $this->testAll,
+                'compensation' => 36187.7,
+                'expected' => [
+                    'employee_share' => '904.692500',
+                    'employer_share' => '904.692500',
+                    'total' => '1809.385000'
+                ]
+            ],
+            [
                 'test_case' => '₱1,711.1',
                 'test' => false || $this->testAll,
                 'compensation' => 34222,
@@ -52,6 +62,16 @@ class StandardPhilhealthContributionTests
                     'employee_share' => '855.550000',
                     'employer_share' => '855.550000',
                     'total' => '1711.100000'
+                ]
+            ],
+            [
+                'test_case' => '₱3,000.0',
+                'test' => false || $this->testAll,
+                'compensation' => 60000,
+                'expected' => [
+                    'employee_share' => '1500.000000',
+                    'employer_share' => '1500.000000',
+                    'total' => '3000.000000'
                 ]
             ],
             [
@@ -124,6 +144,8 @@ class StandardPhilhealthContributionTests
 
                 _debug([
                     'Test case failed' => $testCase['test_case'],
+                    'Expected' => $testCase['expected'],
+                    'Result' => $result,
                 ]);
             }
         }

@@ -125,6 +125,16 @@ class StandardSSSEmployedContributionTests
                 ]
             ],
             [
+                'test_case' => '₱5,280.0',
+                'test' => false || $this->testAll,
+                'compensation' => 36187.7,
+                'expected' => [
+                    'employee_share' => ['regular' => 1000.0, 'mpf' => 750.0, 'total' => 1750.0],
+                    'employer_share' => ['regular' => 2000.0, 'mpf' => 1500.0, 'ec' => 30.0, 'total' => 3530.0],
+                    'total' => 5280.0
+                ]
+            ],
+            [
                 'test_case' => '₱5,205.0',
                 'test' => false || $this->testAll,
                 'compensation' => 34749.99,
@@ -158,6 +168,16 @@ class StandardSSSEmployedContributionTests
                 'test_case' => '₱5,280.0',
                 'test' => false || $this->testAll,
                 'compensation' => 35749.99,
+                'expected' => [
+                    'employee_share' => ['regular' => 1000.0, 'mpf' => 750.0, 'total' => 1750.0],
+                    'employer_share' => ['regular' => 2000.0, 'mpf' => 1500.0, 'ec' => 30.0, 'total' => 3530.0],
+                    'total' => 5280.0
+                ]
+            ],
+            [
+                'test_case' => '₱5,280.0',
+                'test' => false || $this->testAll,
+                'compensation' => 60000.00,
                 'expected' => [
                     'employee_share' => ['regular' => 1000.0, 'mpf' => 750.0, 'total' => 1750.0],
                     'employer_share' => ['regular' => 2000.0, 'mpf' => 1500.0, 'ec' => 30.0, 'total' => 3530.0],
@@ -214,6 +234,8 @@ class StandardSSSEmployedContributionTests
 
                 _debug([
                     'Test case failed' => $testCase['test_case'],
+                    'Expected' => $testCase['expected'],
+                    'Result' => $result,
                 ]);
             }
         }

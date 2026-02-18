@@ -74,6 +74,26 @@ class StandardPagIBIGContributionTests
                     'total' => '400.000000'
                 ]
             ],
+            [
+                'test_case' => '₱400.0',
+                'test' => false || $this->testAll,
+                'compensation' => 36187.7,
+                'expected' => [
+                    'employee_share' => '200.000000',
+                    'employer_share' => '200.000000',
+                    'total' => '400.000000'
+                ]
+            ],
+            [
+                'test_case' => '₱400.0',
+                'test' => false || $this->testAll,
+                'compensation' => 60000.00,
+                'expected' => [
+                    'employee_share' => '200.000000',
+                    'employer_share' => '200.000000',
+                    'total' => '400.000000'
+                ]
+            ],
         ];
     }
 
@@ -114,6 +134,8 @@ class StandardPagIBIGContributionTests
 
                 _debug([
                     'Test case failed' => $testCase['test_case'],
+                    'Expected' => $testCase['expected'],
+                    'Result' => $result,
                 ]);
             }
         }

@@ -16,17 +16,33 @@
         "value": null
     },
     {
-        "key": "bracket_0",
-        "label": "0% bracket",
+        "key": "monthly_frequency",
+        "label": "",
         "order": 2,
+        "type": "text",
+        "readable": "Monthly rates",
+        "value": null
+    },
+    {
+        "key": "monthly_tax_rates",
+        "label": "",
+        "order": 3,
+        "type": "text",
+        "readable": "",
+        "value": ["0", "15", "20", "25", "30", "35"]
+    },
+    {
+        "key": "monthly_bracket_0",
+        "label": "",
+        "order": 4,
         "type": "array",
-        "readable": "0% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "₱20,833.00 and below",
                 "value": [
                     {
@@ -74,17 +90,17 @@
         ]
     },
     {
-        "key": "bracket_15",
-        "label": "15% bracket",
-        "order": 3,
+        "key": "monthly_bracket_15",
+        "label": "",
+        "order": 5,
         "type": "array",
-        "readable": "15% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "Over ₱20,833.00 up to ₱33,333.00",
                 "value": [
                     {
@@ -132,17 +148,17 @@
         ]
     },
     {
-        "key": "bracket_20",
-        "label": "20% bracket",
-        "order": 4,
+        "key": "monthly_bracket_20",
+        "label": "",
+        "order": 6,
         "type": "array",
-        "readable": "20% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "Over ₱33,333.00 up to ₱66,667.00",
                 "value": [
                     {
@@ -190,17 +206,17 @@
         ]
     },
     {
-        "key": "bracket_25",
-        "label": "25% bracket",
-        "order": 5,
+        "key": "monthly_bracket_25",
+        "label": "",
+        "order": 7,
         "type": "array",
-        "readable": "25% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "Over ₱66,667.00 up to ₱166,667.00",
                 "value": [
                     {
@@ -248,17 +264,17 @@
         ]
     },
     {
-        "key": "bracket_30",
-        "label": "30% bracket",
-        "order": 6,
+        "key": "monthly_bracket_30",
+        "label": "",
+        "order": 8,
         "type": "array",
-        "readable": "30% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "Over ₱166,667.00 up to ₱666,667.00",
                 "value": [
                     {
@@ -306,17 +322,17 @@
         ]
     },
     {
-        "key": "bracket_35",
-        "label": "35% bracket",
-        "order": 7,
+        "key": "monthly_bracket_35",
+        "label": "",
+        "order": 9,
         "type": "array",
-        "readable": "35% bracket",
+        "readable": "",
         "value": [
             {
-                "key": "monthly_taxable",
-                "label": "Monthly taxable",
+                "key": "taxable",
+                "label": "Taxable",
                 "order": 0,
-                "type": "text",
+                "type": "array",
                 "readable": "Over ₱666,667.00",
                 "value": [
                     {

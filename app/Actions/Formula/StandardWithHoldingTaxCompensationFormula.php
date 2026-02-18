@@ -3,6 +3,9 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use App\Enums\PayFrequency;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 
 class StandardWithHoldingTaxCompensationFormula
 {
@@ -23,12 +26,108 @@ class StandardWithHoldingTaxCompensationFormula
                 'Formulable' => get_class($formulableModel),
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
-                'Shared' => $context->shared,
-                'Formula settings' => $formulaSettings->cast,
-                'Statement details' => $context->statementDetails
+                'Totals' => $context->totals,
             ]);
         }
 
+        if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
+
+            $totalTaxable = $context->totals['taxable'];
+
+            $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable, PayFrequency::MONTHLY);
+
+            $context->totals = [
+                ...$context->totals,
+                'withholding_tax' => $withholdingTax
+            ];
+
+            if($debugEnabled){
+                _debug([
+                    'Formula slug' => $this->slug,
+                    'Totals' => $context->totals,
+                ]);
+            }
+
+            $statementDetail = [
+                'id' => null,
+                'formulable_type' => $formula->formulable_type->value,
+                'component_type' => $formula->component_type->value,
+                'component_name' => $formulableModel->name,
+                'component_values' => null,
+                'taxable' => 0.0,
+                'nontaxable' => 0.0,
+                'deduction' => 0.0,
+                'contribution' => 0.0,
+                'withholding_tax' => $withholdingTax,
+                'net' => 0.0,
+            ];
+
+            $componentValues = [
+                'pay_frequency_label' => $context->payroll->pay_frequency?->label(),
+                'coverage' => [
+                    'start_date' => $context->payroll->start_date?->toDateString(),
+                    'end_date' => $context->payroll->end_date?->toDateString(),
+                ]
+            ];
+
+            $statementDetail['component_values'] = $componentValues;
+
+            $context->statementDetails[] = $statementDetail;
+        }
+
         return $next($context);
+    }
+
+    public function getIntended($castedCompanyFormulaSettings, $taxable, PayFrequency $payFrequency): string
+    {
+        $settings = collect($castedCompanyFormulaSettings);
+        $brackets = [];
+        $frequencySlug = strtolower($payFrequency->label());
+
+        $taxRates = $settings->where('key', $frequencySlug . '_tax_rates')->first()->value;
+
+        foreach ($taxRates as $rate) {
+
+            $bracketPayload = [];
+
+            $bracket = $settings->where('key', $frequencySlug . "_bracket_" . $rate)->first()?->value;
+
+            if(empty($bracket)) continue;
+
+            $monthlyTaxable = collect($bracket)->where('key', 'taxable')->first()->value;
+
+            $over = collect($monthlyTaxable)->where('key', 'over')->first()->value;
+            $upTo = collect($monthlyTaxable)->where('key', 'up_to')->first()?->value;
+            $taxRate = collect($bracket)->where('key', 'tax_rate')->first()->value;
+            $baseTax = collect($bracket)->where('key', 'base_tax')->first()->value;
+
+            $bracketPayload['over'] = BigDecimal::of($over);
+            $bracketPayload['up_to'] = empty($upTo) ? null : BigDecimal::of($upTo);
+            $bracketPayload['tax_rate'] = BigDecimal::of($taxRate);
+            $bracketPayload['base_tax'] = BigDecimal::of($baseTax);
+
+            $brackets[] = $bracketPayload;
+        }
+
+        $taxableValue = BigDecimal::of($taxable);
+        $withholdingTax = BigDecimal::zero();
+
+        foreach ($brackets as $bracket) {
+
+            $over = $taxableValue->isGreaterThan(BigDecimal::of($bracket['over']));
+
+            if($over && (empty($bracket['up_to']) || $taxableValue->isLessThanOrEqualTo(BigDecimal::of($bracket['up_to'])))){
+
+                $taxMultiplier = $bracket['tax_rate'];
+                $flatTax = $bracket['base_tax'];
+                $excessOver = $taxableValue->minus($bracket['over']);
+
+                $withholdingTax = $withholdingTax->plus($flatTax)->plus($excessOver->multipliedBy($taxMultiplier));
+
+                break;
+            }
+        }
+
+        return (string)$withholdingTax->toScale(6, RoundingMode::HalfUp);
     }
 }
