@@ -26,7 +26,7 @@ class StandardPhilhealthContributionFormula
                 'Formulable' => get_class($formulableModel),
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
-                'Shared' => $context->shared,
+                'Totals' => $context->totals,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);
@@ -34,7 +34,7 @@ class StandardPhilhealthContributionFormula
 
         if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
-            $totalTaxable = $context->shared['total_taxable'];
+            $totalTaxable = $context->totals['taxable'];
 
             $statementDetail = [
                 'id' => null,
@@ -53,7 +53,7 @@ class StandardPhilhealthContributionFormula
             $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable);
             $componentValues = [
                 ...$contribution,
-                'pay_frequency' => $context->payroll->pay_frequency?->label(),
+                'pay_frequency_label' => $context->payroll->pay_frequency?->label(),
                 'coverage' => [
                     'start_date' => $context->payroll->start_date?->toDateString(),
                     'end_date' => $context->payroll->end_date?->toDateString(),

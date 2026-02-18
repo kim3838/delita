@@ -12,24 +12,16 @@ class StandardNetIncomeFormula
 
     public function handle(SalaryStatementContext $context, $next)
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
 
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        if($debugEnabled){
-            _debug([
-                'Formula slug' => $this->slug,
-                'Formula' => get_class($formula),
-                'Shared' => $context->shared,
-            ]);
-        }
-
-        $totalTaxable = BigDecimal::of($context->shared['total_taxable'] ?? '0');
-        $totalNonTaxable = BigDecimal::of($context->shared['total_nontaxable'] ?? '0');
+        $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $totalNonTaxable = BigDecimal::of($context->totals['nontaxable'] ?? '0');
 
         $totalDeduction = BigDecimal::zero();
-        $totalWithholdingTax = BigDecimal::of($context->shared['total_withholding_tax'] ?? '0');
+        $totalWithholdingTax = BigDecimal::of($context->totals['withholding_tax'] ?? '0');
 
         $totalNet = BigDecimal::zero();
 
@@ -43,6 +35,19 @@ class StandardNetIncomeFormula
             ->plus($totalNonTaxable)
             ->minus($totalWithholdingTax)
             ->minus($totalDeduction);
+
+        $context->totals = [
+            ...$context->totals,
+            'deduction' => (string)$totalDeduction->toScale(6, RoundingMode::HalfUp),
+            'net' => (string)$totalNet->toScale(6, RoundingMode::HalfUp)
+        ];
+
+        if($debugEnabled){
+            _debug([
+                'Formula slug' => $this->slug,
+                'Totals' => $context->totals,
+            ]);
+        }
 
         $statementDetail = [
             'id' => null,

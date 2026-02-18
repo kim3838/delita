@@ -17,7 +17,7 @@ class StandardNontaxableIncomeFormula
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        $totalNonTaxable = BigDecimal::of($context->shared['total_nontaxable'] ?? '0');
+        $totalNonTaxable = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
 
@@ -26,15 +26,15 @@ class StandardNontaxableIncomeFormula
 
         if(!$totalNonTaxable->isZero()){
 
-            $shared['total_nontaxable'] = (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp);
-
-            $context->shared = $shared;
+            $context->totals = [
+                ...$context->totals,
+                'nontaxable' => (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp)
+            ];
 
             if($debugEnabled){
                 _debug([
                     'Formula slug' => $this->slug,
-                    'Formula' => get_class($formula),
-                    'Shared' => $context->shared,
+                    'Totals' => $context->totals,
                 ]);
             }
 
@@ -45,7 +45,7 @@ class StandardNontaxableIncomeFormula
                 'component_name' => null,
                 'component_values' => null,
                 'taxable' => 0.0,
-                'nontaxable' => $shared['total_nontaxable'],
+                'nontaxable' => $context->totals['nontaxable'],
                 'deduction' => 0.0,
                 'contribution' => 0.0,
                 'withholding_tax' => 0.0,

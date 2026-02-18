@@ -23,7 +23,7 @@ class StandardTardinessFormula
                 'Formulable' => get_class($formulableModel),
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
-                'Shared' => $context->shared,
+                'Totals' => $context->totals,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);

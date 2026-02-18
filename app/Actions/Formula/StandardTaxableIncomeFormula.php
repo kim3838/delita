@@ -17,7 +17,7 @@ class StandardTaxableIncomeFormula
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        $totalTaxable = BigDecimal::of($context->shared['total_taxable'] ?? '0');
+        $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
         $totalContribution = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
@@ -27,16 +27,16 @@ class StandardTaxableIncomeFormula
 
         $totalTaxable = $totalTaxable->minus($totalContribution);
 
-        $shared['total_taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
-        $shared['total_contribution'] = (string)$totalContribution->toScale(6, RoundingMode::HalfUp);
-
-        $context->shared = $shared;
+        $context->totals = [
+            ...$context->totals,
+            'taxable' => (string)$totalTaxable->toScale(6, RoundingMode::HalfUp),
+            'contribution' => (string)$totalContribution->toScale(6, RoundingMode::HalfUp),
+        ];
 
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
-                'Formula' => get_class($formula),
-                'Shared' => $context->shared,
+                'Totals' => $context->totals,
             ]);
         }
 
@@ -46,7 +46,7 @@ class StandardTaxableIncomeFormula
             'component_type' => null,
             'component_name' => null,
             'component_values' => null,
-            'taxable' => $shared['total_taxable'],
+            'taxable' => $context->totals['taxable'],
             'nontaxable' => 0.0,
             'deduction' => 0.0,
             'contribution' => 0.0,

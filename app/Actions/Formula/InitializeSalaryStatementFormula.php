@@ -10,24 +10,21 @@ class InitializeSalaryStatementFormula
 {
     public function handle(SalaryStatementContext $context, $next)
     {
-        $shared = [];
+        $totals = [];
 
         $totalTaxable = BigDecimal::zero();
-        $totalNonTaxable = BigDecimal::zero();
         $totalDeduction = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
 
             $totalTaxable = $totalTaxable->plus(BigDecimal::of((string)$detail['taxable']));
-            $totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of((string)$detail['nontaxable']));
             $totalDeduction = $totalDeduction->plus(BigDecimal::of((string)$detail['deduction']));
         }
 
-        $shared['total_taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
-        $shared['total_nontaxable'] = (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp);
-        $shared['total_deduction'] = (string)$totalDeduction->toScale(6, RoundingMode::HalfUp);
+        $totals['taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
+        $totals['deduction'] = (string)$totalDeduction->toScale(6, RoundingMode::HalfUp);
 
-        $context->shared = $shared;
+        $context->totals = $totals;
 
         return $next($context);
     }

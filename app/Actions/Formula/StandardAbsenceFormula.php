@@ -3,6 +3,8 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 
 class StandardAbsenceFormula
 {
@@ -23,9 +25,7 @@ class StandardAbsenceFormula
                 'Formulable' => get_class($formulableModel),
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
-                'Shared' => $context->shared,
-                'Formula settings' => $formulaSettings->cast,
-                'Statement details' => $context->statementDetails
+                'Totals' => $context->totals,
             ]);
         }
 
@@ -37,7 +37,7 @@ class StandardAbsenceFormula
             'component_values' => null,
             'taxable' => 0.0,
             'nontaxable' => 0.0,
-            'deduction' => 0.0,
+            'deduction' => (string)$absencePenalty->toScale(6, RoundingMode::HalfUp),
             'contribution' => 0.0,
             'withholding_tax' => 0.0,
             'net' => 0.0,
