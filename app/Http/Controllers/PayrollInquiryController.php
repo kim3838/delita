@@ -21,17 +21,21 @@ class PayrollInquiryController extends Controller
         if($request->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
+            $companyId = $request->validated()['company_id'];
 
             $payFrequencyTypes = $filters->pay_frequency_types;
             $recentCount = $request->validated()['recent_count'];
 
-            $payrollService = App::make(PayrollServiceInterface::class, [Company::findOrFail($request->validated()['company_id'])]);
+            $payrollService = App::make(PayrollServiceInterface::class, [Company::findOrFail($companyId)]);
 
-            $latestWithRecent = $payrollService->getLatestWithRecent($payFrequencyTypes, $recentCount);
+            $currentWithRecent = $payrollService->getCurrentWithRecent($companyId, $payFrequencyTypes, $recentCount);
+
+            $recentPayrolls = Fractal::collection($currentWithRecent['recent'], ListTransformer::class)['data'];
+            $currentPayrolls = Fractal::collection($currentWithRecent['current'], ListTransformer::class)['data'];
 
             return ResponseJson::successfulResponse([
-                'recent' => Fractal::collection($latestWithRecent['recent'], ListTransformer::class)['data'],
-                'latest' => Fractal::collection($latestWithRecent['latest'], ListTransformer::class)['data'],
+                'recent' => $recentPayrolls,
+                'current' => $currentPayrolls,
             ]);
         }
 

@@ -49,7 +49,8 @@ class ListTransformer extends TransformerAbstract
             'start' => $payload->start?->toDateString(),
             'end' => $payload->end?->toDateString(),
             'date_range_readable' => $dateRangeReadable,
-            'remarks' => ''
+            'remarks' => $payload->remarks ?? '',
+            'payroll' => $payload->payroll,
         ];
     }
 }

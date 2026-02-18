@@ -39,6 +39,7 @@ use App\Traits\WorkPeriod;
 use App\Transformers\Attendance\PatchableTransformer as AttendancePatchableTransformer;
 use App\Transformers\AttendanceDetail\PayableSplitTransformer as AttendanceDetailPayableSplitTransformer;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
+use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\PayrollPayload\BasicTransformer;
 use App\Transformers\SalaryStatementAttendanceDetail\PayableSplitTransformer as SalaryStatementAttendanceDetailPayableSplitTransformer;
 use Brick\Math\BigDecimal;
@@ -88,10 +89,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         return $this;
     }
 
-    public function getLatestWithRecent($payFrequencyEnumValue = [], $recentCount = 1): array
+    public function getCurrentWithRecent($companyId, $payFrequencyEnumValue = [], $recentCount = 1): array
     {
         $recentPayrolls = [];
-        $latestPayrolls = [];
+        $currentPayrolls = [];
 
         sort($payFrequencyEnumValue);
 
@@ -99,21 +100,21 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $payFrequencyRecentPayrolls = [];
 
-            $payFrequencyLatestPayroll = $this->getPayrollPayload($payFrequency);
-            $chainStartDate = $payFrequencyLatestPayroll->start->copy();
+            $payFrequencyCurrentPayroll = $this->getPayrollPayload($companyId, $payFrequency);
+            $chainStartDate = $payFrequencyCurrentPayroll->start->copy();
 
             while(count($payFrequencyRecentPayrolls) < $recentCount){
 
                 $this->setCustomDate($chainStartDate->subDay());
 
-                $recent = $this->getPayrollPayload($payFrequency);
+                $recent = $this->getPayrollPayload($companyId, $payFrequency);
 
                 $chainStartDate = $recent->start->copy();
 
                 array_unshift($payFrequencyRecentPayrolls, $recent);
             }
 
-            $latestPayrolls[] = $payFrequencyLatestPayroll;
+            $currentPayrolls[] = $payFrequencyCurrentPayroll;
 
             foreach($payFrequencyRecentPayrolls as $payFrequencyRecentPayroll){
                 $recentPayrolls[] = $payFrequencyRecentPayroll;
@@ -124,11 +125,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         return [
             'recent' => collect($recentPayrolls),
-            'latest' => collect($latestPayrolls),
+            'current' => collect($currentPayrolls),
         ];
     }
 
-    public function getPayrollPayload($payFrequencyEnumValue = null): ?PayrollPayload
+    public function getPayrollPayload($companyId, $payFrequencyEnumValue = null): ?PayrollPayload
     {
         $debugEnabled = false;
 
@@ -158,6 +159,22 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
 
         $payrollPayload = $this->getPayrollPayloadByFrequency($this->payFrequencies->where('type', $payFrequencyEnumValue)->first());
+
+        $payroll = Payroll::query()
+            ->where('company_id', $companyId)
+            ->where('year', $payrollPayload->year)
+            ->where('month', $payrollPayload->month)
+            ->where('pay_frequency', $payrollPayload->pay_frequency?->value)
+            ->where('frequency_sequence', $payrollPayload->frequency_sequence?->value)
+            ->where('start_date', $payrollPayload->start?->toDateString())
+            ->where('end_date', $payrollPayload->end?->toDateString())
+            ->first();
+
+        if(!empty($payroll)){
+
+            $payrollPayload->remarks = $payroll->remarks;
+            $payrollPayload->payroll = Fractal::item($payroll, PayrollBasicTransformer::class);
+        }
 
         return $payrollPayload;
     }
@@ -295,7 +312,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     /**
      * @throws UnexpectedException
      */
-    public function generateSalaryStatements(Payroll $payroll)
+    public function generateSalaryStatements(Payroll $payroll): void
     {
         $debugEnabled = false;
 
@@ -480,12 +497,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
 
         /**
-         * Check if there are other earnings that needed to be taxable from Salary Statement Modules
-         **/
-
-        /**
          * Run salary statement module pipeline, using statement level modules,
-         * Other earnings > Assigned deductions > Taxable income > Nontaxable income > Assigned income taxes > Net income
          **/
         foreach($payroll->salaryStatements()->cursor() as $salaryStatementCursor) {
             $employee = $salaryStatementCursor->employee;
@@ -493,11 +505,6 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
         }
-
-        /**
-         * Summarize taxable, nontaxable, deduction, contribution, withholding tax, net, and employee_contribution
-         * and update the salary statement
-         **/
     }
 
     public static function datePresets(): array
