@@ -491,7 +491,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $employee = $salaryStatementCursor->employee;
             $salaryStatementModuleService->setEmployee($employee);
 
-            $salaryStatementModuleService->statementLevelPipeline($salaryStatementCursor);
+            $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
         }
 
         /**

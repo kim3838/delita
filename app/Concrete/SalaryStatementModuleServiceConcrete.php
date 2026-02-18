@@ -63,7 +63,7 @@ class SalaryStatementModuleServiceConcrete
             ->sortBy('order');
     }
 
-    public function statementLevelPipeline(SalaryStatement $salaryStatement): void
+    public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement): void
     {
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
@@ -166,14 +166,12 @@ class SalaryStatementModuleServiceConcrete
 
         foreach($salaryStatementContext->statementDetails as $statementDetail){
 
-            _debug([
-                'Statement details' => $statementDetail,
-            ]);
-
             if(empty($statementDetail['id'])){
 
                 $salaryStatement->details()->create($statementDetail);
             }
         }
+
+        $salaryStatement->update($salaryStatementContext->totals);
     }
 }
