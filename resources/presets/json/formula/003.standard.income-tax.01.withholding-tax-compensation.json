@@ -1,0 +1,358 @@
+[
+    {
+        "key": "description",
+        "label": "Description",
+        "order": 0,
+        "type": "text",
+        "readable": "Portion of an employee’s salary that the employer deducts and remits directly to the government as advance payment of the employee’s income tax.\nThis ensures taxes are paid gradually each pay period, reducing the employee’s year-end tax burden and keeping the employer compliant with the Bureau of Internal Revenue regulations in the Philippines.",
+        "value": null
+    },
+    {
+        "key": "sub_description",
+        "label": "Official BIR Withholding Tax on Compensation (2026)",
+        "order": 1,
+        "type": "text",
+        "readable": "",
+        "value": null
+    },
+    {
+        "key": "bracket_0",
+        "label": "0% bracket",
+        "order": 2,
+        "type": "array",
+        "readable": "0% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "₱20,833.00 and below",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱0.00",
+                        "value": "0.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱20,833.00",
+                        "value": "20833.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "0%",
+                "value": "0.00"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱0.00",
+                "value": "0.00"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "No withholding tax",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "bracket_15",
+        "label": "15% bracket",
+        "order": 3,
+        "type": "array",
+        "readable": "15% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "Over ₱20,833.00 up to ₱33,333.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱20,833.00",
+                        "value": "20833.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱33,333.00",
+                        "value": "33333.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "15%",
+                "value": "00.15"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱0.00",
+                "value": "0.00"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱20,833.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "bracket_20",
+        "label": "20% bracket",
+        "order": 4,
+        "type": "array",
+        "readable": "20% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "Over ₱33,333.00 up to ₱66,667.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱33,333.00",
+                        "value": "33333.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱66,667.00",
+                        "value": "66667.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "20%",
+                "value": "00.20"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱1,875.00",
+                "value": "1875.00"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱33,333.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "bracket_25",
+        "label": "25% bracket",
+        "order": 5,
+        "type": "array",
+        "readable": "25% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "Over ₱66,667.00 up to ₱166,667.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱66,667.00",
+                        "value": "66667.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱166,667.00",
+                        "value": "166667.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "25%",
+                "value": "00.25"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱8,541.80",
+                "value": "8541.80"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱66,667.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "bracket_30",
+        "label": "30% bracket",
+        "order": 6,
+        "type": "array",
+        "readable": "30% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "Over ₱166,667.00 up to ₱666,667.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱166,667.00",
+                        "value": "166667.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱666,667.00",
+                        "value": "666667.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "30%",
+                "value": "00.30"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱33,541.80",
+                "value": "33541.80"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱166,667.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "bracket_35",
+        "label": "35% bracket",
+        "order": 7,
+        "type": "array",
+        "readable": "35% bracket",
+        "value": [
+            {
+                "key": "monthly_taxable",
+                "label": "Monthly taxable",
+                "order": 0,
+                "type": "text",
+                "readable": "Over ₱666,667.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱666,667.00",
+                        "value": "666667.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "35%",
+                "value": "00.35"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱183,541.80",
+                "value": "183541.80"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱666,667.00",
+                "value": null
+            }
+        ]
+    }
+]

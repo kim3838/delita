@@ -67,12 +67,12 @@ class FormulaSeeder extends Seeder
             //Taxable Income
             ['name' => 'Standard-Taxable-Income', 'formulable_type' => Formulable::TAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
-            //Nonyaxable Income
+            //Nontaxable Income
             ['name' => 'Standard-Nontaxable-Income', 'formulable_type' => Formulable::NONTAXABLE_INCOME ,'component_type' => null, 'aggregation' => true],
 
-            //Income Tax
-            ['name' => 'Standard-Compensation-Tax', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::COMPENSATION_TAX, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_compensation_tax')->first()->path)
+            //Withholding Tax on compensation
+            ['name' => 'Standard-Withholding-Tax-Compensation', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::WITHHOLDING_TAX, 'aggregation' => false,
+                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_withholding_tax_compensation')->first()->path)
             ],
 
             //Net Income

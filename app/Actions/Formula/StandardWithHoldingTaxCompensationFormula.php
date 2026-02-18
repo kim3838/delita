@@ -4,9 +4,9 @@ namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
 
-class StandardCompensationTaxFormula
+class StandardWithHoldingTaxCompensationFormula
 {
-    public string $slug = 'standard-compensation-tax';
+    public string $slug = 'standard-withholding-tax-compensation';
 
     public function handle(SalaryStatementContext $context, $next)
     {

@@ -4,12 +4,12 @@ namespace App\Enums;
 
 enum IncomeTax: int implements BaseEnum
 {
-    case COMPENSATION_TAX = 300;
+    case WITHHOLDING_TAX = 300;
 
     public function label(): string
     {
         return match ($this) {
-            self::COMPENSATION_TAX => 'Compensation Tax',
+            self::WITHHOLDING_TAX => 'Withholding tax',
         };
     }
 

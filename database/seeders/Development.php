@@ -473,7 +473,7 @@ class Development extends Seeder
             ['code' => 'TARDINESS', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
             ['code' => 'UNDERTIME', 'name' => 'Undertime', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Undertime'],
             ['code' => 'ABSENCE', 'name' => 'Absence', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
-            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS Contribution', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
+            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS contribution', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
             ['code' => 'PHILHEALTH', 'name' => 'Philhealth (PHIC)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
             ['code' => 'PAG-IBIG', 'name' => 'Pag-IBIG (HDMF)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Pag-IBIG-Contribution'],
         ];
@@ -485,7 +485,7 @@ class Development extends Seeder
 
         //Company 1002-B, 1002-C Pre-create Income Taxes
         $incomeTaxesPresets = [
-            ['code' => 'WTAX ', 'name' => 'Withholding Tax', 'assignable' => true, 'type' => IncomeTax::COMPENSATION_TAX, 'formula' => 'Standard-Compensation-Tax'],
+            ['code' => 'WTC ', 'name' => 'Withholding tax on compensation (WTC)', 'assignable' => true, 'type' => IncomeTax::WITHHOLDING_TAX, 'formula' => 'Standard-Withholding-Tax-Compensation'],
         ];
 
         foreach ($incomeTaxesPresets as $index => $incomeTaxesPreset) {
@@ -836,7 +836,7 @@ class Development extends Seeder
         $company1002BSSSEmployed = $company1002B->deductions->where('code', 'SSS-EMPLOYED')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
 
         //Company 1002-B Income Taxes
-        $company1002BCompensationTax = $company1002B->incomeTaxes->where('code', 'WTAX ')->where('type', IncomeTax::COMPENSATION_TAX)->first();
+        $company1002BCompensationTax = $company1002B->incomeTaxes->where('code', 'WTC ')->where('type', IncomeTax::WITHHOLDING_TAX)->first();
 
         //Create Compensations for Employee B1001
         $employeeB1001->payrollComponents()->firstOrCreate(
@@ -867,7 +867,7 @@ class Development extends Seeder
         $company1002CPagIBIG = $company1002C->deductions->where('code', 'PAG-IBIG')->where('type', Deduction::STATUTORY_CONTRIBUTION)->first();
 
         //Company 1002-C Income Taxes
-        $company1002CCompensationTax = $company1002C->incomeTaxes->where('code', 'WTAX ')->where('type', IncomeTax::COMPENSATION_TAX)->first();
+        $company1002CCompensationTax = $company1002C->incomeTaxes->where('code', 'WTC ')->where('type', IncomeTax::WITHHOLDING_TAX)->first();
 
         //Create Compensations for Employee C1001
         $employeeC1001->payrollComponents()->firstOrCreate(

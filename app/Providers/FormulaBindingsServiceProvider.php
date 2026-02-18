@@ -6,7 +6,7 @@ use App\Actions\Formula\InitializeSalaryStatementFormula;
 use App\Actions\Formula\StandardAbsenceFormula;
 use App\Actions\Formula\StandardAllowanceFormula;
 use App\Actions\Formula\StandardBasicPayFormula;
-use App\Actions\Formula\StandardCompensationTaxFormula;
+use App\Actions\Formula\StandardWithHoldingTaxCompensationFormula;
 use App\Actions\Formula\StandardNetIncomeFormula;
 use App\Actions\Formula\StandardNontaxableIncomeFormula;
 use App\Actions\Formula\StandardOvertimeFormula;
@@ -41,7 +41,7 @@ class FormulaBindingsServiceProvider extends ServiceProvider
         'standard-pag-ibig-contribution' => StandardPagIBIGContributionFormula::class,
         'standard-taxable-income'=> StandardTaxableIncomeFormula::class,
         'standard-nontaxable-income' => StandardNontaxableIncomeFormula::class,
-        'standard-compensation-tax' => StandardCompensationTaxFormula::class,
+        'standard-withholding-tax-compensation' => StandardWithHoldingTaxCompensationFormula::class,
         'standard-net-income' => StandardNetIncomeFormula::class,
     ];
 

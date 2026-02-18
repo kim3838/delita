@@ -154,9 +154,9 @@ class JsonPreset extends Model
                 'file' => '002.standard.deductions.06.pag-ibig.json',
             ],
             [
-                'key' => 'standard_compensation_tax',
+                'key' => 'standard_withholding_tax_compensation',
                 'resource_preset_path' => 'presets/json/formula',
-                'file' => '003.standard.compensation-tax.01.compensation-tax.json',
+                'file' => '003.standard.income-tax.01.withholding-tax-compensation.json',
             ],
         ];
     }
