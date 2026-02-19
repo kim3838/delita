@@ -24,9 +24,7 @@ class ListTransformer extends TransformerAbstract
             'parent_id' => $model->parent_id,
             'name' => $model->name,
             'head' => $head,
-            'details' => [
-                'sub_departments' => Fractal::collection($model->subDepartments->sortBy('name')->values(), ListTransformer::class)['data']
-            ]
+            'sub_departments' => Fractal::collection($model->subDepartments->sortBy('name')->values(), ListTransformer::class)['data']
         ];
     }
 }
