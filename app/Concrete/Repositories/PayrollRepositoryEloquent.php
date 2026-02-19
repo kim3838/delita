@@ -7,6 +7,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Payroll;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements PayrollRepository
 {
@@ -20,7 +21,24 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $queryBuilder = $this->model::query()->getQuery()
             ->when(!empty($filters->company_ids) && is_array($filters->company_ids), function ($builder) use ($filters) {
                 $builder->whereIn('payrolls.company_id', $filters->company_ids);
-            });
+            })
+            ->when(!empty($filters->payroll_ids) && is_array($filters->payroll_ids), function ($builder) use ($filters) {
+                $builder->whereIn('payrolls.id', $filters->payroll_ids);
+            })
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+                "payrolls.id",
+                "payrolls.company_id",
+                "payrolls.number",
+                "payrolls.year",
+                "payrolls.month",
+                "payrolls.pay_frequency",
+                "payrolls.frequency_sequence",
+                "payrolls.start_date",
+                "payrolls.end_date",
+                "payrolls.remarks",
+                "payrolls.status"
+            ]);
 
         return $queryBuilder;
     }

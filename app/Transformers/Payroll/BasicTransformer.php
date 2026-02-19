@@ -11,6 +11,8 @@ class BasicTransformer extends TransformerAbstract
     public function transform(Payroll $payroll): array
     {
         return [
+            'id' => $payroll->id,
+            'company_id' => $payroll->company_id,
             'number' => $payroll->number,
             'year' => $payroll->year,
             'month' => $payroll->month,
