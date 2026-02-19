@@ -11,6 +11,7 @@ class InitializeSalaryStatementFormula
     public function handle(SalaryStatementContext $context, $next)
     {
         $totals = [];
+        $runningValues = [];
 
         $totalTaxable = BigDecimal::zero();
         $totalDeduction = BigDecimal::zero();
@@ -24,7 +25,10 @@ class InitializeSalaryStatementFormula
         $totals['taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
         $totals['deduction'] = (string)$totalDeduction->toScale(6, RoundingMode::HalfUp);
 
+        $runningValues['taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
+
         $context->totals = $totals;
+        $context->runningValues = $runningValues;
 
         return $next($context);
     }
