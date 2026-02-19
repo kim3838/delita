@@ -81,6 +81,7 @@ use App\Http\Controllers\PayrollInquiryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RequestApprovalStateController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalaryStatementController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
@@ -541,6 +542,9 @@ Route::group([
     Route::get('payroll-inquiry', [PayrollInquiryController::class, 'index']);
 
     Route::post('payroll', [PayrollController::class, 'store']);
+
+    //Salary statement
+    Route::get('salary-statements', [SalaryStatementController::class, 'index']);
 });
 
 Route::group([

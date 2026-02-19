@@ -363,7 +363,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 $salaryStatementAttendance = $salaryStatement->salaryStatementAttendances()->create($salaryStatementAttendanceArray);
 
-                if($salaryStatementAttendance->status == SalaryStatementAttendanceStatus::DAY_OFF) continue;
+                if($salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::DAY_OFF) continue;
 
                 $attendanceArray = $salaryStatementAttendance->attendance?->toArray();
                 $attendanceDetailsArray = $salaryStatementAttendance->attendance?->details?->toArray();
@@ -377,8 +377,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $leaveWithoutPayAndIsLegalHoliday = $leaveWithoutPay && $isLegalHoliday;
 
                 $isAbsentAndLegalHoliday = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::ABSENT && $isLegalHoliday;
+                $isDayOffAndLegalHoliday = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::DAY_OFF && $isLegalHoliday;
 
-                $payableNoneAttendance = $leaveWithPay || $leaveWithoutPayAndIsLegalHoliday || $isAbsentAndLegalHoliday;
+                $payableNoneAttendance = $leaveWithPay || $leaveWithoutPayAndIsLegalHoliday || $isAbsentAndLegalHoliday || $isDayOffAndLegalHoliday;
 
                 if($payableNoneAttendance){
 
@@ -1004,9 +1005,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $isDateIsHoliday = !empty($holidayType);
             $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
-            $dayOffOrHoliday = $dayOff || ($shiftHolidayPolicyIsDayOff && $isDateIsHoliday);
+            $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+            $dayOffOrHolidayDayOff = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
 
-            $dayType = $dayOffOrHoliday ? SalaryStatementAttendanceDayType::DAY_OFF : SalaryStatementAttendanceDayType::WORKING_DAY;
+            $dayType = $dayOffOrHolidayDayOff
+                ? SalaryStatementAttendanceDayType::DAY_OFF
+                : SalaryStatementAttendanceDayType::WORKING_DAY;
 
             if($dayType == SalaryStatementAttendanceDayType::WORKING_DAY){
 
@@ -1014,14 +1018,14 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $periodDaysSummary['total_working_rest_days'] += $isRestDay ? 1 : 0;
             }
 
-            $dayType = $isDateIsHoliday
+            $dayType = $isDateIsHoliday && !$dayOff
                 ? match($holidayType){
                     HolidayType::SPECIAL => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY,
                     HolidayType::LEGAL => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
                     HolidayType::DOUBLE => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
                 } : $dayType;
 
-            if(empty($attendance) && $dayOffOrHoliday){
+            if(empty($attendance) && $dayOffOrHolidayDayOff){
                 $payrollAttendanceStatus = SalaryStatementAttendanceStatus::DAY_OFF;
             } else if(empty($attendance) && !$hasLeave) {
                 $payrollAttendanceStatus = SalaryStatementAttendanceStatus::ABSENT;
@@ -1060,7 +1064,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     '_employee_id' => $employee->id,
                     '_is_day_off' => $dayOff,
                     '_is_holiday' => $isDateIsHoliday,
-                    '_is_day_off_and_holiday_day_off' => $dayOffOrHoliday,
+                    '_is_day_off_and_holiday_day_off' => $dayOffAndHolidayDayOff,
                     '_holiday_type' => $holidayType,
                     '_shift_holiday_policy_is_day_off' => $shiftHolidayPolicyIsDayOff,
                 ] : []),

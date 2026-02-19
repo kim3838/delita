@@ -700,7 +700,9 @@ trait HasPayableDay
         $leaveWithoutPayAndIsLegalHoliday = $leaveWithoutPay && $isLegalHoliday;
 
         $isAbsentAndLegalHoliday = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::ABSENT && $isLegalHoliday;
-        $payableNoneAttendance = $leaveWithPay || $leaveWithoutPayAndIsLegalHoliday || $isAbsentAndLegalHoliday;
+        $isDayOffAndLegalHoliday = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::DAY_OFF && $isLegalHoliday;
+
+        $payableNoneAttendance = $leaveWithPay || $leaveWithoutPayAndIsLegalHoliday || $isAbsentAndLegalHoliday || $isDayOffAndLegalHoliday;
 
         return [
             $isPresent,
