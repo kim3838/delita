@@ -33,9 +33,9 @@ class StandardPhilhealthContributionFormula
             ]);
         }
 
-        if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
+        $totalTaxable = BigDecimal::of($context->totals['taxable']);
 
-            $totalTaxable = $context->totals['taxable'];
+        if($totalTaxable->isGreaterThan(BigDecimal::zero()) && $context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
             $statementDetail = [
                 'id' => null,
@@ -51,7 +51,7 @@ class StandardPhilhealthContributionFormula
                 'net' => 0.0,
             ];
 
-            $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable);
+            $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable->toString());
             $componentValues = [
                 ...$contribution,
                 'pay_frequency_label' => $context->payroll->pay_frequency?->label(),

@@ -24,7 +24,7 @@ class StandardNontaxableIncomeFormula
             $totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of((string)$detail['nontaxable']));
         }
 
-        if(!$totalNonTaxable->isZero()){
+        if($totalNonTaxable->isGreaterThan(BigDecimal::zero())){
 
             $context->totals = [
                 ...$context->totals,
