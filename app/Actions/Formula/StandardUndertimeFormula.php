@@ -24,6 +24,7 @@ class StandardUndertimeFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
+                'Running values' => $context->runningValues,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);

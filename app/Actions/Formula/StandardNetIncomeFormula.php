@@ -17,7 +17,7 @@ class StandardNetIncomeFormula
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $runningTaxable = BigDecimal::of($context->runningValues['taxable'] ?? '0');
         $totalNonTaxable = BigDecimal::of($context->totals['nontaxable'] ?? '0');
 
         $totalDeduction = BigDecimal::zero();
@@ -31,7 +31,7 @@ class StandardNetIncomeFormula
         }
 
         $totalNet = $totalNet
-            ->plus($totalTaxable)
+            ->plus($runningTaxable)
             ->plus($totalNonTaxable)
             ->minus($totalWithholdingTax)
             ->minus($totalDeduction);
@@ -46,6 +46,7 @@ class StandardNetIncomeFormula
             _debug([
                 'Formula slug' => $this->slug,
                 'Totals' => $context->totals,
+                'Running values' => $context->runningValues
             ]);
         }
 

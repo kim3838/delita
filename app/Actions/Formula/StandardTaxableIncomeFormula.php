@@ -25,18 +25,21 @@ class StandardTaxableIncomeFormula
             $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
         }
 
-        $totalTaxable = $totalTaxable->minus($totalContribution);
-
         $context->totals = [
             ...$context->totals,
-            'taxable' => (string)$totalTaxable->toScale(6, RoundingMode::HalfUp),
             'contribution' => (string)$totalContribution->toScale(6, RoundingMode::HalfUp),
+        ];
+
+        $context->runningValues = [
+            ...$context->runningValues,
+            'taxable' => (string)$totalTaxable->minus($totalContribution)->toScale(6, RoundingMode::HalfUp),
         ];
 
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
                 'Totals' => $context->totals,
+                'Running values' => $context->runningValues
             ]);
         }
 
@@ -46,7 +49,7 @@ class StandardTaxableIncomeFormula
             'component_type' => null,
             'component_name' => null,
             'component_values' => null,
-            'taxable' => $context->totals['taxable'],
+            'taxable' => $context->runningValues['taxable'],
             'nontaxable' => 0.0,
             'deduction' => 0.0,
             'contribution' => 0.0,

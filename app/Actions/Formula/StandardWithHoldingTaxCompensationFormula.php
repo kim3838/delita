@@ -27,14 +27,15 @@ class StandardWithHoldingTaxCompensationFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
+                'Running values' => $context->runningValues
             ]);
         }
 
         if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
-            $totalTaxable = $context->totals['taxable'];
+            $runningTaxable = $context->runningValues['taxable'];
 
-            $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable, PayFrequency::MONTHLY);
+            $withholdingTax = $this->getIntended($formulaSettings->cast, $runningTaxable, PayFrequency::MONTHLY);
 
             $context->totals = [
                 ...$context->totals,
@@ -45,6 +46,7 @@ class StandardWithHoldingTaxCompensationFormula
                 _debug([
                     'Formula slug' => $this->slug,
                     'Totals' => $context->totals,
+                    'Running values' => $context->runningValues
                 ]);
             }
 
