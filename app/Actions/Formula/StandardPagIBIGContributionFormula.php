@@ -37,8 +37,6 @@ class StandardPagIBIGContributionFormula
 
         if($totalTaxable->isGreaterThan(BigDecimal::zero()) && $context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
-            $totalTaxable = $context->totals['taxable'];
-
             $statementDetail = [
                 'id' => null,
                 'formulable_type' => $formula->formulable_type->value,
