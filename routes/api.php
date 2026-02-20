@@ -547,6 +547,7 @@ Route::group([
 
     //Salary statement
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);
+    Route::get('salary-statement/{ulid}', [SalaryStatementController::class, 'show']);
     Route::delete('salary-statements', [SalaryStatementController::class, 'batchDestroy']);
 });
 

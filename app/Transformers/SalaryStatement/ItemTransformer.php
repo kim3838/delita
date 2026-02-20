@@ -2,49 +2,22 @@
 
 namespace App\Transformers\SalaryStatement;
 
-use App\Blueprint\Repositories\EmploymentProfileRepository;
-use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\SalaryStatement;
-use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\ListTransformer as SalaryStatementAttendanceListTransformer;
 use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
-use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class ItemTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatement $salaryStatement): array
     {
-        $payrollHydrated = App::make(PayrollRepository::class)->hydrateItem([
-            'id' => $salaryStatement->payroll_id,
-            'company_id' => $salaryStatement->company_id,
-            'number' => $salaryStatement->payroll_number,
-            'year' => $salaryStatement->payroll_year,
-            'month' => $salaryStatement->payroll_month,
-            'pay_frequency' => $salaryStatement->payroll_pay_frequency,
-            'frequency_sequence' => $salaryStatement->payroll_frequency_sequence,
-            'start_date' => $salaryStatement->payroll_start_date,
-            'end_date' => $salaryStatement->payroll_end_date,
-            'remarks' => $salaryStatement->payroll_remarks,
-            'status' => $salaryStatement->payroll_status,
-        ]);
-
-        $payroll = Fractal::item($payrollHydrated, PayrollBasicTransformer::class);
-
-        $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
-            'employee_id' => $salaryStatement->employee_id,
-            'is_active' => $salaryStatement->employee_employment_status_active,
-            'status' => $salaryStatement->employee_current_employment_status,
-            'employment_type' => $salaryStatement->employee_current_employment_type,
-        ]);
-
-        $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
+        $payroll = Fractal::item($salaryStatement->payroll, PayrollBasicTransformer::class);
 
         $employee = Employee::query()->find($salaryStatement->employee_id);
 
@@ -54,8 +27,8 @@ class ListTransformer extends TransformerAbstract
         )['data'];
 
         $salaryStatementDetailRepositoryFilters = (object)[
-            'payroll_ids' => [$payrollHydrated->id],
-            'company_ids' => [$payrollHydrated->company_id],
+            'payroll_ids' => [$salaryStatement->payroll->id],
+            'company_ids' => [$salaryStatement->payroll->company_id],
             'employee_ids' => [$salaryStatement->employee_id],
         ];
 
@@ -82,7 +55,6 @@ class ListTransformer extends TransformerAbstract
 
             'employee_number' => $employee->number,
             'employee_full_name' => $employee->full_name,
-            'employee_current_employment_profile' => $currentEmploymentProfile,
             'employee_department' => $employee->departments->first(),
             'employee_designation' => $employee->designation,
 

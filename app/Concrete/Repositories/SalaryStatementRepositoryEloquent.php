@@ -105,4 +105,11 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
 
         return $this->hydratePaginationItems($paginator, $this->model());
     }
+
+    public function show($identifier)
+    {
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
+
+        return $queryBuilder->firstOrFail();
+    }
 }

@@ -18,11 +18,16 @@ class ListTransformer extends TransformerAbstract
         $deduction = BigDecimal::of($salaryStatementDetail->deduction);
         $net = BigDecimal::of($salaryStatementDetail->net);
 
+        $componentValues = $salaryStatementDetail->component_values;
+        $componentValueType = $componentValues['type'] ?? null;
+
         return [
+            'id' => $salaryStatementDetail->id,
             'formulable_type' => $salaryStatementDetail->formulable_type?->toArray(),
             'component_type' => $salaryStatementDetail->component_type?->toArray(),
             'component_name' => $salaryStatementDetail->component_name,
-            'component_values' => $salaryStatementDetail->component_values,
+            'component_value_type' => $componentValueType,
+            'component_values' => empty($componentValues) ? [] : [$componentValues],
             'taxable' => $taxable->isZero() ? '--' : $taxable->toScale(2, RoundingMode::HalfUp),
             'nontaxable' => $nontaxable->isZero() ? '--' : $nontaxable->toScale(2, RoundingMode::HalfUp),
             'contribution' => $contribution->isZero() ? '--' : $contribution->toScale(2, RoundingMode::HalfUp),

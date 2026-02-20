@@ -6,6 +6,8 @@ use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\SalaryStatement\BatchDestroySalaryStatementRequest;
+use App\Http\Requests\SalaryStatement\ViewSalaryStatementRequest;
+use App\Transformers\SalaryStatement\ItemTransformer;
 use App\Transformers\SalaryStatement\ListTransformer;
 use Illuminate\Http\Request;
 
@@ -24,6 +26,22 @@ class SalaryStatementController extends Controller
             return ResponseJson::successfulResponse(Fractal::collection(
                 $this->repository->paginate($filters, ['current_employment_profile']), ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function show(ViewSalaryStatementRequest $request, $ulid)
+    {
+        if($request->expectsJson()){
+
+            $salaryStatement = $this->repository->show($ulid);
+
+            $salaryStatement = $salaryStatement ? Fractal::item($salaryStatement, ItemTransformer::class) : $salaryStatement;
+
+            return ResponseJson::successfulResponse([
+                'salary_statement' => $salaryStatement,
+            ]);
         }
 
         abort(404);
