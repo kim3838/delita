@@ -65,11 +65,9 @@ class StandardWithHoldingTaxCompensationFormula
             ];
 
             $componentValues = [
-                'pay_frequency_label' => $context->payroll->pay_frequency?->label(),
-                'coverage' => [
-                    'start_date' => $context->payroll->start_date?->toDateString(),
-                    'end_date' => $context->payroll->end_date?->toDateString(),
-                ]
+                'pay_frequency' => $context->payroll->pay_frequency?->label(),
+                'coverage_start' => $context->payroll->start_date?->toDateString(),
+                'coverage_end' => $context->payroll->end_date?->toDateString(),
             ];
 
             $statementDetail['component_values'] = $componentValues;
