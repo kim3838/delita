@@ -541,7 +541,9 @@ Route::group([
     //Payroll
     Route::get('payroll-inquiry', [PayrollInquiryController::class, 'index']);
 
+    Route::get('payrolls', [PayrollController::class, 'index']);
     Route::post('payroll', [PayrollController::class, 'store']);
+    Route::get('payroll/{ulid}', [PayrollController::class, 'show']);
 
     //Salary statement
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);
