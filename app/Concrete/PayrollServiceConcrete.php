@@ -471,11 +471,15 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 foreach($payrollComponents as $payrollComponent){
 
                     if(!isset($salaryStatementDetails[$payrollComponent->component_key])){
+
+                        $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
+
                         $salaryStatementDetails[$payrollComponent->component_key] = [
                             'formulable_type' => $payrollComponent->formulable_type->value,
                             'component_type' => $payrollComponent->component_type->value,
                             'component_name' => $payrollComponent->component_name,
                             'component_values' => [
+                                'type' => $componentValueType?->value,
                                 'regular_pay' => new MutableBigDecimal(),
                                 'night_differential_pay' => new MutableBigDecimal(),
                                 'rest_day_pay' => new MutableBigDecimal(),
@@ -501,6 +505,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     'component_type' => $salaryStatementDetail['component_type'],
                     'component_name' => $salaryStatementDetail['component_name'],
                     'component_values' => [
+                        'type' => $salaryStatementDetail['component_values']['type'] ?? null,
                         'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
                         'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
                         'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),

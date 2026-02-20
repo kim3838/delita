@@ -4,6 +4,7 @@ namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
 use App\Enums\PayFrequency;
+use App\Enums\SalaryStatementDetailComponentValueType;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -65,6 +66,7 @@ class StandardWithHoldingTaxCompensationFormula
             ];
 
             $componentValues = [
+                'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX->value,
                 'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 'coverage_start' => $context->payroll->start_date?->toDateString(),
                 'coverage_end' => $context->payroll->end_date?->toDateString(),

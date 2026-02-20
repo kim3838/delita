@@ -15,9 +15,9 @@ enum Compensation: int implements BaseEnum
     {
         return match ($this) {
             self::BASIC_PAY => 'Basic pay',
+            self::REGULAR_ALLOWANCE => 'Regular allowance',
             self::OVERTIME => 'Overtime',
             self::BENEFIT => 'Benefit',
-            self::REGULAR_ALLOWANCE => 'Regular allowance',
             self::LEAVE_PAY => 'Leave pay',
             self::HOLIDAY_PAY => 'Holiday pay',
         };

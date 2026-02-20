@@ -4,6 +4,7 @@ namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
 use App\Enums\PayFrequency;
+use App\Enums\SalaryStatementDetailComponentValueType;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -54,13 +55,14 @@ class StandardPagIBIGContributionFormula
             $contribution = $this->getContribution($formulaSettings->cast, $totalTaxable->toString());
             $componentValues = [
                 ...$contribution,
+                'type' => SalaryStatementDetailComponentValueType::PH_PAG_IBIG->value,
                 'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 'coverage_start' => $context->payroll->start_date?->toDateString(),
                 'coverage_end' => $context->payroll->end_date?->toDateString(),
             ];
 
             $statementDetail['component_values'] = $componentValues;
-            $statementDetail['contribution'] = $contribution['employee_share'];
+            $statementDetail['contribution'] = $contribution['employee_share']['regular'];
 
             $context->statementDetails[] = $statementDetail;
         }
@@ -99,8 +101,12 @@ class StandardPagIBIGContributionFormula
         $compensation = BigDecimal::of((string)$compensation);
 
         $result = [
-            'employee_share' => '0.000000',
-            'employer_share' => '0.000000',
+            'employee_share' => [
+                'regular' => '0.000000',
+            ],
+            'employer_share' => [
+                'regular' => '0.000000',
+            ],
             'total' => '0.000000'
         ];
 
@@ -123,8 +129,8 @@ class StandardPagIBIGContributionFormula
         $contributionPercentage = $employeeShareValue->plus($employerShareValue);
 
         $result['total'] = (string)$premiumBaseCredit->multipliedBy($contributionPercentage)->toScale(6, RoundingMode::HalfUp);
-        $result['employee_share'] = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
-        $result['employer_share'] = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
+        $result['employee_share']['regular'] = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['regular'] = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
 
         return $result;
     }

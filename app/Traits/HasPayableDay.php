@@ -4,10 +4,12 @@ namespace App\Traits;
 
 use App\Concrete\MutableBigDecimal;
 use App\Enums\Compensation as CompensationEnum;
+use App\Enums\Formulable;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayPeriod;
 use App\Enums\SalaryStatementAttendanceDayType;
 use App\Enums\SalaryStatementAttendanceStatus;
+use App\Enums\SalaryStatementDetailComponentValueType;
 use App\Enums\WorkHourType;
 use App\Models\EmployeePayrollComponent;
 use App\Models\SalaryStatementAttendance;
@@ -766,5 +768,24 @@ trait HasPayableDay
         }
 
         return $hourlyRate;
+    }
+
+    public function getComponentValueType(Formulable $formulable, $componentValue): ?SalaryStatementDetailComponentValueType
+    {
+        $componentValueType = null;
+
+        if($formulable == Formulable::EARNINGS){
+
+            $componentValueType = match($componentValue){
+                CompensationEnum::BASIC_PAY => SalaryStatementDetailComponentValueType::PH_BASIC_PAY,
+                CompensationEnum::REGULAR_ALLOWANCE => SalaryStatementDetailComponentValueType::PH_REGULAR_ALLOWANCE,
+                CompensationEnum::OVERTIME => SalaryStatementDetailComponentValueType::PH_OVERTIME,
+                CompensationEnum::LEAVE_PAY => SalaryStatementDetailComponentValueType::PH_LEAVE,
+                CompensationEnum::HOLIDAY_PAY => SalaryStatementDetailComponentValueType::PH_HOLIDAY,
+                default => null
+            };
+        }
+
+        return $componentValueType;
     }
 }
