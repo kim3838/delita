@@ -6,11 +6,12 @@ use App\Models\Payroll;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
-class BasicTransformer extends TransformerAbstract
+class ItemTransformer extends TransformerAbstract
 {
     public function transform(Payroll $payroll): array
     {
         return [
+            'row_number' => $payroll->row_number,
             'id' => $payroll->id,
             'ulid' => $payroll->ulid,
             'company_id' => $payroll->company_id,

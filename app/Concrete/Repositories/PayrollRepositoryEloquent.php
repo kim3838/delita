@@ -25,9 +25,15 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(!empty($filters->payroll_ids) && is_array($filters->payroll_ids), function ($builder) use ($filters) {
                 $builder->whereIn('payrolls.id', $filters->payroll_ids);
             })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('payrolls.number', 'LIKE', "%$value%");
+                });
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "payrolls.id",
+                "payrolls.ulid",
                 "payrolls.company_id",
                 "payrolls.number",
                 "payrolls.year",
@@ -46,7 +52,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'payrolls.id', 'direction' => 'DESC'],
+            ['field' => 'payrolls.year', 'direction' => 'DESC'],
+            ['field' => 'payrolls.month', 'direction' => 'DESC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders);
@@ -56,5 +63,12 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function show($identifier)
+    {
+        $queryBuilder = $this->model::query()->where('ulid', $identifier);
+
+        return $queryBuilder->firstOrFail();
     }
 }
