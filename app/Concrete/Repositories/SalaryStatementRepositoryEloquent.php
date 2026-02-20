@@ -19,15 +19,15 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         return SalaryStatement::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    public function baseQueryBuilder($filters, $orders, $relations): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
 
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], ['current_employment_profile']);
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], $relations);
 
         $payrollRepositoryFilter = clone $filters;
 
-        $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter, []);
+        $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
 
         $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($payrollQueryBuilder, 'payroll_sub', function ($join) {
@@ -36,10 +36,12 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'salary_statements.employee_id');
             })
+            ->when(!empty($filters->salary_statement_ids) && is_array($filters->salary_statement_ids), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("salary_statements.id"), $filters->salary_statement_ids);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
 
-                "payroll_sub.id AS payroll_id",
                 "payroll_sub.company_id AS company_id",
                 "payroll_sub.number AS payroll_number",
                 "payroll_sub.year AS payroll_year",
@@ -52,9 +54,12 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 "payroll_sub.status AS payroll_status",
 
                 "employee_sub.number AS employee_number",
-                'employee_sub.employment_status_active AS employee_employment_status_active',
-                'employee_sub.current_employment_status AS employee_current_employment_status',
-                'employee_sub.current_employment_type AS employee_current_employment_type',
+
+                ...(in_array('current_employment_profile', $relations) ? [
+                    'employee_sub.employment_status_active AS employee_employment_status_active',
+                    'employee_sub.current_employment_status AS employee_current_employment_status',
+                    'employee_sub.current_employment_type AS employee_current_employment_type',
+                ] : []),
 
                 "salary_statements.id AS id",
                 "salary_statements.ulid AS ulid",
@@ -92,7 +97,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
         ]: $orders;
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 

@@ -4,12 +4,16 @@ namespace App\Transformers\SalaryStatement;
 
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\PayrollRepository;
+use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\SalaryStatement;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\ListTransformer as SalaryStatementAttendanceListTransformer;
+use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -34,7 +38,6 @@ class ListTransformer extends TransformerAbstract
         $payroll = Fractal::item($payrollHydrated, PayrollBasicTransformer::class);
 
         $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
-
             'employee_id' => $salaryStatement->employee_id,
             'is_active' => $salaryStatement->employee_employment_status_active,
             'status' => $salaryStatement->employee_current_employment_status,
@@ -49,6 +52,24 @@ class ListTransformer extends TransformerAbstract
             $salaryStatement->salaryStatementAttendances->sortBy('date'),
             SalaryStatementAttendanceListTransformer::class
         )['data'];
+
+        $salaryStatementDetailRepositoryFilters = (object)[
+            'payroll_ids' => [$payrollHydrated->id],
+            'company_ids' => [$payrollHydrated->company_id],
+            'employee_ids' => [$salaryStatement->employee_id],
+        ];
+
+        $statementDetails = Fractal::collection(
+            app(SalaryStatementDetailRepository::class)->list($salaryStatementDetailRepositoryFilters),
+            SalaryStatementDetailListTransformer::class
+        )['data'];
+
+        $taxable = BigDecimal::of($salaryStatement->taxable);
+        $nontaxable = BigDecimal::of($salaryStatement->nontaxable);
+        $contribution = BigDecimal::of($salaryStatement->contribution);
+        $withholding_tax = BigDecimal::of($salaryStatement->withholding_tax);
+        $deduction = BigDecimal::of($salaryStatement->deduction);
+        $net = BigDecimal::of($salaryStatement->net);
 
         return [
             'row_number' => $salaryStatement->row_number,
@@ -79,14 +100,15 @@ class ListTransformer extends TransformerAbstract
             'total_leave_with_pay' => $salaryStatement->total_leave_with_pay,
             'total_absent' => $salaryStatement->total_absent,
 
-            'taxable' => $salaryStatement->taxable,
-            'nontaxable' => $salaryStatement->nontaxable,
-            'contribution' => $salaryStatement->contribution,
-            'withholding_tax' => $salaryStatement->withholding_tax,
-            'deduction' => $salaryStatement->deduction,
-            'net' => $salaryStatement->net,
+            'taxable' => $taxable->toScale(2, RoundingMode::HalfUp),
+            'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp),
+            'contribution' => $contribution->toScale(2, RoundingMode::HalfUp),
+            'withholding_tax' => $withholding_tax->toScale(2, RoundingMode::HalfUp),
+            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp),
+            'net' => $net->toScale(2, RoundingMode::HalfUp),
 
-            'statement_attendances' => $statementAttendances
+            'statement_attendances' => $statementAttendances,
+            'statement_details' => $statementDetails,
         ];
     }
 }

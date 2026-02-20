@@ -110,6 +110,10 @@ class PermissionService
                     'key' => 'payroll',
                     'readable_name' => 'Payroll',
                     'actions' => ['view', 'create', 'delete']
+                ],[
+                    'key' => 'salary-statement',
+                    'readable_name' => 'Salary statement',
+                    'actions' => ['delete']
                 ],
             ]
         ],
