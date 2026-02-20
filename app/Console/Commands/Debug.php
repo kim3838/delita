@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
+use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Concrete\LeaveService;
 use App\Facades\Fractal;
@@ -36,19 +38,24 @@ class Debug extends Command
      */
     public function handle()
     {
-        $this->payroll();
+    }
+
+    private function salaryStatements()
+    {
+        $filters = (object)[
+            'company_ids' => [4],
+            'payroll_ids' => [12],
+        ];
+
+        $salaryStatements = App::make(SalaryStatementRepository::class)->paginate($filters);
     }
 
     private function payroll()
     {
         $payrollService = App::make(PayrollServiceInterface::class, [Company::find(4)]);
+        $payroll = App::make(PayrollRepository::class)->model()::first();
 
-        $latestWithRecent = $payrollService->getLatestWithRecent([200], 2);
-
-        _debug([
-            'recent' => Fractal::collection($latestWithRecent['recent'], ListTransformer::class)['data'],
-            'latest' => Fractal::collection($latestWithRecent['latest'], ListTransformer::class)['data'],
-        ]);
+        $payrollService->generateSalaryStatements($payroll);
     }
 
     private function userFiledRequest()
