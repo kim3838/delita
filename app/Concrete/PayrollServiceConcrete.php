@@ -382,6 +382,19 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 $payableNoneAttendance = $leaveWithPay || $leaveWithoutPayAndIsLegalHoliday || $isAbsentAndLegalHoliday || $isDayOffAndLegalHoliday;
 
+                if($debugEnabled){
+                    _debug([
+                        'Statement attendance date' => $salaryStatementAttendance->date->toDateString(),
+                        'Leave without pay' => $leaveWithoutPay,
+                        'Leave with pay' => $leaveWithPay,
+                        'Is legal holiday' => $isLegalHoliday,
+                        'Leave without pay and is legal holiday' => $leaveWithoutPayAndIsLegalHoliday,
+                        'Is absent and legal holiday' => $isAbsentAndLegalHoliday,
+                        'Is day off and legal holiday' => $isDayOffAndLegalHoliday,
+                        'Payable none attendance' => $payableNoneAttendance,
+                    ]);
+                }
+
                 if($payableNoneAttendance){
 
                     $this->createSalaryStatementAttendanceDetails($employeeShift, $salaryStatementAttendance);
