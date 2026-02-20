@@ -43,6 +43,7 @@ use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\PayrollPayload\BasicTransformer;
 use App\Transformers\SalaryStatementAttendanceDetail\PayableSplitTransformer as SalaryStatementAttendanceDetailPayableSplitTransformer;
 use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -476,7 +477,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     $salaryStatementDetails[$payrollComponent->component_key]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
                     $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = (string)$salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
+                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
                 }
             }
 
@@ -487,12 +488,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     'component_type' => $salaryStatementDetail['component_type'],
                     'component_name' => $salaryStatementDetail['component_name'],
                     'component_values' => [
-                        'regular_pay' => (string)$salaryStatementDetail['component_values']['regular_pay'],
-                        'night_differential_pay' => (string)$salaryStatementDetail['component_values']['night_differential_pay'],
-                        'rest_day_pay' => (string)$salaryStatementDetail['component_values']['rest_day_pay'],
-                        'total' => (string)$salaryStatementDetail['component_values']['total'],
+                        'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
+                        'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
+                        'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
+                        'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
                     ],
-                    'taxable' => (string)$salaryStatementDetail['taxable']
+                    'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(6, RoundingMode::HalfUp)->toString()
                 ]);
             }
         }
@@ -1045,13 +1046,13 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             switch($dayType){
                 case SalaryStatementAttendanceDayType::WORKING_DAY: $periodDaysSummary['total_regular_work_days']++; break;
-                case SalaryStatementAttendanceDayType::DAY_OFF: $periodDaysSummary['total_day_offs']++; break;
                 case SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY: $periodDaysSummary['total_special_holidays']++; break;
                 case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY:
                 case SalaryStatementAttendanceDayType::LEGAL_HOLIDAY: $periodDaysSummary['total_legal_holidays']++; break;
             }
 
             switch($payrollAttendanceStatus){
+                case SalaryStatementAttendanceStatus::DAY_OFF: $periodDaysSummary['total_day_offs']++; break;
                 case SalaryStatementAttendanceStatus::FULL_PRESENT: $periodDaysSummary['total_full_present']++; break;
                 case SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES: $periodDaysSummary['total_present_with_irregularity']++; break;
                 case SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY: $periodDaysSummary['total_leave_without_pay']++; break;
