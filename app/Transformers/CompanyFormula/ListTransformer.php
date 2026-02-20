@@ -25,9 +25,7 @@ class ListTransformer extends TransformerAbstract
                 ? $model->formulable_component_type?->toArray()
                 : null,
             'default_settings' => $model->default_settings?->cast,
-            'sub_row' => [
-                'settings' => $model->formula_settings?->cast
-            ],
+            'settings' => $model->formula_settings?->cast,
         ];
     }
 }
