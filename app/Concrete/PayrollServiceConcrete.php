@@ -334,7 +334,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $filters = (object)[
             'company_id' => $this->payroll->company_id,
-            'employee_ids' => [4],
+            'employee_ids' => [],
             'pay_frequency_ids' => [$payFrequency->id],
         ];
 
