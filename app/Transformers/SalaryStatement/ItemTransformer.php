@@ -2,15 +2,17 @@
 
 namespace App\Transformers\SalaryStatement;
 
+use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\SalaryStatement;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
-use App\Transformers\SalaryStatementAttendance\ListTransformer as SalaryStatementAttendanceListTransformer;
+use App\Transformers\SalaryStatementAttendance\DetailedListTransformer as SalaryStatementAttendanceDetailedListTransformer;
 use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
+use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
@@ -21,10 +23,13 @@ class ItemTransformer extends TransformerAbstract
 
         $employee = Employee::query()->find($salaryStatement->employee_id);
 
-        $statementAttendances = Fractal::collection(
-            $salaryStatement->salaryStatementAttendances->sortBy('date'),
-            SalaryStatementAttendanceListTransformer::class
-        )['data'];
+        $salaryStatementAttendanceRepositoryFilters = (object)[
+            'salary_statement_ids' => [$salaryStatement->id],
+        ];
+
+        $salaryStatementAttendances = App::make(SalaryStatementAttendanceRepository::class)->list($salaryStatementAttendanceRepositoryFilters);
+
+        $statementAttendances = Fractal::collection($salaryStatementAttendances, SalaryStatementAttendanceDetailedListTransformer::class)['data'];
 
         $salaryStatementDetailRepositoryFilters = (object)[
             'payroll_ids' => [$salaryStatement->payroll->id],

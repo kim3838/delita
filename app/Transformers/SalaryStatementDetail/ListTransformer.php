@@ -22,6 +22,7 @@ class ListTransformer extends TransformerAbstract
         $componentValueType = $componentValues['type'] ?? null;
 
         return [
+            'row_number' => $salaryStatementDetail->row_number,
             'id' => $salaryStatementDetail->id,
             'formulable_type' => $salaryStatementDetail->formulable_type?->toArray(),
             'component_type' => $salaryStatementDetail->component_type?->toArray(),

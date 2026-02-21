@@ -44,6 +44,7 @@ class SalaryStatementAttendanceDetail extends Model
     protected $casts = [
         'salary_statement_attendance_id' => 'int',
 
+        'date' => 'date',
         'split_type' => ShiftBreakDownSplitType::class,
         'split_start' => 'string',
         'split_end' => 'string',
