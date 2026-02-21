@@ -22,7 +22,6 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatement $salaryStatement): array
     {
-        _debug(__LINE__);
         $payrollHydrated = App::make(PayrollRepository::class)->hydrateItem([
             'id' => $salaryStatement->payroll_id,
             'company_id' => $salaryStatement->company_id,
