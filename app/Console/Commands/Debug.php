@@ -6,14 +6,13 @@ use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\Repositories\SalaryStatementAttendanceDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Concrete\LeaveService;
-use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveType;
-use App\Transformers\PayrollPayload\ListTransformer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 
@@ -38,6 +37,16 @@ class Debug extends Command
      */
     public function handle()
     {
+    }
+
+    private function salaryStatementAttendanceDetail()
+    {
+        $filters = (object)[
+            'salary_statement_ids' => [112],
+            'salary_statement_attendance_ids' => [1277, 1294],
+        ];
+
+        $attendanceDetails = App::make(SalaryStatementAttendanceDetailRepository::class)->list($filters);
     }
 
     private function salaryStatements()
