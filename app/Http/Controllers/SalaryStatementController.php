@@ -24,7 +24,7 @@ class SalaryStatementController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters, ['current_employment_profile']), ListTransformer::class
+                $this->repository->paginate($filters, ['payroll', 'current_employment_profile']), ListTransformer::class
             ));
         }
 

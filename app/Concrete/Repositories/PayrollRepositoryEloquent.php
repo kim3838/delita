@@ -3,10 +3,12 @@
 namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\PayrollRepository;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\Payroll;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements PayrollRepository
@@ -16,9 +18,23 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         return Payroll::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
+        $groups = [
+            'payrolls.id'
+        ];
+
         $queryBuilder = $this->model::query()->getQuery()
+            ->when(in_array('salary_statement', $relations), function ($builder) use($filters) {
+
+                $salaryStatementRepositoryFilter = clone $filters;
+
+                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], []);
+
+                $builder->joinSub($salaryStatementQueryBuilder, 'salary_statement_sub', function ($join) {
+                    $join->on('salary_statement_sub.payroll_id', '=', 'payrolls.id');
+                });
+            })
             ->when(!empty($filters->company_ids) && is_array($filters->company_ids), function ($builder) use ($filters) {
                 $builder->whereIn('payrolls.company_id', $filters->company_ids);
             })
@@ -43,20 +59,26 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                 "payrolls.start_date",
                 "payrolls.end_date",
                 "payrolls.remarks",
-                "payrolls.status"
+                "payrolls.status",
+
+                ...(in_array('salary_statement', $relations) ? [
+                    DB::raw("SUM(salary_statement_sub.net) AS total_salary_statement_net"),
+                ] : []),
             ]);
+
+        $this->setGroupsOnBuilder($queryBuilder, $groups);
 
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function paginate($filters, $relations): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'payrolls.year', 'direction' => 'DESC'],
             ['field' => 'payrolls.month', 'direction' => 'DESC'],
         ];
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
