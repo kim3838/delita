@@ -19,19 +19,22 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         return SalaryStatement::class;
     }
 
-    public function baseQueryBuilder($filters, $orders, $relations): QueryBuilder
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], $relations);
 
-        $payrollRepositoryFilter = clone $filters;
-
-        $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
-
         $queryBuilder = $this->model::query()->getQuery()
-            ->joinSub($payrollQueryBuilder, 'payroll_sub', function ($join) {
-                $join->on('payroll_sub.id', '=', 'salary_statements.payroll_id');
+            ->when(in_array('payroll', $relations), function ($builder) use($filters) {
+
+                $payrollRepositoryFilter = clone $filters;
+
+                $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
+
+                $builder->joinSub($payrollQueryBuilder, 'payroll_sub', function ($join) {
+                    $join->on('payroll_sub.id', '=', 'salary_statements.payroll_id');
+                });
             })
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'salary_statements.employee_id');
@@ -42,16 +45,18 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
 
-                "payroll_sub.company_id AS company_id",
-                "payroll_sub.number AS payroll_number",
-                "payroll_sub.year AS payroll_year",
-                "payroll_sub.month AS payroll_month",
-                "payroll_sub.pay_frequency AS payroll_pay_frequency",
-                "payroll_sub.frequency_sequence AS payroll_frequency_sequence",
-                "payroll_sub.start_date AS payroll_start_date",
-                "payroll_sub.end_date AS payroll_end_date",
-                "payroll_sub.remarks AS payroll_remarks",
-                "payroll_sub.status AS payroll_status",
+                ...(in_array('payroll', $relations) ? [
+                    "payroll_sub.company_id AS company_id",
+                    "payroll_sub.number AS payroll_number",
+                    "payroll_sub.year AS payroll_year",
+                    "payroll_sub.month AS payroll_month",
+                    "payroll_sub.pay_frequency AS payroll_pay_frequency",
+                    "payroll_sub.frequency_sequence AS payroll_frequency_sequence",
+                    "payroll_sub.start_date AS payroll_start_date",
+                    "payroll_sub.end_date AS payroll_end_date",
+                    "payroll_sub.remarks AS payroll_remarks",
+                    "payroll_sub.status AS payroll_status",
+                ] : []),
 
                 "employee_sub.number AS employee_number",
 
@@ -93,7 +98,10 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
     public function paginate($filters, $relations = [], $orders = []): LengthAwarePaginator
     {
         $orders = empty($orders) ? [
-            ['field' => 'payroll_sub.id', 'direction' => 'ASC'],
+            ...(in_array('payroll', $relations) ? [
+                ['field' => 'payroll_sub.id', 'direction' => 'ASC']
+            ] : []),
+
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
         ]: $orders;
 

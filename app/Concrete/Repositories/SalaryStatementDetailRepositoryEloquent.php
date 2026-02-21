@@ -7,7 +7,6 @@ use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Models\SalaryStatementDetail;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -19,15 +18,18 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
         return SalaryStatementDetail::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
-        $salaryStatementRepositoryFilter = clone $filters;
-
-        $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], []);
-
         $queryBuilder = $this->model::query()->getQuery()
-            ->joinSub($salaryStatementQueryBuilder, 'salary_statement_sub', function ($join) {
-                $join->on('salary_statement_sub.id', '=', 'salary_statement_details.salary_statement_id');
+            ->when(in_array('salary_statement', $relations), function ($builder) use($filters) {
+
+                $salaryStatementRepositoryFilter = clone $filters;
+
+                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], []);
+
+                $builder->joinSub($salaryStatementQueryBuilder, 'salary_statement_sub', function ($join) {
+                    $join->on('salary_statement_sub.id', '=', 'salary_statement_details.salary_statement_id');
+                });
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
@@ -50,30 +52,14 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
         return $queryBuilder;
     }
 
-    public function paginate($filters, $relations = [], $orders = []): LengthAwarePaginator
-    {
-        $orders = empty($orders) ? [
-            ['field' => 'salary_statement_details.formulable_type', 'direction' => 'ASC'],
-            ['field' => 'salary_statement_details.component_type', 'direction' => 'ASC'],
-        ]: $orders;
-
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
-
-        $this->setOrdersOnBuilder($queryBuilder, $orders);
-
-        $paginator = $this->createPaginationFromBuilder($queryBuilder);
-
-        return $this->hydratePaginationItems($paginator, $this->model());
-    }
-
-    public function list($filters): Collection
+    public function list($filters, $relations = []): Collection
     {
         $orders = [
             ['field' => 'salary_statement_details.formulable_type', 'direction' => 'ASC'],
             ['field' => 'salary_statement_details.component_type', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
