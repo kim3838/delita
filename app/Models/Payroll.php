@@ -39,6 +39,9 @@ class Payroll extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'status' => PayrollStatus::class,
+
+        'total_salary_statement_net' => 'decimal:6',
+        'total_employer_contribution_share' => 'decimal:6',
     ];
 
     public function company(): BelongsTo

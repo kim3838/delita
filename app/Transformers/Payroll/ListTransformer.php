@@ -3,6 +3,8 @@
 namespace App\Transformers\Payroll;
 
 use App\Models\Payroll;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
@@ -10,6 +12,9 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(Payroll $payroll): array
     {
+        $totalSalaryStatementNet = BigDecimal::of((string)$payroll->total_salary_statement_net);
+        $totalEmployerContributionShare = BigDecimal::of((string)$payroll->total_employer_contribution_share);
+
         return [
             'row_number' => $payroll->row_number,
             'id' => $payroll->id,
@@ -25,6 +30,9 @@ class ListTransformer extends TransformerAbstract
             'end_date' => $payroll->end_date?->toDateString(),
             'remarks' => $payroll->remarks,
             'status' => $payroll->status?->toArray(),
+
+            'total_salary_statement_net' => $totalSalaryStatementNet->toScale(2, RoundingMode::HalfUp),
+            'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(2, RoundingMode::HalfUp),
 
             'date_range_readable' => $payroll->start_date->format('F j, Y') . ' - ' . $payroll->end_date->format('F j, Y'),
         ];

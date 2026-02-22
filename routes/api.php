@@ -542,8 +542,10 @@ Route::group([
     Route::get('payroll-inquiry', [PayrollInquiryController::class, 'index']);
 
     Route::get('payrolls', [PayrollController::class, 'index']);
+    Route::get('payroll-selections', [PayrollController::class, 'selection']);
     Route::post('payroll', [PayrollController::class, 'store']);
     Route::get('payroll/{ulid}', [PayrollController::class, 'show']);
+    Route::delete('payrolls', [PayrollController::class, 'batchDestroy']);
 
     //Salary statement
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);

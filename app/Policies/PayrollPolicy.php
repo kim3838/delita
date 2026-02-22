@@ -46,4 +46,14 @@ class PayrollPolicy extends BasePolicy
         return $this->userIsAdminInCompany($user, request()->input('company_id'))
             && $this->hasPermission($user, 'delete-payroll');
     }
+
+    public function batchDelete(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'delete-payroll');
+    }
 }

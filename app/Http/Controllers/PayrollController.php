@@ -8,6 +8,7 @@ use App\Enums\PayrollStatus;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
+use App\Http\Requests\Payroll\BatchDestroyPayrollRequest;
 use App\Http\Requests\Payroll\ListPayrollRequest;
 use App\Http\Requests\Payroll\StorePayrollRequest;
 use App\Http\Requests\Payroll\ViewPayrollRequest;
@@ -15,6 +16,8 @@ use App\Models\Company;
 use App\Transformers\Payroll\BasicTransformer;
 use App\Transformers\Payroll\ItemTransformer;
 use App\Transformers\Payroll\ListTransformer;
+use App\Transformers\Payroll\SelectionTransformer;
+use Illuminate\Http\Request;
 
 class PayrollController extends Controller
 {
@@ -32,6 +35,23 @@ class PayrollController extends Controller
                 $this->repository->paginate($filters, ['salary_statement']),
                 ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function selection(Request $request)
+    {
+        if(request()->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            return ResponseJson::successfulResponse([
+                'selection' => Fractal::collection(
+                    $this->repository->selection($filters),
+                    SelectionTransformer::class
+                )
+            ]);
         }
 
         abort(404);
@@ -56,8 +76,10 @@ class PayrollController extends Controller
 
             $payrollService->generateSalaryStatements($payroll);
 
+            $payroll = $this->repository->show($payroll->ulid);
+
             return ResponseJson::successfulResponse([
-                'payroll' => Fractal::item($payroll, BasicTransformer::class),
+                'payroll' => Fractal::item($payroll, ItemTransformer::class),
                 'salary_statements' => []
             ]);
         }
@@ -71,11 +93,30 @@ class PayrollController extends Controller
 
             $payroll = $this->repository->show($ulid);
 
+            _debug([
+                'Payroll' => get_class($payroll),
+                'Payroll array' => $payroll?->toArray(),
+            ]);
+
             $payroll = $payroll ? Fractal::item($payroll, ItemTransformer::class) : $payroll;
 
             return ResponseJson::successfulResponse([
                 'payroll' => $payroll,
             ]);
+        }
+
+        abort(404);
+    }
+
+    public function batchDestroy(BatchDestroyPayrollRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $ids = data_get($request->validated(), 'payroll_ids', []);
+
+            $this->repository->batchDelete($ids);
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);
