@@ -103,8 +103,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
     public function paginate($filters, $relations): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'payrolls.year', 'direction' => 'DESC'],
-            ['field' => 'payrolls.month', 'direction' => 'DESC'],
+            ['field' => 'payrolls.year', 'direction' => 'ASC'],
+            ['field' => 'payrolls.month', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
