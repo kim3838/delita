@@ -24,7 +24,7 @@ class ListTransformer extends TransformerAbstract
     {
         $payrollHydrated = App::make(PayrollRepository::class)->hydrateItem([
             'id' => $salaryStatement->payroll_id,
-            'company_id' => $salaryStatement->company_id,
+            'company_id' => $salaryStatement->payroll_company_id,
             'number' => $salaryStatement->payroll_number,
             'year' => $salaryStatement->payroll_year,
             'month' => $salaryStatement->payroll_month,
@@ -58,6 +58,7 @@ class ListTransformer extends TransformerAbstract
         $statementAttendances = Fractal::collection($salaryStatementAttendances, SalaryStatementAttendanceDetailedListTransformer::class)['data'];
 
         $salaryStatementDetailRepositoryFilters = (object)[
+            'payroll_ids' => [$salaryStatement->payroll->id],
             'company_ids' => [$payrollHydrated->company_id],
             'employee_ids' => [$salaryStatement->employee_id],
         ];

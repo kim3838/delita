@@ -32,6 +32,7 @@ class ItemTransformer extends TransformerAbstract
         $statementAttendances = Fractal::collection($salaryStatementAttendances, SalaryStatementAttendanceDetailedListTransformer::class)['data'];
 
         $salaryStatementDetailRepositoryFilters = (object)[
+            'payroll_ids' => [$salaryStatement->payroll->id],
             'company_ids' => [$salaryStatement->payroll->company_id],
             'employee_ids' => [$salaryStatement->employee_id],
         ];

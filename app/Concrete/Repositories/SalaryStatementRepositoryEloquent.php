@@ -22,6 +22,11 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
     public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
+        if(isset($employeeRepositoryFilter->employee_search)){
+            $employeeRepositoryFilter->search = $employeeRepositoryFilter->employee_search;
+        }
+        unset($employeeRepositoryFilter->payroll_search);
+        unset($employeeRepositoryFilter->employee_search);
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], $relations);
 
@@ -29,6 +34,11 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             ->when(in_array('payroll', $relations), function ($builder) use($filters) {
 
                 $payrollRepositoryFilter = clone $filters;
+                if(isset($payrollRepositoryFilter->payroll_search)){
+                    $payrollRepositoryFilter->search = $payrollRepositoryFilter->payroll_search;
+                }
+                unset($payrollRepositoryFilter->payroll_search);
+                unset($payrollRepositoryFilter->employee_search);
 
                 $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
 
@@ -46,7 +56,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
 
                 ...(in_array('payroll', $relations) ? [
-                    "payroll_sub.company_id AS company_id",
+                    "payroll_sub.ulid AS payroll_ulid",
+                    "payroll_sub.company_id AS payroll_company_id",
                     "payroll_sub.number AS payroll_number",
                     "payroll_sub.year AS payroll_year",
                     "payroll_sub.month AS payroll_month",

@@ -25,7 +25,7 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
 
                 $salaryStatementRepositoryFilter = clone $filters;
 
-                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], []);
+                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], ['payroll']);
 
                 $builder->joinSub($salaryStatementQueryBuilder, 'salary_statement_sub', function ($join) {
                     $join->on('salary_statement_sub.id', '=', 'salary_statement_details.salary_statement_id');
