@@ -106,9 +106,11 @@ class StandardPhilhealthContributionFormula
         $result = [
             'employee_share' => [
                 'regular' => '0.000000',
+                'total' => '0.000000',
             ],
             'employer_share' => [
                 'regular' => '0.000000',
+                'total' => '0.000000',
             ],
             'total' => '0.000000'
         ];
@@ -122,8 +124,15 @@ class StandardPhilhealthContributionFormula
         }
 
         $result['total'] = (string)$premium->toScale(6, RoundingMode::HalfUp);
-        $result['employee_share']['regular'] = (string)$premium->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
-        $result['employer_share']['regular'] = (string)$premium->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
+
+        $employeeShareRegular = (string)$premium->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
+        $result['employee_share']['regular'] = $employeeShareRegular;
+        $result['employee_share']['total'] = $employeeShareRegular;
+
+        $employerShareRegular = (string)$premium->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['regular'] = $employerShareRegular;
+        $result['employer_share']['total'] = $employerShareRegular;
+
 
         return $result;
     }
