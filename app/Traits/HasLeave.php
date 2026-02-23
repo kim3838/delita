@@ -2,9 +2,12 @@
 
 namespace App\Traits;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
+use App\Models\Company;
+use App\Models\Employee;
 use App\Models\Leave;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use Carbon\CarbonPeriod;
@@ -25,7 +28,7 @@ trait HasLeave
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
-        $filteredDates = $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'filter');
+        $filteredDates = $this->processDatePeriod($datePeriod, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff, 'filter');
 
         return collect($filteredDates)->map(function ($date){
             return $date->toDateString();
@@ -40,7 +43,7 @@ trait HasLeave
 
         $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
-        return $this->processDatePeriod($datePeriod, $leaves, $companyId, $shiftHolidayPolicyIsDayOff, 'map');
+        return $this->processDatePeriod($datePeriod, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff, 'map');
     }
 
     private function getEmployeeLeaves($employeeId, CarbonPeriod $datePeriod): Collection
@@ -53,23 +56,23 @@ trait HasLeave
         return collect(Fractal::collection($leaves, LeaveBasicTransformer::class)['data']);
     }
 
-    private function processDatePeriod(CarbonPeriod $datePeriod, Collection $leaves, $companyId, bool $shiftHolidayPolicyIsDayOff, string $operation): array
+    private function processDatePeriod(CarbonPeriod $datePeriod, Collection $leaves, $companyId, $employeeId, bool $shiftHolidayPolicyIsDayOff, string $operation): array
     {
         return collect($datePeriod)
             ->when($operation === 'filter',
 
                 fn($collection) => $collection->filter(
-                    function ($date) use ($leaves, $companyId, $shiftHolidayPolicyIsDayOff) {
+                    function ($date) use ($leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff) {
 
-                        $dateEvaluation = $this->evaluateDate($date, $leaves, $companyId, $shiftHolidayPolicyIsDayOff);
+                        $dateEvaluation = $this->evaluateDate($date, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff);
 
                         return $dateEvaluation['is_claimable'];
                     }
                 ),
 
-                fn($collection) => collect($collection->map(function ($date) use ($leaves, $companyId, $shiftHolidayPolicyIsDayOff) {
+                fn($collection) => collect($collection->map(function ($date) use ($leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff) {
 
-                    $dateEvaluation = $this->evaluateDate($date, $leaves, $companyId, $shiftHolidayPolicyIsDayOff);
+                    $dateEvaluation = $this->evaluateDate($date, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff);
 
                     return [
                         'date' => $date->toDateString(),
@@ -83,7 +86,7 @@ trait HasLeave
     /**
      * @throws UnexpectedException
      */
-    private function evaluateDate($date, Collection $leaves, $companyId, bool $shiftHolidayPolicyIsDayOff): array
+    private function evaluateDate($date, Collection $leaves, $companyId, $employeeId, bool $shiftHolidayPolicyIsDayOff): array
     {
         $this->setAttendanceSchedule($date);
 
@@ -97,9 +100,15 @@ trait HasLeave
             ($attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff ? 'Holiday' :
                 ($hasLeave ? 'Leave claimed' : 'Claimable'));
 
+        $payrollService = app(PayrollServiceInterface::class, [Company::query()->find($companyId)]);
+        $employee = Employee::query()->find($employeeId);
+
+        $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+        $message = $isDateOnAnyPayrollStatementAttendance ? 'Payroll generated' : $message;
+
         return [
             'message' => $message,
-            'is_claimable' => !$dayOffOrHoliday && !$hasLeave,
+            'is_claimable' => !$dayOffOrHoliday && !$hasLeave && !$isDateOnAnyPayrollStatementAttendance,
         ];
     }
 }
