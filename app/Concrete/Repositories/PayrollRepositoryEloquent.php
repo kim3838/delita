@@ -60,6 +60,9 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(!empty($filters->payroll_ulids) && is_array($filters->payroll_ulids), function ($builder) use ($filters) {
                 $builder->whereIn('payrolls.ulid', $filters->payroll_ulids);
             })
+            ->when(!empty($filters->payroll_not_in_statuses) && is_array($filters->payroll_not_in_statuses), function ($builder) use ($filters) {
+                $builder->whereNotIn('payrolls.status', $filters->payroll_not_in_statuses);
+            })
             ->when((
                 (isset($filters->from_month) && Carbon::createFromFormat('Y-m', $filters->from_month)) &&
                 (isset($filters->to_month) && Carbon::createFromFormat('Y-m', $filters->to_month))

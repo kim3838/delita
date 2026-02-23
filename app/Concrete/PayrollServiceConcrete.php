@@ -10,12 +10,14 @@ use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\LeaveTypeRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PayrollPayloadRepository;
+use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\AttendanceStatus;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
 use App\Enums\HolidayType;
 use App\Enums\PayFrequency as PayFrequencyEnum;
+use App\Enums\PayrollStatus;
 use App\Enums\PayType;
 use App\Enums\SalaryStatementAttendanceDayType;
 use App\Enums\SalaryStatementAttendanceStatus;
@@ -1111,5 +1113,17 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $periodDaysSummary,
             $salaryStatementAttendances
         ];
+    }
+
+    public function isDateOnAnyNonDraftPayrollStatementAttendance(Employee $employee, Carbon $date): bool
+    {
+        $filters = (object)[
+            'employee_ids' => [$employee->id],
+            'date' => $date->toDateString(),
+            'company_ids' => [$this->company->id],
+            'payroll_not_in_statuses' => [PayrollStatus::DRAFT->value],
+        ];
+
+        return app(SalaryStatementAttendanceRepository::class)->list($filters, ['salary_statement'])->isNotEmpty();
     }
 }
