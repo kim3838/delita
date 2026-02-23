@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\TwoFactorQrCodeController;
 use App\Http\Controllers\Auth\TwoFactorRecoveryCodeController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\Auth\UpdateUserPasswordController;
+use App\Http\Controllers\AutoCreateAttendanceController;
 use App\Http\Controllers\BulkOrganizationController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyUserController;
@@ -415,6 +416,9 @@ Route::group([
     Route::get('employee-portal-attendances', [EmployeePortalAttendanceController::class, 'index']);
     Route::get('employee-portal-attendance/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'show']);
     Route::get('employee-portal-attendances-gate/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'showGate']);
+
+    //Auto create attendance
+    Route::post('auto-create-attendances', [AutoCreateAttendanceController::class, 'store']);
 
     //Attendance Adjustment Request
     Route::get('attendance-adjustment-requests', [AttendanceAdjustmentRequestController::class, 'index']);
