@@ -4,6 +4,7 @@ namespace App\Concrete\Imports;
 
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Imports\AttendanceImport;
+use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Concrete\BaseImportConcrete;
@@ -152,6 +153,21 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                     $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
                     continue;
                 }
+            }
+
+            /**
+             * Validate if the date is not yet payroll generated
+             **/
+            $payrollService = app(PayrollServiceInterface::class, [Company::query()->find($companyId)]);
+
+            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+
+            if($isDateOnAnyPayrollStatementAttendance){
+
+                $validationErrors[] = 'Date is payroll generated.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
             }
 
             /**

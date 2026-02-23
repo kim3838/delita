@@ -35,8 +35,8 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
             ->when(!empty($filters->salary_statement_ids) && is_array($filters->salary_statement_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("salary_statement_attendances.salary_statement_id"), $filters->salary_statement_ids);
             })
-            ->when(isset($filters->date), function ($builder, $value) {
-                $builder->whereDate(DB::raw("salary_statement_attendances.date"), $value);
+            ->when(isset($filters->date), function ($builder, $value) use($filters) {
+                $builder->whereDate(DB::raw("salary_statement_attendances.date"), $filters->date);
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
@@ -61,6 +61,8 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        _log_query_builder_with_bindings($queryBuilder);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
