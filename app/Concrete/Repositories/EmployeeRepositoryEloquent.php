@@ -134,6 +134,9 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                         ->orWhere(DB::raw("CONCAT(employees.family_name, ' ', employees.given_name, ' ', employees.middle_name)"), 'LIKE', "%$value%");
                 });
             })
+            ->when(!empty($filters->or_employee_ids) && is_array($filters->or_employee_ids), function ($builder) use ($filters) {
+                $builder->orWhereIn(DB::raw("employees.id"), $filters->or_employee_ids);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
