@@ -19,8 +19,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 1500,
                 'expected' => [
-                    'employee_share' => '15.000000',
-                    'employer_share' => '30.000000',
+                    'employee_share' => [
+                        'regular' => '15.000000',
+                        'total' => '15.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '30.000000',
+                        'total' => '30.000000'
+                    ],
                     'total' => '45.000000'
                 ]
             ],
@@ -29,8 +35,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 2500,
                 'expected' => [
-                    'employee_share' => '50.000000',
-                    'employer_share' => '50.000000',
+                    'employee_share' => [
+                        'regular' => '50.000000',
+                        'total' => '50.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '50.000000',
+                        'total' => '50.000000'
+                    ],
                     'total' => '100.000000'
                 ]
             ],
@@ -39,8 +51,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 9999.99,
                 'expected' => [
-                    'employee_share' => '199.999800',
-                    'employer_share' => '199.999800',
+                    'employee_share' => [
+                        'regular' => '199.999800',
+                        'total' => '199.999800'
+                    ],
+                    'employer_share' => [
+                        'regular' => '199.999800',
+                        'total' => '199.999800'
+                    ],
                     'total' => '399.999600'
                 ]
             ],
@@ -49,8 +67,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 10000.00,
                 'expected' => [
-                    'employee_share' => '200.000000',
-                    'employer_share' => '200.000000',
+                    'employee_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
                     'total' => '400.000000'
                 ]
             ],
@@ -59,8 +83,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 11500.00,
                 'expected' => [
-                    'employee_share' => '200.000000',
-                    'employer_share' => '200.000000',
+                    'employee_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
                     'total' => '400.000000'
                 ]
             ],
@@ -69,8 +99,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 21500.00,
                 'expected' => [
-                    'employee_share' => '200.000000',
-                    'employer_share' => '200.000000',
+                    'employee_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
                     'total' => '400.000000'
                 ]
             ],
@@ -79,8 +115,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 36187.7,
                 'expected' => [
-                    'employee_share' => '200.000000',
-                    'employer_share' => '200.000000',
+                    'employee_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
                     'total' => '400.000000'
                 ]
             ],
@@ -89,8 +131,14 @@ class StandardPagIBIGContributionTests
                 'test' => false || $this->testAll,
                 'compensation' => 60000.00,
                 'expected' => [
-                    'employee_share' => '200.000000',
-                    'employer_share' => '200.000000',
+                    'employee_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
+                    'employer_share' => [
+                        'regular' => '200.000000',
+                        'total' => '200.000000'
+                    ],
                     'total' => '400.000000'
                 ]
             ],
