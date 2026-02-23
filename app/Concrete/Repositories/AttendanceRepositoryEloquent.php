@@ -12,6 +12,7 @@ use App\Models\Attendance;
 use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -55,6 +56,9 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 $join->on('employee_sub.id', '=', 'attendances.employee_id');
             })
             ->join('attendance_shift_details', 'attendance_shift_details.attendance_id', '=', 'attendances.id')
+            ->when(!empty($filters->attendance_ids) && is_array($filters->attendance_ids), function ($builder) use ($filters) {
+                $builder->whereIn('attendances.id', $filters->attendance_ids);
+            })
             ->when(!empty($filters->attendance_ulids) && is_array($filters->attendance_ulids), function ($builder) use ($filters) {
                 $builder->whereIn('attendances.ulid', $filters->attendance_ulids);
             })
@@ -147,5 +151,19 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+            ['field' => 'attendances.date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 }
