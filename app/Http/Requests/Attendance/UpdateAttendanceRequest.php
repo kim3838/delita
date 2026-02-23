@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Attendance;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Models\Attendance;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
@@ -115,6 +117,28 @@ class UpdateAttendanceRequest extends ImportAttendance
             ],
             'date' => 'required|date_format:Y-m-d',
         ]);
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            $company = Company::query()->find($this->input('company_id'));
+            $employee = Employee::query()->find($this->input('employee_id'));
+            $date = Carbon::parse($this->input('date'));
+
+            $payrollService = app(PayrollServiceInterface::class, [$company]);
+
+            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+
+            if (!empty($employee) && !empty($company) && $isDateOnAnyPayrollStatementAttendance) {
+
+                $validator->errors()->add(
+                    'date',
+                    'Unable to update, payroll generated.'
+                );
+            }
+        });
     }
 
     public function messages(): array
