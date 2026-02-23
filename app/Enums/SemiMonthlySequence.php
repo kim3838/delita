@@ -10,8 +10,8 @@ enum SemiMonthlySequence: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
-            self::FIRST_HALF => 'First half',
-            self::SECOND_HALF => 'Second half',
+            self::FIRST_HALF => '1st half',
+            self::SECOND_HALF => '2nd half',
         };
     }
 
