@@ -86,9 +86,9 @@ class AutoCreateAttendanceConcrete
 
             foreach($datePeriod as $date){
 
-                //Skip if employee has non-draft payroll attendance on this date
-                $isDateOnAnyNonDraftPayrollStatementAttendance = $payrollService->isDateOnAnyNonDraftPayrollStatementAttendance($employee, $date);
-                if($isDateOnAnyNonDraftPayrollStatementAttendance){
+                //Skip if employee has payroll attendance on this date
+                $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+                if($isDateOnAnyPayrollStatementAttendance){
                     $errors[] = [
                         'employee_number' => $employee->number,
                         'employee_full_name' => $employee->fullName,

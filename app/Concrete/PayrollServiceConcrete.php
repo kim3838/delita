@@ -1115,13 +1115,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         ];
     }
 
-    public function isDateOnAnyNonDraftPayrollStatementAttendance(Employee $employee, Carbon $date): bool
+    public function isDateOnAnyPayrollStatementAttendance(Employee $employee, Carbon $date): bool
     {
         $filters = (object)[
             'employee_ids' => [$employee->id],
             'date' => $date->toDateString(),
             'company_ids' => [$this->company->id],
-            'payroll_not_in_statuses' => [PayrollStatus::DRAFT->value],
         ];
 
         return app(SalaryStatementAttendanceRepository::class)->list($filters, ['salary_statement'])->isNotEmpty();
