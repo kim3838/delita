@@ -9,7 +9,9 @@ use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\Repositories\SalaryStatementAttendanceDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Blueprint\Repositories\UserFiledRequestRepository;
+use App\Concrete\AutoCreateAttendanceConcrete;
 use App\Concrete\LeaveService;
+use App\Exceptions\UnexpectedException;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveType;
@@ -37,6 +39,25 @@ class Debug extends Command
      */
     public function handle()
     {
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    private function autoCreateAttendance(): void
+    {
+        $validated = (object)[
+            'replace_existing_attendance' => true,
+            'company_id' => 4,
+            'employee_ids' => [4],
+            'assigned_employee_group_ids' => [],
+            'date_from' => '2026-01-26',
+            'date_to' => '2026-02-25',
+        ];
+
+        $autoCreateAttendance = new AutoCreateAttendanceConcrete();
+
+        $errors = $autoCreateAttendance($validated);
     }
 
     private function salaryStatementAttendanceDetail()
