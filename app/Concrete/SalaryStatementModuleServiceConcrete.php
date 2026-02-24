@@ -4,6 +4,8 @@ namespace App\Concrete;
 
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
+use App\Enums\PayFrequency;
+use App\Enums\SemiMonthlySequence;
 use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Employee;
@@ -145,16 +147,40 @@ class SalaryStatementModuleServiceConcrete
             }
         }
 
+        $additionalSalaryStatements = collect();
         $pipelinePayload = collect($pipelinePayload);
         $pipeline = $pipelinePayload->map(fn($payload) => app($payload['formula_slug']))->values()->toArray();
         $statementDetails = Fractal::collection($salaryStatement->details, PipelineChainableTransformer::class)['data'];
+
+        $isWeekly = $this->payroll->pay_frequency == PayFrequency::WEEKLY;
+        $isWeeklyAndIsLastSplitOfMonth = false;
+
+        if($isWeekly){
+
+            $weekSpan = 7;
+            $nextWeeklyPayrollEndDate = $this->payroll->end_date->copy()->addDays($weekSpan);
+
+            $nextWeeklyPayrollIsSameYearMonthAsIntermediate = $nextWeeklyPayrollEndDate->year == $this->payroll->end_date->year &&
+                $nextWeeklyPayrollEndDate->month == $this->payroll->end_date->month;
+
+            $isWeeklyAndIsLastSplitOfMonth = !$nextWeeklyPayrollIsSameYearMonthAsIntermediate;
+        }
+
+        $flags = [
+            'is_monthly' => $this->payroll->pay_frequency == PayFrequency::MONTHLY,
+            'is_semimonthly_and_is_2nd_half' => $this->payroll->pay_frequency == PayFrequency::SEMI_MONTHLY &&
+                $this->payroll->frequency_sequence == SemiMonthlySequence::SECOND_HALF,
+            'is_weekly_and_is_last_split_of_month' => $isWeeklyAndIsLastSplitOfMonth
+        ];
 
         $pipelineContext = new SalaryStatementContext(
             $this->company,
             $this->payroll,
             $salaryStatement,
+            $additionalSalaryStatements,
             $this->employee,
             $pipelinePayload,
+            $flags,
             $statementDetails
         );
 

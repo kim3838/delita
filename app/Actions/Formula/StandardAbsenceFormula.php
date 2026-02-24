@@ -30,6 +30,8 @@ class StandardAbsenceFormula
             ]);
         }
 
+        $absencePenalty = BigDecimal::zero();
+
         $statementDetail = [
             'id' => null,
             'formulable_type' => $formula->formulable_type->value,

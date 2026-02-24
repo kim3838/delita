@@ -3,8 +3,10 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
-use App\Enums\PayFrequency;
+use App\Enums\Formulable;
 use App\Enums\SalaryStatementDetailComponentValueType;
+use App\Facades\Fractal;
+use App\Transformers\SalaryStatementDetail\PipelineChainableTransformer;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -21,6 +23,11 @@ class StandardPhilhealthContributionFormula
         $formulaSettings = $companyFormula->settings;
         $formula = $pipelinePayload['formula'];
 
+        $coverage = [
+            'coverage_start' => $context->payroll->start_date?->toDateString(),
+            'coverage_end' => $context->payroll->end_date?->toDateString(),
+        ];
+
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
@@ -36,8 +43,29 @@ class StandardPhilhealthContributionFormula
 
         $totalTaxable = BigDecimal::of($context->totals['taxable']);
 
-        if($totalTaxable->isGreaterThan(BigDecimal::zero()) && $context->payroll->pay_frequency == PayFrequency::MONTHLY){
+        if($context->additionalSalaryStatements->isNotEmpty()){
 
+            $coverage['coverage_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
+
+            foreach($context->additionalSalaryStatements as $salaryStatement){
+
+                $statementDetails = Fractal::collection(
+                    $salaryStatement->details->where('formulable_type', Formulable::EARNINGS->value),
+                    PipelineChainableTransformer::class
+                )['data'];
+
+                foreach ($statementDetails as $detail) {
+
+                    $totalTaxable = $totalTaxable->plus(BigDecimal::of((string)$detail['taxable']));
+                }
+            }
+        }
+
+        if($totalTaxable->isGreaterThan(BigDecimal::zero()) && (
+                $context->flags['is_monthly'] ||
+                $context->flags['is_semimonthly_and_is_2nd_half'] ||
+                $context->flags['is_weekly_and_is_last_split_of_month']))
+        {
             $statementDetail = [
                 'id' => null,
                 'formulable_type' => $formula->formulable_type->value,
@@ -57,8 +85,7 @@ class StandardPhilhealthContributionFormula
                 ...$contribution,
                 'type' => SalaryStatementDetailComponentValueType::PH_PHILHEALTH->value,
                 'pay_frequency' => $context->payroll->pay_frequency?->label(),
-                'coverage_start' => $context->payroll->start_date?->toDateString(),
-                'coverage_end' => $context->payroll->end_date?->toDateString(),
+                ...$coverage
             ];
 
             $statementDetail['component_values'] = $componentValues;

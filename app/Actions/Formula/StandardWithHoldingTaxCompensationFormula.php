@@ -3,8 +3,11 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use App\Enums\Formulable;
 use App\Enums\PayFrequency;
 use App\Enums\SalaryStatementDetailComponentValueType;
+use App\Facades\Fractal;
+use App\Transformers\SalaryStatementDetail\PipelineChainableTransformer;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -21,6 +24,11 @@ class StandardWithHoldingTaxCompensationFormula
         $formulaSettings = $companyFormula->settings;
         $formula = $pipelinePayload['formula'];
 
+        $coverage = [
+            'coverage_start' => $context->payroll->start_date?->toDateString(),
+            'coverage_end' => $context->payroll->end_date?->toDateString(),
+        ];
+
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
@@ -32,11 +40,32 @@ class StandardWithHoldingTaxCompensationFormula
             ]);
         }
 
-        if($context->payroll->pay_frequency == PayFrequency::MONTHLY){
+        $runningTaxable = BigDecimal::of($context->runningValues['taxable'] ?? '0');
 
-            $runningTaxable = $context->runningValues['taxable'];
+        if($context->additionalSalaryStatements->isNotEmpty()){
 
-            $withholdingTax = $this->getIntended($formulaSettings->cast, $runningTaxable, PayFrequency::MONTHLY);
+            $coverage['coverage_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
+
+            foreach($context->additionalSalaryStatements as $salaryStatement){
+
+                $statementDetails = Fractal::collection(
+                    $salaryStatement->details->where('formulable_type', Formulable::EARNINGS->value),
+                    PipelineChainableTransformer::class
+                )['data'];
+
+                foreach ($statementDetails as $detail) {
+
+                    $runningTaxable = $runningTaxable->plus(BigDecimal::of((string)$detail['taxable']));
+                }
+            }
+        }
+
+        if(
+            $context->flags['is_monthly'] ||
+            $context->flags['is_semimonthly_and_is_2nd_half'] ||
+            $context->flags['is_weekly_and_is_last_split_of_month']
+        ){
+            $withholdingTax = $this->getIntended($formulaSettings->cast, $runningTaxable->toString(), PayFrequency::MONTHLY);
 
             $context->totals = [
                 ...$context->totals,
@@ -68,8 +97,7 @@ class StandardWithHoldingTaxCompensationFormula
             $componentValues = [
                 'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX->value,
                 'pay_frequency' => $context->payroll->pay_frequency?->label(),
-                'coverage_start' => $context->payroll->start_date?->toDateString(),
-                'coverage_end' => $context->payroll->end_date?->toDateString(),
+                ...$coverage
             ];
 
             $statementDetail['component_values'] = $componentValues;
