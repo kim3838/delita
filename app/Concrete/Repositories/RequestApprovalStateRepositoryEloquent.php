@@ -8,6 +8,7 @@ use App\Concrete\ApprovalService;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
+use App\Models\Company;
 use App\Models\RequestApprovalState;
 use App\Traits\HasPolicy;
 use Carbon\Carbon;
@@ -242,7 +243,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
     /**
      * @throws UnexpectedException
      */
-    public function applyWorkflow($accountId, RequestApprovalStatus $action, $remarks, $approvalStates): array
+    public function applyWorkflow($accountId, $companyId, RequestApprovalStatus $action, $remarks, $approvalStates): array
     {
         $approvalStates = collect($approvalStates)->sortBy('id')->toArray();
         $actionReadable = $action->verbLabel();
@@ -293,6 +294,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
             }
 
             $approvalService = new ApprovalService();
+            $approvalService->setCompany(Company::query()->find($companyId));
 
             list(
                 $noValidationError,

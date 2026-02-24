@@ -9,6 +9,7 @@ use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Models\Attendance;
+use App\Models\Company;
 use App\Models\RequestApprovalState;
 use App\Models\Shift;
 use App\Traits\HasLeave;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\App;
 
 class ApprovalService
 {
+    public ?Company $company;
+
     use HasLeave;
 
     public static array $seriesMap = [
@@ -63,6 +66,11 @@ class ApprovalService
             ]
         ],
     ];
+
+    public function setCompany(Company $company): void
+    {
+        $this->company = $company;
+    }
 
     /**
      *

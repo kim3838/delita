@@ -39,13 +39,14 @@ class RequestApprovalStateController extends Controller
     {
         if($request->expectsJson()){
 
+            $companyId = data_get($request->validated(), 'company_id');
             $accountId = data_get($request->validated(), 'account_id');
             $action = data_get($request->validated(), 'action');
             $remarks = data_get($request->validated(), 'remarks');
             $approvalStates = data_get($request->validated(), 'approval_states', []);
 
             return ResponseJson::successfulResponse([
-                'results' => $this->repository->applyWorkflow($accountId, RequestApprovalStatus::tryFrom($action), $remarks, $approvalStates)
+                'results' => $this->repository->applyWorkflow($accountId, $companyId, RequestApprovalStatus::tryFrom($action), $remarks, $approvalStates)
             ]);
         }
 
