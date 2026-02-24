@@ -1050,7 +1050,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $payrollAttendanceStatus = SalaryStatementAttendanceStatus::DAY_OFF;
             } else if(empty($attendance) && !$hasLeave) {
                 $payrollAttendanceStatus = SalaryStatementAttendanceStatus::ABSENT;
-            } else if ($hasLeave){
+            } else if (empty($attendance) && $hasLeave){
                 $payrollAttendanceStatus = match($leaveType?->is_paid){
                     true => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY,
                     false, null => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
