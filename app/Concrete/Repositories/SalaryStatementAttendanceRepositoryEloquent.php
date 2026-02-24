@@ -62,8 +62,6 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());

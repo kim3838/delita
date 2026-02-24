@@ -9,6 +9,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Models\SalaryStatement;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -34,11 +35,18 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             ->when(in_array('payroll', $relations), function ($builder) use($filters) {
 
                 $payrollRepositoryFilter = clone $filters;
-                if(isset($payrollRepositoryFilter->payroll_search)){
-                    $payrollRepositoryFilter->search = $payrollRepositoryFilter->payroll_search;
-                }
+                if(isset($payrollRepositoryFilter->payroll_search)){$payrollRepositoryFilter->search = $payrollRepositoryFilter->payroll_search;}
+                if(isset($payrollRepositoryFilter->payroll_year)){$payrollRepositoryFilter->year = $payrollRepositoryFilter->payroll_year;}
+                if(isset($payrollRepositoryFilter->payroll_month)){$payrollRepositoryFilter->month = $payrollRepositoryFilter->payroll_month;}
+                if(isset($payrollRepositoryFilter->payroll_pay_frequency)){$payrollRepositoryFilter->pay_frequency = $payrollRepositoryFilter->payroll_pay_frequency;}
+                if(isset($payrollRepositoryFilter->payroll_frequency_sequence)){$payrollRepositoryFilter->frequency_sequence = $payrollRepositoryFilter->payroll_frequency_sequence;}
+
                 unset($payrollRepositoryFilter->payroll_search);
                 unset($payrollRepositoryFilter->employee_search);
+                unset($payrollRepositoryFilter->payroll_year);
+                unset($payrollRepositoryFilter->payroll_month);
+                unset($payrollRepositoryFilter->payroll_pay_frequency);
+                unset($payrollRepositoryFilter->payroll_frequency_sequence);
 
                 $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
 
@@ -51,6 +59,9 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             })
             ->when(!empty($filters->salary_statement_ids) && is_array($filters->salary_statement_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("salary_statements.id"), $filters->salary_statement_ids);
+            })
+            ->when(!empty($filters->not_salary_statement_ids) && is_array($filters->not_salary_statement_ids), function ($builder) use ($filters) {
+                $builder->whereNotIn(DB::raw("salary_statements.id"), $filters->not_salary_statement_ids);
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
@@ -123,6 +134,23 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters, $relations = []): Collection
+    {
+        $orders = empty($orders) ? [
+            ...(in_array('payroll', $relations) ? [
+                ['field' => 'payroll_sub.id', 'direction' => 'ASC']
+            ] : []),
+
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+        ]: $orders;
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function show($identifier)

@@ -93,11 +93,6 @@ class PayrollController extends Controller
 
             $payroll = $this->repository->show($ulid);
 
-            _debug([
-                'Payroll' => get_class($payroll),
-                'Payroll array' => $payroll?->toArray(),
-            ]);
-
             $payroll = $payroll ? Fractal::item($payroll, ItemTransformer::class) : $payroll;
 
             return ResponseJson::successfulResponse([

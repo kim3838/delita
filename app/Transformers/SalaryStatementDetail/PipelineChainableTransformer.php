@@ -14,12 +14,12 @@ class PipelineChainableTransformer extends TransformerAbstract
             'formulable_type' => $model->formulable_type?->value,
             'component_type' => $model->component_type?->value,
             'component_values' => $model->component_values,
-            'taxable' => (float)$model->taxable,
-            'nontaxable' => (float)$model->nontaxable,
-            'deduction' => (float)$model->deduction,
-            'contribution' => (float)$model->contribution,
-            'withholding_tax' => (float)$model->withholding_tax,
-            'net' => (float)$model->net,
+            'taxable' => $model->taxable,
+            'nontaxable' => $model->nontaxable,
+            'deduction' => $model->deduction,
+            'contribution' => $model->contribution,
+            'withholding_tax' => $model->withholding_tax,
+            'net' => $model->net,
         ];
     }
 }

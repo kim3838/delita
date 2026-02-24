@@ -10,6 +10,7 @@ use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -63,6 +64,18 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(!empty($filters->payroll_not_in_statuses) && is_array($filters->payroll_not_in_statuses), function ($builder) use ($filters) {
                 $builder->whereNotIn('payrolls.status', $filters->payroll_not_in_statuses);
             })
+            ->when(isset($filters->year), function ($builder) use ($filters) {
+                $builder->where('payrolls.year', $filters->year);
+            })
+            ->when(isset($filters->month), function ($builder) use ($filters) {
+                $builder->where('payrolls.month', $filters->month);
+            })
+            ->when(isset($filters->pay_frequency), function ($builder) use ($filters) {
+                $builder->where('payrolls.pay_frequency', $filters->pay_frequency);
+            })
+            ->when(isset($filters->frequency_sequence), function ($builder) use ($filters) {
+                $builder->where('payrolls.frequency_sequence', $filters->frequency_sequence);
+            })
             ->when((
                 (isset($filters->from_month) && Carbon::createFromFormat('Y-m', $filters->from_month)) &&
                 (isset($filters->to_month) && Carbon::createFromFormat('Y-m', $filters->to_month))
@@ -108,6 +121,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $orders = [
             ['field' => 'payrolls.year', 'direction' => 'ASC'],
             ['field' => 'payrolls.month', 'direction' => 'ASC'],
+            ['field' => 'payrolls.pay_frequency', 'direction' => 'ASC'],
+            ['field' => 'payrolls.frequency_sequence', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
@@ -117,6 +132,20 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'payrolls.year', 'direction' => 'ASC'],
+            ['field' => 'payrolls.month', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function selection($filters): LengthAwarePaginator
