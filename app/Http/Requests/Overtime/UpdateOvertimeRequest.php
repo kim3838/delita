@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Overtime;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Models\Attendance;
+use App\Models\Company;
 use App\Models\Overtime;
 use App\Models\Shift;
 use App\Traits\WorkPeriod;
@@ -83,6 +85,27 @@ class UpdateOvertimeRequest extends ImportOvertime
                 }
             ],
         ]);
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            $company = Company::query()->find($this->input('company_id'));
+            $attendance = Attendance::query()->find($this->input('attendance_id'));
+
+            $payrollService = app(PayrollServiceInterface::class, [$company]);
+
+            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($attendance->employee, $attendance->date);
+
+            if ($isDateOnAnyPayrollStatementAttendance) {
+
+                $validator->errors()->add(
+                    'date',
+                    'Unable to update, payroll generated.'
+                );
+            }
+        });
     }
 
     public function messages(): array

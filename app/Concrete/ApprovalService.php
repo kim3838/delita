@@ -2,6 +2,7 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
@@ -97,6 +98,8 @@ class ApprovalService
 
             if($action == RequestApprovalStatus::APPROVED){
 
+                $payrollService = app(PayrollServiceInterface::class, [$this->company]);
+
                 switch($approvalState->requestable_type){
                     case 'attendance_adjustment_request':
                     case 'overtime_request':
@@ -138,7 +141,7 @@ class ApprovalService
                                 list(
                                     $currentShiftAndAttendanceShiftStillTheSame,
                                     $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                                    ) = $this->validateAttendanceShiftDetails(
+                                ) = $this->validateAttendanceShiftDetails(
                                     $this->shift,
                                     $this->attendanceSchedule,
                                     $attendance->shiftDetail->toArray(),
@@ -154,12 +157,34 @@ class ApprovalService
 
                                     $validationErrors[] = 'Unable to proceed, shift schedule settings have changed';
                                 }
+
+                                $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($attendance->employee, $attendance->date);
+
+                                if ($isDateOnAnyPayrollStatementAttendance) {
+
+                                    $validationErrors[] = 'Unable to proceed, payroll generated.';
+                                }
                             }
                         }
 
                         break;
                     case 'leave_request':
                         $requestablePatchable = Fractal::item($requestable, LeaveRequestPatchableTransformer::class);
+
+                        $datePeriod = CarbonPeriod::create($requestable->date_from, $requestable->date_to);
+
+                        foreach($datePeriod as $date){
+
+                            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($requestable->employee, $date);
+
+                            if($isDateOnAnyPayrollStatementAttendance){
+                                $validationErrors[] = 'Unable to proceed ' .$date->toDateString() . ', payroll generated.';
+
+                                break;
+                            }
+                        }
+
+                        break;
                 }
 
                 $this->chainRequestableAction(empty($validationErrors), $requestable, $approvalState , $requestablePatchable);

@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Overtime;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,9 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
             ->joinSub($attendanceQueryBuilder, 'attendance_sub', function ($join) {
                 $join->on('attendance_sub.id', '=', 'overtimes.attendance_id');
             })
+            ->when(!empty($filters->overtime_ids) && is_array($filters->overtime_ids), function ($builder) use ($filters) {
+                $builder->whereIn('overtimes.id', $filters->overtime_ids);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
 
@@ -48,6 +52,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
                 "attendance_sub.ulid AS attendance_ulid",
                 "attendance_sub.employee_id AS attendance_employee_id",
                 "attendance_sub.shift_id AS attendance_shift_id",
+                "attendance_sub.date AS attendance_date",
 
                 /**
                  * Shift
@@ -84,6 +89,19 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $orders = [
+            ['field' => 'attendance_sub.date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     /**

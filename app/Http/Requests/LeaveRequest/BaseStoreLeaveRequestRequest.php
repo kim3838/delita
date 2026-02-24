@@ -2,9 +2,14 @@
 
 namespace App\Http\Requests\LeaveRequest;
 
+use App\Blueprint\PayrollServiceInterface;
+use App\Models\Company;
+use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Traits\HasApproval;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -57,6 +62,49 @@ class BaseStoreLeaveRequestRequest extends FormRequest
             'date_to' => 'required|date_format:Y-m-d|after_or_equal:date_from',
             'remarks' => 'nullable|string|max:255',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            $leaveRequestAborted = false;
+            $company = Company::query()->find($this->input('company_id'));
+            $employee = Employee::query()->find($this->input('employee_id'));
+            $dateFrom = $this->input('date_from', null);
+            $dateTo = $this->input('date_to', null);
+            $payrollService = app(PayrollServiceInterface::class, [$company]);
+
+            if(!empty($dateFrom) && !empty($dateTo)){
+
+                $dateFrom = Carbon::parse($dateFrom);
+                $dateTo = Carbon::parse($dateTo);
+
+                $datePeriod = CarbonPeriod::create($dateFrom, $dateTo);
+
+                foreach($datePeriod as $date){
+
+                    $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+
+                    if(!$leaveRequestAborted && $isDateOnAnyPayrollStatementAttendance){
+
+                        $leaveRequestAborted = true;
+
+                        $validator->errors()->add(
+                            'leave_request_aborted',
+                            'Leave request aborted'
+                        );
+                    }
+
+                    if($isDateOnAnyPayrollStatementAttendance){
+                        $validator->errors()->add(
+                            $date->toDateString(),
+                            'Unable to leave request ' .$date->toDateString() . ', payroll generated.'
+                        );
+                    }
+                }
+            }
+        });
     }
 
     public function messages(): array

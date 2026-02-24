@@ -26,7 +26,7 @@ class BatchDestroyAttendanceRequest extends FormRequest
     {
         $validator->after(function ($validator) {
 
-            $buildDeleteAborted = false;
+            $bulkDeleteAborted = false;
             $attendanceIds = $this->input('attendance_ids', []);
             $attendances = app(AttendanceRepository::class)->list((object)[
                 'attendance_ids' => $attendanceIds
@@ -38,9 +38,9 @@ class BatchDestroyAttendanceRequest extends FormRequest
 
                 $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($attendance->employee, $attendance->date);
 
-                if(!$buildDeleteAborted && $isDateOnAnyPayrollStatementAttendance){
+                if(!$bulkDeleteAborted && $isDateOnAnyPayrollStatementAttendance){
 
-                    $buildDeleteAborted = true;
+                    $bulkDeleteAborted = true;
 
                     $validator->errors()->add(
                         'bulk_delete_aborted',

@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\OvertimeRequest;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Http\Requests\Overtime\ImportOvertime;
 use App\Models\Attendance;
+use App\Models\Company;
 use App\Models\OvertimeRequest;
 use App\Models\Shift;
 use App\Traits\HasApproval;
@@ -104,6 +106,27 @@ class BaseStoreOvertimeRequestRequest extends ImportOvertime
             ],
             'remarks' => 'nullable|string|max:255',
         ]);
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            $company = Company::query()->find($this->input('company_id'));
+            $attendance = Attendance::query()->find($this->input('attendance_id'));
+
+            $payrollService = app(PayrollServiceInterface::class, [$company]);
+
+            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($attendance->employee, $attendance->date);
+
+            if ($isDateOnAnyPayrollStatementAttendance) {
+
+                $validator->errors()->add(
+                    'date',
+                    'Unable to submit, payroll generated.'
+                );
+            }
+        });
     }
 
     public function messages(): array

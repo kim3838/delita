@@ -4,6 +4,7 @@ namespace App\Concrete\Imports;
 
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Imports\OvertimeImport;
+use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\OvertimeRepository;
 use App\Concrete\BaseImportConcrete;
 use App\Exceptions\UnexpectedException;
@@ -139,6 +140,21 @@ class OvertimeImportConcrete extends BaseImportConcrete implements OvertimeImpor
                     $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
                     continue;
                 }
+            }
+
+            /**
+             * Validate if the date is not yet payroll generated
+             **/
+            $payrollService = app(PayrollServiceInterface::class, [Company::query()->find($companyId)]);
+
+            $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+
+            if($isDateOnAnyPayrollStatementAttendance){
+
+                $validationErrors[] = 'Date is payroll generated.';
+
+                $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
+                continue;
             }
 
             /**
