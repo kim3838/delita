@@ -7,6 +7,16 @@ use App\Models\User;
 
 class SalaryStatementPolicy extends BasePolicy
 {
+    public function viewAny(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'view-salary-statement');
+    }
+
     public function view(User $user, SalaryStatement $salaryStatement): bool
     {
         if($user->isSuperAdmin()){
@@ -14,7 +24,7 @@ class SalaryStatementPolicy extends BasePolicy
         }
 
         return $this->userIsAdminInCompany($user, request()->input('company_id'))
-            && $this->hasPermission($user, 'view-payroll');
+            && $this->hasPermission($user, 'view-salary-statement');
     }
 
     public function delete(User $user, SalaryStatement $salaryStatement): bool

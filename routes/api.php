@@ -44,6 +44,7 @@ use App\Http\Controllers\EmployeePortal\LeaveRequestController as EmployeePortal
 use App\Http\Controllers\EmployeePortal\LeaveRunningBalanceByTypeController as EmployeePortalLeaveRunningBalanceByTypeController;
 use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
 use App\Http\Controllers\EmployeePortal\OvertimeRequestController as EmployeePortalOvertimeRequestController;
+use App\Http\Controllers\EmployeeSalaryStatementController as EmployeeSalaryStatementController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
@@ -555,6 +556,9 @@ Route::group([
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);
     Route::get('salary-statement/{ulid}', [SalaryStatementController::class, 'show']);
     Route::delete('salary-statements', [SalaryStatementController::class, 'batchDestroy']);
+
+    Route::get('employee-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
+    Route::get('employee-salary-statement/{ulid}', [EmployeeSalaryStatementController::class, 'show']);
 });
 
 Route::group([

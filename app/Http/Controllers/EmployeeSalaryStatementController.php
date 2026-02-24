@@ -5,19 +5,18 @@ namespace App\Http\Controllers;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Http\Requests\SalaryStatement\BatchDestroySalaryStatementRequest;
-use App\Http\Requests\SalaryStatement\ListSalaryStatementRequest;
-use App\Http\Requests\SalaryStatement\ViewSalaryStatementRequest;
+use App\Http\Requests\EmployeePortal\SalaryStatement\ViewSalaryStatementRequest;
 use App\Transformers\SalaryStatement\ItemTransformer;
 use App\Transformers\SalaryStatement\ListTransformer;
+use Illuminate\Http\Request;
 
-class SalaryStatementController extends Controller
+class EmployeeSalaryStatementController extends Controller
 {
     public function __construct(
         protected readonly SalaryStatementRepository $repository
     ){}
 
-    public function index(ListSalaryStatementRequest $request)
+    public function index(Request $request)
     {
         if($request->expectsJson()){
 
@@ -42,20 +41,6 @@ class SalaryStatementController extends Controller
             return ResponseJson::successfulResponse([
                 'salary_statement' => $salaryStatement,
             ]);
-        }
-
-        abort(404);
-    }
-
-    public function batchDestroy(BatchDestroySalaryStatementRequest $request)
-    {
-        if($request->expectsJson()){
-
-            $ids = data_get($request->validated(), 'salary_statement_ids', []);
-
-            $this->repository->batchDelete($ids);
-
-            return ResponseJson::successfulResponse();
         }
 
         abort(404);

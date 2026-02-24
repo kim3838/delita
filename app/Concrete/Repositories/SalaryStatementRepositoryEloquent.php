@@ -40,13 +40,10 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 if(isset($payrollRepositoryFilter->payroll_month)){$payrollRepositoryFilter->month = $payrollRepositoryFilter->payroll_month;}
                 if(isset($payrollRepositoryFilter->payroll_pay_frequency)){$payrollRepositoryFilter->pay_frequency = $payrollRepositoryFilter->payroll_pay_frequency;}
                 if(isset($payrollRepositoryFilter->payroll_frequency_sequence)){$payrollRepositoryFilter->frequency_sequence = $payrollRepositoryFilter->payroll_frequency_sequence;}
+                if(isset($payrollRepositoryFilter->payroll_from_month)){$payrollRepositoryFilter->from_month = $payrollRepositoryFilter->payroll_from_month;}
+                if(isset($payrollRepositoryFilter->payroll_to_month)){$payrollRepositoryFilter->to_month = $payrollRepositoryFilter->payroll_to_month;}
 
-                unset($payrollRepositoryFilter->payroll_search);
                 unset($payrollRepositoryFilter->employee_search);
-                unset($payrollRepositoryFilter->payroll_year);
-                unset($payrollRepositoryFilter->payroll_month);
-                unset($payrollRepositoryFilter->payroll_pay_frequency);
-                unset($payrollRepositoryFilter->payroll_frequency_sequence);
 
                 $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter);
 
@@ -121,7 +118,11 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
     {
         $orders = empty($orders) ? [
             ...(in_array('payroll', $relations) ? [
-                ['field' => 'payroll_sub.id', 'direction' => 'ASC']
+                ['field' => 'payroll_sub.year', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.month', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.pay_frequency', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.frequency_sequence', 'direction' => 'ASC'],
+
             ] : []),
 
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
