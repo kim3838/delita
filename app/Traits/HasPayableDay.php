@@ -767,6 +767,22 @@ trait HasPayableDay
             };
         }
 
+        if($payrollFrequency === PayFrequencyEnum::WEEKLY){
+
+            $hourlyRate = match($amountablePayrollComponent->pay_period){
+
+                PayPeriod::MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('4'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::SEMI_MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('2'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                    ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
+
+                PayPeriod::HOURLY => $payrollComponentAmount
+            };
+        }
+
         return $hourlyRate;
     }
 
