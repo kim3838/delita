@@ -122,6 +122,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 ['field' => 'payroll_sub.month', 'direction' => 'ASC'],
                 ['field' => 'payroll_sub.pay_frequency', 'direction' => 'ASC'],
                 ['field' => 'payroll_sub.frequency_sequence', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.start_date', 'direction' => 'ASC'],
 
             ] : []),
 

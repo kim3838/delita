@@ -34,7 +34,9 @@ class Attendance extends Model
         'lunch_out' => 'datetime',
         'lunch_in' => 'datetime',
         'last_out' => 'datetime',
-        'status' => AttendanceStatus::class
+        'status' => AttendanceStatus::class,
+
+        'date_series_date' => 'date',
     ];
 
     public function employee(): BelongsTo

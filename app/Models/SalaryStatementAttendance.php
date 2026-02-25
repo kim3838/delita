@@ -32,6 +32,7 @@ class SalaryStatementAttendance extends Model
     protected $casts = [
         'ulid' => 'string',
         'salary_statement_id' => 'int',
+        'attendance_id' => 'int',
         'date' => 'date',
         'status' => SalaryStatementAttendanceStatus::class,
         'day_type' => SalaryStatementAttendanceDayType::class,
