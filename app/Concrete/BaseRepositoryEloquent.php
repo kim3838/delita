@@ -8,12 +8,11 @@ use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Str;
 
 abstract class BaseRepositoryEloquent
 {
@@ -112,10 +111,10 @@ abstract class BaseRepositoryEloquent
     /**
      * Generate a LengthAwarePaginator class based from the count of Builder class
      *
-     * @param Builder $queryBuilder
+     * @param QueryBuilder $queryBuilder
      * @return LengthAwarePaginator
      */
-    protected function createPaginationFromBuilder(Builder $queryBuilder): LengthAwarePaginator
+    protected function createPaginationFromBuilder(QueryBuilder $queryBuilder): LengthAwarePaginator
     {
         $itemsPerPage = Request::get('perPage', 50);
 
@@ -203,23 +202,23 @@ abstract class BaseRepositoryEloquent
         return "ORDER BY $order";
     }
 
-    protected function setOrdersOnBuilder(Builder $builder, $orders = []): void
+    protected function setOrdersOnBuilder(QueryBuilder $builder, $orders = []): void
     {
         foreach ($orders as $order) {
             $builder->orderBy($order['field'], $order['direction']);
         }
     }
 
-    protected function setGroupsOnBuilder(Builder $builder, $groups = []): void
+    protected function setGroupsOnBuilder(QueryBuilder $builder, $groups = []): void
     {
         foreach ($groups as $group) {
             $builder->groupBy($group);
         }
     }
 
-    protected function queryAsSub(Builder $builder, $as)
+    protected function queryAsSub(QueryBuilder $builder, $as)
     {
-        return app(Builder::class)->fromSub($builder, $as);
+        return app(QueryBuilder::class)->fromSub($builder, $as);
     }
 
     protected function subQuery($builder, $alias = '_'): Builder
@@ -227,6 +226,26 @@ abstract class BaseRepositoryEloquent
         return DB::table(DB::raw("(" . $builder->toSql() . ") as " . $alias))
             ->mergeBindings($builder)
             ->select('*');
+    }
+
+    protected function dateSeries($dateFrom, $dateTo, $alias = 'date_series')
+    {
+        $dateSeries = "
+            WITH RECURSIVE date_series AS (
+                SELECT DATE(?) AS date
+                UNION ALL
+                SELECT DATE_ADD(date, INTERVAL 1 DAY)
+                FROM date_series
+                WHERE date < ?
+            )
+            SELECT date
+            FROM date_series
+        ";
+
+        $dateSeriesParams = ['start_date' => $dateFrom, 'end_date' => $dateTo];
+
+        return app(QueryBuilder::class)
+            ->fromRaw("($dateSeries) as date_series", [$dateSeriesParams['start_date'], $dateSeriesParams['end_date']]);
     }
 
     /**
