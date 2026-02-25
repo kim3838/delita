@@ -123,6 +123,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ['field' => 'payrolls.month', 'direction' => 'ASC'],
             ['field' => 'payrolls.pay_frequency', 'direction' => 'ASC'],
             ['field' => 'payrolls.frequency_sequence', 'direction' => 'ASC'],
+            ['field' => 'payrolls.start_date', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
@@ -148,24 +149,17 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function selection($filters): LengthAwarePaginator
+    public function selection($filters, $relations = []): LengthAwarePaginator
     {
         $orders = [
-            ['field' => 'payrolls.id', 'direction' => 'ASC'],
+            ['field' => 'payrolls.year', 'direction' => 'DESC'],
+            ['field' => 'payrolls.month', 'direction' => 'DESC'],
+            ['field' => 'payrolls.pay_frequency', 'direction' => 'DESC'],
+            ['field' => 'payrolls.frequency_sequence', 'direction' => 'DESC'],
+            ['field' => 'payrolls.start_date', 'direction' => 'DESC'],
         ];
 
-        $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where('payrolls.company_id', $value);
-            })
-            ->when($filters->search ?? false, function ($builder, $value) {
-                $builder->where(function ($query) use ($value) {
-                    $query->where('number', 'like', "%$value%");
-                });
-            })
-            ->select([
-                'payrolls.*',
-            ]);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 

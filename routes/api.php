@@ -44,6 +44,7 @@ use App\Http\Controllers\EmployeePortal\LeaveRequestController as EmployeePortal
 use App\Http\Controllers\EmployeePortal\LeaveRunningBalanceByTypeController as EmployeePortalLeaveRunningBalanceByTypeController;
 use App\Http\Controllers\EmployeePortal\OvertimeController as EmployeePortalOvertimeController;
 use App\Http\Controllers\EmployeePortal\OvertimeRequestController as EmployeePortalOvertimeRequestController;
+use App\Http\Controllers\EmployeePortal\PayrollAttendanceController as EmployeePortalPayrollAttendanceController;
 use App\Http\Controllers\EmployeeSalaryStatementController as EmployeeSalaryStatementController;
 use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
@@ -417,6 +418,8 @@ Route::group([
     Route::get('employee-portal-attendances', [EmployeePortalAttendanceController::class, 'index']);
     Route::get('employee-portal-attendance/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'show']);
     Route::get('employee-portal-attendances-gate/{attendanceUlid}', [EmployeePortalAttendanceController::class, 'showGate']);
+
+    Route::get('employee-portal-payroll-attendances', [EmployeePortalPayrollAttendanceController::class, 'index']);
 
     //Auto create attendance
     Route::post('auto-create-attendances', [AutoCreateAttendanceController::class, 'store']);
