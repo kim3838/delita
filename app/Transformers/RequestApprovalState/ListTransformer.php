@@ -4,6 +4,7 @@ namespace App\Transformers\RequestApprovalState;
 
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Enums\RequestableType;
 use App\Facades\Fractal;
 use App\Models\RequestApprovalState;
 use App\Traits\HasTime;
@@ -79,6 +80,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $requestApprovalState->id,
             'requestable' => [
                 'type' => $requestApprovalState->requestable_type,
+                'type_readable' => RequestableType::tryFrom($requestApprovalState->requestable_type)?->label(),
                 'id' => $requestApprovalState->requestable_id,
                 'number' => $requestApprovalState->requestable_number,
                 'date_requested_diff' => $this->diffForHumans(

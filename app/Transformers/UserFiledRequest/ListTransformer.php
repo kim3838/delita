@@ -2,6 +2,7 @@
 
 namespace App\Transformers\UserFiledRequest;
 
+use App\Enums\RequestableType;
 use App\Models\Hydrations\User\UserFiledRequest;
 use App\Traits\HasTime;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $userFiledRequest->id,
             'requestable_type' => $userFiledRequest->requestable_type,
             'requestable_id' => $userFiledRequest->requestable_id,
+            'requestable_type_readable' => RequestableType::tryFrom($userFiledRequest->requestable_type)?->label(),
             'number' => $userFiledRequest->number,
             'date_requested' => $userFiledRequest->date_requested->format('Y-m-d H:i'),
             'date_requested_diff' => $this->diffForHumans(
