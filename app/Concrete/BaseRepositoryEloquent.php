@@ -221,7 +221,7 @@ abstract class BaseRepositoryEloquent
         return app(QueryBuilder::class)->fromSub($builder, $as);
     }
 
-    protected function subQuery($builder, $alias = '_'): Builder
+    protected function subQuery($builder, $alias = '_'): QueryBuilder
     {
         return DB::table(DB::raw("(" . $builder->toSql() . ") as " . $alias))
             ->mergeBindings($builder)
