@@ -9,6 +9,8 @@ class WorldSeeder extends Seeder
 {
 	public function run()
 	{
+        ini_set('memory_limit', '512M');
+
 		$this->call([
 			SeedAction::class,
 		]);
