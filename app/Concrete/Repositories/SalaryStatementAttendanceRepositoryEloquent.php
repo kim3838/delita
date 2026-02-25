@@ -49,6 +49,21 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
                 "salary_statement_attendances.date",
                 "salary_statement_attendances.status",
                 "salary_statement_attendances.day_type",
+
+                ...(in_array('salary_statement', $relations) ? [
+                    DB::raw("salary_statement_sub.payroll_id as payroll_id"),
+                    DB::raw("salary_statement_sub.payroll_ulid as payroll_ulid"),
+                    DB::raw("salary_statement_sub.payroll_company_id as payroll_company_id"),
+                    DB::raw("salary_statement_sub.payroll_number as payroll_number"),
+                    DB::raw("salary_statement_sub.payroll_year as payroll_year"),
+                    DB::raw("salary_statement_sub.payroll_month as payroll_month"),
+                    DB::raw("salary_statement_sub.payroll_pay_frequency as payroll_pay_frequency"),
+                    DB::raw("salary_statement_sub.payroll_frequency_sequence as payroll_frequency_sequence"),
+                    DB::raw("salary_statement_sub.payroll_start_date as payroll_start_date"),
+                    DB::raw("salary_statement_sub.payroll_end_date as payroll_end_date"),
+                    DB::raw("salary_statement_sub.payroll_remarks as payroll_remarks"),
+                    DB::raw("salary_statement_sub.payroll_status as payroll_status"),
+                ] : []),
             ]);
 
         return $queryBuilder;

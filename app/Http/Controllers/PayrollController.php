@@ -48,7 +48,7 @@ class PayrollController extends Controller
 
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
-                    $this->repository->selection($filters),
+                    $this->repository->selection($filters, ['salary_statement']),
                     SelectionTransformer::class
                 )
             ]);

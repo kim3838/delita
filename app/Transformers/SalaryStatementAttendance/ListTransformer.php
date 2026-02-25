@@ -11,8 +11,8 @@ class ListTransformer extends TransformerAbstract
     {
         return [
             'id' => $salaryStatementAttendance->id,
-            'date' => $salaryStatementAttendance->date->format('F j, Y'),
-            'week_day_name' => $salaryStatementAttendance->date->format('l'),
+            'date' => $salaryStatementAttendance->date?->format('F j, Y'),
+            'week_day_name' => $salaryStatementAttendance->date?->format('l'),
             'status' => $salaryStatementAttendance->status?->toArray(),
             'day_type' => $salaryStatementAttendance->day_type?->toArray(),
         ];

@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
+use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Exceptions\UnexpectedException;
@@ -23,29 +24,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         return Attendance::class;
     }
 
-    /**
-     * @throws UnexpectedException
-     */
-    public function update($identifier, $attributes, ?AttendanceSplitter $splitterInterface = null)
-    {
-        $attendanceSplitter = $splitterInterface
-            ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
-
-        $deleteAttendanceOvertime = clone $this->model;
-        //Delete existing overtime
-        $deleteAttendanceOvertime::query()->where('ulid', $identifier)->firstOrFail()->overtime?->delete();
-
-        $attendance = clone $this->model::query()->where('ulid', $identifier)->firstOrFail();
-        $update = collect($attributes)->except(['company_id', 'employee_id', 'shift_id'])->toArray();
-
-        $attendance->update($update);
-
-        $attendanceSplitter->generate($attendance);
-
-        return $attendance;
-    }
-
-    public function baseQueryBuilder($filters, $orders = [])
+    public function baseQueryBuilder($filters, $orders = [], $relations = [])
     {
         $employeeRepositoryFilter = clone $filters;
 
@@ -56,6 +35,26 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 $join->on('employee_sub.id', '=', 'attendances.employee_id');
             })
             ->join('attendance_shift_details', 'attendance_shift_details.attendance_id', '=', 'attendances.id')
+            ->when(in_array('salary_statement_attendance', $relations), function ($builder) use($filters) {
+
+                $dateSeriesQueryBuilder = $this->dateSeries($filters->date_from, $filters->date_to, 'date_series');
+                $dateSeriesQueryBuilder = $this->queryAsSub($dateSeriesQueryBuilder, 'date_series_sub')
+                    ->select(DB::raw("date_series_sub.date AS date_series_date"));
+
+                $salaryStatementAttendanceRepositoryFilter = clone $filters;
+                if(isset($salaryStatementAttendanceRepositoryFilter->payroll_id)){
+                    $salaryStatementAttendanceRepositoryFilter->payroll_ids = [$salaryStatementAttendanceRepositoryFilter->payroll_id];
+                }
+                unset($salaryStatementAttendanceRepositoryFilter->payroll_id);
+
+                $salaryStatementAttendanceQueryBuilder = App::make(SalaryStatementAttendanceRepository::class)->baseQueryBuilder($salaryStatementAttendanceRepositoryFilter, [], ['salary_statement']);
+
+                $builder->rightJoinSub($dateSeriesQueryBuilder, 'date_series_sub', function ($join) {
+                    $join->on('date_series_sub.date_series_date', '=', 'attendances.date');
+                })->leftJoinSub($salaryStatementAttendanceQueryBuilder, 'salary_statement_attendance_sub', function ($join) {
+                    $join->on('salary_statement_attendance_sub.date', '=', 'date_series_sub.date_series_date');
+                });
+            })
             ->when(!empty($filters->attendance_ids) && is_array($filters->attendance_ids), function ($builder) use ($filters) {
                 $builder->whereIn('attendances.id', $filters->attendance_ids);
             })
@@ -66,13 +65,13 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 $builder->whereIn('attendances.shift_id', $filters->attendance_shift_ids);
             })
             ->when((
+                !in_array('salary_statement_attendance', $relations) &&
                 (isset($filters->date_from) && Carbon::createFromFormat('Y-m-d', $filters->date_from)) &&
                 (isset($filters->date_to) && Carbon::createFromFormat('Y-m-d', $filters->date_to))
             ),function($builder) use ($filters){
                 $builder->whereBetween('attendances.date', [$filters->date_from, $filters->date_to]);
             })
             ->select([
-                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "employee_sub.number AS employee_number",
                 "employee_sub.company_id AS employee_company_id",
 
@@ -86,6 +85,32 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendances.lunch_in AS lunch_in",
                 "attendances.last_out AS last_out",
                 "attendances.status AS status",
+
+                ...(in_array('salary_statement_attendance', $relations) ? [
+
+                    DB::raw("date_series_sub.date_series_date AS date_series_date"),
+
+                    DB::raw("salary_statement_attendance_sub.id AS salary_statement_attendance_id"),
+                    DB::raw("salary_statement_attendance_sub.ulid AS salary_statement_attendance_ulid"),
+                    DB::raw("salary_statement_attendance_sub.salary_statement_id AS salary_statement_attendance_salary_statement_id"),
+                    DB::raw("salary_statement_attendance_sub.attendance_id AS salary_statement_attendance_attendance_id"),
+                    DB::raw("salary_statement_attendance_sub.date AS salary_statement_attendance_date"),
+                    DB::raw("salary_statement_attendance_sub.status AS salary_statement_attendance_status"),
+                    DB::raw("salary_statement_attendance_sub.day_type AS salary_statement_attendance_day_type"),
+
+                    DB::raw("salary_statement_attendance_sub.payroll_id AS salary_statement_attendance_payroll_id"),
+                    DB::raw("salary_statement_attendance_sub.payroll_ulid AS salary_statement_attendance_payroll_ulid"),
+                    DB::raw("salary_statement_attendance_sub.payroll_company_id AS salary_statement_attendance_payroll_company_id"),
+                    DB::raw("salary_statement_attendance_sub.payroll_number AS salary_statement_attendance_payroll_number"),
+                    DB::raw("salary_statement_attendance_sub.payroll_year AS salary_statement_attendance_payroll_year"),
+                    DB::raw("salary_statement_attendance_sub.payroll_month AS salary_statement_attendance_payroll_month"),
+                    DB::raw("salary_statement_attendance_sub.payroll_pay_frequency AS salary_statement_attendance_payroll_pay_frequency"),
+                    DB::raw("salary_statement_attendance_sub.payroll_frequency_sequence AS salary_statement_attendance_payroll_frequency_sequence"),
+                    DB::raw("salary_statement_attendance_sub.payroll_start_date AS salary_statement_attendance_payroll_start_date"),
+                    DB::raw("salary_statement_attendance_sub.payroll_end_date AS salary_statement_attendance_payroll_end_date"),
+                    DB::raw("salary_statement_attendance_sub.payroll_remarks AS salary_statement_attendance_payroll_remarks"),
+                    DB::raw("salary_statement_attendance_sub.payroll_status AS salary_statement_attendance_payroll_status"),
+                ] : []),
 
                 /**
                  * Shift
@@ -123,7 +148,58 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendance_shift_details.total_lunch_break_hours AS shift_schedule_total_lunch_break_hours",
             ]);
 
+        $queryBuilder = $this->queryAsSub($queryBuilder, 'attendance_sub')
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+
+                ...(in_array('salary_statement_attendance', $relations) ? [
+                    DB::raw("attendance_sub.date_series_date"),
+                    DB::raw("CASE
+                        WHEN attendance_sub.id IS NULL
+                        THEN attendance_sub.date_series_date
+                        ELSE NULL
+                    END as proxy_id"),
+                ]: []),
+
+                DB::raw("attendance_sub.*"),
+            ]);
+
         return $queryBuilder;
+    }
+
+    public function paginate($filters, $relations = []): LengthAwarePaginator
+    {
+        $orders = [
+            ...(in_array('salary_statement_attendance', $relations) ? [
+                ['field' => 'attendance_sub.date_series_date', 'direction' => 'ASC'],
+                ['field' => 'attendance_sub.salary_statement_attendance_id', 'direction' => 'ASC'],
+            ]: [
+                ['field' => 'attendance_sub.employee_number', 'direction' => 'ASC'],
+                ['field' => 'attendance_sub.date', 'direction' => 'ASC'],
+            ]),
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters, $relations = []): Collection
+    {
+        $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+            ['field' => 'attendances.date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function show($identifier): Attendance
@@ -137,33 +213,25 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
         return $this->hydrateItem($queryBuilder->firstOrFail());
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    /**
+     * @throws UnexpectedException
+     */
+    public function update($identifier, $attributes, ?AttendanceSplitter $splitterInterface = null)
     {
-        $orders = [
-            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'attendances.date', 'direction' => 'ASC'],
-        ];
+        $attendanceSplitter = $splitterInterface
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find($attributes['company_id'])]);
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $deleteAttendanceOvertime = clone $this->model;
+        //Delete existing overtime
+        $deleteAttendanceOvertime::query()->where('ulid', $identifier)->firstOrFail()->overtime?->delete();
 
-        $this->setOrdersOnBuilder($queryBuilder, $orders);
+        $attendance = clone $this->model::query()->where('ulid', $identifier)->firstOrFail();
+        $update = collect($attributes)->except(['company_id', 'employee_id', 'shift_id'])->toArray();
 
-        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+        $attendance->update($update);
 
-        return $this->hydratePaginationItems($paginator, $this->model());
-    }
+        $attendanceSplitter->generate($attendance);
 
-    public function list($filters): Collection
-    {
-        $orders = [
-            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'attendances.date', 'direction' => 'ASC'],
-        ];
-
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
-
-        $this->setOrdersOnBuilder($queryBuilder, $orders);
-
-        return $this->hydrateCollection($queryBuilder->get(), $this->model());
+        return $attendance;
     }
 }
