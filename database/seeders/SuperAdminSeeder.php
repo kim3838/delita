@@ -20,6 +20,7 @@ class SuperAdminSeeder extends Seeder
         User::query()->firstOrCreate([
             'name' => 'kim.123',
         ],[
+            ...User::factory()->definition(),
             'name' => 'kim.123',
             'type' => UserType::SUPER_ADMIN,
             'email' => 'luxere20@gmail.com',
