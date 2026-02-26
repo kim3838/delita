@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Facades\ResponseJson;
-use Nnjeim\World\Models\Country;
-use Nnjeim\World\Models\Currency;
-use Nnjeim\World\Models\Timezone;
+use App\Models\Country;
+use App\Models\Currency;
+use App\Models\Timezone;
 
 class WorldController extends Controller
 {

@@ -22,6 +22,8 @@ class StoreCompanyRequest extends FormRequest
             'code' => 'required|string|regex:' . RegexValidation::NO_WHITESPACE->value . '|max:255|unique:companies,code',
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:25',
+            'address_line_1' => 'nullable|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
             'timezone' => 'required|string',
         ];
     }
@@ -38,6 +40,8 @@ class StoreCompanyRequest extends FormRequest
             'code.max' => 'Code must not be greater than 255 characters',
             'short_name.required' => 'Company short name is required',
             'short_name.max' => 'Company short name must not be greater than 25 characters',
+            'address_line_1.max' => 'Address line 1 must not be greater than 255 characters',
+            'address_line_2.max' => 'Address line 2 must not be greater than 255 characters',
             'name.required' => 'Company name is required',
             'name.max' => 'Company name must not be greater than 255 characters',
             'timezone.required' => 'Company timezone is required',

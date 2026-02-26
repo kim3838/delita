@@ -15,6 +15,8 @@ class AssociatedCompany extends Model
         'account_number' => 'string',
         'company_code' => 'string',
         'company_short_name' => 'string',
+        'company_address_line_1' => 'string',
+        'company_address_line_2' => 'string',
         'company_name' => 'string',
         'country_id' => 'int',
         'country_name' => 'string',

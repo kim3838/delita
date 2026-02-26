@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('currency');
             $table->string('code')->nullable();
             $table->string('short_name');
+            $table->string('address_line_1')->nullable();
+            $table->string('address_line_2')->nullable();
             $table->string('name');
             $table->string('timezone')->default('UTC');
             $table->timestamps();

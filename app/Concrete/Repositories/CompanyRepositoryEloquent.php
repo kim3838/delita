@@ -41,6 +41,8 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
                 'accounts.number as account_number',
                 'companies.code as company_code',
                 'companies.short_name as company_short_name',
+                'companies.address_line_1 as company_address_line_1',
+                'companies.address_line_2 as company_address_line_2',
                 'companies.name as company_name',
                 'countries.name as country_name',
                 'companies.currency as company_currency',
