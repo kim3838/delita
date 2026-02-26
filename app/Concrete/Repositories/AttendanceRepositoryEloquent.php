@@ -191,8 +191,8 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
     public function list($filters, $relations = []): Collection
     {
         $orders = [
-            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'attendances.date', 'direction' => 'ASC'],
+            ['field' => 'attendance_sub.employee_number', 'direction' => 'ASC'],
+            ['field' => 'attendance_sub.date', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
