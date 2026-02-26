@@ -36,7 +36,7 @@ class PayrollObserver
         $startDate = $payroll->start_date->format('Ymd');
         $endDate = $payroll->end_date->format('Ymd');
 
-        $prefix = 'PAYROLL';
+        $prefix = 'PR';
 
         $number = "{$prefix}-{$year}-{$month}-{$payFrequencyLabel}" . ($frequencySequenceFlag ? "-{$frequencySequenceFlag}" : '') . ("-{$startDate}-{$endDate}");
 
