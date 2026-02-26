@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>User Account Verification</title>
+    <title>User Account Credentials</title>
     <style>
         * {
             font-family: sans-serif;
@@ -13,7 +13,7 @@
 <table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; padding: 20px;">
     <tr>
         <td>
-            <p>User Account Verification</p>
+            <p>User Account Credentials</p>
 
             <p>Hello <strong>{{$username}}</strong></p>
 

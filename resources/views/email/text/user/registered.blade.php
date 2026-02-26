@@ -1,4 +1,4 @@
-User Account Verification
+User Account Credentials
 
 Hello {{$username}}
 
