@@ -11,8 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('timezones');
-
         Schema::create('timezones', function (Blueprint $table) {
             $table->id();
             $table->string('name');
