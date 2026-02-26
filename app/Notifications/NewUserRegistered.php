@@ -38,7 +38,7 @@ class NewUserRegistered extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('User Account Verification')
+            ->subject('User Account Credentials')
             ->view(
                 [
                     'email.html.user.registered',
