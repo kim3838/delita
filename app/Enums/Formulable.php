@@ -9,7 +9,7 @@ enum Formulable: int implements BaseEnum
     case TAXABLE_INCOME = 300;
     case NONTAXABLE_INCOME = 400;
     case INCOME_TAX = 500;
-    case NET_INCOME = 600;
+    case NET_INCOME = 900;
 
     public function label(): string
     {

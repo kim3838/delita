@@ -3,6 +3,7 @@
 namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
+use App\Enums\SalaryStatementDetailComponentValueType;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 
@@ -17,24 +18,29 @@ class StandardNetIncomeFormula
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        $runningTaxable = BigDecimal::of($context->runningValues['taxable'] ?? '0');
+        $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
         $totalNonTaxable = BigDecimal::of($context->totals['nontaxable'] ?? '0');
 
+        $totalContribution = BigDecimal::zero();
         $totalDeduction = BigDecimal::zero();
         $totalWithholdingTax = BigDecimal::of($context->totals['withholding_tax'] ?? '0');
 
-        $totalNet = BigDecimal::zero();
+        $gross = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
-
+            $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
             $totalDeduction = $totalDeduction->plus(BigDecimal::of((string)$detail['deduction']));
         }
 
-        $totalNet = $totalNet
-            ->plus($runningTaxable)
-            ->plus($totalNonTaxable)
-            ->minus($totalWithholdingTax)
-            ->minus($totalDeduction);
+        $gross = $gross
+            ->plus($totalTaxable)
+            ->plus($totalNonTaxable);
+
+        $deduction = $totalWithholdingTax
+            ->plus($totalContribution)
+            ->plus($totalDeduction);
+
+        $totalNet = $gross->minus($deduction);
 
         $context->totals = [
             ...$context->totals,
@@ -50,12 +56,19 @@ class StandardNetIncomeFormula
             ]);
         }
 
+        $componentValues = [
+            'type' => SalaryStatementDetailComponentValueType::NET->value,
+            'gross' => $gross->toScale(6, RoundingMode::HalfUp)->toString(),
+            'deduction' => $deduction->toScale(6, RoundingMode::HalfUp)->toString(),
+            'net' => $totalNet->toScale(6, RoundingMode::HalfUp)->toString(),
+        ];
+
         $statementDetail = [
             'id' => null,
             'formulable_type' => $formula->formulable_type->value,
             'component_type' => null,
             'component_name' => null,
-            'component_values' => null,
+            'component_values' => $componentValues,
             'taxable' => 0.0,
             'nontaxable' => 0.0,
             'deduction' => 0.0,

@@ -181,6 +181,10 @@ class Development extends Seeder
 
         //Company MAC Shifts
         //Regular no lunch out/in
+        $shiftMACRegular = $companyMAC->shifts()->firstOrCreate(['code' => 'REGULAR'],['ulid' => Str::ulid(), 'code' => 'REGULAR', 'name' => 'Regular 08:00 AM to 05:00 PM', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 10, 'max_overtime' => 10]);
+        $this->createShiftSchedules(Shift::query()->where('code', 'REGULAR')->first(), false, ['08:00','17:00'], '09:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
+
+        //Regular no lunch out/in
         $shiftMAC1 = $companyMAC->shifts()->firstOrCreate(['code' => '001-DAYSHIFT-REG-2DOFF-NL0/I'],['ulid' => Str::ulid(), 'code' => '001-DAYSHIFT-REG-2DOFF-NL0/I', 'name' => 'REGULAR 2 DAYS OFF[SUN,SAT] 09:00 AM to 05:00 PM NO LUNCH OUT/IN', 'type' => ShiftType::REGULAR, 'work_start_grace_time' => 10, 'require_lunch_time_in_and_out' => false, 'lunch_start_grace_time' => 0, 'max_overtime' => 0]);
         $this->createShiftSchedules(Shift::query()->where('code', '001-DAYSHIFT-REG-2DOFF-NL0/I')->first(), false, ['09:00','17:00'], '08:00', true, ['12:00','13:00'], '01:00', [CarbonInterface::SUNDAY, CarbonInterface::SATURDAY]);
 
@@ -598,7 +602,7 @@ class Development extends Seeder
         $this->createEmployeeContact($employeeC1001);
         $this->createEmploymentProfile($employeeC1001);
         $employeeC1001->shifts()->detach();
-        $employeeC1001->shifts()->syncWithoutDetaching([$shiftMAC1->id => ['start_date' => '2025-01-10', 'stated_shift_end_date' => false,]]);
+        $employeeC1001->shifts()->syncWithoutDetaching([$shiftMACRegular->id => ['start_date' => '2026-01-01', 'stated_shift_end_date' => false,]]);
         $employeeC1001->leaveTypes()->detach();
         $employeeC1001->leaveTypes()->syncWithoutDetaching([
             $leaveMAC1->id => ['override_balance_upon_eligibility' => true, 'balance_upon_eligibility' => 0],
@@ -896,11 +900,7 @@ class Development extends Seeder
         //Create Compensations for Employee C1001
         $employeeC1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACBasicSalary->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '1200.14', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE]
-        );
-        $employeeC1001->payrollComponents()->firstOrCreate(
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACMealAllowance->id, 'payroll_componentable_type' => 'compensation'],
-            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACMealAllowance->id, 'payroll_componentable_type' => 'compensation', 'amount' => '200', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE]
+            ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACBasicSalary->id, 'payroll_componentable_type' => 'compensation', 'amount' => '25000', 'currency' => 'PHP', 'pay_period' => PayPeriod::MONTHLY, 'pay_type' => PayType::BY_ATTENDANCE]
         );
         $employeeC1001->payrollComponents()->firstOrCreate(
             ['formulable_type' => Formulable::EARNINGS , 'payroll_componentable_id' => $companyMACOvertime->id, 'payroll_componentable_type' => 'compensation'],

@@ -32,6 +32,9 @@ class StandardAbsenceFormula
 
         $absencePenalty = BigDecimal::zero();
 
+        //Example 200 awol penalty
+        //$absencePenalty = $absencePenalty->plus(BigDecimal::of('200'));
+
         $statementDetail = [
             'id' => null,
             'formulable_type' => $formula->formulable_type->value,

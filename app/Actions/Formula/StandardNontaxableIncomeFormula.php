@@ -19,6 +19,9 @@ class StandardNontaxableIncomeFormula
 
         $totalNonTaxable = BigDecimal::zero();
 
+        //Example non taxable income
+        //$totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of('25000'));
+
         foreach ($context->statementDetails as $detail) {
 
             $totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of((string)$detail['nontaxable']));

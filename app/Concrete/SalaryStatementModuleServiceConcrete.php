@@ -67,6 +67,8 @@ class SalaryStatementModuleServiceConcrete
 
     public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement): void
     {
+        $debugEnabled = false;
+
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
         $pipelinePayload = [];
@@ -196,6 +198,12 @@ class SalaryStatementModuleServiceConcrete
 
                 $salaryStatement->details()->create($statementDetail);
             }
+        }
+
+        if($debugEnabled){
+            _debug([
+                'Salary statement totals' => $salaryStatementContext->totals
+            ]);
         }
 
         $salaryStatement->update($salaryStatementContext->totals);

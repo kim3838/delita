@@ -13,6 +13,7 @@ enum SalaryStatementDetailComponentValueType: int implements BaseEnum
     case PH_PHILHEALTH = 700;
     case PH_PAG_IBIG = 800;
     case PH_WITHHOLDING_TAX = 900;
+    case NET = 5000;
 
     public function label(): string
     {
@@ -26,6 +27,7 @@ enum SalaryStatementDetailComponentValueType: int implements BaseEnum
             self::PH_PHILHEALTH => 'Ph PhilHealth',
             self::PH_PAG_IBIG => 'Ph Pag-Ibig',
             self::PH_WITHHOLDING_TAX => 'Ph Withholding Tax',
+            self::NET => 'Net',
         };
     }
 
