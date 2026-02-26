@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->ulid()->unique()->index();
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
-            $table->foreignId('country_id');
+            $table->foreignId('country_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->string('currency');
             $table->string('code')->nullable();
             $table->string('short_name');

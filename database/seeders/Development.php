@@ -46,7 +46,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use Nnjeim\World\Models\Country;
+use App\Models\Country;
 
 class Development extends Seeder
 {

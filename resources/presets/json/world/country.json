@@ -1,0 +1,290 @@
+[
+    {
+        "iso2": "AR",
+        "name": "Argentina",
+        "phone_code": "54",
+        "iso3": "ARG",
+        "region": "Americas",
+        "subregion": "South America"
+    },
+    {
+        "iso2": "AU",
+        "name": "Australia",
+        "phone_code": "61",
+        "iso3": "AUS",
+        "region": "Oceania",
+        "subregion": "Australia and New Zealand"
+    },
+    {
+        "iso2": "BR",
+        "name": "Brazil",
+        "phone_code": "55",
+        "iso3": "BRA",
+        "region": "Americas",
+        "subregion": "South America"
+    },
+    {
+        "iso2": "CA",
+        "name": "Canada",
+        "phone_code": "1",
+        "iso3": "CAN",
+        "region": "Americas",
+        "subregion": "Northern America"
+    },
+    {
+        "iso2": "CL",
+        "name": "Chile",
+        "phone_code": "56",
+        "iso3": "CHL",
+        "region": "Americas",
+        "subregion": "South America"
+    },
+    {
+        "iso2": "CN",
+        "name": "China",
+        "phone_code": "86",
+        "iso3": "CHN",
+        "region": "Asia",
+        "subregion": "Eastern Asia"
+    },
+    {
+        "iso2": "CO",
+        "name": "Colombia",
+        "phone_code": "57",
+        "iso3": "COL",
+        "region": "Americas",
+        "subregion": "South America"
+    },
+    {
+        "iso2": "EG",
+        "name": "Egypt",
+        "phone_code": "20",
+        "iso3": "EGY",
+        "region": "Africa",
+        "subregion": "Northern Africa"
+    },
+    {
+        "iso2": "FR",
+        "name": "France",
+        "phone_code": "33",
+        "iso3": "FRA",
+        "region": "Europe",
+        "subregion": "Western Europe"
+    },
+    {
+        "iso2": "DE",
+        "name": "Germany",
+        "phone_code": "49",
+        "iso3": "DEU",
+        "region": "Europe",
+        "subregion": "Western Europe"
+    },
+    {
+        "iso2": "IN",
+        "name": "India",
+        "phone_code": "91",
+        "iso3": "IND",
+        "region": "Asia",
+        "subregion": "Southern Asia"
+    },
+    {
+        "iso2": "ID",
+        "name": "Indonesia",
+        "phone_code": "62",
+        "iso3": "IDN",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    },
+    {
+        "iso2": "IL",
+        "name": "Israel",
+        "phone_code": "972",
+        "iso3": "ISR",
+        "region": "Asia",
+        "subregion": "Western Asia"
+    },
+    {
+        "iso2": "IT",
+        "name": "Italy",
+        "phone_code": "39",
+        "iso3": "ITA",
+        "region": "Europe",
+        "subregion": "Southern Europe"
+    },
+    {
+        "iso2": "JP",
+        "name": "Japan",
+        "phone_code": "81",
+        "iso3": "JPN",
+        "region": "Asia",
+        "subregion": "Eastern Asia"
+    },
+    {
+        "iso2": "KE",
+        "name": "Kenya",
+        "phone_code": "254",
+        "iso3": "KEN",
+        "region": "Africa",
+        "subregion": "Eastern Africa"
+    },
+    {
+        "iso2": "MY",
+        "name": "Malaysia",
+        "phone_code": "60",
+        "iso3": "MYS",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    },
+    {
+        "iso2": "MX",
+        "name": "Mexico",
+        "phone_code": "52",
+        "iso3": "MEX",
+        "region": "Americas",
+        "subregion": "Central America"
+    },
+    {
+        "iso2": "NL",
+        "name": "Netherlands",
+        "phone_code": "31",
+        "iso3": "NLD",
+        "region": "Europe",
+        "subregion": "Western Europe"
+    },
+    {
+        "iso2": "NZ",
+        "name": "New Zealand",
+        "phone_code": "64",
+        "iso3": "NZL",
+        "region": "Oceania",
+        "subregion": "Australia and New Zealand"
+    },
+    {
+        "iso2": "NG",
+        "name": "Nigeria",
+        "phone_code": "234",
+        "iso3": "NGA",
+        "region": "Africa",
+        "subregion": "Western Africa"
+    },
+    {
+        "iso2": "PE",
+        "name": "Peru",
+        "phone_code": "51",
+        "iso3": "PER",
+        "region": "Americas",
+        "subregion": "South America"
+    },
+    {
+        "iso2": "PH",
+        "name": "Philippines",
+        "phone_code": "63",
+        "iso3": "PHL",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    },
+    {
+        "iso2": "PL",
+        "name": "Poland",
+        "phone_code": "48",
+        "iso3": "POL",
+        "region": "Europe",
+        "subregion": "Eastern Europe"
+    },
+    {
+        "iso2": "SA",
+        "name": "Saudi Arabia",
+        "phone_code": "966",
+        "iso3": "SAU",
+        "region": "Asia",
+        "subregion": "Western Asia"
+    },
+    {
+        "iso2": "SG",
+        "name": "Singapore",
+        "phone_code": "65",
+        "iso3": "SGP",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    },
+    {
+        "iso2": "ZA",
+        "name": "South Africa",
+        "phone_code": "27",
+        "iso3": "ZAF",
+        "region": "Africa",
+        "subregion": "Southern Africa"
+    },
+    {
+        "iso2": "KR",
+        "name": "South Korea",
+        "phone_code": "82",
+        "iso3": "KOR",
+        "region": "Asia",
+        "subregion": "Eastern Asia"
+    },
+    {
+        "iso2": "ES",
+        "name": "Spain",
+        "phone_code": "34",
+        "iso3": "ESP",
+        "region": "Europe",
+        "subregion": "Southern Europe"
+    },
+    {
+        "iso2": "SE",
+        "name": "Sweden",
+        "phone_code": "46",
+        "iso3": "SWE",
+        "region": "Europe",
+        "subregion": "Northern Europe"
+    },
+    {
+        "iso2": "CH",
+        "name": "Switzerland",
+        "phone_code": "41",
+        "iso3": "CHE",
+        "region": "Europe",
+        "subregion": "Western Europe"
+    },
+    {
+        "iso2": "TH",
+        "name": "Thailand",
+        "phone_code": "66",
+        "iso3": "THA",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    },
+    {
+        "iso2": "AE",
+        "name": "United Arab Emirates",
+        "phone_code": "971",
+        "iso3": "ARE",
+        "region": "Asia",
+        "subregion": "Western Asia"
+    },
+    {
+        "iso2": "GB",
+        "name": "United Kingdom",
+        "phone_code": "44",
+        "iso3": "GBR",
+        "region": "Europe",
+        "subregion": "Northern Europe"
+    },
+    {
+        "iso2": "US",
+        "name": "United States",
+        "phone_code": "1",
+        "iso3": "USA",
+        "region": "Americas",
+        "subregion": "Northern America"
+    },
+    {
+        "iso2": "VN",
+        "name": "Vietnam",
+        "phone_code": "84",
+        "iso3": "VNM",
+        "region": "Asia",
+        "subregion": "South-Eastern Asia"
+    }
+]

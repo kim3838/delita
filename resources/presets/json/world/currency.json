@@ -1,0 +1,132 @@
+[
+    {
+        "name": "Euro",
+        "code": "EUR",
+        "precision": 2,
+        "symbol": "€",
+        "symbol_native": "€",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "US Dollar",
+        "code": "USD",
+        "precision": 2,
+        "symbol": "$",
+        "symbol_native": "$",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Australian Dollar",
+        "code": "AUD",
+        "precision": 2,
+        "symbol": "AU$",
+        "symbol_native": "$",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Canadian Dollar",
+        "code": "CAD",
+        "precision": 2,
+        "symbol": "CA$",
+        "symbol_native": "$",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Chinese Yuan",
+        "code": "CNY",
+        "precision": 2,
+        "symbol": "CN¥",
+        "symbol_native": "CN¥",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "British Pound Sterling",
+        "code": "GBP",
+        "precision": 2,
+        "symbol": "£",
+        "symbol_native": "£",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Indian Rupee",
+        "code": "INR",
+        "precision": 2,
+        "symbol": "Rs",
+        "symbol_native": "₹",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Japanese Yen",
+        "code": "JPY",
+        "precision": 0,
+        "symbol": "¥",
+        "symbol_native": "￥",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Philippine Peso",
+        "code": "PHP",
+        "precision": 2,
+        "symbol": "₱",
+        "symbol_native": "₱",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Qatari Rial",
+        "code": "QAR",
+        "precision": 2,
+        "symbol": "QR",
+        "symbol_native": "ر.ق.",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Saudi Riyal",
+        "code": "SAR",
+        "precision": 2,
+        "symbol": "SR",
+        "symbol_native": "ر.س.",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "Singapore Dollar",
+        "code": "SGD",
+        "precision": 2,
+        "symbol": "S$",
+        "symbol_native": "$",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    },
+    {
+        "name": "United Arab Emirates Dirham",
+        "code": "AED",
+        "precision": 2,
+        "symbol": "AED",
+        "symbol_native": "د.إ.",
+        "symbol_first": 1,
+        "decimal_mark": ".",
+        "thousands_separator": ","
+    }
+]

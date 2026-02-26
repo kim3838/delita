@@ -1,0 +1,41 @@
+[
+    {
+        "name": "Australia/Sydney"
+    },
+    {
+        "name": "Asia/Shanghai"
+    },
+    {
+        "name": "Europe/Berlin"
+    },
+    {
+        "name": "Asia/Kolkata"
+    },
+    {
+        "name": "Asia/Tokyo"
+    },
+    {
+        "name": "Asia/Manila"
+    },
+    {
+        "name": "Asia/Bangkok"
+    },
+    {
+        "name": "Asia/Dubai"
+    },
+    {
+        "name": "Europe/London"
+    },
+    {
+        "name": "America/Chicago"
+    },
+    {
+        "name": "America/Denver"
+    },
+    {
+        "name": "America/Los_Angeles"
+    },
+    {
+        "name": "America/New_York"
+    }
+]
