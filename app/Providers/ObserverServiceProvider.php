@@ -13,6 +13,7 @@ use App\Observers\OvertimeRequestObserver;
 use App\Observers\PayrollObserver;
 use App\Observers\SalaryStatementAttendanceObserver;
 use App\Observers\SalaryStatementObserver;
+use App\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,6 +42,14 @@ class ObserverServiceProvider extends ServiceProvider
     protected function observableMap(): array
     {
         return array(
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('user'),
+                ],
+                'observers' => [
+                    UserObserver::class,
+                ]
+            ),
             array(
                 'observables' => [
                     Relation::getMorphedModel('company'),
@@ -115,7 +124,6 @@ class ObserverServiceProvider extends ServiceProvider
             ),
             array(
                 'observables' => [
-                    Relation::getMorphedModel('user'),
                     Relation::getMorphedModel('role'),
                     Relation::getMorphedModel('shift'),
                     Relation::getMorphedModel('pay_frequency'),
