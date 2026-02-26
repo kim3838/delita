@@ -137,16 +137,10 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     {
         $companyId = $data['company_id'];
         $officeEmail = $data['office_email'];
-        $familyName = preg_replace('/\s+/', '', $data['family_name']);
-        $givenName = preg_replace('/\s+/', '', $data['given_name']);
 
-        $userCount = User::query()->count();
         $companyTimezone = Company::query()->find($companyId)->timezone;
 
-        $familyName = strtolower($familyName);
-        $givenNameFirstCharacter = substr(strtolower($givenName), 0, 1);
-        $fourCharacter = substr(crc32(($userCount+1)), -3) . _str_random(1);
-        $username = "$familyName.$givenNameFirstCharacter." . strtolower($fourCharacter);
+        $username = $this->generateUsername($data);
         $password = Str::random(8);
 
         return $this->store([
@@ -157,5 +151,23 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
             'status' => UserStatus::ACTIVE->value,
             'timezone' => $companyTimezone,
         ]);
+    }
+
+    public function generateUsername(array $data): string
+    {
+        $familyName = strtolower(preg_replace('/\s+/', '', $data['family_name']));
+        $givenName = strtolower(preg_replace('/\s+/', '', $data['given_name']));
+        $givenNameFirstCharacter = substr($givenName, 0, 1);
+
+        do {
+            $userCount = User::query()->count();
+            $randomPart = substr((string) crc32($userCount + rand(1, 9999)), -3) . Str::lower(Str::random(1));
+            $username = "{$familyName}.{$givenNameFirstCharacter}.{$randomPart}";
+
+            $exists = User::query()->where('name', $username)->exists();
+
+        } while ($exists);
+
+        return $username;
     }
 }
