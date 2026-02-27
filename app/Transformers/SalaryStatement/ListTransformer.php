@@ -38,17 +38,6 @@ class ListTransformer extends TransformerAbstract
 
         $payroll = Fractal::item($payrollHydrated, PayrollBasicTransformer::class);
 
-        $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
-            'employee_id' => $salaryStatement->employee_id,
-            'is_active' => $salaryStatement->employee_employment_status_active,
-            'status' => $salaryStatement->employee_current_employment_status,
-            'employment_type' => $salaryStatement->employee_current_employment_type,
-        ]);
-
-        $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
-
-        $employee = Employee::query()->find($salaryStatement->employee_id);
-
         $salaryStatementAttendanceRepositoryFilters = (object)[
             'salary_statement_ids' => [$salaryStatement->id],
         ];
@@ -85,11 +74,8 @@ class ListTransformer extends TransformerAbstract
 
             'payroll' => $payroll,
 
-            'employee_number' => $employee->number,
-            'employee_full_name' => $employee->full_name,
-            'employee_current_employment_profile' => $currentEmploymentProfile,
-            'employee_department' => $employee->departments->first(),
-            'employee_designation' => $employee->designation,
+            'employee_number' => $salaryStatement->employee_number,
+            'employee_full_name' => $salaryStatement->employee_full_name,
 
             'total_days' => $salaryStatement->total_days,
             'total_day_offs' => $salaryStatement->total_day_offs,
