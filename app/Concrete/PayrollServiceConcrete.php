@@ -423,6 +423,16 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->where('status', '!==', SalaryStatementAttendanceStatus::DAY_OFF->value)
                 ->count();
 
+            /**
+             * Include paid holidays on the working day count, to prevent basic pay overflow when on  semimonthly or monthly pay period
+             **/
+            $this->frequencyWorkingDayCount += $salaryStatementCursor->salaryStatementAttendances->filter(function($salaryStatementAttendance){
+                $statusDayOff = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::DAY_OFF;
+                $dayTypeLegal = $salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::LEGAL_HOLIDAY || $salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY;
+
+                return $statusDayOff && $dayTypeLegal;
+            })->count();
+
             $employee = $salaryStatementCursor->employee;
 
             foreach($salaryStatementCursor->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
