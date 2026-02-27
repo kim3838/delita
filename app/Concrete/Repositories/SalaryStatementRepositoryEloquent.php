@@ -134,12 +134,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 ] : []),
 
                 "employee_sub.number AS employee_number",
-
-                ...(in_array('current_employment_profile', $relations) ? [
-                    'employee_sub.employment_status_active AS employee_employment_status_active',
-                    'employee_sub.current_employment_status AS employee_current_employment_status',
-                    'employee_sub.current_employment_type AS employee_current_employment_type',
-                ] : []),
+                "employee_sub.full_name AS employee_full_name",
 
                 "salary_statements.id AS id",
                 "salary_statements.ulid AS ulid",
