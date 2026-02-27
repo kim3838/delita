@@ -142,6 +142,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
                 "companies.timezone AS company_timezone",
                 "employees.*",
+                DB::raw("CONCAT_WS(' ',family_name,given_name,middle_name) AS full_name"),
 
                 ...(in_array('user', $relations) ? [
                     DB::raw("users.id AS user_id"),
