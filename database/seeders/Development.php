@@ -598,7 +598,7 @@ class Development extends Seeder
             $companyMACHrAssistant,
             null,
             $companyMACMonthlyPayFrequency,
-            'C1001', 'Amanda', 'N', 'Nõrth');
+            'C1001', 'Maëlys', 'N', 'Nõrth');
         $this->createEmployeeContact($employeeC1001);
         $this->createEmploymentProfile($employeeC1001);
         $employeeC1001->shifts()->detach();
