@@ -124,6 +124,16 @@ class AutoCreateAttendanceConcrete
                     }
                 }
 
+                if(!$employeeShift->pivot->stated_shift_end_date && $date->lt($employeeShift->pivot->start_date)) {
+                    $errors[] = [
+                        'employee_number' => $employee->number,
+                        'employee_full_name' => $employee->fullName,
+                        'date' => $date->toDateString(),
+                        'error' => 'Date is not in date range of employee shift assignment.'
+                    ];
+                    continue;
+                }
+
                 $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
                 $hasLeave = $leave->isNotEmpty();
 
