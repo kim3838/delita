@@ -12,7 +12,7 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use App\Transformers\EmployeeShift\ItemTransformer as EmployeeShiftItemTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
-use App\Transformers\SalaryStatementAttendance\ListTransformer as SalaryStatementAttendanceListTransformer;
+use App\Transformers\SalaryStatementAttendance\BasicListTransformer as SalaryStatementAttendanceBasicListTransformer;
 use App\Transformers\Shift\ItemTransformer as ShiftItemTransformer;
 use App\Transformers\ShiftSchedule\ListTransformer as ShiftScheduleListTransformer;
 use Illuminate\Support\Facades\App;
@@ -104,7 +104,7 @@ class ListTransformer extends TransformerAbstract
                 'day_type' => $attendance->salary_statement_attendance_day_type,
             ]);
 
-            $salaryStatementAttendance = Fractal::item($salaryStatementAttendanceHydrated, SalaryStatementAttendanceListTransformer::class);
+            $salaryStatementAttendance = Fractal::item($salaryStatementAttendanceHydrated, SalaryStatementAttendanceBasicListTransformer::class);
         }
 
         $dateReadable = $attendance->date

@@ -5,7 +5,7 @@ namespace App\Transformers\SalaryStatementAttendance;
 use App\Models\SalaryStatementAttendance;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class BasicListTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatementAttendance $salaryStatementAttendance): array
     {
