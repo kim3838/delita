@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Casts\FormulaComponentType;
+use App\Enums\Formulable;
 use App\Enums\SalaryStatementAttendanceDayType;
 use App\Enums\SalaryStatementAttendanceStatus;
 use Carbon\Carbon;
@@ -36,6 +38,17 @@ class SalaryStatementAttendance extends Model
         'date' => 'date',
         'status' => SalaryStatementAttendanceStatus::class,
         'day_type' => SalaryStatementAttendanceDayType::class,
+
+        /**
+         * Attendance payroll components fields
+         **/
+        'formulable_type' => Formulable::class,
+        'component_type' => FormulaComponentType::class,
+        'component_name' => 'string',
+        'regular_pay' => 'decimal:6',
+        'night_differential_pay' => 'decimal:6',
+        'rest_day_pay' => 'decimal:6',
+        'total' => 'decimal:6',
     ];
 
     public function salaryStatement(): BelongsTo

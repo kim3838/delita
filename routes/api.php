@@ -84,6 +84,7 @@ use App\Http\Controllers\PayrollInquiryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RequestApprovalStateController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalaryStatementAttendanceController;
 use App\Http\Controllers\SalaryStatementController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
@@ -562,6 +563,9 @@ Route::group([
 
     Route::get('employee-portal-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
     Route::get('employee-portal-salary-statement/{ulid}', [EmployeeSalaryStatementController::class, 'show']);
+
+    //Salary statement attendance
+    Route::get('per-day-salary-statements', [SalaryStatementAttendanceController::class, 'index']);
 });
 
 Route::group([

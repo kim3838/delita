@@ -35,33 +35,14 @@ class SalaryStatementAttendancePayrollComponentRepositoryEloquent extends BaseRe
                         });
                 });
             })
+            ->when(!empty($filters->payroll_componentable_morph_to_type) && is_array($filters->payroll_componentable_morph_to_type), function ($builder) use ($filters) {
+                $builder->whereIn('salary_statement_attendance_payroll_components.component_type', $filters->payroll_componentable_morph_to_type);
+            })
+            ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
+                $builder->whereIn('salary_statement_attendance_payroll_components.component_key', $filters->payroll_componentable_morph);
+            })
             ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
-
-                $filteredFormulableTypes = array_filter($filters->formulable_types, function($formulableType) {
-                    return Formulable::tryFrom($formulableType) !== null;
-                });
-
-                foreach ($filteredFormulableTypes as $index => $formulableType) {
-
-                    $builder->{$index > 0 ? 'orWhere' : 'where'}(function($clause) use($formulableType, $filters){
-
-                        $clause->where('salary_statement_attendance_payroll_components.formulable_type', $formulableType);
-
-                        if($formulableType == Formulable::EARNINGS->value){
-                            $clause->when(!empty($filters->earning_components) && is_array($filters->earning_components), function ($builder) use ($filters) {
-                                $builder->whereIn('salary_statement_attendance_payroll_components.component_type', $filters->earning_components);
-                            });
-                        } else if($formulableType == Formulable::DEDUCTIONS->value){
-                            $clause->when(!empty($filters->deduction_components) && is_array($filters->deduction_components), function ($builder) use ($filters) {
-                                $builder->whereIn('salary_statement_attendance_payroll_components.component_type', $filters->deduction_components);
-                            });
-                        } else if($formulableType == Formulable::INCOME_TAX->value){
-                            $clause->when(!empty($filters->income_tax_components) && is_array($filters->income_tax_components), function ($builder) use ($filters) {
-                                $builder->whereIn('salary_statement_attendance_payroll_components.component_type', $filters->income_tax_components);
-                            });
-                        }
-                    });
-                }
+                $builder->whereIn('salary_statement_attendance_payroll_components.formulable_type', $filters->formulable_types);
             })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),

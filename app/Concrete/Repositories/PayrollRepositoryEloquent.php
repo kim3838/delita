@@ -32,24 +32,10 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
 
                 $salaryStatementRepositoryFilter = clone $filters;
 
-                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], []);
-
-                $salaryStatementDetailQueryBuilder = App::make(SalaryStatementDetailRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], [])
-                    ->select([
-                        'salary_statement_details.salary_statement_id',
-                        DB::raw("component_values->>'$.employer_share.total' AS total_employer_share"),
-                    ]);
-
-                $salaryStatementDetailEmployerShareQueryBuilder = $this->queryAsSub($salaryStatementDetailQueryBuilder, 'employer_share_sub')
-                    ->select([
-                        'employer_share_sub.salary_statement_id',
-                        DB::raw("SUM(employer_share_sub.total_employer_share) AS total_employer_contribution_share")
-                    ])->groupBy('salary_statement_id');
+                $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], ['detail_totals']);
 
                 $builder->joinSub($salaryStatementQueryBuilder, 'salary_statement_sub', function ($join) {
                     $join->on('salary_statement_sub.payroll_id', '=', 'payrolls.id');
-                })->leftJoinSub($salaryStatementDetailEmployerShareQueryBuilder, 'employer_share_sub', function ($join) {
-                    $join->on('employer_share_sub.salary_statement_id', '=', 'salary_statement_sub.id');
                 });
             })
             ->when(!empty($filters->company_ids) && is_array($filters->company_ids), function ($builder) use ($filters) {
@@ -107,7 +93,10 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
 
                 ...(in_array('salary_statement', $relations) ? [
                     DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_salary_statement_net"),
-                    DB::raw("COALESCE(SUM(employer_share_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_basic_pay), '0.000000') AS total_basic_pay"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_nonstatutory_deduction), '0.000000') AS total_nonstatutory_deduction"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_basic_gross), '0.000000') AS total_basic_gross"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
                 ] : []),
             ]);
 

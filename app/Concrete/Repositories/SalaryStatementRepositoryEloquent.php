@@ -4,8 +4,12 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\PayrollRepository;
+use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\Compensation;
+use App\Enums\Deduction;
+use App\Enums\Formulable;
 use App\Models\SalaryStatement;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -51,6 +55,51 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     $join->on('payroll_sub.id', '=', 'salary_statements.payroll_id');
                 });
             })
+            ->when(in_array('detail_totals', $relations), function ($builder) use($filters) {
+
+                $salaryStatementDetailRepositoryFilter = (object)[];
+
+                $salaryStatementDetailQueryBuilder = App::make(SalaryStatementDetailRepository::class)->baseQueryBuilder($salaryStatementDetailRepositoryFilter, [], [])
+                    ->select([
+                        'salary_statement_details.salary_statement_id',
+                        DB::raw("component_values->>'$.employer_share.total' AS total_employer_share"),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value, Compensation::LEAVE_PAY->value])  .")
+                            THEN component_values->>'$.regular_pay'
+                            ELSE '0.000000'
+                            END AS total_basic_pay
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::DEDUCTIONS->value ." AND salary_statement_details.component_type IN (". implode(",", [Deduction::DEDUCTION->value])  .")
+                            THEN component_values->>'$.regular_pay'
+                            ELSE '0.000000'
+                            END AS total_nonstatutory_deduction
+                        "),
+                    ]);
+
+                //Aggregate detail totals by salary statement id
+                $salaryStatementDetailTotalBuilder = $this->queryAsSub($salaryStatementDetailQueryBuilder, 'details_total_sub')
+                    ->select([
+                        'details_total_sub.salary_statement_id',
+                        DB::raw("SUM(details_total_sub.total_employer_share) AS total_employer_contribution_share"),
+                        DB::raw("SUM(details_total_sub.total_basic_pay) AS total_basic_pay"),
+                        DB::raw("SUM(details_total_sub.total_nonstatutory_deduction) AS total_nonstatutory_deduction"),
+                    ])->groupBy('salary_statement_id');
+
+                //Get actual basic pay
+                $salaryStatementDetailTotalBuilder = $this->queryAsSub($salaryStatementDetailTotalBuilder, 'details_total_sub')
+                    ->select([
+                        'details_total_sub.salary_statement_id',
+                        DB::raw("details_total_sub.total_employer_contribution_share"),
+                        DB::raw("details_total_sub.total_basic_pay"),
+                        DB::raw("details_total_sub.total_nonstatutory_deduction"),
+                        DB::raw("details_total_sub.total_basic_pay - details_total_sub.total_nonstatutory_deduction AS total_basic_gross"),
+                    ]);
+
+                $builder->joinSub($salaryStatementDetailTotalBuilder, 'details_total_sub', function ($join) {
+                    $join->on('details_total_sub.salary_statement_id', '=', 'salary_statements.id');
+                });
+            })
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'salary_statements.employee_id');
             })
@@ -75,6 +124,13 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     "payroll_sub.end_date AS payroll_end_date",
                     "payroll_sub.remarks AS payroll_remarks",
                     "payroll_sub.status AS payroll_status",
+                ] : []),
+
+                ...(in_array('detail_totals', $relations) ? [
+                    "details_total_sub.total_employer_contribution_share AS total_employer_contribution_share",
+                    "details_total_sub.total_basic_pay AS total_basic_pay",
+                    "details_total_sub.total_nonstatutory_deduction AS total_nonstatutory_deduction",
+                    "details_total_sub.total_basic_gross AS total_basic_gross",
                 ] : []),
 
                 "employee_sub.number AS employee_number",

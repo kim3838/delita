@@ -68,6 +68,7 @@ class ListTransformer extends TransformerAbstract
             SalaryStatementDetailListTransformer::class
         )['data'];
 
+        $basicGross = BigDecimal::of($salaryStatement->total_basic_gross);
         $taxable = BigDecimal::of($salaryStatement->taxable);
         $nontaxable = BigDecimal::of($salaryStatement->nontaxable);
         $contribution = BigDecimal::of($salaryStatement->contribution);
@@ -105,6 +106,7 @@ class ListTransformer extends TransformerAbstract
             'total_leave_with_pay' => $salaryStatement->total_leave_with_pay,
             'total_absent' => $salaryStatement->total_absent,
 
+            'basic_gross' => $basicGross->toScale(2, RoundingMode::HalfUp),
             'taxable' => $taxable->toScale(2, RoundingMode::HalfUp),
             'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp),
             'contribution' => $contribution->toScale(2, RoundingMode::HalfUp),
