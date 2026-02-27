@@ -7,7 +7,7 @@ use App\Blueprint\Repositories\SalaryStatementAttendancePayrollComponentReposito
 use App\Facades\Fractal;
 use App\Models\SalaryStatementAttendance;
 use App\Transformers\SalaryStatementAttendanceDetail\ListTransformer as SalaryStatementAttendanceDetailListTransformer;
-use App\Transformers\SalaryStatementAttendancePayrollComponent\ListTransformer as SalaryStatementAttendancePayrollComponentListTransformer;
+use App\Transformers\SalaryStatementAttendancePayrollComponent\NonComputableListTransformer as SalaryStatementAttendancePayrollComponentNonComputableListTransformer;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -25,8 +25,8 @@ class DetailedListTransformer extends TransformerAbstract
         $attendanceDetails = App::make(SalaryStatementAttendanceDetailRepository::class)->list($salaryStatementAttendanceRelatedRepositoryFilters);
         $attendanceDetails = Fractal::collection($attendanceDetails, SalaryStatementAttendanceDetailListTransformer::class)['data'];
 
-        $attendancePayrollComponents = App::make(SalaryStatementAttendancePayrollComponentRepository::class)->list($salaryStatementAttendanceRelatedRepositoryFilters);
-        $attendancePayrollComponents = Fractal::collection($attendancePayrollComponents, SalaryStatementAttendancePayrollComponentListTransformer::class)['data'];
+        $attendancePayrollComponents = App::make(SalaryStatementAttendancePayrollComponentRepository::class)->list($salaryStatementAttendanceRelatedRepositoryFilters, ['salary_statement_attendance']);
+        $attendancePayrollComponents = Fractal::collection($attendancePayrollComponents, SalaryStatementAttendancePayrollComponentNonComputableListTransformer::class)['data'];
 
         return [
             'row_number' => $salaryStatementAttendance->row_number,

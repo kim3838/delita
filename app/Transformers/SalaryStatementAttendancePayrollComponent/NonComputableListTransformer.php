@@ -7,7 +7,7 @@ use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class NonComputableListTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatementAttendancePayrollComponent $salaryStatementAttendancePayrollComponent): array
     {
