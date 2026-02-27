@@ -518,12 +518,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     'component_name' => $salaryStatementDetail['component_name'],
                     'component_values' => [
                         'type' => $salaryStatementDetail['component_values']['type'] ?? null,
-                        'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
-                        'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
-                        'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
-                        'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(6, RoundingMode::HalfUp)->toString(),
+                        'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
                     ],
-                    'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(6, RoundingMode::HalfUp)->toString()
+                    'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(2, RoundingMode::HalfUp)->toString()
                 ]);
             }
         }
