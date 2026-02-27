@@ -248,6 +248,13 @@ abstract class BaseRepositoryEloquent
             ->fromRaw("($dateSeries) as date_series", [$dateSeriesParams['start_date'], $dateSeriesParams['end_date']]);
     }
 
+    protected function removeFieldsFromFilter($filter, $fieldsToRemove = []): void
+    {
+        foreach ($fieldsToRemove as $field) {
+            unset($filter->{$field});
+        }
+    }
+
     /**
      * Trigger static method calls to the model
      *
