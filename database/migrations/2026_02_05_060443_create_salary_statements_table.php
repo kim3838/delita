@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('total_working_rest_days')->default(0);
             $table->tinyInteger('total_special_holidays')->default(0);
             $table->tinyInteger('total_legal_holidays')->default(0);
+            $table->tinyInteger('total_double_holidays')->default(0);
             $table->tinyInteger('total_full_present')->default(0);
             $table->tinyInteger('total_present_with_irregularity')->default(0);
             $table->tinyInteger('total_leave_without_pay')->default(0);

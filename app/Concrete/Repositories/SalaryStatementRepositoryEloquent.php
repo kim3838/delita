@@ -146,6 +146,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 "salary_statements.total_working_rest_days",
                 "salary_statements.total_special_holidays",
                 "salary_statements.total_legal_holidays",
+                "salary_statements.total_double_holidays",
                 "salary_statements.total_full_present",
                 "salary_statements.total_present_with_irregularity",
                 "salary_statements.total_leave_without_pay",

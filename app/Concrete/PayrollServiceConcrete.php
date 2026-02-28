@@ -967,6 +967,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             'total_special_holidays' => 0,
             'total_legal_holidays' => 0,
+            'total_double_holidays' => 0,
 
             'total_full_present' => 0,
             'total_present_with_irregularity' => 0,
@@ -1082,7 +1083,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             switch($dayType){
                 case SalaryStatementAttendanceDayType::WORKING_DAY: $periodDaysSummary['total_regular_work_days']++; break;
                 case SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY: $periodDaysSummary['total_special_holidays']++; break;
-                case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY:
+                case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY: $periodDaysSummary['total_double_holidays']++; break;
                 case SalaryStatementAttendanceDayType::LEGAL_HOLIDAY: $periodDaysSummary['total_legal_holidays']++; break;
             }
 
