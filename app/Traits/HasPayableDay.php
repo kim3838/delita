@@ -673,6 +673,8 @@ trait HasPayableDay
         if($debugEnabled){
             _debug([
                 'Preceding attendance' => [
+                    'SQL' => $precedingAttendanceEloquentQueryBuilder->toSql(),
+                    'Bindings' => $precedingAttendanceEloquentQueryBuilder->getBindings(),
                     'date' => $precedingAttendance->date->toDateString(),
                     'status' => $precedingAttendance->status?->label(),
                     'day_type' => $precedingAttendance->day_type?->label(),

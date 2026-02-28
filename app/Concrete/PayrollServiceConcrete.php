@@ -677,7 +677,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              **/
             foreach ($companyPerDayAbleGlobalCompensations as $companyPerDayAbleGlobalCompensation){
 
-                $key = $companyPerDayAbleGlobalCompensation->id . '.global.compensation';
+                $key = $companyPerDayAbleGlobalCompensation->id . '.compensation';
 
                 if($companyPerDayAbleGlobalCompensation->type == CompensationEnum::LEAVE_PAY &&
                     !isset($payloadMap[CompensationEnum::LEAVE_PAY->value])
@@ -742,9 +742,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         ($isHoliday && $globalCompensation->type == CompensationEnum::HOLIDAY_PAY);
                 })
                 ->mapWithKeys(fn ($globalCompensation) => [
-                    $globalCompensation->id . '.global.compensation' => [
+                    $globalCompensation->id . '.compensation' => [
                         'component_type' => $globalCompensation->type->value,
-                        'component_key' => $globalCompensation->id . '.global.compensation',
+                        'component_key' => $globalCompensation->id . '.compensation',
                         'component_name' => $globalCompensation->name,
                         'hourly_rate' => BigDecimal::zero(),
                         'work_hour_type' => WorkHourType::REGULAR->value,
@@ -854,6 +854,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $this->workSplits = Fractal::collection($workSplitCollection, $payableSplitTransformer)['data'];
             $this->overtimeSplits = Fractal::collection($overtimeSplitCollection, $payableSplitTransformer)['data'];
+
+            /**
+             * Set holiday pay forfeiture flag before set amount on splits
+             **/
+            $holiday = $this->getCompanyHolidayByDate($date->toDateString(), $this->company->id);
+            $this->holidayPayForfeiture = !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
 
             $this->statementAttendanceSetAmountableOnSplits(
                 $salaryStatementAttendance,
@@ -1031,7 +1037,6 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $dayOff = $this->attendanceScheduleIsDayOff;
             $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
             $holidayType = !empty($holiday) ? $holiday->type : null;
-            $this->holidayPayForfeiture = !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
             $isRestDay = in_array($date->dayOfWeek, $this->restDays);
 
             $isDateIsHoliday = !empty($holidayType);
