@@ -232,7 +232,6 @@ class AutoCreateAttendanceConcrete
 
                 $existing = $attendanceRepository->model()::query()
                     ->where('employee_id', $employee->id)
-                    ->where('shift_id', $employeeShift->id)
                     ->where('date', $date->toDateString())
                     ->first();
 
