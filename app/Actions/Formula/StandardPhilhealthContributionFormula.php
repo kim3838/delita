@@ -35,7 +35,6 @@ class StandardPhilhealthContributionFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);
@@ -84,7 +83,6 @@ class StandardPhilhealthContributionFormula
             $componentValues = [
                 ...$contribution,
                 'type' => SalaryStatementDetailComponentValueType::PH_PHILHEALTH->value,
-                'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 ...$coverage
             ];
 
@@ -150,13 +148,13 @@ class StandardPhilhealthContributionFormula
             $premium = $compensation->multipliedBy($rateValue);
         }
 
-        $result['total'] = (string)$premium->toScale(6, RoundingMode::HalfUp);
+        $result['total'] = (string)$premium->toScale(2, RoundingMode::HalfUp);
 
-        $employeeShareRegular = (string)$premium->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
+        $employeeShareRegular = (string)$premium->multipliedBy($employeeShareValue)->toScale(2, RoundingMode::HalfUp);
         $result['employee_share']['regular'] = $employeeShareRegular;
         $result['employee_share']['total'] = $employeeShareRegular;
 
-        $employerShareRegular = (string)$premium->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
+        $employerShareRegular = (string)$premium->multipliedBy($employerShareValue)->toScale(2, RoundingMode::HalfUp);
         $result['employer_share']['regular'] = $employerShareRegular;
         $result['employer_share']['total'] = $employerShareRegular;
 

@@ -18,6 +18,8 @@ class StandardTaxableIncomeFormula
         $formula = $pipelinePayload['formula'];
 
         $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $totalAnnualTaxable = BigDecimal::zero();
+
         $totalContribution = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
@@ -25,21 +27,18 @@ class StandardTaxableIncomeFormula
             $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
         }
 
+        $totalTaxable = $totalTaxable->minus($totalContribution);
+
         $context->totals = [
             ...$context->totals,
-            'contribution' => (string)$totalContribution->toScale(6, RoundingMode::HalfUp),
-        ];
-
-        $context->runningValues = [
-            ...$context->runningValues,
-            'taxable' => (string)$totalTaxable->minus($totalContribution)->toScale(6, RoundingMode::HalfUp),
+            'contribution' => $totalContribution->toScale(6, RoundingMode::HalfUp)->toString(),
         ];
 
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues
+                'Total taxable' => $totalTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
             ]);
         }
 
@@ -49,7 +48,7 @@ class StandardTaxableIncomeFormula
             'component_type' => null,
             'component_name' => null,
             'component_values' => null,
-            'taxable' => $context->runningValues['taxable'],
+            'taxable' => $totalTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
             'nontaxable' => 0.0,
             'deduction' => 0.0,
             'contribution' => 0.0,

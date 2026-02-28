@@ -31,19 +31,13 @@ class StandardNontaxableIncomeFormula
 
             $context->totals = [
                 ...$context->totals,
-                'nontaxable' => (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp)
-            ];
-
-            $context->runningValues = [
-                ...$context->runningValues,
-                'nontaxable' => (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp),
+                'nontaxable' => $totalNonTaxable->toScale(6, RoundingMode::HalfUp)->toString()
             ];
 
             if($debugEnabled){
                 _debug([
                     'Formula slug' => $this->slug,
                     'Totals' => $context->totals,
-                    'Running values' => $context->runningValues
                 ]);
             }
 
@@ -54,7 +48,7 @@ class StandardNontaxableIncomeFormula
                 'component_name' => null,
                 'component_values' => null,
                 'taxable' => 0.0,
-                'nontaxable' => $context->runningValues['nontaxable'],
+                'nontaxable' => $totalNonTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
                 'deduction' => 0.0,
                 'contribution' => 0.0,
                 'withholding_tax' => 0.0,

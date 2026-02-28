@@ -35,7 +35,6 @@ class StandardSSSEmployedContributionFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);
@@ -84,7 +83,6 @@ class StandardSSSEmployedContributionFormula
             $componentValues = [
                 ...$contribution,
                 'type' => SalaryStatementDetailComponentValueType::PH_SSS->value,
-                'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 ...$coverage
             ];
 
@@ -174,9 +172,9 @@ class StandardSSSEmployedContributionFormula
         $employeeShareTemp = $msc->multipliedBy($employeeShareValue);
         $employeeMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employeeMpfValue)) : BigDecimal::zero();
 
-        $result['employee_share']['regular'] = (string)$employeeShareTemp->minus($employeeMpf)->toScale(6, RoundingMode::HalfUp);
-        $result['employee_share']['mpf'] = (string)$employeeMpf->toScale(6, RoundingMode::HalfUp);
-        $result['employee_share']['total'] = (string)$employeeShareTemp->toScale(6, RoundingMode::HalfUp);
+        $result['employee_share']['regular'] = (string)$employeeShareTemp->minus($employeeMpf)->toScale(2, RoundingMode::HalfUp);
+        $result['employee_share']['mpf'] = (string)$employeeMpf->toScale(2, RoundingMode::HalfUp);
+        $result['employee_share']['total'] = (string)$employeeShareTemp->toScale(2, RoundingMode::HalfUp);
 
         $employerShareTemp = $msc->multipliedBy($employerShareValue);
         $employerMpf = ($msc->isGreaterThan($employeeMpfEligibilityValue)) ? ($mscExcessOverMpfThreshold->multipliedBy($employerMpfValue)) : BigDecimal::zero();
@@ -184,12 +182,12 @@ class StandardSSSEmployedContributionFormula
 
         $employerTotalShare = $employerShareTemp->plus($employerEc);
 
-        $result['employer_share']['regular'] = (string)$employerShareTemp->minus($employerMpf)->toScale(6, RoundingMode::HalfUp);
-        $result['employer_share']['mpf'] = (string)$employerMpf->toScale(6, RoundingMode::HalfUp);
-        $result['employer_share']['ec'] = (string)$employerEc->toScale(6, RoundingMode::HalfUp);
-        $result['employer_share']['total'] = (string)$employerTotalShare->toScale(6, RoundingMode::HalfUp);
+        $result['employer_share']['regular'] = (string)$employerShareTemp->minus($employerMpf)->toScale(2, RoundingMode::HalfUp);
+        $result['employer_share']['mpf'] = (string)$employerMpf->toScale(2, RoundingMode::HalfUp);
+        $result['employer_share']['ec'] = (string)$employerEc->toScale(2, RoundingMode::HalfUp);
+        $result['employer_share']['total'] = (string)$employerTotalShare->toScale(2, RoundingMode::HalfUp);
 
-        $result['total'] = (string)$employeeShareTemp->plus($employerTotalShare)->toScale(6, RoundingMode::HalfUp);
+        $result['total'] = (string)$employeeShareTemp->plus($employerTotalShare)->toScale(2, RoundingMode::HalfUp);
 
         return $result;
     }

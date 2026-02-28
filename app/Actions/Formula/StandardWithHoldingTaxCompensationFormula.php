@@ -36,11 +36,18 @@ class StandardWithHoldingTaxCompensationFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues
             ]);
         }
 
-        $runningTaxable = BigDecimal::of($context->runningValues['taxable'] ?? '0');
+        $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $totalContribution = BigDecimal::zero();
+
+        foreach ($context->statementDetails as $detail) {
+
+            $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
+        }
+
+        $totalTaxable = $totalTaxable->minus($totalContribution);
 
         if($context->additionalSalaryStatements->isNotEmpty()){
 
@@ -55,7 +62,7 @@ class StandardWithHoldingTaxCompensationFormula
 
                 foreach ($statementDetails as $detail) {
 
-                    $runningTaxable = $runningTaxable->plus(BigDecimal::of((string)$detail['taxable']));
+                    $totalTaxable = $totalTaxable->plus(BigDecimal::of((string)$detail['taxable']));
                 }
             }
         }
@@ -65,7 +72,18 @@ class StandardWithHoldingTaxCompensationFormula
             $context->flags['is_semimonthly_and_is_2nd_half'] ||
             $context->flags['is_weekly_and_is_last_split_of_month']
         ){
-            $withholdingTax = $this->getIntended($formulaSettings->cast, $runningTaxable->toString(), PayFrequency::MONTHLY);
+
+            /**
+             * Withholding tax for payroll's coverage
+             **/
+            $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable->toString(), PayFrequency::MONTHLY);
+
+            /**
+             * If payroll month is december, include annual tax
+             **/
+            if($context->payroll->month == 12){
+
+            }
 
             $context->totals = [
                 ...$context->totals,
@@ -76,7 +94,8 @@ class StandardWithHoldingTaxCompensationFormula
                 _debug([
                     'Formula slug' => $this->slug,
                     'Totals' => $context->totals,
-                    'Running values' => $context->runningValues
+                    'Total taxable' => $totalTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
+                    'Withholding tax' => $withholdingTax,
                 ]);
             }
 
@@ -96,7 +115,6 @@ class StandardWithHoldingTaxCompensationFormula
 
             $componentValues = [
                 'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX->value,
-                'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 ...$coverage
             ];
 

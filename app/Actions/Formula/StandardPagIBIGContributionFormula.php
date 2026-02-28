@@ -35,7 +35,6 @@ class StandardPagIBIGContributionFormula
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues,
                 'Formula settings' => $formulaSettings->cast,
                 'Statement details' => $context->statementDetails
             ]);
@@ -84,7 +83,6 @@ class StandardPagIBIGContributionFormula
             $componentValues = [
                 ...$contribution,
                 'type' => SalaryStatementDetailComponentValueType::PH_PAG_IBIG->value,
-                'pay_frequency' => $context->payroll->pay_frequency?->label(),
                 ...$coverage
             ];
 
@@ -157,13 +155,13 @@ class StandardPagIBIGContributionFormula
 
         $contributionPercentage = $employeeShareValue->plus($employerShareValue);
 
-        $result['total'] = (string)$premiumBaseCredit->multipliedBy($contributionPercentage)->toScale(6, RoundingMode::HalfUp);
+        $result['total'] = (string)$premiumBaseCredit->multipliedBy($contributionPercentage)->toScale(2, RoundingMode::HalfUp);
 
-        $employeeShareRegular = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(6, RoundingMode::HalfUp);
+        $employeeShareRegular = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(2, RoundingMode::HalfUp);
         $result['employee_share']['regular'] = $employeeShareRegular;
         $result['employee_share']['total'] = $employeeShareRegular;
 
-        $employerShareRegular = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(6, RoundingMode::HalfUp);
+        $employerShareRegular = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(2, RoundingMode::HalfUp);
         $result['employer_share']['regular'] = $employerShareRegular;
         $result['employer_share']['total'] = $employerShareRegular;
 

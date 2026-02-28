@@ -44,23 +44,24 @@ class StandardNetIncomeFormula
 
         $context->totals = [
             ...$context->totals,
-            'deduction' => (string)$totalDeduction->toScale(6, RoundingMode::HalfUp),
-            'net' => (string)$totalNet->toScale(6, RoundingMode::HalfUp)
+            'taxable' => $totalTaxable->minus($totalContribution)->toScale(6, RoundingMode::HalfUp)->toString(),
+            'deduction' => $totalDeduction->toScale(6, RoundingMode::HalfUp)->toString(),
+            'net' => $totalNet->toScale(6, RoundingMode::HalfUp)->toString()
         ];
 
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
                 'Totals' => $context->totals,
-                'Running values' => $context->runningValues
+                'Total taxable' => $totalTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
             ]);
         }
 
         $componentValues = [
             'type' => SalaryStatementDetailComponentValueType::NET->value,
-            'gross' => $gross->toScale(6, RoundingMode::HalfUp)->toString(),
-            'deduction' => $deduction->toScale(6, RoundingMode::HalfUp)->toString(),
-            'net' => $totalNet->toScale(6, RoundingMode::HalfUp)->toString(),
+            'gross' => $gross->toScale(2, RoundingMode::HalfUp)->toString(),
+            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp)->toString(),
+            'net' => $totalNet->toScale(2, RoundingMode::HalfUp)->toString(),
         ];
 
         $statementDetail = [
