@@ -61,6 +61,12 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
             ->when(!empty($filters->salary_statement_ids) && is_array($filters->salary_statement_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("salary_statement_attendances.salary_statement_id"), $filters->salary_statement_ids);
             })
+            ->when(!empty($filters->statement_date_statuses) && is_array($filters->statement_date_statuses), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("salary_statement_attendances.status"), $filters->statement_date_statuses);
+            })
+            ->when(!empty($filters->statement_date_day_types) && is_array($filters->statement_date_day_types), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("salary_statement_attendances.day_type"), $filters->statement_date_day_types);
+            })
             ->when(isset($filters->date), function ($builder, $value) use($filters) {
                 $builder->whereDate(DB::raw("salary_statement_attendances.date"), $filters->date);
             })
