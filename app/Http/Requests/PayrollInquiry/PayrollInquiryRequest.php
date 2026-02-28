@@ -15,7 +15,7 @@ class PayrollInquiryRequest extends FormRequest
     {
         return [
             'company_id' => ['required', 'integer', 'exists:companies,id'],
-            'recent_count' => 'sometimes|integer|min:0|max:48'
+            'recent_count' => 'sometimes|integer|min:0|max:100'
         ];
     }
 
@@ -25,7 +25,7 @@ class PayrollInquiryRequest extends FormRequest
             'company_id.required' => 'Company is required',
             'company_id.exists' => 'Company not found',
             'recent_count.integer' => 'Recent count must be an integer',
-            'recent_count.max' => 'Recent count must be 48 or less'
+            'recent_count.max' => 'Recent count must be 100 or less'
         ];
     }
 }
