@@ -40,8 +40,15 @@ class Payroll extends Model
         'end_date' => 'date',
         'status' => PayrollStatus::class,
 
-        'total_salary_statement_net' => 'decimal:6',
+        'total_basic_gross' => 'decimal:6',
+        'total_other_gross' => 'decimal:6',
+        'total_taxable' => 'decimal:6',
+        'total_nontaxable' => 'decimal:6',
+        'total_contribution' => 'decimal:6',
         'total_employer_contribution_share' => 'decimal:6',
+        'total_tax_withheld' => 'decimal:6',
+        'total_deduction' => 'decimal:6',
+        'total_net' => 'decimal:6',
     ];
 
     public function company(): BelongsTo

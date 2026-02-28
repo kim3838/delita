@@ -12,10 +12,15 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(Payroll $payroll): array
     {
-        $totalSalaryStatementBasicGross = BigDecimal::of((string)$payroll->total_basic_gross);
-        $totalSalaryStatementOtherGross = BigDecimal::of((string)$payroll->total_other_gross);
-        $totalSalaryStatementNet = BigDecimal::of((string)$payroll->total_salary_statement_net);
+        $totalBasicGross = BigDecimal::of((string)$payroll->total_basic_gross);
+        $totalOtherGross = BigDecimal::of((string)$payroll->total_other_gross);
+        $totalTaxable = BigDecimal::of((string)$payroll->total_taxable);
+        $totalNontaxable = BigDecimal::of((string)$payroll->total_nontaxable);
+        $totalContribution = BigDecimal::of((string)$payroll->total_contribution);
         $totalEmployerContributionShare = BigDecimal::of((string)$payroll->total_employer_contribution_share);
+        $totalTaxWithheld = BigDecimal::of((string)$payroll->total_tax_withheld);
+        $totalDeduction = BigDecimal::of((string)$payroll->total_deduction);
+        $totalNet = BigDecimal::of((string)$payroll->total_net);
 
         return [
             'row_number' => $payroll->row_number,
@@ -33,10 +38,15 @@ class ListTransformer extends TransformerAbstract
             'remarks' => $payroll->remarks,
             'status' => $payroll->status?->toArray(),
 
-            'total_salary_statement_basic_gross' => $totalSalaryStatementBasicGross->toScale(2, RoundingMode::HalfUp),
-            'total_salary_statement_other_gross' => $totalSalaryStatementOtherGross->toScale(2, RoundingMode::HalfUp),
+            'total_basic_gross' => $totalBasicGross->toScale(2, RoundingMode::HalfUp),
+            'total_other_gross' => $totalOtherGross->toScale(2, RoundingMode::HalfUp),
+            'total_taxable' => $totalTaxable->toScale(2, RoundingMode::HalfUp),
+            'total_nontaxable' => $totalNontaxable->toScale(2, RoundingMode::HalfUp),
+            'total_contribution' => $totalContribution->toScale(2, RoundingMode::HalfUp),
             'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(2, RoundingMode::HalfUp),
-            'total_salary_statement_net' => $totalSalaryStatementNet->toScale(2, RoundingMode::HalfUp),
+            'total_tax_withheld' => $totalTaxWithheld->toScale(2, RoundingMode::HalfUp),
+            'total_deduction' => $totalDeduction->toScale(2, RoundingMode::HalfUp),
+            'total_net' => $totalNet->toScale(2, RoundingMode::HalfUp),
 
             'date_range_readable' => $payroll->start_date->format('F j, Y') . ' - ' . $payroll->end_date->format('F j, Y'),
         ];

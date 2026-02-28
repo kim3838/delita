@@ -92,10 +92,15 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                 "payrolls.status",
 
                 ...(in_array('salary_statement', $relations) ? [
-                    DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_salary_statement_net"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_basic_gross), '0.000000') AS total_basic_gross"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_other_gross), '0.000000') AS total_other_gross"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.taxable), '0.000000') AS total_taxable"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.nontaxable), '0.000000') AS total_nontaxable"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.contribution), '0.000000') AS total_contribution"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.withholding_tax), '0.000000') AS total_tax_withheld"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.deduction), '0.000000') AS total_deduction"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_net"),
                 ] : []),
             ]);
 
@@ -163,6 +168,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, [], ['salary_statement']);
+
+        _log_query_builder_with_bindings($queryBuilder);
 
         return $this->hydrateItem($queryBuilder->firstOrFail());
     }
