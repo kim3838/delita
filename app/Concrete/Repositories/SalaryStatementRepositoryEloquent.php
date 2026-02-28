@@ -67,13 +67,13 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value, Compensation::LEAVE_PAY->value])  .")
                             THEN component_values->>'$.regular_pay'
                             ELSE '0.000000'
-                            END AS total_basic_pay
+                            END AS total_basic_gross
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::DEDUCTIONS->value ." AND salary_statement_details.component_type IN (". implode(",", [Deduction::DEDUCTION->value])  .")
-                            THEN component_values->>'$.regular_pay'
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type NOT IN (". implode(",", [Compensation::BASIC_PAY->value, Compensation::LEAVE_PAY->value])  .")
+                            THEN component_values->>'$.total'
                             ELSE '0.000000'
-                            END AS total_nonstatutory_deduction
+                            END AS total_other_gross
                         "),
                     ]);
 
@@ -82,8 +82,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     ->select([
                         'details_total_sub.salary_statement_id',
                         DB::raw("SUM(details_total_sub.total_employer_share) AS total_employer_contribution_share"),
-                        DB::raw("SUM(details_total_sub.total_basic_pay) AS total_basic_pay"),
-                        DB::raw("SUM(details_total_sub.total_nonstatutory_deduction) AS total_nonstatutory_deduction"),
+                        DB::raw("SUM(details_total_sub.total_basic_gross) AS total_basic_gross"),
+                        DB::raw("SUM(details_total_sub.total_other_gross) AS total_other_gross"),
                     ])->groupBy('salary_statement_id');
 
                 //Get actual basic pay
@@ -91,9 +91,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     ->select([
                         'details_total_sub.salary_statement_id',
                         DB::raw("details_total_sub.total_employer_contribution_share"),
-                        DB::raw("details_total_sub.total_basic_pay"),
-                        DB::raw("details_total_sub.total_nonstatutory_deduction"),
-                        DB::raw("details_total_sub.total_basic_pay - details_total_sub.total_nonstatutory_deduction AS total_basic_gross"),
+                        DB::raw("details_total_sub.total_basic_gross"),
+                        DB::raw("details_total_sub.total_other_gross"),
                     ]);
 
                 $builder->joinSub($salaryStatementDetailTotalBuilder, 'details_total_sub', function ($join) {
@@ -128,9 +127,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
 
                 ...(in_array('detail_totals', $relations) ? [
                     "details_total_sub.total_employer_contribution_share AS total_employer_contribution_share",
-                    "details_total_sub.total_basic_pay AS total_basic_pay",
-                    "details_total_sub.total_nonstatutory_deduction AS total_nonstatutory_deduction",
                     "details_total_sub.total_basic_gross AS total_basic_gross",
+                    "details_total_sub.total_other_gross AS total_other_gross",
                 ] : []),
 
                 "employee_sub.number AS employee_number",

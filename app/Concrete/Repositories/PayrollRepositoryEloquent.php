@@ -93,9 +93,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
 
                 ...(in_array('salary_statement', $relations) ? [
                     DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_salary_statement_net"),
-                    DB::raw("COALESCE(SUM(salary_statement_sub.total_basic_pay), '0.000000') AS total_basic_pay"),
-                    DB::raw("COALESCE(SUM(salary_statement_sub.total_nonstatutory_deduction), '0.000000') AS total_nonstatutory_deduction"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_basic_gross), '0.000000') AS total_basic_gross"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_other_gross), '0.000000') AS total_other_gross"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
                 ] : []),
             ]);
