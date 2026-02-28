@@ -19,7 +19,6 @@ class SalaryStatementContext
         public Collection $pipelinePayload,
         public array $flags = [],
         public array $statementDetails,
-        public array $totals = [],
-        public array $runningValues = [],
+        public array $totals = []
     ){}
 }
