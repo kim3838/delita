@@ -801,11 +801,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             if($debugEnabled){
                 _debug([
-                    'payload map' => $payloadMap,
-                    'employee compensations' => $employeePerDayableCompensations->toArray(),
-                    'global compensations' => $companyPerDayAbleGlobalCompensations->toArray(),
-                    'employee compensations payload' => $employeePerDayableCompensationsPayload,
-                    'global compensations payload' => $companyPerDayAbleGlobalCompensationsPayload,
+                    'Payload map' => $payloadMap,
+                    'Employee compensations' => $employeePerDayableCompensations->toArray(),
+                    'Global compensations' => $companyPerDayAbleGlobalCompensations->toArray(),
+                    'Employee compensations payload' => $employeePerDayableCompensationsPayload,
+                    'Global compensations payload' => $companyPerDayAbleGlobalCompensationsPayload,
                 ]);
             }
 
