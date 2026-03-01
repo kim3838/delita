@@ -55,8 +55,7 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
     public function list($filters, $relations = []): Collection
     {
         $orders = [
-            ['field' => 'salary_statement_details.formulable_type', 'direction' => 'ASC'],
-            ['field' => 'salary_statement_details.component_type', 'direction' => 'ASC'],
+            ['field' => 'salary_statement_details.id', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
