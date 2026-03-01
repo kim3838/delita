@@ -1053,12 +1053,6 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
             $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
 
-            /**
-             * Todo: Check if attendance already belongs from another salary statement, and payroll is not in draft status
-             * marks as payroll already generated
-             * SalaryStatementAttendanceStatus::PAYROLL_ALREADY_GENERATED->value
-             **/
-
             $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
             $hasLeave = $leave->isNotEmpty();
             $leaveType = null;

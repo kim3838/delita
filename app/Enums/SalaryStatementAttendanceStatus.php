@@ -11,7 +11,6 @@ enum SalaryStatementAttendanceStatus: int implements BaseEnum
     case LEAVE_WITHOUT_PAY = 300;
     case LEAVE_WITH_PAY = 301;
     case ABSENT = 401;
-    case PAYROLL_ALREADY_GENERATED = 500;
 
     public function label(): string
     {
@@ -23,7 +22,6 @@ enum SalaryStatementAttendanceStatus: int implements BaseEnum
             self::LEAVE_WITHOUT_PAY => 'Leave without pay',
             self::LEAVE_WITH_PAY => 'Leave with pay',
             self::ABSENT => 'Absent',
-            self::PAYROLL_ALREADY_GENERATED => 'Payroll already generated',
         };
     }
 
