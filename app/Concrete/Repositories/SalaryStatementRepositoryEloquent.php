@@ -139,19 +139,21 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 "salary_statements.payroll_id AS payroll_id",
                 "salary_statements.employee_id AS employee_id",
 
-                "salary_statements.total_days",
-                "salary_statements.total_day_offs",
-                "salary_statements.total_working_days",
-                "salary_statements.total_regular_work_days",
-                "salary_statements.total_working_rest_days",
-                "salary_statements.total_special_holidays",
-                "salary_statements.total_legal_holidays",
-                "salary_statements.total_double_holidays",
-                "salary_statements.total_full_present",
-                "salary_statements.total_present_with_irregularity",
-                "salary_statements.total_leave_without_pay",
-                "salary_statements.total_leave_with_pay",
-                "salary_statements.total_absent",
+                ...(!in_array('no_day_totals', $relations) ? [
+                    "salary_statements.total_days",
+                    "salary_statements.total_day_offs",
+                    "salary_statements.total_working_days",
+                    "salary_statements.total_regular_work_days",
+                    "salary_statements.total_working_rest_days",
+                    "salary_statements.total_special_holidays",
+                    "salary_statements.total_legal_holidays",
+                    "salary_statements.total_double_holidays",
+                    "salary_statements.total_full_present",
+                    "salary_statements.total_present_with_irregularity",
+                    "salary_statements.total_leave_without_pay",
+                    "salary_statements.total_leave_with_pay",
+                    "salary_statements.total_absent",
+                ] : []),
 
                 "salary_statements.taxable",
                 "salary_statements.nontaxable",
@@ -192,7 +194,11 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
     {
         $orders = empty($orders) ? [
             ...(in_array('payroll', $relations) ? [
-                ['field' => 'payroll_sub.id', 'direction' => 'ASC']
+                ['field' => 'payroll_sub.year', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.month', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.pay_frequency', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.frequency_sequence', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.start_date', 'direction' => 'ASC'],
             ] : []),
 
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
