@@ -4,6 +4,7 @@ namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\Compensation;
 use App\Enums\Deduction;
 use App\Enums\Formulable;
 use App\Models\SalaryStatementModule;
@@ -44,17 +45,6 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 2,
-                'key' => 'other_earnings',
-                'name' => 'Other earnings',
-                'formulable_type' => Formulable::EARNINGS,
-                'statement_level' => true,
-                'aggregation' => false,
-                'property' => 'company',
-                'attribute' => 'compensations',
-                'conditions' => null
-            ],
-            [
-                'order' => 3,
                 'key' => 'statutory_contributions',
                 'name' => 'Statutory contributions',
                 'formulable_type' => Formulable::DEDUCTIONS,
@@ -84,6 +74,40 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                         ],
                         'operator' => '=',
                         'value' => Deduction::STATUTORY_CONTRIBUTION,
+                    ],
+                ]
+            ],
+            [
+                'order' => 3,
+                'key' => 'benefits',
+                'name' => 'Benefits',
+                'formulable_type' => Formulable::EARNINGS,
+                'statement_level' => true,
+                'aggregation' => false,
+                'property' => 'employee',
+                'attribute' => 'compensations',
+                'conditions' => [
+                    [
+                        'order' => 1,
+                        'property' => 'payroll_componentable_type',
+                        'operator' => '=',
+                        'value' => 'compensation',
+                    ],
+                    [
+                        'order' => 2,
+                        'property' => 'formulable_type',
+                        'operator' => '=',
+                        'value' => Formulable::EARNINGS,
+                    ],
+                    [
+                        'order' => 3,
+                        'property' => [
+                            'payrollComponentable',
+                            'type',
+                            'value'
+                        ],
+                        'operator' => '=',
+                        'value' => Compensation::BENEFIT,
                     ],
                 ]
             ],
