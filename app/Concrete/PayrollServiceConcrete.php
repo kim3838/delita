@@ -696,20 +696,20 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
 
-                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::BASIC_PAY &&
-                    !isset($payloadMap[CompensationEnum::BASIC_PAY->value])
+                if(!isset($payloadMap[CompensationEnum::BASIC_PAY->value]) &&
+                    $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::BASIC_PAY
                 ){
                     $payloadMap[CompensationEnum::BASIC_PAY->value] = $componentableMorph;
                 }
 
-                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::REGULAR_ALLOWANCE &&
-                    !in_array($componentableMorph, $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value])
+                if(!in_array($componentableMorph, $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value]) &&
+                    $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::REGULAR_ALLOWANCE
                 ){
                     $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value][] = $componentableMorph;
                 }
 
-                if($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::OVERTIME &&
-                    !isset($payloadMap[CompensationEnum::OVERTIME->value])
+                if(!isset($payloadMap[CompensationEnum::OVERTIME->value]) &&
+                    $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::OVERTIME
                 ){
                     $payloadMap[CompensationEnum::OVERTIME->value] = $componentableMorph;
                 }
@@ -722,14 +722,14 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 $key = $companyPerDayAbleGlobalCompensation->id . '.compensation';
 
-                if($companyPerDayAbleGlobalCompensation->type == CompensationEnum::LEAVE_PAY &&
-                    !isset($payloadMap[CompensationEnum::LEAVE_PAY->value])
+                if(!isset($payloadMap[CompensationEnum::LEAVE_PAY->value]) &&
+                    $companyPerDayAbleGlobalCompensation->type == CompensationEnum::LEAVE_PAY
                 ){
                     $payloadMap[CompensationEnum::LEAVE_PAY->value] = $key;
                 }
 
-                if($companyPerDayAbleGlobalCompensation->type == CompensationEnum::HOLIDAY_PAY &&
-                    !isset($payloadMap[CompensationEnum::HOLIDAY_PAY->value])
+                if(!isset($payloadMap[CompensationEnum::HOLIDAY_PAY->value]) &&
+                    $companyPerDayAbleGlobalCompensation->type == CompensationEnum::HOLIDAY_PAY
                 ){
                     $payloadMap[CompensationEnum::HOLIDAY_PAY->value] = $key;
                 }
