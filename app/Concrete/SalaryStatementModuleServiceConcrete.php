@@ -36,14 +36,16 @@ class SalaryStatementModuleServiceConcrete
         return $this;
     }
 
-    public function companyPerDayAbleEarningsMorphFilterSlugs(): array
-    {
+    public function companyPerDayAbleEarningsMorphFilterSlugs(
+        $compensationEnums = [CompensationEnum::BASIC_PAY, CompensationEnum::REGULAR_ALLOWANCE, CompensationEnum::OVERTIME]
+    ): array{
+
         /**
          * Company per day-able compensations: (Basic pay, Allowance, Overtime)
          **/
         $companyPerDayAbleEarnings = $this->company->compensations->where('assignable', true)
             ->where('formulable_type', Formulable::EARNINGS->value)
-            ->whereIn('type', [CompensationEnum::BASIC_PAY, CompensationEnum::REGULAR_ALLOWANCE, CompensationEnum::OVERTIME]);
+            ->whereIn('type', $compensationEnums);
 
         $companyPerDayAbleEarningsMorphFilterSlugs = $companyPerDayAbleEarnings
             ->map(fn($companyPerDayEarning) => $companyPerDayEarning->id . '.compensation')
@@ -67,7 +69,7 @@ class SalaryStatementModuleServiceConcrete
 
     public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement): void
     {
-        $debugEnabled = false;
+        $debugEnabled = true;
 
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
