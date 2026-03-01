@@ -132,6 +132,49 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         ];
     }
 
+    public function getCurrentUpToEndOfYear($companyId, $year, $payFrequencyEnumValue = []): array
+    {
+        $currentPayrolls = [];
+        $nextPayrolls = [];
+
+        sort($payFrequencyEnumValue);
+
+        foreach($payFrequencyEnumValue as $payFrequency){
+
+            $payFrequencyCurrentPayroll = $this->getPayrollPayload($companyId, $payFrequency);
+            $chainEndDate = $payFrequencyCurrentPayroll->end->copy();
+
+            $currentPayrolls[] = $payFrequencyCurrentPayroll;
+
+            $payFrequencyNextPayrolls = [];
+
+            do {
+                $this->setCustomDate($chainEndDate->addDay());
+
+                $next = $this->getPayrollPayload($companyId, $payFrequency);
+
+                if($next->year == $year){
+
+                    $chainEndDate = $next->end->copy();
+
+                    $payFrequencyNextPayrolls[] = $next;
+                }
+
+            } while ($next->year == $year);
+
+            foreach($payFrequencyNextPayrolls as $payFrequencyNextPayroll){
+                $nextPayrolls[] = $payFrequencyNextPayroll;
+            }
+
+            $this->resetDate();
+        }
+
+        return [
+            'current' => collect($currentPayrolls),
+            'next' => collect($nextPayrolls),
+        ];
+    }
+
     public function getPayrollPayload($companyId, $payFrequencyEnumValue = null): ?PayrollPayload
     {
         $debugEnabled = false;
