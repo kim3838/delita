@@ -79,9 +79,13 @@ class UtilityController extends Controller
 
         $result = \DB::select("SELECT CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', 'Asia/Manila') AS manila_time");
 
+        $mysqlCteMaxRecursionDepth = \DB::select("SELECT @@cte_max_recursion_depth AS cte_max_recursion_depth");
+
         $manilaTime = $result[0]->manila_time;
+        $cteMaxRecursionDepth = $mysqlCteMaxRecursionDepth[0]->cte_max_recursion_depth;
 
         $response = [
+            '00 CTE Max recursion depth' => $cteMaxRecursionDepth,
             '00 MYSQL Manila now' => $manilaTime,
             '00 Carbon Manila now' => $globalCarbonToManila->toDateTimeString(),
             '01 Auth Timezone' => $request->user()?->timezone ?? 'Unauthenticated',
