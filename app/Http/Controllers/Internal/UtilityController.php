@@ -77,7 +77,13 @@ class UtilityController extends Controller
 
         $dateTimeAsIs = Carbon::createFromFormat('Y-m-d H:i:s', '2025-09-02 10:00:00', 'Asia/Manila');
 
+        $result = \DB::select("SELECT CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', 'Asia/Manila') AS manila_time");
+
+        $manilaTime = $result[0]->manila_time;
+
         $response = [
+            '00 MYSQL Manila now' => $manilaTime,
+            '00 Carbon Manila now' => $dateTimeAsIs->toDateTimeString(),
             '01 Auth Timezone' => $request->user()?->timezone ?? 'Unauthenticated',
             '02 Default Timezone' => date_default_timezone_get(),
             '03 Global Carbon Now' => $globalCarbon->toArray(),
