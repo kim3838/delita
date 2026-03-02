@@ -76,6 +76,9 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("pay_frequencies.company_id"), $value);
             })
+            ->when(!empty($filters->frequency_types) && is_array($filters->frequency_types), function ($builder) use ($filters) {
+                $builder->whereIn('pay_frequencies.type', $filters->frequency_types);
+            })
             ->select([
                 'pay_frequencies.id AS id',
                 'pay_frequencies.code AS code',

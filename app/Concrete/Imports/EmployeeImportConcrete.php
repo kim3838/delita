@@ -9,6 +9,7 @@ use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseImportConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\CreationType;
+use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\RegexValidation;
 use App\Exports\BlankEmployeeTemplateExport;
 use App\Http\Requests\EmployeeContact\StoreEmployeeContactRequest;
@@ -89,6 +90,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 $payFrequency = PayFrequency::query()
                     ->where('company_id', $companyId)
                     ->where('code', $row['payroll_group'])
+                    ->whereIn('type', [PayFrequencyEnum::MONTHLY->value, PayFrequencyEnum::SEMI_MONTHLY->value])
                     ->first();
 
                 if (empty($payFrequency)) {

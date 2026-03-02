@@ -11,6 +11,7 @@ use App\Blueprint\Repositories\EmployeeGroupRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Enums\Compensation as CompensationEnum;
+use App\Enums\PayFrequency;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Transformers\Compensation\SelectionAsComponentableMorphTransformer as CompensationSelectionAsComponentableMorphTransformer;
@@ -45,7 +46,11 @@ class BulkOrganizationController extends Controller
                 $employeeGroupSelection = Fractal::collection(App::make(EmployeeGroupRepository::class)->selection($filters), EmployeeGroupSelectionTransformer::class)['data'];
                 $departmentSelection = Fractal::collection(App::make(DepartmentRepository::class)->selection($filters), DepartmentSelectionTransformer::class)['data'];
                 $designationSelection = Fractal::collection(App::make(DesignationRepository::class)->selection($filters), DesignationSelectionTransformer::class)['data'];
-                $payFrequencySelection = Fractal::collection(App::make(PayFrequencyRepository::class)->selection($filters), PayFrequencySelectionTransformer::class)['data'];
+
+                $payFrequencyFilters = $filters;
+                $payFrequencyFilters->frequency_types = [PayFrequency::MONTHLY->value, PayFrequency::SEMI_MONTHLY->value];
+                $payFrequencySelection = Fractal::collection(App::make(PayFrequencyRepository::class)
+                    ->selection($payFrequencyFilters), PayFrequencySelectionTransformer::class)['data'];
 
                 $compensationNames = Fractal::collection(App::make(CompensationRepository::class)->selection($filters), CompensationSelectionAsComponentableMorphTransformer::class)['data'];
                 $deductionNames = Fractal::collection(App::make(DeductionRepository::class)->selection($filters), DeductionSelectionAsComponentableMorphTransformer::class)['data'];
