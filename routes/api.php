@@ -99,7 +99,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
-if(App::environment('local', 'development')) {
+if(true || App::environment('local', 'development')) {
     Route::group([
         'prefix' => 'utility'
     ], function(){
