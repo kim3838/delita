@@ -62,6 +62,12 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(isset($filters->frequency_sequence), function ($builder) use ($filters) {
                 $builder->where('payrolls.frequency_sequence', $filters->frequency_sequence);
             })
+            ->when(!empty($filters->pay_frequencies) && is_array($filters->pay_frequencies), function ($builder) use ($filters) {
+                $builder->whereIn('payrolls.pay_frequency', $filters->pay_frequencies);
+            })
+            ->when(!empty($filters->frequency_sequences) && is_array($filters->frequency_sequences), function ($builder) use ($filters) {
+                $builder->whereIn('payrolls.frequency_sequence', $filters->frequency_sequences);
+            })
             ->when((
                 (isset($filters->from_month) && Carbon::createFromFormat('Y-m', $filters->from_month)) &&
                 (isset($filters->to_month) && Carbon::createFromFormat('Y-m', $filters->to_month))
