@@ -29,3 +29,7 @@ Route::group([
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 });
+
+Route::get('/admin/error-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadErrors'])->name('download.logs.errors');
+Route::get('/admin/debug-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadDebugs'])->name('download.logs.debugs');
+Route::get('/admin/auth-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadAuths'])->name('download.logs.auth');
