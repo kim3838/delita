@@ -18,7 +18,7 @@ class StandardTaxableIncomeFormula
         $formula = $pipelinePayload['formula'];
 
         $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
-        $totalAnnualTaxable = BigDecimal::zero();
+        $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
 
         $totalContribution = BigDecimal::zero();
 
@@ -27,7 +27,9 @@ class StandardTaxableIncomeFormula
             $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
         }
 
-        $totalTaxable = $totalTaxable->minus($totalContribution);
+        $totalTaxable = $totalTaxable
+            ->plus($totalTaxableBonus)
+            ->minus($totalContribution);
 
         $context->totals = [
             ...$context->totals,
@@ -37,8 +39,9 @@ class StandardTaxableIncomeFormula
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
-                'Totals' => $context->totals,
                 'Total taxable' => $totalTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
+                'Total taxable bonus' => $totalTaxableBonus->toScale(6, RoundingMode::HalfUp)->toString(),
+                'Totals' => $context->totals,
             ]);
         }
 

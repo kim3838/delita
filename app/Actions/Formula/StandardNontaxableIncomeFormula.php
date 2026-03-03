@@ -17,22 +17,17 @@ class StandardNontaxableIncomeFormula
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formula = $pipelinePayload['formula'];
 
-        $totalNonTaxable = BigDecimal::zero();
+        $totalNonTaxable = BigDecimal::of($context->totals['nontaxable'] ?? '0');
+        $totalNontaxableBonus = BigDecimal::of($context->totals['nontaxable_bonus'] ?? '0');
 
-        //Example non taxable income
-        //$totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of('25000'));
+        $totalNonTaxable = $totalNonTaxable->plus($totalNontaxableBonus);
 
-        foreach ($context->statementDetails as $detail) {
+        $context->totals = [
+            ...$context->totals,
+            'nontaxable' => $totalNonTaxable->toScale(6, RoundingMode::HalfUp)->toString()
+        ];
 
-            $totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of((string)$detail['nontaxable']));
-        }
-
-        if($totalNonTaxable->isGreaterThan(BigDecimal::zero())){
-
-            $context->totals = [
-                ...$context->totals,
-                'nontaxable' => $totalNonTaxable->toScale(6, RoundingMode::HalfUp)->toString()
-            ];
+        if(!$totalNonTaxable->isEqualTo(BigDecimal::zero())){
 
             if($debugEnabled){
                 _debug([
@@ -56,7 +51,6 @@ class StandardNontaxableIncomeFormula
             ];
 
             $context->statementDetails[] = $statementDetail;
-
         }
 
         return $next($context);

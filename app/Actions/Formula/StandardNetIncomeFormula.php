@@ -19,6 +19,8 @@ class StandardNetIncomeFormula
         $formula = $pipelinePayload['formula'];
 
         $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
+
         $totalNonTaxable = BigDecimal::of($context->totals['nontaxable'] ?? '0');
 
         $totalContribution = BigDecimal::zero();
@@ -32,8 +34,13 @@ class StandardNetIncomeFormula
             $totalDeduction = $totalDeduction->plus(BigDecimal::of((string)$detail['deduction']));
         }
 
+        $totalTaxableAfterContribution = $totalTaxable
+            ->plus($totalTaxableBonus)
+            ->minus($totalContribution);
+
         $gross = $gross
             ->plus($totalTaxable)
+            ->plus($totalTaxableBonus)
             ->plus($totalNonTaxable);
 
         $deduction = $totalWithholdingTax
@@ -44,7 +51,7 @@ class StandardNetIncomeFormula
 
         $context->totals = [
             ...$context->totals,
-            'taxable' => $totalTaxable->minus($totalContribution)->toScale(6, RoundingMode::HalfUp)->toString(),
+            'taxable' => $totalTaxableAfterContribution->toScale(6, RoundingMode::HalfUp)->toString(),
             'deduction' => $totalDeduction->toScale(6, RoundingMode::HalfUp)->toString(),
             'net' => $totalNet->toScale(6, RoundingMode::HalfUp)->toString()
         ];

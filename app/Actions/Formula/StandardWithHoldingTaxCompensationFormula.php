@@ -40,6 +40,8 @@ class StandardWithHoldingTaxCompensationFormula
         }
 
         $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
+        $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
+
         $totalContribution = BigDecimal::zero();
 
         foreach ($context->statementDetails as $detail) {
@@ -47,7 +49,7 @@ class StandardWithHoldingTaxCompensationFormula
             $totalContribution = $totalContribution->plus(BigDecimal::of((string)$detail['contribution']));
         }
 
-        $totalTaxable = $totalTaxable->minus($totalContribution);
+        $totalTaxable = $totalTaxable->plus($totalTaxableBonus)->minus($totalContribution);
 
         if($context->additionalSalaryStatements->isNotEmpty()){
 

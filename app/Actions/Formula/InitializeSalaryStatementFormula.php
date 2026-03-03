@@ -4,6 +4,8 @@ namespace App\Actions\Formula;
 
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\SalaryStatementContext;
+use App\Enums\Compensation as CompensationEnum;
+use App\Enums\Formulable;
 use App\Enums\PayFrequency;
 use App\Enums\SemiMonthlySequence;
 use Brick\Math\BigDecimal;
@@ -13,19 +15,66 @@ class InitializeSalaryStatementFormula
 {
     public function handle(SalaryStatementContext $context, $next)
     {
+        $debugEnabled = false;
         $totals = [];
 
+        $totalNonTaxable = BigDecimal::zero();
         $totalTaxable = BigDecimal::zero();
         $totalDeduction = BigDecimal::zero();
 
+        $totalNontaxableBonus = BigDecimal::of('0');
+        $totalTaxableBonus = BigDecimal::of('0');
+
         foreach ($context->statementDetails as $detail) {
 
+            $totalNonTaxable = $totalNonTaxable->plus(BigDecimal::of((string)$detail['nontaxable']));
             $totalTaxable = $totalTaxable->plus(BigDecimal::of((string)$detail['taxable']));
             $totalDeduction = $totalDeduction->plus(BigDecimal::of((string)$detail['deduction']));
+
+            $totalNontaxableBonus = $totalNontaxableBonus->plus(BigDecimal::of((string)($detail['nontaxable_bonus'] ?? '0')));
+            $totalTaxableBonus = $totalTaxableBonus->plus(BigDecimal::of((string)($detail['taxable_bonus'] ?? '0')));
         }
 
+        if($debugEnabled){
+
+            _debug([
+                'Initialize' => 'Salary Statement Formula',
+                'nontaxable' => (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp),
+                'taxable' => (string)$totalTaxable->toScale(6, RoundingMode::HalfUp),
+                'deduction' => (string)$totalDeduction->toScale(6, RoundingMode::HalfUp),
+                'nontaxable_bonus' => (string)$totalNontaxableBonus->toScale(6, RoundingMode::HalfUp),
+                'taxable_bonus' => (string)$totalTaxableBonus->toScale(6, RoundingMode::HalfUp)
+            ]);
+        }
+
+        /**
+         * Example bonus
+         **/
+        $customBonus = $totalNontaxableBonus->isGreaterThan(BigDecimal::zero()) || $totalTaxableBonus->isGreaterThan(BigDecimal::zero());
+
+        if($customBonus){
+
+            $context->statementDetails[] = [
+                'id' => null,
+                'formulable_type' => Formulable::EARNINGS->value,
+                'component_type' => CompensationEnum::BENEFIT->value,
+                'component_name' => 'Bonus',
+                'component_values' => null,
+                'taxable' => $totalTaxableBonus->toScale(6, RoundingMode::HalfUp)->toString(),
+                'nontaxable' => $totalNontaxableBonus->toScale(6, RoundingMode::HalfUp)->toString(),
+                'deduction' => 0.0,
+                'contribution' => 0.0,
+                'withholding_tax' => 0.0,
+                'net' => 0.0,
+            ];
+        }
+
+        $totals['nontaxable'] = (string)$totalNonTaxable->toScale(6, RoundingMode::HalfUp);
         $totals['taxable'] = (string)$totalTaxable->toScale(6, RoundingMode::HalfUp);
         $totals['deduction'] = (string)$totalDeduction->toScale(6, RoundingMode::HalfUp);
+
+        $totals['nontaxable_bonus'] = (string)$totalNontaxableBonus->toScale(6, RoundingMode::HalfUp);
+        $totals['taxable_bonus'] = (string)$totalTaxableBonus->toScale(6, RoundingMode::HalfUp);
 
         $context->totals = $totals;
 
