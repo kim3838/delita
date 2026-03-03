@@ -9,6 +9,7 @@ use App\Enums\EmploymentStatus;
 use App\Facades\Fractal;
 use App\Models\EmploymentProfile;
 use App\Transformers\EmploymentProfile\PatchableTransformer;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -21,7 +22,7 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
         return EmploymentProfile::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = [], $relations = [])
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
         unset($employeeRepositoryFilter->employment_profile_status);
@@ -78,10 +79,10 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function currentEmploymentProfileBuilder($filters)
+    public function currentEmploymentProfileBuilder($filters): QueryBuilder
     {
         $filters = (object)[
-            'status' => [EmploymentStatus::ACTIVE],
+            'employment_profile_status' => [EmploymentStatus::ACTIVE],
             'company_id' => $filters->company_id ?? false,
         ];
 
