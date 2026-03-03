@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SalaryStatementType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,9 @@ return new class extends Migration
             $table->ulid()->unique()->index();
             $table->foreignId('payroll_id')->constrained()->cascadeOnDelete();
             $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+
+            $table->smallInteger('type')->default(SalaryStatementType::DEFAULT);
+            $table->boolean('is_paid')->default(false);
 
             $table->tinyInteger('total_days')->default(0);
             $table->tinyInteger('total_day_offs')->default(0);
