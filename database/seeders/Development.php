@@ -488,7 +488,7 @@ class Development extends Seeder
             ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
             ['code' => 'LEAVE-PAY', 'name' => 'Leave pay', 'assignable' => false, 'type' => Compensation::LEAVE_PAY, 'formula' => 'Standard-Leave-Pay'],
             ['code' => 'HOLIDAY-PAY', 'name' => 'Holiday pay', 'assignable' => false, 'type' => Compensation::HOLIDAY_PAY, 'formula' => 'Standard-Holiday-Pay'],
-            ['code' => '13THMONTH', 'name' => '13th month pay', 'assignable' => true, 'type' => Compensation::BENEFIT, 'formula' => 'Standard-13th-Month'],
+            ['code' => '13THMONTH', 'name' => '13th month pay', 'assignable' => true, 'type' => Compensation::STATUTORY_BENEFIT, 'formula' => 'Standard-13th-Month'],
         ];
 
         foreach ($compensationsPresets as $index => $compensationPreset) {
