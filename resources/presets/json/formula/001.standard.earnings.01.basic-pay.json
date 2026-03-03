@@ -4,7 +4,7 @@
         "label": "Description",
         "order": 0,
         "type": "text",
-        "readable": "Refers to the fixed amount an employee regularly receives before\nany additions (like allowances, overtime, bonuses) or deductions (like taxes, contributions, or absences).",
+        "readable": "Refers to the fixed amount an employee regularly receives before\nany additions or deductions.",
         "value": null
     },
     {
