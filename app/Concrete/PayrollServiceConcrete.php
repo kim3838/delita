@@ -358,7 +358,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     /**
      * @throws UnexpectedException
      */
-    public function generateSalaryStatements(Payroll $payroll): void
+    public function generateSalaryStatements(Payroll $payroll, $employeeIds = []): void
     {
         $debugEnabled = false;
 
@@ -379,7 +379,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $filters = (object)[
             'company_id' => $this->payroll->company_id,
-            'employee_ids' => [],
+            'employee_ids' => $employeeIds,
             'pay_frequency_ids' => [$payFrequency->id],
         ];
 
