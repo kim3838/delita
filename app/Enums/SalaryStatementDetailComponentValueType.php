@@ -13,6 +13,9 @@ enum SalaryStatementDetailComponentValueType: int implements BaseEnum
     case PH_PHILHEALTH = 700;
     case PH_PAG_IBIG = 800;
     case PH_WITHHOLDING_TAX = 900;
+    case PH_BONUS_13TH_MONTH = 3000;
+    case PH_BONUS_13TH_MONTH_POSITIVE_ADJUSTMENT = 3001;
+    case PH_BONUS_13TH_MONTH_NEGATIVE_ADJUSTMENT = 3002;
     case NET = 5000;
 
     public function label(): string
@@ -27,6 +30,9 @@ enum SalaryStatementDetailComponentValueType: int implements BaseEnum
             self::PH_PHILHEALTH => 'Ph PhilHealth',
             self::PH_PAG_IBIG => 'Ph Pag-Ibig',
             self::PH_WITHHOLDING_TAX => 'Ph Withholding Tax',
+            self::PH_BONUS_13TH_MONTH => 'Bonus 13th month',
+            self::PH_BONUS_13TH_MONTH_POSITIVE_ADJUSTMENT => '13th month positive adjustment',
+            self::PH_BONUS_13TH_MONTH_NEGATIVE_ADJUSTMENT => '13th month negative adjustment',
             self::NET => 'Net',
         };
     }
