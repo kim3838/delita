@@ -56,6 +56,9 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(isset($filters->month), function ($builder) use ($filters) {
                 $builder->where('payrolls.month', $filters->month);
             })
+            ->when(isset($filters->is_after_start_date), function ($builder) use ($filters) {
+                $builder->where('payrolls.start_date', '<', $filters->is_after_start_date);
+            })
             ->when(isset($filters->pay_frequency), function ($builder) use ($filters) {
                 $builder->where('payrolls.pay_frequency', $filters->pay_frequency);
             })

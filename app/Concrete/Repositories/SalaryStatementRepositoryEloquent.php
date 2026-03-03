@@ -46,6 +46,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 if(isset($payrollRepositoryFilter->payroll_frequency_sequence)){$payrollRepositoryFilter->frequency_sequence = $payrollRepositoryFilter->payroll_frequency_sequence;}
                 if(isset($payrollRepositoryFilter->payroll_from_month)){$payrollRepositoryFilter->from_month = $payrollRepositoryFilter->payroll_from_month;}
                 if(isset($payrollRepositoryFilter->payroll_to_month)){$payrollRepositoryFilter->to_month = $payrollRepositoryFilter->payroll_to_month;}
+                if(isset($payrollRepositoryFilter->payroll_is_after_start_date)){$payrollRepositoryFilter->is_after_start_date = $payrollRepositoryFilter->payroll_is_after_start_date;}
 
                 unset($payrollRepositoryFilter->employee_search);
 
