@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SalaryStatementType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,9 @@ class SalaryStatement extends Model
     protected $fillable = [
         'payroll_id',
         'employee_id',
+
+        'type',
+        'is_paid',
 
         'total_days',
         'total_day_offs',
@@ -44,6 +48,9 @@ class SalaryStatement extends Model
         'payroll_id' => 'int',
         'employee_id' => 'int',
 
+        'type' => SalaryStatementType::class,
+        'is_paid' => 'boolean',
+
         'total_days' => 'int',
         'total_day_offs' => 'int',
         'total_working_days' => 'int',
@@ -74,6 +81,9 @@ class SalaryStatement extends Model
         'total_tax_withheld' => 'decimal:6',
         'total_deduction' => 'decimal:6',
         'total_net' => 'decimal:6',
+
+        'total_nonstatutory_benefits' => 'decimal:6',
+        'total_13th_month_amount' => 'decimal:6',
     ];
 
     public function payroll(): BelongsTo

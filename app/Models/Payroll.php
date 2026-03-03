@@ -5,10 +5,15 @@ namespace App\Models;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\PayrollStatus;
 use App\Enums\SemiMonthlySequence;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property boolean isYearEnd
+ **/
 class Payroll extends Model
 {
     protected $fillable = [
@@ -50,6 +55,11 @@ class Payroll extends Model
         'total_deduction' => 'decimal:6',
         'total_net' => 'decimal:6',
     ];
+
+    public function isYearEnd(): Attribute
+    {
+        return new Attribute(get: fn () => $this->month === CarbonInterface::DECEMBER);
+    }
 
     public function company(): BelongsTo
     {

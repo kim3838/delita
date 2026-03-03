@@ -75,6 +75,18 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             ELSE '0.000000'
                             END AS total_other_gross
                         "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
+                            THEN salary_statement_details.taxable + salary_statement_details.nontaxable
+                            ELSE '0.000000'
+                            END AS total_nonstatutory_benefits
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value])  .")
+                            THEN salary_statement_details.taxable + salary_statement_details.nontaxable
+                            ELSE '0.000000'
+                            END AS total_13th_month_amount
+                        "),
                     ]);
 
                 //Aggregate detail totals by salary statement id
@@ -84,6 +96,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         DB::raw("SUM(details_total_sub.total_employer_share) AS total_employer_contribution_share"),
                         DB::raw("SUM(details_total_sub.total_basic_gross) AS total_basic_gross"),
                         DB::raw("SUM(details_total_sub.total_other_gross) AS total_other_gross"),
+                        DB::raw("SUM(details_total_sub.total_nonstatutory_benefits) AS total_nonstatutory_benefits"),
+                        DB::raw("SUM(details_total_sub.total_13th_month_amount) AS total_13th_month_amount"),
                     ])->groupBy('salary_statement_id');
 
                 //Get actual basic pay
@@ -93,6 +107,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         DB::raw("details_total_sub.total_employer_contribution_share"),
                         DB::raw("details_total_sub.total_basic_gross"),
                         DB::raw("details_total_sub.total_other_gross"),
+                        DB::raw("details_total_sub.total_nonstatutory_benefits"),
+                        DB::raw("details_total_sub.total_13th_month_amount"),
                     ]);
 
                 $builder->joinSub($salaryStatementDetailTotalBuilder, 'details_total_sub', function ($join) {
@@ -101,6 +117,9 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
             })
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
                 $join->on('employee_sub.id', '=', 'salary_statements.employee_id');
+            })
+            ->when(!empty($filters->salary_statement_types) && is_array($filters->salary_statement_types), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("salary_statements.type"), $filters->salary_statement_types);
             })
             ->when(!empty($filters->salary_statement_ids) && is_array($filters->salary_statement_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("salary_statements.id"), $filters->salary_statement_ids);
@@ -129,6 +148,9 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     "details_total_sub.total_employer_contribution_share AS total_employer_contribution_share",
                     "details_total_sub.total_basic_gross AS total_basic_gross",
                     "details_total_sub.total_other_gross AS total_other_gross",
+
+                    "details_total_sub.total_nonstatutory_benefits AS total_nonstatutory_benefits",
+                    "details_total_sub.total_13th_month_amount AS total_13th_month_amount",
                 ] : []),
 
                 "employee_sub.number AS employee_number",
@@ -138,6 +160,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 "salary_statements.ulid AS ulid",
                 "salary_statements.payroll_id AS payroll_id",
                 "salary_statements.employee_id AS employee_id",
+                "salary_statements.type AS type",
+                "salary_statements.is_paid AS is_paid",
 
                 ...(!in_array('no_day_totals', $relations) ? [
                     "salary_statements.total_days",

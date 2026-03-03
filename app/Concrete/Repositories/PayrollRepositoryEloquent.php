@@ -175,8 +175,6 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
 
         $queryBuilder = $this->baseQueryBuilder($filters, [], ['salary_statement']);
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         return $this->hydrateItem($queryBuilder->firstOrFail());
     }
 }

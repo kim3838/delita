@@ -55,6 +55,8 @@ class ItemTransformer extends TransformerAbstract
             'ulid' => $salaryStatement->ulid,
             'payroll_id' => $salaryStatement->payroll_id,
             'employee_id' => $salaryStatement->employee_id,
+            'type' => $salaryStatement->type?->toArray(),
+            'is_paid' => $salaryStatement->is_paid,
 
             'payroll' => $payroll,
 

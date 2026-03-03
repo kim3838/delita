@@ -79,8 +79,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 3,
-                'key' => 'benefits',
-                'name' => 'Benefits',
+                'key' => 'statutory_benefits',
+                'name' => 'Statutory Benefits',
                 'formulable_type' => Formulable::EARNINGS,
                 'statement_level' => true,
                 'aggregation' => false,
@@ -107,7 +107,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                             'value'
                         ],
                         'operator' => '=',
-                        'value' => Compensation::BENEFIT,
+                        'value' => Compensation::STATUTORY_BENEFIT,
                     ],
                 ]
             ],
