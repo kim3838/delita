@@ -22,8 +22,8 @@ class PayrollObserver
     public function addCustomNumberAttribute(Payroll $payroll): Payroll
     {
         $year = $payroll->year;
+        $yearLastTwoDigits = substr($year, -2);
         $month = str_pad($payroll->month, 2, '0', STR_PAD_LEFT);
-        $payFrequencyLabel = strtoupper($payroll->pay_frequency?->label());
         $frequencySequenceFlag = null;
 
         if($payroll->frequency_sequence){
@@ -33,12 +33,9 @@ class PayrollObserver
             }
         }
 
-        $startDate = $payroll->start_date->format('Ymd');
-        $endDate = $payroll->end_date->format('Ymd');
-
         $prefix = 'PR';
 
-        $number = "{$prefix}-{$year}-{$month}-{$payFrequencyLabel}" . ($frequencySequenceFlag ? "-{$frequencySequenceFlag}" : '') . ("-{$startDate}-{$endDate}");
+        $number = "{$prefix}{$yearLastTwoDigits}{$month}" . (empty($frequencySequenceFlag) ? '' : "-{$frequencySequenceFlag}");
 
         $payroll->number = $number;
 
