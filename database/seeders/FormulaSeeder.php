@@ -40,7 +40,7 @@ class FormulaSeeder extends Seeder
             ['name' => 'Standard-Holiday-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::HOLIDAY_PAY, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_holiday_pay')->first()->path)
             ],
-            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BENEFIT, 'aggregation' => false,
+            ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::STATUTORY_BENEFIT, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],
 
