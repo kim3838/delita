@@ -71,6 +71,9 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
             ->when(!empty($filters->employee_ids) && is_array($filters->employee_ids), function ($builder) use ($filters) {
                 $builder->whereIn('employment_profiles.employee_id', $filters->employee_ids);
             })
+            ->when(!empty($filters->employment_profile_status) && is_array($filters->employment_profile_status), function ($builder) use ($filters) {
+                $builder->whereIn('employment_profiles.status', $filters->employment_profile_status);
+            })
             ->select([
                 'employment_profiles.*',
             ])
