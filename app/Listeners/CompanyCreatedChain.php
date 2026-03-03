@@ -47,6 +47,7 @@ class CompanyCreatedChain
          * Standard-Overtime
          * Standard-Leave-Pay
          * Standard-Holiday-Pay
+         * Standard-13th-Month
          * Standard-Taxable-Income
          * Standard-Nontaxable-Income
          * Standard-Compensation-Tax

@@ -8,39 +8,76 @@
         "value": null
     },
     {
-        "key": "cut_off",
-        "label": "Cut Off",
+        "key": "tax_exempt",
+        "label": "Tax exempt",
         "order": 1,
+        "type": "number",
+        "readable": "First ₱90,000.00 of the 13th month pay (plus other bonuses)",
+        "value": "90000.00"
+    },
+    {
+        "key": "monthly_schedule",
+        "label": "Monthly pay frequency",
+        "order": 2,
         "type": "array",
-        "readable": "Cut off of November 1st",
+        "readable": "Monthly pay frequency",
         "value": [
             {
-                "key": "start_date",
-                "label": "Start Date",
+                "key": "payroll_month",
+                "label": "Include in payroll month",
                 "order": 1,
-                "type": "date",
-                "readable": "November 02 of last year",
-                "value": {
-                    "base": "Nov 02 last year",
-                    "year": null,
-                    "month": null,
-                    "day": null,
-                    "time": "startOfDay"
-                }
+                "type": "number",
+                "readable": "November",
+                "value": "11"
             },
             {
-                "key": "end_date",
-                "label": "End Date",
+                "key": "reconcile_payroll_month",
+                "label": "Reconcile on payroll month",
                 "order": 2,
-                "type": "date",
-                "readable": "November 01 of current year",
-                "value": {
-                    "base": "Nov 01",
-                    "year": null,
-                    "month": null,
-                    "day": null,
-                    "time": "endOfDay"
-                }
+                "type": "number",
+                "readable": "December",
+                "value": "12"
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_schedule",
+        "label": "Semimonthly pay frequency",
+        "order": 3,
+        "type": "array",
+        "readable": "Semimonthly pay frequency",
+        "value": [
+            {
+                "key": "payroll_month",
+                "label": "Include in payroll month",
+                "order": 1,
+                "type": "number",
+                "readable": "November",
+                "value": "11"
+            },
+            {
+                "key": "payroll_month_sequence",
+                "label": "Semimonthly Sequence",
+                "order": 2,
+                "type": "number",
+                "readable": "2nd half",
+                "value": "200"
+            },
+            {
+                "key": "reconcile_payroll_month",
+                "label": "Reconcile on payroll month",
+                "order": 3,
+                "type": "number",
+                "readable": "December",
+                "value": "12"
+            },
+            {
+                "key": "reconcile_payroll_month_sequence",
+                "label": "Reconcile month sequence",
+                "order": 4,
+                "type": "number",
+                "readable": "2nd half",
+                "value": "200"
             }
         ]
     }
