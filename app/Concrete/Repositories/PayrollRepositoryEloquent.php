@@ -31,6 +31,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             ->when(in_array('salary_statement', $relations), function ($builder) use($filters) {
 
                 $salaryStatementRepositoryFilter = clone $filters;
+                unset($salaryStatementRepositoryFilter->search);
 
                 $salaryStatementQueryBuilder = App::make(SalaryStatementRepository::class)->baseQueryBuilder($salaryStatementRepositoryFilter, [], ['detail_totals']);
 
