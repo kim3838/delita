@@ -15,6 +15,7 @@ class SalaryStatementContext
     public EmployeeServiceInterface $employeeService;
 
     public bool $isFinalPayState = false;
+    public bool $isPayrollYearEnd = false;
 
     public function __construct(
         public Company $company,
@@ -30,7 +31,10 @@ class SalaryStatementContext
     ){
         $this->employeeService = app(EmployeeServiceInterface::class, [$this->employee]);
 
-        $this->isFinalPayState = $this->employeeService->hasToAnnualizePayroll($this->payroll);
+        list($isYearEnd, $noUpcomingEmployment) = $this->employeeService->getPayrollAndEmploymentPayload($this->payroll);
+
+        $this->isFinalPayState = $noUpcomingEmployment;
+        $this->isPayrollYearEnd = $isYearEnd;
 
         if($this->isFinalPayState){
 
