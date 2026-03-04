@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\FormulaComponentType;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,6 +14,7 @@ class SalaryStatementDetail extends Model
         'salary_statement_id',
         'formulable_type',
         'component_type',
+        'component_sub_type',
         'component_name',
 
         'component_values',
@@ -34,6 +36,7 @@ class SalaryStatementDetail extends Model
         'salary_statement_attendance_id' => 'int',
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
+        'component_sub_type' => FormulableComponentSubType::class,
         'component_name' => 'string',
 
         'component_values' => 'array',

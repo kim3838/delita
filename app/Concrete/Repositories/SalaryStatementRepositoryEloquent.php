@@ -8,8 +8,8 @@ use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Compensation;
-use App\Enums\Deduction;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Models\SalaryStatement;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -43,7 +43,9 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 if(isset($payrollRepositoryFilter->payroll_year)){$payrollRepositoryFilter->year = $payrollRepositoryFilter->payroll_year;}
                 if(isset($payrollRepositoryFilter->payroll_month)){$payrollRepositoryFilter->month = $payrollRepositoryFilter->payroll_month;}
                 if(isset($payrollRepositoryFilter->payroll_pay_frequency)){$payrollRepositoryFilter->pay_frequency = $payrollRepositoryFilter->payroll_pay_frequency;}
+                if(isset($payrollRepositoryFilter->payroll_pay_frequencies)){$payrollRepositoryFilter->pay_frequencies = $payrollRepositoryFilter->payroll_pay_frequencies;}
                 if(isset($payrollRepositoryFilter->payroll_frequency_sequence)){$payrollRepositoryFilter->frequency_sequence = $payrollRepositoryFilter->payroll_frequency_sequence;}
+                if(isset($payrollRepositoryFilter->payroll_frequency_sequences)){$payrollRepositoryFilter->frequency_sequences = $payrollRepositoryFilter->payroll_frequency_sequences;}
                 if(isset($payrollRepositoryFilter->payroll_from_month)){$payrollRepositoryFilter->from_month = $payrollRepositoryFilter->payroll_from_month;}
                 if(isset($payrollRepositoryFilter->payroll_to_month)){$payrollRepositoryFilter->to_month = $payrollRepositoryFilter->payroll_to_month;}
                 if(isset($payrollRepositoryFilter->payroll_is_after_start_date)){$payrollRepositoryFilter->is_after_start_date = $payrollRepositoryFilter->payroll_is_after_start_date;}
@@ -63,29 +65,47 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 $salaryStatementDetailQueryBuilder = App::make(SalaryStatementDetailRepository::class)->baseQueryBuilder($salaryStatementDetailRepositoryFilter, [], [])
                     ->select([
                         'salary_statement_details.salary_statement_id',
-                        DB::raw("component_values->>'$.employer_share.total' AS total_employer_share"),
+                        DB::raw("CAST(component_values->>'$.employer_share.total' AS DECIMAL(21,6)) AS total_employer_share"),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value, Compensation::LEAVE_PAY->value])  .")
-                            THEN component_values->>'$.regular_pay'
-                            ELSE '0.000000'
-                            END AS total_basic_gross
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            THEN CAST(component_values->>'$.regular_pay' AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_basic_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type NOT IN (". implode(",", [Compensation::BASIC_PAY->value, Compensation::LEAVE_PAY->value])  .")
-                            THEN component_values->>'$.total'
-                            ELSE '0.000000'
-                            END AS total_other_gross
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::LEAVE_PAY->value])  .")
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_leave_pay
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            THEN CAST(component_values->>'$.rest_day_pay' AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_rest_day_pay
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            THEN CAST(component_values->>'$.night_differential_pay' AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_night_differential_pay
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::REGULAR_ALLOWANCE->value, Compensation::OVERTIME->value, Compensation::HOLIDAY_PAY->value])  .")
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_non_basic_pay
                         "),
                         DB::raw("
                             CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
-                            THEN salary_statement_details.taxable + salary_statement_details.nontaxable
-                            ELSE '0.000000'
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6)) + CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_nonstatutory_benefits
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value])  .")
-                            THEN salary_statement_details.taxable + salary_statement_details.nontaxable
-                            ELSE '0.000000'
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value])  .")
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6)) + CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_13th_month_amount
                         "),
                     ]);
@@ -95,8 +115,13 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     ->select([
                         'details_total_sub.salary_statement_id',
                         DB::raw("SUM(details_total_sub.total_employer_share) AS total_employer_contribution_share"),
-                        DB::raw("SUM(details_total_sub.total_basic_gross) AS total_basic_gross"),
-                        DB::raw("SUM(details_total_sub.total_other_gross) AS total_other_gross"),
+                        DB::raw("SUM(details_total_sub.total_basic_pay) AS total_basic_pay"),
+                        DB::raw("SUM(details_total_sub.total_leave_pay) AS total_leave_pay"),
+
+                        DB::raw("SUM(details_total_sub.total_rest_day_pay) AS total_rest_day_pay"),
+                        DB::raw("SUM(details_total_sub.total_night_differential_pay) AS total_night_differential_pay"),
+                        DB::raw("SUM(details_total_sub.total_non_basic_pay) AS total_non_basic_pay"),
+
                         DB::raw("SUM(details_total_sub.total_nonstatutory_benefits) AS total_nonstatutory_benefits"),
                         DB::raw("SUM(details_total_sub.total_13th_month_amount) AS total_13th_month_amount"),
                     ])->groupBy('salary_statement_id');
@@ -106,8 +131,14 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     ->select([
                         'details_total_sub.salary_statement_id',
                         DB::raw("details_total_sub.total_employer_contribution_share"),
-                        DB::raw("details_total_sub.total_basic_gross"),
-                        DB::raw("details_total_sub.total_other_gross"),
+                        DB::raw("(details_total_sub.total_basic_pay + details_total_sub.total_leave_pay) AS total_basic_gross"),
+                        DB::raw("
+                            (
+                                details_total_sub.total_rest_day_pay +
+                                details_total_sub.total_night_differential_pay +
+                                details_total_sub.total_non_basic_pay
+                            ) AS total_other_gross
+                        "),
                         DB::raw("details_total_sub.total_nonstatutory_benefits"),
                         DB::raw("details_total_sub.total_13th_month_amount"),
                     ]);

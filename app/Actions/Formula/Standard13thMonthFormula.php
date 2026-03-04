@@ -11,6 +11,7 @@ use App\Concrete\SalaryStatementModuleServiceConcrete;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Deduction;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\HolidayType;
 use App\Enums\PayFrequency;
 use App\Enums\PayType;
@@ -53,10 +54,6 @@ class Standard13thMonthFormula
     public bool $prorate13thMonth = false;
 
     public ?BigDecimal $taxExempt;
-    public ?Carbon $actualCoverageDateStart = null;
-    public ?Carbon $actualCoverageDateEnd = null;
-    public ?Carbon $projectedCoverageDateStart = null;
-    public ?Carbon $projectedCoverageDateEnd = null;
 
     use WorkPeriod, HasPayableDay;
 
@@ -404,6 +401,7 @@ class Standard13thMonthFormula
                     'id' => null,
                     'formulable_type' => $formula->formulable_type->value,
                     'component_type' => $formula->component_type->value,
+                    'component_sub_type' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value,
                     'component_name' => $formulableModel->name,
                     'component_values' => null,
                     'taxable' => $_13thMonthTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
