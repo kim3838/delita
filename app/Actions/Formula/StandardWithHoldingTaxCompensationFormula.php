@@ -24,6 +24,8 @@ class StandardWithHoldingTaxCompensationFormula
         $formulaSettings = $companyFormula->settings;
         $formula = $pipelinePayload['formula'];
 
+        $isFinalPayState = $context->isFinalPayState;
+
         $coverage = [
             'coverage_start' => $context->payroll->start_date?->toDateString(),
             'coverage_end' => $context->payroll->end_date?->toDateString(),
@@ -32,6 +34,7 @@ class StandardWithHoldingTaxCompensationFormula
         if($debugEnabled){
             _debug([
                 'Formula slug' => $this->slug,
+                'Is final pay state' => $isFinalPayState,
                 'Formulable' => get_class($formulableModel),
                 'Company formula' => get_class($companyFormula),
                 'Formula' => get_class($formula),
@@ -69,11 +72,11 @@ class StandardWithHoldingTaxCompensationFormula
             }
         }
 
-        if(
-            $context->flags['is_monthly'] ||
+        $trigger = $context->flags['is_monthly'] ||
             $context->flags['is_semimonthly_and_is_2nd_half'] ||
-            $context->flags['is_weekly_and_is_last_split_of_month']
-        ){
+            $context->flags['is_weekly_and_is_last_split_of_month'];
+
+        if($trigger || $isFinalPayState) {
 
             /**
              * Withholding tax for payroll's coverage

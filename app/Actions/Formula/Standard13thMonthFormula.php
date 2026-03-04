@@ -82,7 +82,7 @@ class Standard13thMonthFormula
             $this->formulaSettingsReconcilePayrollSequence == $context->payroll->frequency_sequence;
 
         /**
-         * Reconciliation trigger cannot be the same as payroll month trigger,
+         * Reconciliation trigger cannot be the same as payroll month trigger
          **/
         if($this->context->payroll->pay_frequency == PayFrequency::MONTHLY){
 
@@ -100,18 +100,21 @@ class Standard13thMonthFormula
 
         $isFinalPayState = $this->context->isFinalPayState;
 
-        $this->prorate13thMonth = !$this->context->payroll->isYearEnd && $isFinalPayState;
+        $this->prorate13thMonth = !$this->context->isPayrollYearEnd && $isFinalPayState;
 
-        _debug([
-            'Formula setting s payroll month' => $this->formulaSettingsPayrollMonth,
-            'Formula setting s payroll month sequence' => $this->formulaSettingsPayrollMonthSequence,
-            'Formula setting reconcile payroll month' => $this->formulaSettingsReconcilePayrollMonth,
-            'Formula setting reconcile payroll month sequence' => $this->formulaSettingsReconcilePayrollSequence,
-            'Payroll month trigger' => $payrollMonthTrigger,
-            'Reconcile payroll month trigger' => $reconcilePayrollMonthTrigger,
-            'Is final pay state' =>$isFinalPayState,
-            'Prorate 13th month' => $this->prorate13thMonth,
-        ]);
+        if (true || $debugEnabled) {
+
+            _debug([
+                'Formula settings payroll month' => $this->formulaSettingsPayrollMonth,
+                'Formula settings payroll month sequence' => $this->formulaSettingsPayrollMonthSequence,
+                'Formula setting reconcile payroll month' => $this->formulaSettingsReconcilePayrollMonth,
+                'Formula setting reconcile payroll month sequence' => $this->formulaSettingsReconcilePayrollSequence,
+                'Payroll month trigger' => $payrollMonthTrigger,
+                'Reconcile payroll month trigger' => $reconcilePayrollMonthTrigger,
+                'Is final pay state' =>$isFinalPayState,
+                'Prorate 13th month' => $this->prorate13thMonth,
+            ]);
+        }
 
         if (empty($this->formulaSettingsPayrollMonth) || empty($this->formulaSettingsReconcilePayrollMonth)) {
 
@@ -137,6 +140,8 @@ class Standard13thMonthFormula
             $projectedBasicGross = BigDecimal::zero();
 
             /**
+             * Project next payroll months, and add them up in $projectedBasicGross
+             *
              * If not prorated, project the rest of calendar year,
              * Assume the next calendar months to be full attendance
              **/
@@ -198,6 +203,7 @@ class Standard13thMonthFormula
 
                 _debug([
                     'Formula slug' => $this->slug,
+                    'Employee' => $context->employee->full_name,
                     'Settings payroll month' => $this->formulaSettingsPayrollMonth,
                     'Reconcile payroll month' => $this->formulaSettingsReconcilePayrollMonth,
                     'Payroll year' => $context->payroll->year,
@@ -205,10 +211,8 @@ class Standard13thMonthFormula
                     'Total actual basic gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
                     'Projected basic gross' => $projectedBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
 
-
                     'Total nontaxable bonus' => $totalNontaxableBonus->toScale(2, RoundingMode::HalfUp)->toString(),
                     'Total taxable bonus' => $totalTaxableBonus->toScale(2, RoundingMode::HalfUp)->toString(),
-
                     '13th month' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
                     '13th month non taxable' => $_13thMonthNonTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
                     '13th month taxable' => $_13thMonthTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
@@ -216,9 +220,17 @@ class Standard13thMonthFormula
             }
 
             /**
+             * 13th month reconciliation is only performed when the 13th month projection is performed before year end payroll
              * On 13th month reconciliation, compare actual + projected 13th month value, to the actual 13th month value
              **/
             if ($reconcilePayrollMonthTrigger) {
+
+                if (true || $debugEnabled) {
+
+                    _debug([
+                        '13th month Reconciliation' => 'Start',
+                    ]);
+                }
 
                 $assumedActualWithProjected13thMonth = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_13th_month_amount');
                 $payrollYearNonstatutoryBenefits = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_nonstatutory_benefits');
