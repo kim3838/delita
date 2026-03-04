@@ -26,9 +26,9 @@ class StandardWithHoldingTaxCompensationFormula
 
         $isFinalPayState = $context->isFinalPayState;
 
-        $coverage = [
-            'coverage_start' => $context->payroll->start_date?->toDateString(),
-            'coverage_end' => $context->payroll->end_date?->toDateString(),
+        $period = [
+            'period_start' => $context->payroll->start_date?->toDateString(),
+            'period_end' => $context->payroll->end_date?->toDateString(),
         ];
 
         if($debugEnabled){
@@ -56,7 +56,7 @@ class StandardWithHoldingTaxCompensationFormula
 
         if($context->additionalSalaryStatements->isNotEmpty()){
 
-            $coverage['coverage_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
+            $period['period_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
 
             foreach($context->additionalSalaryStatements as $salaryStatement){
 
@@ -79,7 +79,7 @@ class StandardWithHoldingTaxCompensationFormula
         if($trigger || $isFinalPayState) {
 
             /**
-             * Withholding tax for payroll's coverage
+             * Withholding tax for payroll's period
              **/
             $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable->toString(), PayFrequency::MONTHLY);
 
@@ -120,7 +120,7 @@ class StandardWithHoldingTaxCompensationFormula
 
             $componentValues = [
                 'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX->value,
-                ...$coverage
+                ...$period
             ];
 
             $statementDetail['component_values'] = $componentValues;

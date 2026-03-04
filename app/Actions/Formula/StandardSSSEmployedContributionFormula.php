@@ -25,9 +25,9 @@ class StandardSSSEmployedContributionFormula
 
         $isFinalPayState = $context->isFinalPayState;
 
-        $coverage = [
-            'coverage_start' => $context->payroll->start_date?->toDateString(),
-            'coverage_end' => $context->payroll->end_date?->toDateString(),
+        $period = [
+            'period_start' => $context->payroll->start_date?->toDateString(),
+            'period_end' => $context->payroll->end_date?->toDateString(),
         ];
 
         if($debugEnabled){
@@ -47,7 +47,7 @@ class StandardSSSEmployedContributionFormula
 
         if($context->additionalSalaryStatements->isNotEmpty()){
 
-            $coverage['coverage_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
+            $period['period_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
 
             foreach($context->additionalSalaryStatements as $salaryStatement){
 
@@ -87,7 +87,7 @@ class StandardSSSEmployedContributionFormula
             $componentValues = [
                 ...$contribution,
                 'type' => SalaryStatementDetailComponentValueType::PH_SSS->value,
-                ...$coverage
+                ...$period
             ];
 
             $statementDetail['component_values'] = $componentValues;
