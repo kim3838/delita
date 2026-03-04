@@ -40,6 +40,7 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'employee_sub.company_timezone AS company_timezone',
                 'employee_sub.local_date AS local_date',
                 'employee_sub.number AS employee_number',
+                'employee_sub.full_name AS employee_full_name',
                 "employment_profiles.*",
             ]);
     }
@@ -67,17 +68,13 @@ class EmploymentProfileRepositoryEloquent extends BaseRepositoryEloquent impleme
 
     public function list($filters): Collection
     {
-        $queryBuilder = $this->model::query()->getQuery()
-            ->when(!empty($filters->employee_ids) && is_array($filters->employee_ids), function ($builder) use ($filters) {
-                $builder->whereIn('employment_profiles.employee_id', $filters->employee_ids);
-            })
-            ->when(!empty($filters->employment_profile_status) && is_array($filters->employment_profile_status), function ($builder) use ($filters) {
-                $builder->whereIn('employment_profiles.status', $filters->employment_profile_status);
-            })
-            ->select([
-                'employment_profiles.*',
-            ])
-            ->orderBy('employment_profiles.start_date', 'ASC');
+        $orders = [
+            ['field' => 'employment_profiles.start_date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }

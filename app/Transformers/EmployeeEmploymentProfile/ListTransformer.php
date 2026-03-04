@@ -12,11 +12,15 @@ class ListTransformer extends TransformerAbstract
         return [
             'id' => $model->id,
             'employee_id' => $model->employee_id,
+            'employee_number' => $model->employee->_number,
+            'employee_full_name' => $model->employee->_full_name,
             'status' => $model->status?->toArray(),
             'employment_type' => $model->employment_type?->toArray(),
             'start_date' => $model->start_date?->format('Y-m-d'),
+            'start_date_readable' => $model->start_date?->format('F j, Y'),
             'end_of_service_type' => $model->end_of_service_type?->toArray(),
             'end_date' => $model->end_date?->format('Y-m-d'),
+            'end_date_readable' => $model->end_date?->format('F j, Y'),
         ];
     }
 }
