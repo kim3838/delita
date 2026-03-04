@@ -555,17 +555,26 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             foreach($salaryStatementDetails as $salaryStatementDetail){
 
-                $salaryStatementCursor->details()->create([
-                    'formulable_type' => $salaryStatementDetail['formulable_type'],
-                    'component_type' => $salaryStatementDetail['component_type'],
-                    'component_name' => $salaryStatementDetail['component_name'],
-                    'component_values' => [
+                $componentValues = null;
+
+                if(in_array($salaryStatementDetail['component_type'], [
+                    CompensationEnum::BASIC_PAY->value,
+                    CompensationEnum::OVERTIME->value,
+                ])){
+                    $componentValues = [
                         'type' => $salaryStatementDetail['component_values']['type'] ?? null,
                         'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
                         'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
                         'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
                         'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
-                    ],
+                    ];
+                }
+
+                $salaryStatementCursor->details()->create([
+                    'formulable_type' => $salaryStatementDetail['formulable_type'],
+                    'component_type' => $salaryStatementDetail['component_type'],
+                    'component_name' => $salaryStatementDetail['component_name'],
+                    'component_values' => $componentValues,
                     'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(2, RoundingMode::HalfUp)->toString()
                 ]);
             }

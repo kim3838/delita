@@ -350,8 +350,7 @@ trait HasPayableDay
                         $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] =
                             $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']->plus($holidayPay);
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']
-                            ->plus($globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']);
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'];
                     }
 
                     /**
@@ -485,8 +484,7 @@ trait HasPayableDay
                         $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'] =
                             $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']->plus($holidayPay);
 
-                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay']
-                            ->plus($globalEarningsPayload[$holidayPayPayloadKey]['night_differential_pay']);
+                        $globalEarningsPayload[$holidayPayPayloadKey]['total'] = $globalEarningsPayload[$holidayPayPayloadKey]['regular_pay'];
                     }
 
                     if($test || $debug){
