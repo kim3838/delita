@@ -64,6 +64,8 @@ class PayrollController extends Controller
     {
         if($request->expectsJson()){
 
+            ini_set('max_execution_time', 6000);
+
             $companyId = $request->validated()['company_id'];
             $employeeIds = $request->validated()['employee_ids'];
 
