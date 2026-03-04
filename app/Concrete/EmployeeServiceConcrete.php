@@ -3,10 +3,13 @@
 namespace App\Concrete;
 
 use App\Blueprint\EmployeeServiceInterface;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\EmploymentStatus;
+use App\Enums\SalaryStatementType;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Payroll;
+use Carbon\Carbon;
 
 class EmployeeServiceConcrete implements EmployeeServiceInterface
 {
@@ -18,33 +21,95 @@ class EmployeeServiceConcrete implements EmployeeServiceInterface
         $this->company = $employee->company;
     }
 
-    public function hasToAnnualizePayroll(Payroll $payroll): bool
+    /**
+     * Identify if the employee has final pay before the given date (payroll start date)
+     **/
+    public function hasFinalPayBeforeDate(Employee $employee, Carbon $date): array
+    {
+        $finalPaySalaryStatement = app(SalaryStatementRepository::class)->list((object)[
+            'employee_ids' => [$employee->id],
+            'salary_statement_types' => [SalaryStatementType::FINAL_PAY->value],
+            'payroll_is_after_start_date' => $date->toDateString(),
+        ], ['payroll']);
+
+        return [
+            $finalPaySalaryStatement->isNotEmpty(),
+            $finalPaySalaryStatement->first()
+        ];
+    }
+
+    public function getPayrollAndEmploymentPayload(Payroll $payroll): array
     {
         $debugEnabled = false;
 
+        $hasAtLeastOneEmployment = true;
+        $hasEmploymentProfileWithinPayrollPeriod = true;
+
+        if($this->employee->employmentProfiles->isEmpty()){
+            $hasAtLeastOneEmployment = false;
+
+            return [$payroll->isYearEnd, false, $hasAtLeastOneEmployment];
+        }
+
+        $payrollStartDate = $payroll->start_date;
+        $payrollEndDate = $payroll->end_date;
         $nextPayrollStartDate = $payroll->end_date->copy()->addDay();
 
         $currentOrUpcomingEmploymentProfilesQueryBuilder = $this->employee->employmentProfiles()
             ->getQuery()
             ->whereIn('status', [EmploymentStatus::ACTIVE->value])
             ->where(function ($query) use ($nextPayrollStartDate){
-                $query->where('start_date', '>=', $nextPayrollStartDate->toDateString())
-                    ->orWhere(function ($query) use ($nextPayrollStartDate){
-                        $query->whereNotNull('end_date')
-                            ->where('end_date', '>=', $nextPayrollStartDate->toDateString());
-                    });
+                $query->where(function ($query) use ($nextPayrollStartDate){
+                    $query->whereNull('end_date')
+                        ->where('start_date', '<=', $nextPayrollStartDate->toDateString());
+                })->orWhere(function ($query) use ($nextPayrollStartDate){
+                    $query->whereNull('end_date')
+                        ->where('start_date', '>=', $nextPayrollStartDate->toDateString());
+                })->orWhere(function ($query) use ($nextPayrollStartDate){
+                    $query->whereNotNull('end_date')
+                        ->where('end_date', '>=', $nextPayrollStartDate->toDateString());
+                });
             });
 
-        $currentOrUpcomingEmploymentProfiles = $currentOrUpcomingEmploymentProfilesQueryBuilder->get();
+        $currentAndUpcomingEmploymentProfiles = $currentOrUpcomingEmploymentProfilesQueryBuilder->get();
 
-        if($debugEnabled){
+        $employmentProfileWithinPayrollPeriodQueryBuilder = $this->employee->employmentProfiles()
+            ->getQuery()
+            ->whereIn('status', [EmploymentStatus::ACTIVE->value])
+            ->where(function ($query) use ($payrollStartDate, $payrollEndDate){
+                $query->where(function ($query) use ($payrollEndDate){
+                    $query->whereNull('end_date')
+                        ->where('start_date', '<=', $payrollEndDate->toDateString());
+                })->orWhere(function ($query) use ($payrollStartDate, $payrollEndDate){
+                    $query->whereNotNull('end_date')
+                        ->where('start_date', '<=', $payrollEndDate->toDateString())
+                        ->where('end_date', '>=', $payrollStartDate->toDateString());
+                });
+            });
+
+        $employmentProfileWithinPayrollPeriod = $employmentProfileWithinPayrollPeriodQueryBuilder->get();
+
+        $hasEmploymentProfileWithinPayrollPeriod = !$employmentProfileWithinPayrollPeriod->isEmpty();
+
+        if(true || $debugEnabled){
 
             _debug([
-                'Not yet year end' => !$payroll->isYearEnd,
-                'Has no current and upcoming employment' => $currentOrUpcomingEmploymentProfiles->isEmpty(),
+                'Employee' => $this->employee->full_name,
+                'Next payroll start date' => $nextPayrollStartDate->toDateString(),
+                'Yar end' => $payroll->isYearEnd,
+                'Payroll start date' => $payrollStartDate->toDateString(),
+                'Payroll end date' => $payrollEndDate->toDateString(),
+                'Has current ending and no upcoming employment' => $currentAndUpcomingEmploymentProfiles->isEmpty(),
+                'Has employment profile within period' => !$employmentProfileWithinPayrollPeriod->isEmpty(),
+                'Has to annualize early' => !$payroll->isYearEnd && $currentAndUpcomingEmploymentProfiles->isEmpty()
             ]);
         }
 
-        return !$payroll->isYearEnd && $currentOrUpcomingEmploymentProfiles->isEmpty();
+        return [
+            $payroll->isYearEnd,
+            $currentAndUpcomingEmploymentProfiles->isEmpty(),
+            $hasAtLeastOneEmployment,
+            $hasEmploymentProfileWithinPayrollPeriod
+        ];
     }
 }

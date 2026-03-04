@@ -65,6 +65,7 @@ class PayrollController extends Controller
         if($request->expectsJson()){
 
             $companyId = $request->validated()['company_id'];
+            $employeeIds = $request->validated()['employee_ids'];
 
             $storePayroll = array_merge($request->validated(), [
                 'status' => PayrollStatus::DRAFT
@@ -74,7 +75,7 @@ class PayrollController extends Controller
 
             $payrollService = app(PayrollServiceInterface::class, [Company::find($companyId)]);
 
-            $payrollService->generateSalaryStatements($payroll);
+            $payrollService->generateSalaryStatements($payroll, $employeeIds);
 
             $payroll = $this->repository->show($payroll->ulid);
 

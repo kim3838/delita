@@ -53,6 +53,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
+use App\Http\Controllers\PreGeneratePayrollController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
 use App\Http\Controllers\Imports\EmployeeController as EmployeeImportController;
@@ -555,6 +556,8 @@ Route::group([
     Route::post('payroll', [PayrollController::class, 'store']);
     Route::get('payroll/{ulid}', [PayrollController::class, 'show']);
     Route::delete('payrolls', [PayrollController::class, 'batchDestroy']);
+
+    Route::post('pre-generate-payroll', [PreGeneratePayrollController::class, 'store']);
 
     //Salary statement
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);
