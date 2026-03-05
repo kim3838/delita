@@ -2,14 +2,11 @@
 
 namespace App\Transformers\SalaryStatement;
 
-use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\SalaryStatement;
-use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\DetailedListTransformer as SalaryStatementAttendanceDetailedListTransformer;
 use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;

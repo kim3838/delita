@@ -97,10 +97,16 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             END AS total_non_basic_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
-                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6)) + CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
-                            END AS total_nonstatutory_benefits
+                            END AS total_taxable_nonstatutory_bonus
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
+                            THEN CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_nontaxable_nonstatutory_bonus
                         "),
                         DB::raw("
                             CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value])  .")
@@ -122,7 +128,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         DB::raw("SUM(details_total_sub.total_night_differential_pay) AS total_night_differential_pay"),
                         DB::raw("SUM(details_total_sub.total_non_basic_pay) AS total_non_basic_pay"),
 
-                        DB::raw("SUM(details_total_sub.total_nonstatutory_benefits) AS total_nonstatutory_benefits"),
+                        DB::raw("SUM(details_total_sub.total_taxable_nonstatutory_bonus) AS total_taxable_nonstatutory_bonus"),
+                        DB::raw("SUM(details_total_sub.total_nontaxable_nonstatutory_bonus) AS total_nontaxable_nonstatutory_bonus"),
                         DB::raw("SUM(details_total_sub.total_13th_month_amount) AS total_13th_month_amount"),
                     ])->groupBy('salary_statement_id');
 
@@ -139,7 +146,14 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                                 details_total_sub.total_non_basic_pay
                             ) AS total_other_gross
                         "),
-                        DB::raw("details_total_sub.total_nonstatutory_benefits"),
+                        DB::raw("details_total_sub.total_taxable_nonstatutory_bonus"),
+                        DB::raw("details_total_sub.total_nontaxable_nonstatutory_bonus"),
+                        DB::raw("
+                            (
+                                details_total_sub.total_taxable_nonstatutory_bonus +
+                                details_total_sub.total_nontaxable_nonstatutory_bonus
+                            ) AS total_nonstatutory_bonus"
+                        ),
                         DB::raw("details_total_sub.total_13th_month_amount"),
                     ]);
 
@@ -181,7 +195,9 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     "details_total_sub.total_basic_gross AS total_basic_gross",
                     "details_total_sub.total_other_gross AS total_other_gross",
 
-                    "details_total_sub.total_nonstatutory_benefits AS total_nonstatutory_benefits",
+                    "details_total_sub.total_taxable_nonstatutory_bonus AS total_taxable_nonstatutory_bonus",
+                    "details_total_sub.total_nontaxable_nonstatutory_bonus AS total_nontaxable_nonstatutory_bonus",
+                    "details_total_sub.total_nonstatutory_bonus AS total_nonstatutory_bonus",
                     "details_total_sub.total_13th_month_amount AS total_13th_month_amount",
                 ] : []),
 

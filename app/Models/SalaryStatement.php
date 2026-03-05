@@ -82,7 +82,9 @@ class SalaryStatement extends Model
         'total_deduction' => 'decimal:6',
         'total_net' => 'decimal:6',
 
-        'total_nonstatutory_benefits' => 'decimal:6',
+        'total_taxable_nonstatutory_bonus' => 'decimal:6',
+        'total_nontaxable_nonstatutory_bonus' => 'decimal:6',
+        'total_nonstatutory_bonus' => 'decimal:6',
         'total_13th_month_amount' => 'decimal:6',
     ];
 

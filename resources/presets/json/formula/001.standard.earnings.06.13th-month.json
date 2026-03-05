@@ -52,16 +52,16 @@
                 "label": "Include in payroll month",
                 "order": 1,
                 "type": "number",
-                "readable": "November",
-                "value": "11"
+                "readable": "December",
+                "value": "12"
             },
             {
                 "key": "payroll_month_sequence",
                 "label": "Semimonthly Sequence",
                 "order": 2,
                 "type": "number",
-                "readable": "2nd half",
-                "value": "200"
+                "readable": "1st half",
+                "value": "100"
             },
             {
                 "key": "reconcile_payroll_month",
