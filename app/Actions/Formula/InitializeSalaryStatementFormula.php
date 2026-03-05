@@ -86,7 +86,7 @@ class InitializeSalaryStatementFormula
             $filters = (object)[
                 'payroll_year' => $context->payroll->year,
                 'payroll_month' => $context->payroll->month,
-                'payroll_pay_frequency' => PayFrequency::SEMI_MONTHLY->value,
+                'payroll_pay_frequency' => PayFrequency::SEMIMONTHLY->value,
                 'payroll_frequency_sequence' => SemiMonthlySequence::FIRST_HALF->value,
                 'employee_ids' => [$context->employee->id]
             ];

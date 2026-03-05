@@ -54,34 +54,26 @@ class StandardWithHoldingTaxCompensationFormula
 
         $totalTaxable = $totalTaxable->plus($totalTaxableBonus)->minus($totalContribution);
 
-        if($context->additionalSalaryStatements->isNotEmpty()){
-
-            $period['period_start'] = $context->additionalSalaryStatements->first()->payroll_start_date;
-
-            foreach($context->additionalSalaryStatements as $salaryStatement){
-
-                $statementDetails = Fractal::collection(
-                    $salaryStatement->details->where('formulable_type', Formulable::EARNINGS->value),
-                    PipelineChainableTransformer::class
-                )['data'];
-
-                foreach ($statementDetails as $detail) {
-
-                    $totalTaxable = $totalTaxable->plus(BigDecimal::of((string)$detail['taxable']));
-                }
-            }
-        }
-
         $trigger = $context->flags['is_monthly'] ||
+            $context->flags['is_semimonthly_and_is_1st_half'] ||
             $context->flags['is_semimonthly_and_is_2nd_half'] ||
             $context->flags['is_weekly_and_is_last_split_of_month'];
 
         if($trigger || $isFinalPayState) {
 
+            $withHoldingTaxFrequencyBase = PayFrequency::MONTHLY;
+
+            switch($context->payroll->pay_frequency){
+                case PayFrequency::MONTHLY:
+                case PayFrequency::WEEKLY: $withHoldingTaxFrequencyBase = PayFrequency::MONTHLY;
+                    break;
+                case PayFrequency::SEMIMONTHLY: $withHoldingTaxFrequencyBase = PayFrequency::SEMIMONTHLY;
+            }
+
             /**
              * Withholding tax for payroll's period
              **/
-            $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable->toString(), PayFrequency::MONTHLY);
+            $withholdingTax = $this->getIntended($formulaSettings->cast, $totalTaxable->toString(), $withHoldingTaxFrequencyBase);
 
             /**
              * If payroll month is december, include annual tax
@@ -181,6 +173,6 @@ class StandardWithHoldingTaxCompensationFormula
             }
         }
 
-        return (string)$withholdingTax->toScale(6, RoundingMode::HalfUp);
+        return $withholdingTax->toScale(6, RoundingMode::HalfUp)->toString();
     }
 }

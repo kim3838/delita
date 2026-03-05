@@ -16,15 +16,15 @@
         "value": null
     },
     {
-        "key": "monthly_frequency",
-        "label": "Monthly rates",
+        "key": "semimonthly_frequency",
+        "label": "Semimonthly rates",
         "order": 2,
         "type": "text",
         "readable": "",
         "value": null
     },
     {
-        "key": "monthly_tax_rates",
+        "key": "semimonthly_tax_rates",
         "label": "",
         "order": 3,
         "type": "text",
@@ -32,9 +32,373 @@
         "value": ["0", "15", "20", "25", "30", "35"]
     },
     {
-        "key": "monthly_bracket_0",
+        "key": "semimonthly_bracket_0",
         "label": "",
         "order": 4,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "₱10,417.00 and below",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱0.00",
+                        "value": "0.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱10,417.00",
+                        "value": "10417.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "0%",
+                "value": "0.00"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱0.00",
+                "value": "0.00"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "No withholding tax",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_bracket_15",
+        "label": "",
+        "order": 5,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "Over ₱10,417.00 up to ₱16,666.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱10,417.00",
+                        "value": "10417.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱16,666.00",
+                        "value": "16666.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "15%",
+                "value": "00.15"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱0.00",
+                "value": "0.00"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱10,417.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_bracket_20",
+        "label": "",
+        "order": 6,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "Over ₱16,666.00 up to ₱33,332.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱16,666.00",
+                        "value": "16666.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱33,332.00",
+                        "value": "33332.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "20%",
+                "value": "00.20"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱937.50",
+                "value": "937.50"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱16,666.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_bracket_25",
+        "label": "",
+        "order": 7,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "Over ₱33,332.00 up to ₱83,332.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱33,332.00",
+                        "value": "33332.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱83,332.00",
+                        "value": "83332.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "25%",
+                "value": "00.25"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱4,270.70",
+                "value": "4270.70"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱33,332.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_bracket_30",
+        "label": "",
+        "order": 8,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "Over ₱83,332.00 up to ₱333,332.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱83,332.00",
+                        "value": "83332.00"
+                    },
+                    {
+                        "key": "up_to",
+                        "label": "Up to",
+                        "order": 2,
+                        "type": "number",
+                        "readable": "₱333,332.00",
+                        "value": "333332.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "30%",
+                "value": "00.30"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱16,770.70",
+                "value": "16770.70"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱83,332.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "semimonthly_bracket_35",
+        "label": "",
+        "order": 9,
+        "type": "array",
+        "readable": "",
+        "value": [
+            {
+                "key": "taxable",
+                "label": "Taxable",
+                "order": 0,
+                "type": "array",
+                "readable": "Over ₱333,332.00",
+                "value": [
+                    {
+                        "key": "over",
+                        "label": "Over",
+                        "order": 1,
+                        "type": "number",
+                        "readable": "₱333,332.00",
+                        "value": "333332.00"
+                    }
+                ]
+            },
+            {
+                "key": "tax_rate",
+                "label": "Tax rate",
+                "order": 1,
+                "type": "number",
+                "readable": "35%",
+                "value": "00.35"
+            },
+            {
+                "key": "base_tax",
+                "label": "Base tax",
+                "order": 2,
+                "type": "number",
+                "readable": "₱91,770.70",
+                "value": "91770.70"
+            },
+            {
+                "key": "computation",
+                "label": "Computation",
+                "order": 3,
+                "type": "text",
+                "readable": "Base tax + tax rate of excess over ₱333,332.00",
+                "value": null
+            }
+        ]
+    },
+    {
+        "key": "spacer",
+        "label": "",
+        "order": 10,
+        "type": "spacer",
+        "readable": "",
+        "value": null
+    },
+    {
+        "key": "monthly_frequency",
+        "label": "Monthly rates",
+        "order": 11,
+        "type": "text",
+        "readable": "",
+        "value": null
+    },
+    {
+        "key": "monthly_tax_rates",
+        "label": "",
+        "order": 12,
+        "type": "text",
+        "readable": "",
+        "value": ["0", "15", "20", "25", "30", "35"]
+    },
+    {
+        "key": "monthly_bracket_0",
+        "label": "",
+        "order": 13,
         "type": "array",
         "readable": "",
         "value": [
@@ -92,7 +456,7 @@
     {
         "key": "monthly_bracket_15",
         "label": "",
-        "order": 5,
+        "order": 14,
         "type": "array",
         "readable": "",
         "value": [
@@ -150,7 +514,7 @@
     {
         "key": "monthly_bracket_20",
         "label": "",
-        "order": 6,
+        "order": 15,
         "type": "array",
         "readable": "",
         "value": [
@@ -208,7 +572,7 @@
     {
         "key": "monthly_bracket_25",
         "label": "",
-        "order": 7,
+        "order": 16,
         "type": "array",
         "readable": "",
         "value": [
@@ -266,7 +630,7 @@
     {
         "key": "monthly_bracket_30",
         "label": "",
-        "order": 8,
+        "order": 17,
         "type": "array",
         "readable": "",
         "value": [
@@ -324,7 +688,7 @@
     {
         "key": "monthly_bracket_35",
         "label": "",
-        "order": 9,
+        "order": 18,
         "type": "array",
         "readable": "",
         "value": [
@@ -374,7 +738,7 @@
     {
         "key": "spacer",
         "label": "",
-        "order": 10,
+        "order": 19,
         "type": "spacer",
         "readable": "",
         "value": null
@@ -382,7 +746,7 @@
     {
         "key": "annual_frequency",
         "label": "Annual rates",
-        "order": 11,
+        "order": 20,
         "type": "text",
         "readable": "",
         "value": null
@@ -390,7 +754,7 @@
     {
         "key": "annual_frequency_cut_off",
         "label": "Annual tax cut-off",
-        "order": 12,
+        "order": 21,
         "type": "array",
         "readable": "Annual tax cut-off",
         "value": [
@@ -415,7 +779,7 @@
     {
         "key": "annual_tax_rates",
         "label": "",
-        "order": 13,
+        "order": 22,
         "type": "text",
         "readable": "",
         "value": ["0", "15", "20", "25", "30", "35"]
@@ -423,7 +787,7 @@
     {
         "key": "annual_bracket_0",
         "label": "",
-        "order": 14,
+        "order": 23,
         "type": "array",
         "readable": "",
         "value": [
@@ -481,7 +845,7 @@
     {
         "key": "annual_bracket_15",
         "label": "",
-        "order": 15,
+        "order": 24,
         "type": "array",
         "readable": "",
         "value": [
@@ -539,7 +903,7 @@
     {
         "key": "annual_bracket_20",
         "label": "",
-        "order": 16,
+        "order": 25,
         "type": "array",
         "readable": "",
         "value": [
@@ -597,7 +961,7 @@
     {
         "key": "annual_bracket_25",
         "label": "",
-        "order": 17,
+        "order": 26,
         "type": "array",
         "readable": "",
         "value": [
@@ -655,7 +1019,7 @@
     {
         "key": "annual_bracket_30",
         "label": "",
-        "order": 18,
+        "order": 27,
         "type": "array",
         "readable": "",
         "value": [
@@ -713,7 +1077,7 @@
     {
         "key": "annual_bracket_35",
         "label": "",
-        "order": 19,
+        "order": 28,
         "type": "array",
         "readable": "",
         "value": [

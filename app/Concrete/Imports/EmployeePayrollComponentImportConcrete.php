@@ -176,7 +176,7 @@ class EmployeePayrollComponentImportConcrete extends BaseImportConcrete implemen
                 if(!empty($payPeriod) && !empty($payFrequency)){
 
                     $payPeriodIsSemimonthlyOrMonthly = in_array($payPeriod, [
-                        PayPeriod::SEMI_MONTHLY,
+                        PayPeriod::SEMIMONTHLY,
                         PayPeriod::MONTHLY
                     ]);
 

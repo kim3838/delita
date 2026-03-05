@@ -172,7 +172,9 @@ class SalaryStatementModuleServiceConcrete
 
         $flags = [
             'is_monthly' => $this->payroll->pay_frequency == PayFrequency::MONTHLY,
-            'is_semimonthly_and_is_2nd_half' => $this->payroll->pay_frequency == PayFrequency::SEMI_MONTHLY &&
+            'is_semimonthly_and_is_1st_half' => $this->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
+                $this->payroll->frequency_sequence == SemiMonthlySequence::FIRST_HALF,
+            'is_semimonthly_and_is_2nd_half' => $this->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
                 $this->payroll->frequency_sequence == SemiMonthlySequence::SECOND_HALF,
             'is_weekly_and_is_last_split_of_month' => $isWeeklyAndIsLastSplitOfMonth
         ];

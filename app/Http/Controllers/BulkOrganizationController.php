@@ -48,7 +48,7 @@ class BulkOrganizationController extends Controller
                 $designationSelection = Fractal::collection(App::make(DesignationRepository::class)->selection($filters), DesignationSelectionTransformer::class)['data'];
 
                 $payFrequencyFilters = $filters;
-                $payFrequencyFilters->frequency_types = [PayFrequency::MONTHLY->value, PayFrequency::SEMI_MONTHLY->value];
+                $payFrequencyFilters->frequency_types = [PayFrequency::MONTHLY->value, PayFrequency::SEMIMONTHLY->value];
                 $payFrequencySelection = Fractal::collection(App::make(PayFrequencyRepository::class)
                     ->selection($payFrequencyFilters), PayFrequencySelectionTransformer::class)['data'];
 

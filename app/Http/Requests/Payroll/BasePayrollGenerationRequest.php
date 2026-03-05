@@ -31,7 +31,7 @@ class BasePayrollGenerationRequest extends FormRequest
                 'integer',
                 Rule::in([
                     PayFrequency::WEEKLY,
-                    PayFrequency::SEMI_MONTHLY,
+                    PayFrequency::SEMIMONTHLY,
                     PayFrequency::MONTHLY
                 ])
             ],

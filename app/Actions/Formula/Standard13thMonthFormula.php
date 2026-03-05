@@ -87,7 +87,7 @@ class Standard13thMonthFormula
                 ? false
                 : $reconcilePayrollMonthTrigger;
 
-        } else if($this->context->payroll->pay_frequency == PayFrequency::SEMI_MONTHLY){
+        } else if($this->context->payroll->pay_frequency == PayFrequency::SEMIMONTHLY){
 
             $reconcilePayrollMonthTrigger = $this->formulaSettingsPayrollMonthSequence == $this->formulaSettingsReconcilePayrollMonth &&
                 $this->formulaSettingsReconcilePayrollSequence == $this->formulaSettingsPayrollMonthSequence
@@ -484,7 +484,7 @@ class Standard13thMonthFormula
             $this->formulaSettingsReconcilePayrollMonth = $reconcilePayrollMonth;
         }
 
-        if($payFrequency = PayFrequency::SEMI_MONTHLY && !empty($semiMonthlySequence)){
+        if($payFrequency = PayFrequency::SEMIMONTHLY && !empty($semiMonthlySequence)){
 
             $semiMonthlySchedule = $settings->where('key', 'semimonthly_schedule')->first()->value;
             $semiMonthlySchedule = collect($semiMonthlySchedule);

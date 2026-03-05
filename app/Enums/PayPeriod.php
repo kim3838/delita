@@ -6,7 +6,7 @@ enum PayPeriod: int implements BaseEnum
 {
     case HOURLY = 50;
     case DAILY = 100;
-    case SEMI_MONTHLY = 300;
+    case SEMIMONTHLY = 300;
     case MONTHLY = 400;
 
     public function label(): string
@@ -14,7 +14,7 @@ enum PayPeriod: int implements BaseEnum
         return match ($this) {
             self::HOURLY => "Hourly",
             self::DAILY => "Daily",
-            self::SEMI_MONTHLY => "Semimonthly",
+            self::SEMIMONTHLY => "Semimonthly",
             self::MONTHLY => "Monthly",
         };
     }

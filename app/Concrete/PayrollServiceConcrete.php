@@ -185,7 +185,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         if($debugEnabled){
             $weekly = PayFrequencyEnum::WEEKLY;
-            $semimonthly = PayFrequencyEnum::SEMI_MONTHLY;
+            $semimonthly = PayFrequencyEnum::SEMIMONTHLY;
             $monthly = PayFrequencyEnum::MONTHLY;
 
             $weeklyFrequency = $this->payFrequencies->where('type', $weekly->value)->first();
@@ -282,7 +282,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             }
         }
 
-        if($frequency->type == PayFrequencyEnum::SEMI_MONTHLY){
+        if($frequency->type == PayFrequencyEnum::SEMIMONTHLY){
 
             if($frequency->timePeriodPreset->name == 'end_of_month_cut_off'){
 

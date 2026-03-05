@@ -741,7 +741,7 @@ trait HasPayableDay
                 PayPeriod::MONTHLY => ($payrollComponentAmount->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
-                PayPeriod::SEMI_MONTHLY => (($payrollComponentAmount->multipliedBy(BigInteger::of('2')))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                PayPeriod::SEMIMONTHLY => (($payrollComponentAmount->multipliedBy(BigInteger::of('2')))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
                 PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
@@ -751,13 +751,13 @@ trait HasPayableDay
             };
         }
 
-        if($payrollFrequency === PayFrequencyEnum::SEMI_MONTHLY){
+        if($payrollFrequency === PayFrequencyEnum::SEMIMONTHLY){
 
             $hourlyRate = match($amountablePayrollComponent->pay_period){
                 PayPeriod::MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('2'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
-                PayPeriod::SEMI_MONTHLY => ($payrollComponentAmount->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                PayPeriod::SEMIMONTHLY => ($payrollComponentAmount->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
                 PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
@@ -774,7 +774,7 @@ trait HasPayableDay
                 PayPeriod::MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('4'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
-                PayPeriod::SEMI_MONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('2'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
+                PayPeriod::SEMIMONTHLY => (($payrollComponentAmount->dividedBy(BigInteger::of('2'), 6, RoundingMode::HalfUp))->dividedBy(BigInteger::of((string)$this->frequencyWorkingDayCount), 6, RoundingMode::HalfUp))
                     ->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),
 
                 PayPeriod::DAILY => $payrollComponentAmount->dividedBy(BigInteger::of($totalWorkMinutes)->dividedBy(BigInteger::of('60')), 6, RoundingMode::HalfUp),

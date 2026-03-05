@@ -312,7 +312,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                             ->where('employee_id', $employee->id)
                             ->where('payroll_componentable_type', 'compensation')
                             ->where('formulable_type', Formulable::EARNINGS->value)
-                            ->whereIn('pay_period', [PayPeriod::SEMI_MONTHLY->value, PayPeriod::MONTHLY->value])
+                            ->whereIn('pay_period', [PayPeriod::SEMIMONTHLY->value, PayPeriod::MONTHLY->value])
                             ->get()->toArray();
 
                         if(!empty($employeeAmountableSemiMonthlyOrMonthlyCompensation)){

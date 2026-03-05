@@ -37,7 +37,7 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
             ],[
                 'code' => 'SEMI_MONTHLY',
                 'order' => 2,
-                'type' => PayFrequencyEnum::SEMI_MONTHLY,
+                'type' => PayFrequencyEnum::SEMIMONTHLY,
                 'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,
                 'period' => $endOfMonthTimePeriodPreset->semimonthly_period,
                 'cutoff_type' => null,

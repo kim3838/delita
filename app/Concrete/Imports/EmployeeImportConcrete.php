@@ -90,7 +90,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                 $payFrequency = PayFrequency::query()
                     ->where('company_id', $companyId)
                     ->where('code', $row['payroll_group'])
-                    ->whereIn('type', [PayFrequencyEnum::MONTHLY->value, PayFrequencyEnum::SEMI_MONTHLY->value])
+                    ->whereIn('type', [PayFrequencyEnum::MONTHLY->value, PayFrequencyEnum::SEMIMONTHLY->value])
                     ->first();
 
                 if (empty($payFrequency)) {
