@@ -36,7 +36,7 @@ class SalaryStatementModuleServiceConcrete
         return $this;
     }
 
-    public function companyPerDayAbleEarningsMorphFilterSlugs(
+    public function companyPerDayAbleEarningsComponentSubTypeFilterSlugs(
         $compensationEnums = [CompensationEnum::BASIC_PAY, CompensationEnum::REGULAR_ALLOWANCE, CompensationEnum::OVERTIME]
     ): array{
 
@@ -47,12 +47,12 @@ class SalaryStatementModuleServiceConcrete
             ->where('formulable_type', Formulable::EARNINGS->value)
             ->whereIn('type', $compensationEnums);
 
-        $companyPerDayAbleEarningsMorphFilterSlugs = $companyPerDayAbleEarnings
-            ->map(fn($companyPerDayEarning) => $companyPerDayEarning->id . '.compensation')
+        $companyPerDayAbleEarningsComponentSubTypeSlugs = $companyPerDayAbleEarnings
+            ->map(fn($companyPerDayEarning) => $companyPerDayEarning->component_sub_type->value)
             ->values()
             ->toArray();
 
-        return $companyPerDayAbleEarningsMorphFilterSlugs;
+        return $companyPerDayAbleEarningsComponentSubTypeSlugs;
     }
 
     public function companyPerDayableGlobalCompensations(): Collection

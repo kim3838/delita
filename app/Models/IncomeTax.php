@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\IncomeTax as IncomeTaxEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,7 @@ class IncomeTax extends Model
         'order',
         'assignable',
         'type',
+        'component_sub_type',
         'company_formula_id'
     ];
 
@@ -34,6 +36,7 @@ class IncomeTax extends Model
         'order' => 'int',
         'assignable' => 'boolean',
         'type' => IncomeTaxEnum::class,
+        'component_sub_type' => FormulableComponentSubType::class,
         'company_formula_id' => 'int',
     ];
 

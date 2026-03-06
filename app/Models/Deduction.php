@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Deduction as DeductionEnum;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,7 @@ class Deduction extends Model
         'order',
         'assignable',
         'type',
+        'component_sub_type',
         'company_formula_id'
     ];
 
@@ -34,6 +36,7 @@ class Deduction extends Model
         'order' => 'int',
         'assignable' => 'boolean',
         'type' => DeductionEnum::class,
+        'component_sub_type' => FormulableComponentSubType::class,
         'company_formula_id' => 'int',
     ];
 

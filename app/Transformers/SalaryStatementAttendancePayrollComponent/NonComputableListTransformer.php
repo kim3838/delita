@@ -22,7 +22,7 @@ class NonComputableListTransformer extends TransformerAbstract
             'formulable_type' => $salaryStatementAttendancePayrollComponent->formulable_type?->toArray(),
             'component_type' => $salaryStatementAttendancePayrollComponent->component_type?->toArray(),
 
-            'component_key' => $salaryStatementAttendancePayrollComponent->component_key,
+            'component_sub_type' => $salaryStatementAttendancePayrollComponent->component_sub_type,
             'component_name' => $salaryStatementAttendancePayrollComponent->component_name,
 
             'regular_pay' => $regularPay->isZero() ? '--' : $regularPay->toScale(2, RoundingMode::HalfUp),

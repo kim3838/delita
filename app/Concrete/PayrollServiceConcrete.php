@@ -15,9 +15,9 @@ use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\AttendanceStatus;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\HolidayType;
 use App\Enums\PayFrequency as PayFrequencyEnum;
-use App\Enums\PayrollStatus;
 use App\Enums\PayType;
 use App\Enums\SalaryStatementAttendanceDayType;
 use App\Enums\SalaryStatementAttendanceStatus;
@@ -452,7 +452,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
          * Instantiate Salary Statement Module Service
          **/
         $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($this->payroll, $this->company);
-        $companyPerDayAbleEarningsMorphFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsMorphFilterSlugs();
+        $companyPerDayAbleEarningsComponentSubTypeFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsComponentSubTypeFilterSlugs();
         $companyPerDayAbleGlobalCompensations = $salaryStatementModuleService->companyPerDayAbleGlobalCompensations();
 
         foreach($payroll->salaryStatements()->cursor() as $salaryStatementCursor) {
@@ -492,7 +492,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $employeePayrollComponentFilters = (object)[
                     'employee_ids' => [$employee->id],
                     'payroll_componentable_type' => [Relation::getMorphAlias(Compensation::class)],
-                    'payroll_componentable_morph' => $companyPerDayAbleEarningsMorphFilterSlugs,
+                    'payroll_componentable_component_sub_types' => $companyPerDayAbleEarningsComponentSubTypeFilterSlugs,
                     'payroll_componentable_date' => $salaryStatementAttendance->date->toDateString()
                 ];
                 $employeePerDayableCompensations = app(EmployeePayrollComponentRepository::class)->list($employeePayrollComponentFilters);
@@ -525,13 +525,14 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 foreach($payrollComponents as $payrollComponent){
 
-                    if(!isset($salaryStatementDetails[$payrollComponent->component_key])){
+                    if(!isset($salaryStatementDetails[$payrollComponent->component_sub_type])){
 
                         $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
 
-                        $salaryStatementDetails[$payrollComponent->component_key] = [
+                        $salaryStatementDetails[$payrollComponent->component_sub_type] = [
                             'formulable_type' => $payrollComponent->formulable_type->value,
                             'component_type' => $payrollComponent->component_type->value,
+                            'component_sub_type' => $payrollComponent->component_sub_type,
                             'component_name' => $payrollComponent->component_name,
                             'component_values' => [
                                 'type' => $componentValueType?->value,
@@ -544,12 +545,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         ];
                     }
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
-                    $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
+                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
+                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
+                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
+                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
 
-                    $salaryStatementDetails[$payrollComponent->component_key]['taxable'] = $salaryStatementDetails[$payrollComponent->component_key]['component_values']['total'];
+                    $salaryStatementDetails[$payrollComponent->component_sub_type]['taxable'] = $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total'];
                 }
             }
 
@@ -573,6 +574,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $salaryStatementCursor->details()->create([
                     'formulable_type' => $salaryStatementDetail['formulable_type'],
                     'component_type' => $salaryStatementDetail['component_type'],
+                    'component_sub_type' => $salaryStatementDetail['component_sub_type'],
                     'component_name' => $salaryStatementDetail['component_name'],
                     'component_values' => $componentValues,
                     'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(2, RoundingMode::HalfUp)->toString()
@@ -703,24 +705,24 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              **/
             foreach ($employeePerDayableCompensations as $employeePerDayableCompensation){
 
-                $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
+                $componentableSubType = $employeePerDayableCompensation->payrollComponentable->component_sub_type->value;
 
                 if(!isset($payloadMap[CompensationEnum::BASIC_PAY->value]) &&
                     $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::BASIC_PAY
                 ){
-                    $payloadMap[CompensationEnum::BASIC_PAY->value] = $componentableMorph;
+                    $payloadMap[CompensationEnum::BASIC_PAY->value] = $componentableSubType;
                 }
 
-                if(!in_array($componentableMorph, $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value]) &&
+                if(!in_array($componentableSubType, $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value]) &&
                     $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::REGULAR_ALLOWANCE
                 ){
-                    $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value][] = $componentableMorph;
+                    $payloadMap[CompensationEnum::REGULAR_ALLOWANCE->value][] = $componentableSubType;
                 }
 
                 if(!isset($payloadMap[CompensationEnum::OVERTIME->value]) &&
                     $employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::OVERTIME
                 ){
-                    $payloadMap[CompensationEnum::OVERTIME->value] = $componentableMorph;
+                    $payloadMap[CompensationEnum::OVERTIME->value] = $componentableSubType;
                 }
             }
 
@@ -729,18 +731,18 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              **/
             foreach ($companyPerDayAbleGlobalCompensations as $companyPerDayAbleGlobalCompensation){
 
-                $key = $companyPerDayAbleGlobalCompensation->id . '.compensation';
+                $componentSubType = $companyPerDayAbleGlobalCompensation->component_sub_type->value;
 
                 if(!isset($payloadMap[CompensationEnum::LEAVE_PAY->value]) &&
                     $companyPerDayAbleGlobalCompensation->type == CompensationEnum::LEAVE_PAY
                 ){
-                    $payloadMap[CompensationEnum::LEAVE_PAY->value] = $key;
+                    $payloadMap[CompensationEnum::LEAVE_PAY->value] = $componentSubType;
                 }
 
                 if(!isset($payloadMap[CompensationEnum::HOLIDAY_PAY->value]) &&
                     $companyPerDayAbleGlobalCompensation->type == CompensationEnum::HOLIDAY_PAY
                 ){
-                    $payloadMap[CompensationEnum::HOLIDAY_PAY->value] = $key;
+                    $payloadMap[CompensationEnum::HOLIDAY_PAY->value] = $componentSubType;
                 }
             }
 
@@ -771,10 +773,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
              **/
             $employeePerDayableCompensationsPayload = $employeePerDayableCompensations
                 ->mapWithKeys(fn ($compensation) => [
-                    $compensation->payroll_componentable_morph => [
+                    $compensation->payrollComponentable->component_sub_type->value => [
                         'component_type' => $compensation->payrollComponentable->type->value,
-                        'component_key' => $compensation->payroll_componentable_morph,
-                        'component_name' => $compensation->payrollComponentable->name,
+                        'component_sub_type' => $compensation->payrollComponentable->component_sub_type->value,
+                        'component_name' => FormulableComponentSubType::tryFrom($compensation->payrollComponentable->component_sub_type->value)->label(),
                         'hourly_rate' => BigDecimal::zero(),
                         'work_hour_type' => WorkHourType::REGULAR->value,
                         'regular_pay' => BigDecimal::zero(),
@@ -794,10 +796,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                         ($isHoliday && $globalCompensation->type == CompensationEnum::HOLIDAY_PAY);
                 })
                 ->mapWithKeys(fn ($globalCompensation) => [
-                    $globalCompensation->id . '.compensation' => [
+                    $globalCompensation->component_sub_type->value => [
                         'component_type' => $globalCompensation->type->value,
-                        'component_key' => $globalCompensation->id . '.compensation',
-                        'component_name' => $globalCompensation->name,
+                        'component_sub_type' => $globalCompensation->component_sub_type->value,
+                        'component_name' => FormulableComponentSubType::tryFrom($globalCompensation->component_sub_type->value)->label(),
                         'hourly_rate' => BigDecimal::zero(),
                         'work_hour_type' => WorkHourType::REGULAR->value,
                         'regular_pay' => BigDecimal::zero(),
@@ -839,15 +841,15 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 if($payrollComponentIsAmountable){
 
-                    $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
+                    $componentableSubType = $employeePerDayableCompensation->payrollComponentable->component_sub_type->value;
 
                     switch($employeePerDayableCompensation->payrollComponentable->type){
 
                         case CompensationEnum::BASIC_PAY:
 
-                            if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
-                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] =
-                                    $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
+                            if(isset($employeePerDayableCompensationsPayload[$componentableSubType])){
+                                $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate'] =
+                                    $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
                                     $payrollFrequency,
                                     $employeePerDayableCompensation,
                                     $totalWorkMinutes
@@ -856,9 +858,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                         case CompensationEnum::REGULAR_ALLOWANCE:
 
-                            if(isset($employeePerDayableCompensationsPayload[$componentableMorph])){
-                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] =
-                                    $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
+                            if(isset($employeePerDayableCompensationsPayload[$componentableSubType])){
+                                $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate'] =
+                                    $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
                                     $payrollFrequency,
                                     $employeePerDayableCompensation,
                                     $totalWorkMinutes
@@ -870,11 +872,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             if($debugEnabled){
                 _debug([
+                    'Payload map' => $payloadMap,
                     'Earnings payload' => array_map(function($payload){
                         return [
                             'component_type' => $payload['component_type'],
-                            'component_key' => $payload['component_key'],
-                            'component_name' => $payload['component_name'],
+                            'component_sub_type' => $payload['component_sub_type'],
+                            'component_name' => FormulableComponentSubType::tryFrom($payload['component_sub_type'])->label(),
                             'hourly_rate' => (string)$payload['hourly_rate'],
                             'work_hour_type' => $payload['work_hour_type'],
                             'night_differential_pay' => (string)$payload['night_differential_pay'],
@@ -885,8 +888,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                     'Global earnings payload' => array_map(function($payload){
                         return [
                             'component_type' => $payload['component_type'],
-                            'component_key' => $payload['component_key'],
-                            'component_name' => $payload['component_name'],
+                            'component_sub_type' => $payload['component_sub_type'],
+                            'component_name' => FormulableComponentSubType::tryFrom($payload['component_sub_type'])->label(),
                             'hourly_rate' => (string)$payload['hourly_rate'],
                             'work_hour_type' => $payload['work_hour_type'],
                             'night_differential_pay' => (string)$payload['night_differential_pay'],
@@ -930,8 +933,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
-                    'component_key' => $value['component_key'],
-                    'component_name' => $value['component_name'],
+                    'component_sub_type' => $value['component_sub_type'],
+                    'component_name' => FormulableComponentSubType::tryFrom($value['component_sub_type'])->label(),
                     'regular_pay' => (string)$value['regular_pay'],
                     'night_differential_pay' => (string)$value['night_differential_pay'],
                     'rest_day_pay' => (string)$value['rest_day_pay'],
@@ -945,8 +948,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->map(fn($value, $key) => [
                     'formulable_type' => Formulable::EARNINGS->value,
                     'component_type' => $value['component_type'],
-                    'component_key' => $value['component_key'],
-                    'component_name' => $value['component_name'],
+                    'component_sub_type' => $value['component_sub_type'],
+                    'component_name' => FormulableComponentSubType::tryFrom($value['component_sub_type'])->label(),
                     'regular_pay' => (string)$value['regular_pay'],
                     'night_differential_pay' => (string)$value['night_differential_pay'],
                     'rest_day_pay' => (string)$value['rest_day_pay'],

@@ -50,7 +50,13 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
             })
             ->select([
                 "employee_sub.number AS employee_number",
-                DB::raw("CONCAT(employee_payroll_components.payroll_componentable_id, '.', employee_payroll_components.payroll_componentable_type) AS payroll_componentable_morph"),
+                DB::raw("
+                    CASE
+                        WHEN employee_payroll_components.payroll_componentable_type = 'compensation' THEN compensations.component_sub_type
+                        WHEN employee_payroll_components.payroll_componentable_type = 'deduction' THEN deductions.component_sub_type
+                    ELSE income_taxes.component_sub_type
+                    END AS component_sub_type
+                "),
                 DB::raw("
                     CASE
                         WHEN employee_payroll_components.payroll_componentable_type = 'compensation' THEN compensations.type
@@ -68,8 +74,8 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
             ->when(!empty($filters->payroll_componentable_morph_to_type) && is_array($filters->payroll_componentable_morph_to_type), function ($builder) use ($filters) {
                 $builder->whereIn('payroll_component_sub.payroll_componentable_morph_to_type', $filters->payroll_componentable_morph_to_type);
             })
-            ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
-                $builder->whereIn('payroll_component_sub.payroll_componentable_morph', $filters->payroll_componentable_morph);
+            ->when(!empty($filters->payroll_componentable_component_sub_types) && is_array($filters->payroll_componentable_component_sub_types), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_component_sub.component_sub_type', $filters->payroll_componentable_component_sub_types);
             })
             ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
                 $builder->whereIn('payroll_component_sub.formulable_type', $filters->formulable_types);

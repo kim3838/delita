@@ -32,6 +32,7 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
                 'compensations.code AS code',
                 'compensations.name AS name',
                 'compensations.type AS type',
+                'compensations.component_sub_type AS component_sub_type',
                 'compensations.assignable AS assignable',
             ])
             ->orderBy('order', 'ASC');

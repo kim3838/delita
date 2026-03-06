@@ -32,6 +32,7 @@ class DeductionRepositoryEloquent extends BaseRepositoryEloquent implements Dedu
                 'deductions.code AS code',
                 'deductions.name AS name',
                 'deductions.type AS type',
+                'deductions.component_sub_type AS component_sub_type',
                 'deductions.assignable AS assignable',
             ])
             ->orderBy('order', 'ASC');

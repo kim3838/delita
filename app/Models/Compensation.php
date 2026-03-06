@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,6 +21,7 @@ class Compensation extends Model
         'order',
         'assignable',
         'type',
+        'component_sub_type',
         'company_formula_id'
     ];
 
@@ -36,6 +38,7 @@ class Compensation extends Model
         'order' => 'int',
         'assignable' => 'boolean',
         'type' => CompensationEnum::class,
+        'component_sub_type' => FormulableComponentSubType::class,
         'company_formula_id' => 'int',
     ];
 

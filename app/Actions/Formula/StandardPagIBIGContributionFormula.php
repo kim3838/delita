@@ -4,6 +4,7 @@ namespace App\Actions\Formula;
 
 use App\Concrete\SalaryStatementContext;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\SalaryStatementDetailComponentValueType;
 use App\Facades\Fractal;
 use App\Transformers\SalaryStatementDetail\PipelineChainableTransformer;
@@ -73,7 +74,8 @@ class StandardPagIBIGContributionFormula
                 'id' => null,
                 'formulable_type' => $formula->formulable_type->value,
                 'component_type' => $formula->component_type->value,
-                'component_name' => $formulableModel->name,
+                'component_sub_type' => FormulableComponentSubType::PH_PAG_IBIG->value,
+                'component_name' => FormulableComponentSubType::PH_PAG_IBIG->label(),
                 'component_values' => null,
                 'taxable' => 0.0,
                 'nontaxable' => 0.0,

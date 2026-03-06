@@ -32,6 +32,7 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
                 'income_taxes.code AS code',
                 'income_taxes.name AS name',
                 'income_taxes.type AS type',
+                'income_taxes.component_sub_type AS component_sub_type',
                 'income_taxes.assignable AS assignable',
             ])
             ->orderBy('order', 'ASC');

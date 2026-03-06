@@ -292,7 +292,8 @@ class Standard13thMonthFormula
                         'id' => null,
                         'formulable_type' => Formulable::DEDUCTIONS->value,
                         'component_type' => Deduction::THIRTEENTH_MONTH_ADJUSTMENT->value,
-                        'component_name' => null,
+                        'component_sub_type' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH_NEGATIVE_ADJUSTMENT->value,
+                        'component_name' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH_NEGATIVE_ADJUSTMENT->label(),
                         'component_values' => $negativeAdjustmentComponentValues,
                         'taxable' => $taxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                         'nontaxable' => 0.0,
@@ -355,8 +356,9 @@ class Standard13thMonthFormula
                         $context->statementDetails[] = [
                             'id' => null,
                             'formulable_type' => Formulable::EARNINGS->value,
-                            'component_type' => CompensationEnum::STATUTORY_BENEFIT->value,
-                            'component_name' => '13th month adjustment',
+                            'component_type' => CompensationEnum::THIRTEENTH_MONTH_ADJUSTMENT->value,
+                            'component_sub_type' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH_POSITIVE_ADJUSTMENT->value,
+                            'component_name' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH_POSITIVE_ADJUSTMENT->label(),
                             'component_values' => $positiveAdjustmentComponentValues,
                             'taxable' => $taxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                             'nontaxable' => $nontaxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
@@ -395,7 +397,7 @@ class Standard13thMonthFormula
                     'formulable_type' => $formula->formulable_type->value,
                     'component_type' => $formula->component_type->value,
                     'component_sub_type' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value,
-                    'component_name' => $formulableModel->name,
+                    'component_name' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->label(),
                     'component_values' => null,
                     'taxable' => $_13thMonthTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
                     'nontaxable' => $_13thMonthNonTaxable->toScale(6, RoundingMode::HalfUp)->toString(),
@@ -571,12 +573,12 @@ class Standard13thMonthFormula
                  * Instantiate Salary Statement Module Service
                  **/
                 $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($context->payroll, $this->company);
-                $companyPerDayAbleEarningsMorphFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsMorphFilterSlugs([CompensationEnum::BASIC_PAY]);
-                $companyPerDayAbleEarningsMorphFilterSlug = $companyPerDayAbleEarningsMorphFilterSlugs[0];
+                $companyPerDayAbleEarningsComponentSubTypeFilterSlugs = $salaryStatementModuleService->companyPerDayAbleEarningsComponentSubTypeFilterSlugs([CompensationEnum::BASIC_PAY]);
+                $companyPerDayAbleEarningsComponentSubTypeFilterSlug = $companyPerDayAbleEarningsComponentSubTypeFilterSlugs[0];
                 $employeePayrollComponentFilters = (object)[
                     'employee_ids' => [$context->employee->id],
                     'payroll_componentable_type' => [Relation::getMorphAlias(Compensation::class)],
-                    'payroll_componentable_morph' => [$companyPerDayAbleEarningsMorphFilterSlug],
+                    'payroll_componentable_component_sub_types' => [$companyPerDayAbleEarningsComponentSubTypeFilterSlug],
                     'payroll_componentable_date' => $date->toDateString()
                 ];
                 $employeePerDayableCompensations = app(EmployeePayrollComponentRepository::class)->list($employeePayrollComponentFilters);
@@ -603,7 +605,7 @@ class Standard13thMonthFormula
 
                 $employeePerDayableCompensationsPayload = $employeePerDayableCompensations
                     ->mapWithKeys(fn ($compensation) => [
-                        $compensation->payroll_componentable_morph => [
+                        $compensation->payrollComponentable->component_sub_type->value => [
                             'hourly_rate' => BigDecimal::zero(),
                         ],
                     ])
@@ -622,12 +624,12 @@ class Standard13thMonthFormula
 
                     if($payrollComponentIsAmountable){
 
-                        $componentableMorph = $employeePerDayableCompensation->payroll_componentable_morph;
+                        $componentableSubType = $employeePerDayableCompensation->payrollComponentable->component_sub_type->value;
 
                         if ($employeePerDayableCompensation->payrollComponentable->type == CompensationEnum::BASIC_PAY) {
-                            if (isset($employeePerDayableCompensationsPayload[$componentableMorph])) {
-                                $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate'] =
-                                    $employeePerDayableCompensationsPayload[$componentableMorph]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
+                            if (isset($employeePerDayableCompensationsPayload[$componentableSubType])) {
+                                $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate'] =
+                                    $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
                                         $payrollPayFrequency,
                                         $employeePerDayableCompensation,
                                         $totalWorkMinutes
@@ -645,7 +647,7 @@ class Standard13thMonthFormula
                 $hours = BigDecimal::of((string)$totalWorkMinutes)->dividedBy(BigInteger::of('60'), 6, RoundingMode::HalfUp);
 
                 $dayBasicPay = $hours
-                    ->multipliedBy($employeePerDayableCompensationsPayload[$companyPerDayAbleEarningsMorphFilterSlug]['hourly_rate'])
+                    ->multipliedBy($employeePerDayableCompensationsPayload[$companyPerDayAbleEarningsComponentSubTypeFilterSlug]['hourly_rate'])
                     ->multipliedBy($baseMultiplier);
 
                 $nextPayrollBasicPayAssumptions[$nextPayroll->month] = $nextPayrollBasicPayAssumptions[$nextPayroll->month]->plus($dayBasicPay);
@@ -653,7 +655,7 @@ class Standard13thMonthFormula
                 if($debugEnabled){
                     _debug([
                         'Date' => $date->toDateString(),
-                        'Slug' => $companyPerDayAbleEarningsMorphFilterSlug,
+                        'Slug' => $companyPerDayAbleEarningsComponentSubTypeFilterSlug,
                         'Total work day minutes' => $totalWorkMinutes,
                         'Earnings payload' => array_map(function($payload){
                             return [

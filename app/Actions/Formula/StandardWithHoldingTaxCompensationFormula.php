@@ -6,6 +6,7 @@ use App\Concrete\SalaryStatementContext;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Deduction as DeductionEnum;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\PayFrequency;
 use App\Enums\SalaryStatementDetailComponentValueType;
 use Brick\Math\BigDecimal;
@@ -101,7 +102,8 @@ class StandardWithHoldingTaxCompensationFormula
                 'id' => null,
                 'formulable_type' => $formula->formulable_type->value,
                 'component_type' => $formula->component_type->value,
-                'component_name' => $formulableModel->name,
+                'component_sub_type' => FormulableComponentSubType::PH_WITHHOLDING_TAX_COMPENSATION->value,
+                'component_name' => FormulableComponentSubType::PH_WITHHOLDING_TAX_COMPENSATION->label(),
                 'component_values' => null,
                 'taxable' => 0.0,
                 'nontaxable' => 0.0,
@@ -189,8 +191,9 @@ class StandardWithHoldingTaxCompensationFormula
                     $context->statementDetails[] = [
                         'id' => null,
                         'formulable_type' => Formulable::DEDUCTIONS->value,
-                        'component_type' => DeductionEnum::TAX_DEFICIT->value,
-                        'component_name' => DeductionEnum::TAX_DEFICIT->label(),
+                        'component_type' => DeductionEnum::TAX_ADJUSTMENT->value,
+                        'component_sub_type' => FormulableComponentSubType::TAX_DEFICIT->value,
+                        'component_name' => FormulableComponentSubType::TAX_DEFICIT->label(),
                         'component_values' => $negativeAdjustmentComponentValues,
                         'taxable' => 0.0,
                         'nontaxable' => 0.0,
@@ -228,8 +231,9 @@ class StandardWithHoldingTaxCompensationFormula
                     $context->statementDetails[] = [
                         'id' => null,
                         'formulable_type' => Formulable::EARNINGS->value,
-                        'component_type' => CompensationEnum::TAX_REFUND->value,
-                        'component_name' => CompensationEnum::TAX_REFUND->label(),
+                        'component_type' => CompensationEnum::TAX_ADJUSTMENT->value,
+                        'component_sub_type' => FormulableComponentSubType::TAX_REFUND->value,
+                        'component_name' => FormulableComponentSubType::TAX_REFUND->label(),
                         'component_values' => $positiveAdjustmentComponentValues,
                         'taxable' => 0.0,
                         'nontaxable' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),

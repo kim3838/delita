@@ -15,6 +15,7 @@ use App\Enums\EmploymentStatus;
 use App\Enums\EmploymentType;
 use App\Enums\EndOfServiceType;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\HolidayType;
 use App\Enums\IncomeTax;
 use App\Enums\LeaveBalanceAdjustmentType;
@@ -481,14 +482,14 @@ class Development extends Seeder
 
         //Company VTC, MAC Pre-create Compensations
         $compensationsPresets = [
-            ['code' => 'BASICPAY', 'name' => 'Basic pay', 'assignable' => true, 'type' => Compensation::BASIC_PAY, 'formula' => 'Standard-Basic-Pay'],
-            ['code' => 'MEAL', 'name' => 'Meal allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Allowance'],
-            ['code' => 'COFFEE', 'name' => 'Coffee allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Allowance'],
-            ['code' => 'TRANSPORTATION', 'name' => 'Transportation allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'formula' => 'Standard-Allowance'],
-            ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'formula' => 'Standard-Overtime'],
-            ['code' => 'LEAVE-PAY', 'name' => 'Leave pay', 'assignable' => false, 'type' => Compensation::LEAVE_PAY, 'formula' => 'Standard-Leave-Pay'],
-            ['code' => 'HOLIDAY-PAY', 'name' => 'Holiday pay', 'assignable' => false, 'type' => Compensation::HOLIDAY_PAY, 'formula' => 'Standard-Holiday-Pay'],
-            ['code' => '13THMONTH', 'name' => '13th month pay', 'assignable' => true, 'type' => Compensation::STATUTORY_BENEFIT, 'formula' => 'Standard-13th-Month'],
+            ['code' => 'BASICPAY', 'name' => 'Basic pay', 'assignable' => true, 'type' => Compensation::BASIC_PAY, 'component_sub_type' => FormulableComponentSubType::BASIC_PAY->value, 'formula' => 'Standard-Basic-Pay'],
+            ['code' => 'MEAL', 'name' => 'Meal allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'component_sub_type' => FormulableComponentSubType::MEAL_ALLOWANCE->value, 'formula' => 'Standard-Allowance'],
+            ['code' => 'COFFEE', 'name' => 'Coffee allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'component_sub_type' => FormulableComponentSubType::COFFEE_ALLOWANCE->value, 'formula' => 'Standard-Allowance'],
+            ['code' => 'TRANSPORTATION', 'name' => 'Transportation allowance', 'assignable' => true, 'type' => Compensation::REGULAR_ALLOWANCE, 'component_sub_type' => FormulableComponentSubType::TRANSPORTATION_ALLOWANCE->value, 'formula' => 'Standard-Allowance'],
+            ['code' => 'OVERTIME', 'name' => 'Overtime', 'assignable' => true, 'type' => Compensation::OVERTIME, 'component_sub_type' => FormulableComponentSubType::OVERTIME->value, 'formula' => 'Standard-Overtime'],
+            ['code' => 'LEAVE-PAY', 'name' => 'Leave pay', 'assignable' => false, 'type' => Compensation::LEAVE_PAY, 'component_sub_type' => FormulableComponentSubType::LEAVE_PAY->value, 'formula' => 'Standard-Leave-Pay'],
+            ['code' => 'HOLIDAY-PAY', 'name' => 'Holiday pay', 'assignable' => false, 'type' => Compensation::HOLIDAY_PAY, 'component_sub_type' => FormulableComponentSubType::HOLIDAY_PAY->value, 'formula' => 'Standard-Holiday-Pay'],
+            ['code' => '13THMONTH', 'name' => '13th month pay', 'assignable' => true, 'type' => Compensation::STATUTORY_BENEFIT, 'component_sub_type' => FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value, 'formula' => 'Standard-13th-Month'],
         ];
 
         foreach ($compensationsPresets as $index => $compensationPreset) {
@@ -498,12 +499,9 @@ class Development extends Seeder
 
         //Company VTC, MAC Pre-create Deductions
         $deductionsPresets = [
-            ['code' => 'TARDINESS', 'name' => 'Tardiness', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Tardiness'],
-            ['code' => 'UNDERTIME', 'name' => 'Undertime', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Undertime'],
-            ['code' => 'ABSENCE', 'name' => 'Absence', 'assignable' => true, 'type' => Deduction::DEDUCTION, 'formula' => 'Standard-Absence'],
-            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS contribution', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-SSS-Employed-Contribution'],
-            ['code' => 'PHILHEALTH', 'name' => 'Philhealth (PHIC)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Philhealth-Contribution'],
-            ['code' => 'PAG-IBIG', 'name' => 'Pag-IBIG (HDMF)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'formula' => 'Standard-Pag-IBIG-Contribution'],
+            ['code' => 'SSS-EMPLOYED', 'name' => 'SSS contribution', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'component_sub_type' => FormulableComponentSubType::PH_SSS->value, 'formula' => 'Standard-SSS-Employed-Contribution'],
+            ['code' => 'PHILHEALTH', 'name' => 'Philhealth (PHIC)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'component_sub_type' => FormulableComponentSubType::PH_PHILHEALTH->value, 'formula' => 'Standard-Philhealth-Contribution'],
+            ['code' => 'PAG-IBIG', 'name' => 'Pag-IBIG (HDMF)', 'assignable' => true, 'type' => Deduction::STATUTORY_CONTRIBUTION, 'component_sub_type' => FormulableComponentSubType::PH_PAG_IBIG->value, 'formula' => 'Standard-Pag-IBIG-Contribution'],
         ];
 
         foreach ($deductionsPresets as $index => $deductionsPreset) {
@@ -513,7 +511,7 @@ class Development extends Seeder
 
         //Company VTC, MAC Pre-create Income Taxes
         $incomeTaxesPresets = [
-            ['code' => 'WTC ', 'name' => 'Compensation tax (WTC)', 'assignable' => true, 'type' => IncomeTax::WITHHOLDING_TAX, 'formula' => 'Standard-Withholding-Tax-Compensation'],
+            ['code' => 'WTC ', 'name' => 'Compensation tax (WTC)', 'assignable' => true, 'type' => IncomeTax::WITHHOLDING_TAX, 'component_sub_type' => FormulableComponentSubType::PH_WITHHOLDING_TAX_COMPENSATION->value, 'formula' => 'Standard-Withholding-Tax-Compensation'],
         ];
 
         foreach ($incomeTaxesPresets as $index => $incomeTaxesPreset) {

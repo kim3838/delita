@@ -11,7 +11,8 @@ enum Compensation: int implements BaseEnum
     case BENEFIT = 130;
     case LEAVE_PAY = 200;
     case HOLIDAY_PAY = 300;
-    case TAX_REFUND = 1000;
+    case TAX_ADJUSTMENT = 1000;
+    case THIRTEENTH_MONTH_ADJUSTMENT = 2000;
 
     public function label(): string
     {
@@ -23,7 +24,8 @@ enum Compensation: int implements BaseEnum
             self::BENEFIT => 'Benefit',
             self::LEAVE_PAY => 'Leave pay',
             self::HOLIDAY_PAY => 'Holiday pay',
-            self::TAX_REFUND => 'Tax refund',
+            self::TAX_ADJUSTMENT => 'Tax adjustment',
+            self::THIRTEENTH_MONTH_ADJUSTMENT => '13th month adjustment',
         };
     }
 

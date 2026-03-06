@@ -19,6 +19,7 @@ return new class extends Migration
             $table->smallInteger('order');
             $table->boolean('assignable')->default(true);
             $table->smallInteger('type');
+            $table->string('component_sub_type');
             $table->foreignId('company_formula_id');
             $table->timestamps();
 

@@ -14,12 +14,12 @@ use App\Enums\Compensation as CompensationEnum;
 use App\Enums\PayFrequency;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
-use App\Transformers\Compensation\SelectionAsComponentableMorphTransformer as CompensationSelectionAsComponentableMorphTransformer;
-use App\Transformers\Deduction\SelectionAsComponentableMorphTransformer as DeductionSelectionAsComponentableMorphTransformer;
+use App\Transformers\Compensation\SelectionAsComponentSubTypeTransformer as CompensationSelectionAsComponentSubTypeTransformer;
+use App\Transformers\Deduction\SelectionAsComponentSubTypeTransformer as DeductionSelectionAsComponentSubTypeTransformer;
 use App\Transformers\Department\SelectionTransformer as DepartmentSelectionTransformer;
 use App\Transformers\Designation\SelectionTransformer as DesignationSelectionTransformer;
 use App\Transformers\EmployeeGroup\SelectionTransformer as EmployeeGroupSelectionTransformer;
-use App\Transformers\IncomeTax\SelectionAsComponentableMorphTransformer as IncomeTaxSelectionAsComponentableMorphTransformer;
+use App\Transformers\IncomeTax\SelectionAsComponentSubTypeTransformer as IncomeTaxSelectionAsComponentSubTypeTransformer;
 use App\Transformers\PayFrequency\SelectionTransformer as PayFrequencySelectionTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -52,9 +52,9 @@ class BulkOrganizationController extends Controller
                 $payFrequencySelection = Fractal::collection(App::make(PayFrequencyRepository::class)
                     ->selection($payFrequencyFilters), PayFrequencySelectionTransformer::class)['data'];
 
-                $compensationNames = Fractal::collection(App::make(CompensationRepository::class)->selection($filters), CompensationSelectionAsComponentableMorphTransformer::class)['data'];
-                $deductionNames = Fractal::collection(App::make(DeductionRepository::class)->selection($filters), DeductionSelectionAsComponentableMorphTransformer::class)['data'];
-                $incomeTaxNames = Fractal::collection(App::make(IncomeTaxRepository::class)->selection($filters), IncomeTaxSelectionAsComponentableMorphTransformer::class)['data'];
+                $compensationNames = Fractal::collection(App::make(CompensationRepository::class)->selection($filters), CompensationSelectionAsComponentSubTypeTransformer::class)['data'];
+                $deductionNames = Fractal::collection(App::make(DeductionRepository::class)->selection($filters), DeductionSelectionAsComponentSubTypeTransformer::class)['data'];
+                $incomeTaxNames = Fractal::collection(App::make(IncomeTaxRepository::class)->selection($filters), IncomeTaxSelectionAsComponentSubTypeTransformer::class)['data'];
             }
 
             $compensations = App::make(EnumInterface::class)->selection('compensation');

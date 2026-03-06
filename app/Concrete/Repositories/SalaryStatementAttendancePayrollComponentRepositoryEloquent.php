@@ -38,8 +38,8 @@ class SalaryStatementAttendancePayrollComponentRepositoryEloquent extends BaseRe
             ->when(!empty($filters->payroll_componentable_morph_to_type) && is_array($filters->payroll_componentable_morph_to_type), function ($builder) use ($filters) {
                 $builder->whereIn('salary_statement_attendance_payroll_components.component_type', $filters->payroll_componentable_morph_to_type);
             })
-            ->when(!empty($filters->payroll_componentable_morph) && is_array($filters->payroll_componentable_morph), function ($builder) use ($filters) {
-                $builder->whereIn('salary_statement_attendance_payroll_components.component_key', $filters->payroll_componentable_morph);
+            ->when(!empty($filters->payroll_componentable_component_sub_types) && is_array($filters->payroll_componentable_component_sub_types), function ($builder) use ($filters) {
+                $builder->whereIn('salary_statement_attendance_payroll_components.component_sub_type', $filters->payroll_componentable_component_sub_types);
             })
             ->when(!empty($filters->formulable_types) && is_array($filters->formulable_types), function ($builder) use ($filters) {
                 $builder->whereIn('salary_statement_attendance_payroll_components.formulable_type', $filters->formulable_types);
@@ -51,7 +51,7 @@ class SalaryStatementAttendancePayrollComponentRepositoryEloquent extends BaseRe
 
                 "salary_statement_attendance_payroll_components.formulable_type",
                 "salary_statement_attendance_payroll_components.component_type",
-                "salary_statement_attendance_payroll_components.component_key",
+                "salary_statement_attendance_payroll_components.component_sub_type",
                 "salary_statement_attendance_payroll_components.component_name",
                 "salary_statement_attendance_payroll_components.regular_pay",
                 "salary_statement_attendance_payroll_components.night_differential_pay",
