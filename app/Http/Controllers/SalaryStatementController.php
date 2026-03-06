@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Blueprint\Repositories\SalaryStatementRepository;
+use App\Exports\SalaryStatementExport;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\SalaryStatement\BatchDestroySalaryStatementRequest;
+use App\Http\Requests\SalaryStatement\ExportSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ListSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ViewSalaryStatementRequest;
+use App\Transformers\SalaryStatement\ExportTransformer;
 use App\Transformers\SalaryStatement\ItemTransformer;
 use App\Transformers\SalaryStatement\ListTransformer;
+use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel as ExcelFacade;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class SalaryStatementController extends Controller
 {
@@ -26,6 +32,27 @@ class SalaryStatementController extends Controller
             return ResponseJson::successfulResponse(Fractal::collection(
                 $this->repository->paginate($filters, ['payroll', 'detail_totals']), ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function export(ExportSalaryStatementRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            $data = $this->repository->list($filters, ['payroll', 'detail_totals']);
+            $data = Fractal::collection($data, ExportTransformer::class)['data'];
+
+            $export = new SalaryStatementExport(collect($data));
+
+            return ExcelFacade::download($export, 'salary_statements.csv', Excel::CSV);
         }
 
         abort(404);

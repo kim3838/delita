@@ -113,7 +113,7 @@ class PermissionService
                 ],[
                     'key' => 'salary-statement',
                     'readable_name' => 'Salary statement',
-                    'actions' => ['view', 'delete']
+                    'actions' => ['view', 'delete', 'export']
                 ],
             ]
         ],
