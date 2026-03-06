@@ -105,6 +105,8 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
 
                 ...(in_array('salary_statement', $relations) && in_array('payroll_components', $relations) ? [
                     DB::raw("salary_statement_sub.employee_id as employee_id"),
+                    DB::raw("salary_statement_sub.employee_number as employee_number"),
+                    DB::raw("salary_statement_sub.employee_full_name as employee_full_name"),
                 ] : []),
 
                 ...(in_array('payroll_components', $relations) ? [
@@ -144,9 +146,15 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
 
     public function list($filters, $relations = []): Collection
     {
-        $orders = [
+        $orders = empty($orders) ? [
+            ...(in_array('payroll_components', $relations) ? [
+                ['field' => 'salary_statement_attendances.date', 'direction' => 'ASC'],
+                ['field' => 'payroll_components_sub.formulable_type', 'direction' => 'ASC'],
+                ['field' => 'payroll_components_sub.component_type', 'direction' => 'ASC'],
+            ] : []),
+
             ['field' => 'salary_statement_attendances.date', 'direction' => 'ASC'],
-        ];
+        ]: $orders;
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 

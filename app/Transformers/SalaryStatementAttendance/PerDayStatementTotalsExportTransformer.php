@@ -7,7 +7,7 @@ use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
-class ListTransformer extends TransformerAbstract
+class PerDayStatementTotalsExportTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatementAttendance $salaryStatementAttendance): array
     {
@@ -17,19 +17,17 @@ class ListTransformer extends TransformerAbstract
         $total = BigDecimal::of($salaryStatementAttendance->total ?? '0.00');
 
         return [
-            'row_number' => $salaryStatementAttendance->row_number,
-            'id' => $salaryStatementAttendance->id,
-
             'employee_number' => $salaryStatementAttendance->employee_number,
             'employee_full_name' => $salaryStatementAttendance->employee_full_name,
 
-            'date' => $salaryStatementAttendance->date?->format('M j, Y'),
+            'date' => $salaryStatementAttendance->date?->toDateString(),
+            'date_readable' => $salaryStatementAttendance->date?->format('M j, Y'),
             'week_day_name' => $salaryStatementAttendance->date?->format('l'),
-            'status' => $salaryStatementAttendance->status?->toArray(),
-            'day_type' => $salaryStatementAttendance->day_type?->toArray(),
+            'status' => $salaryStatementAttendance->status?->label(),
+            'day_type' => $salaryStatementAttendance->day_type?->label(),
 
-            'formulable_type' => $salaryStatementAttendance->formulable_type?->toArray(),
-            'component_type' => $salaryStatementAttendance->component_type?->toArray(),
+            'formulable_type' => $salaryStatementAttendance->formulable_type?->label(),
+            'component_type' => $salaryStatementAttendance->component_type?->label(),
             'component_name' => $salaryStatementAttendance->component_name,
 
             'regular_pay' => $regularPay->toScale(2, RoundingMode::HalfUp)->toString(),

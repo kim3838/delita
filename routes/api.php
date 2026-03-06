@@ -569,7 +569,8 @@ Route::group([
     Route::get('employee-portal-salary-statement/{ulid}', [EmployeeSalaryStatementController::class, 'show']);
 
     //Salary statement attendance
-    Route::get('per-day-salary-statements', [SalaryStatementAttendanceController::class, 'index']);
+    Route::get('per-day-salary-statement-totals', [SalaryStatementAttendanceController::class, 'index']);
+    Route::get('per-day-salary-statement-totals-export', [SalaryStatementAttendanceController::class, 'export']);
 });
 
 Route::group([
