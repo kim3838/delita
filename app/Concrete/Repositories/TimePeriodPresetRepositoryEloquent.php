@@ -7,6 +7,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\TimePeriodType;
 use App\Models\TimePeriodPreset;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implements TimePeriodPresetRepository
 {
@@ -28,6 +29,9 @@ class TimePeriodPresetRepositoryEloquent extends BaseRepositoryEloquent implemen
         $queryBuilder = $this->model::query()->getQuery()
             ->when($filters->name ?? false, function ($builder, $value) {
                 $builder->where('name', $value);
+            })
+            ->when(!empty($filters->time_period_preset_names) && is_array($filters->time_period_preset_names), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("name"), $filters->time_period_preset_names);
             })
             ->when(
                 isset($filters->type) && TimePeriodType::tryFrom($filters->type) !== null,

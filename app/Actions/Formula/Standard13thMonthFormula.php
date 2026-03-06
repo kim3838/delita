@@ -131,8 +131,8 @@ class Standard13thMonthFormula
                 ]);
             }
 
-            $payrollYearSalaryStatements = $this->getPayrollYearSalaryStatements($context->payroll, $context->employee);
-            $actualTotalBasicGross = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_basic_gross');
+            $payrollYearSalaryStatements = $this->context->getPayrollYearSalaryStatements($context->payroll, $context->employee);
+            $actualTotalBasicGross = $this->context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_basic_gross');
             $projectedBasicGross = BigDecimal::zero();
 
             /**
@@ -160,7 +160,7 @@ class Standard13thMonthFormula
             /**
              * Chain the payroll year total nontaxable nonstatutory bonus into context total nontaxable bonus
              **/
-            $payrollYearNonTaxableNonstatutoryBonus = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_nontaxable_nonstatutory_bonus');
+            $payrollYearNonTaxableNonstatutoryBonus = $this->context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_nontaxable_nonstatutory_bonus');
 
             $totalNontaxableBonus = BigDecimal::of($context->totals['nontaxable_bonus'] ?? '0');
             $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
@@ -222,8 +222,8 @@ class Standard13thMonthFormula
                     ]);
                 }
 
-                $assumedActualWithProjected13thMonth = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_13th_month_amount');
-                $payrollYearNonstatutoryBonus = $this->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_nonstatutory_bonus');
+                $assumedActualWithProjected13thMonth = $this->context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_13th_month_amount');
+                $payrollYearNonstatutoryBonus = $this->context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'total_nonstatutory_bonus');
 
                 //Deduct the paid 13th month to the actual 13th month
                 $adjustment = $_13thMonth->minus($assumedActualWithProjected13thMonth);
@@ -422,40 +422,6 @@ class Standard13thMonthFormula
         }
 
         return $next($context);
-    }
-
-    public function getPayrollYearSalaryStatements(?Payroll $payroll, ?Employee $employee): Collection
-    {
-        $payroll = $payroll ?? $this->context->payroll;
-        $employee = $employee ?? $this->context->employee;
-
-        $payrollMonthRange = [
-            'payroll_from_month' => $payroll->year . '-01',
-            'payroll_to_month' => $payroll->year . '-' . str_pad($payroll->month, 2, '0', STR_PAD_LEFT)
-        ];
-        $calendarYearSalaryStatementFilters = (object)[
-            'company_ids' => [$payroll->company->id],
-            'payroll_year' => $payroll->year,
-            ...$payrollMonthRange,
-            'employee_ids' => [$employee->id],
-        ];
-
-        $calendarYearSalaryStatements = app(SalaryStatementRepository::class)
-            ->list($calendarYearSalaryStatementFilters, ['no_day_totals', 'payroll', 'detail_totals']);
-
-        return $calendarYearSalaryStatements;
-    }
-
-    public function getTotalFromSalaryStatementCollection(Collection $salaryStatements, string $key): BigDecimal
-    {
-        $total = BigDecimal::zero();
-
-        foreach($salaryStatements as $salaryStatement){
-
-            $total = $total->plus(BigDecimal::of($salaryStatement->{$key}));
-        }
-
-        return $total;
     }
 
     public function formulaSettings($castedCompanyFormulaSettings, PayFrequency $payFrequency, ?SemiMonthlySequence $semiMonthlySequence): void

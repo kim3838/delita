@@ -91,7 +91,7 @@ class EmployeeServiceConcrete implements EmployeeServiceInterface
 
         $hasEmploymentProfileWithinPayrollPeriod = !$employmentProfileWithinPayrollPeriod->isEmpty();
 
-        if(true || $debugEnabled){
+        if($debugEnabled){
 
             _debug([
                 'Employee' => $this->employee->full_name,

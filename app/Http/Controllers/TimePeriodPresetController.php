@@ -17,7 +17,13 @@ class TimePeriodPresetController extends Controller
         if($request->expectsJson()){
 
             $filters = [
-                'type' => TimePeriodType::PAY_FREQUENCY
+                'type' => TimePeriodType::PAY_FREQUENCY,
+                'time_period_preset_names' => [
+                    '05th_cut_off',
+                    '20th_cut_off',
+                    '25th_cut_off',
+                    'end_of_month_cut_off',
+                ]
             ];
 
             $request->query->set('filters', json_encode($filters));

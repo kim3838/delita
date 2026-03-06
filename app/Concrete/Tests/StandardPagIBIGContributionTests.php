@@ -5,6 +5,8 @@ namespace App\Concrete\Tests;
 use App\Actions\Formula\StandardPagIBIGContributionFormula;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\Storage;
 
 class StandardPagIBIGContributionTests
@@ -173,8 +175,22 @@ class StandardPagIBIGContributionTests
 
             $result = $formula->getContribution($castedSettingsFromFormulableModel, $testCase['compensation']);
 
+            $testCaseExpected = [
+                'employee_share' =>
+                    [
+                        'regular' => BigDecimal::of($testCase['expected']['employee_share']['regular'])->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'total' => BigDecimal::of($testCase['expected']['employee_share']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+                    ],
+                'employer_share' =>
+                    [
+                        'regular' => BigDecimal::of($testCase['expected']['employer_share']['regular'])->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'total' => BigDecimal::of($testCase['expected']['employer_share']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+                    ],
+                'total' => BigDecimal::of($testCase['expected']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+            ];
+
             if(
-                $testCase['expected'] == $result
+                $testCaseExpected == $result
             ){
                 $passed++;
             } else {

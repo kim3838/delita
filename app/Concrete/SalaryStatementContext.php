@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\EmployeeServiceInterface;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\SalaryStatementType;
 use App\Models\Company;
 use App\Models\Employee;
@@ -45,6 +46,40 @@ class SalaryStatementContext
         $this->salaryStatement->update([
             'type' => $this->type->value,
         ]);
+    }
+
+    public function getPayrollYearSalaryStatements(?Payroll $payroll, ?Employee $employee): Collection
+    {
+        $payroll = $payroll ?? $this->payroll;
+        $employee = $employee ?? $this->employee;
+
+        $payrollMonthRange = [
+            'payroll_from_month' => $payroll->year . '-01',
+            'payroll_to_month' => $payroll->year . '-' . str_pad($payroll->month, 2, '0', STR_PAD_LEFT)
+        ];
+        $calendarYearSalaryStatementFilters = (object)[
+            'company_ids' => [$payroll->company->id],
+            'payroll_year' => $payroll->year,
+            ...$payrollMonthRange,
+            'employee_ids' => [$employee->id],
+        ];
+
+        $calendarYearSalaryStatements = app(SalaryStatementRepository::class)
+            ->list($calendarYearSalaryStatementFilters, ['no_day_totals', 'payroll', 'detail_totals']);
+
+        return $calendarYearSalaryStatements;
+    }
+
+    public function getTotalFromSalaryStatementCollection(Collection $salaryStatements, string $key): BigDecimal
+    {
+        $total = BigDecimal::zero();
+
+        foreach($salaryStatements as $salaryStatement){
+
+            $total = $total->plus(BigDecimal::of($salaryStatement->{$key}));
+        }
+
+        return $total;
     }
 
     public function chainNontaxable(

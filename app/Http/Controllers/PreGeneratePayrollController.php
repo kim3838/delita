@@ -70,10 +70,6 @@ class PreGeneratePayrollController extends Controller
 
             foreach($employees as $employee){
 
-                _debug([
-                    'Pre-generate payroll check' => $employee->full_name,
-                ]);
-
                 $employee = app(EmployeeRepository::class)->hydrateItem($employee);
 
                 $employeeService = app(EmployeeServiceInterface::class, [$employee]);
@@ -85,6 +81,7 @@ class PreGeneratePayrollController extends Controller
                 if(true || $debugEnabled){
 
                     _debug([
+                        'Pre-generate payroll check' => $employee->number . ' ' .$employee->full_name,
                         'Date' => $payrollHydration->start_date->toDateString(),
                         'Has final pay before payroll start date' => $hasFinalPayBeforeDate,
                     ]);
@@ -108,6 +105,8 @@ class PreGeneratePayrollController extends Controller
                     _debug([
                         'Has current ending and no upcoming employment' => $currentEndingOrNoUpcomingEmployment,
                         'Has at least one employment profile' => $hasAtLeastOneEmployment,
+                        'Has employment profile within payroll period' => $hasEmploymentProfileWithinPayrollPeriod,
+                        'Generate payroll?' => $hasAtLeastOneEmployment && $hasEmploymentProfileWithinPayrollPeriod
                     ]);
                 }
 
@@ -148,9 +147,12 @@ class PreGeneratePayrollController extends Controller
                 }
             }
 
-            _debug([
-                'Pre-generate employee ids' => $generatePayrollEmployeeIds,
-            ]);
+            if($debugEnabled){
+
+                _debug([
+                    'Pre-generate employee ids' => $generatePayrollEmployeeIds,
+                ]);
+            }
 
             return ResponseJson::successfulResponse([
                 'generate_payroll_employee_ids' => $generatePayrollEmployeeIds,
