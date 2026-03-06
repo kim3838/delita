@@ -8,7 +8,7 @@ use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
 use App\Models\SalaryStatement;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
-use App\Transformers\SalaryStatementAttendance\DetailedListTransformer as SalaryStatementAttendanceDetailedListTransformer;
+use App\Transformers\SalaryStatementAttendance\BasicListTransformer as SalaryStatementAttendanceBasicListTransformer;
 use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -41,7 +41,7 @@ class ListTransformer extends TransformerAbstract
 
         $salaryStatementAttendances = App::make(SalaryStatementAttendanceRepository::class)->list($salaryStatementAttendanceRepositoryFilters);
 
-        $statementAttendances = Fractal::collection($salaryStatementAttendances, SalaryStatementAttendanceDetailedListTransformer::class)['data'];
+        $statementAttendances = Fractal::collection($salaryStatementAttendances, SalaryStatementAttendanceBasicListTransformer::class)['data'];
 
         $salaryStatementDetailRepositoryFilters = (object)[
             'payroll_ids' => [$salaryStatement->payroll->id],
