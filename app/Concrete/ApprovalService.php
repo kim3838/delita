@@ -32,6 +32,7 @@ class ApprovalService
         [
             'model_alias' => 'attendance_adjustment_request',
             'readable_name' => 'Attendance adjustment request',
+            'employable' => true,
             'foreign_path' => 'employee_foreign_relation_path',
             'employee_foreign_relation_path' => [
                 [
@@ -45,6 +46,7 @@ class ApprovalService
         ], [
             'model_alias' => 'overtime_request',
             'readable_name' => 'Overtime request',
+            'employable' => true,
             'foreign_path' => 'employee_foreign_relation_path',
             'employee_foreign_relation_path' => [
                 [
@@ -58,6 +60,7 @@ class ApprovalService
         ], [
             'model_alias' => 'leave_request',
             'readable_name' => 'Leave request',
+            'employable' => true,
             'foreign_path' => 'employee_foreign_relation_path',
             'employee_foreign_relation_path' => [
                 [

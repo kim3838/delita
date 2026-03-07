@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(FormulaSeeder::class);
         $this->call(SuperAdminSeeder::class);
         $this->call(PermissionAndRoleSeeder::class);
+        $this->call(ApprovalSettingSeeder::class);
 
         if(App::environment('development', 'staging')){
             $this->call(Development::class);

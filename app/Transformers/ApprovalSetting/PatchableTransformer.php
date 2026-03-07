@@ -25,6 +25,7 @@ class PatchableTransformer extends TransformerAbstract
             'id' => $model->id,
             'company_id' => $model->company_id,
             'request_title' => $requestTitle,
+            'employable' => $model->employable,
             'approvers' => $approvers,
         ];
     }

@@ -76,7 +76,11 @@ class CompanyCreatedChain
          * Create approval settings for requestable model
          **/
         foreach(ApprovalService::$seriesMap as $approvalSetting){
-            $event->company->approvalSettings()->firstOrCreate(['request_model' => $approvalSetting['model_alias']]);
+
+            $event->company->approvalSettings()->firstOrCreate([
+                'request_model' => $approvalSetting['model_alias'],
+                'employable' => $approvalSetting['employable'],
+            ]);
         }
     }
 }

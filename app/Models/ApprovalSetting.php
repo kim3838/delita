@@ -10,12 +10,14 @@ class ApprovalSetting extends Model
 {
     protected $fillable = [
         'company_id',
-        'request_model'
+        'request_model',
+        'employable'
     ];
 
     protected $casts = [
         'company_id' => 'int',
-        'request_model' => 'string'
+        'request_model' => 'string',
+        'employable' => 'boolean',
     ];
 
     protected $hidden = [
