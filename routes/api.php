@@ -53,6 +53,7 @@ use App\Http\Controllers\EnumController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
+use App\Http\Controllers\Internal\TaxCalculatorController;
 use App\Http\Controllers\PreGeneratePayrollController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
@@ -122,6 +123,8 @@ Route::get('employment-profile-import-template', [EmploymentProfileImportTemplat
 Route::get('employee-pay-items-import-template', [EmployeePayItemsImportTemplateController::class, 'index']);
 Route::get('attendance-import-template', [AttendanceImportTemplateController::class, 'index']);
 Route::get('overtime-import-template', [OvertimeImportTemplateController::class, 'index']);
+
+Route::post('monthly-salary-calculate-tax', [TaxCalculatorController::class, 'store']);
 
 Route::group([
     'middleware' => ['guest']
