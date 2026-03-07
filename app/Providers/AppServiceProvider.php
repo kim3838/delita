@@ -26,6 +26,7 @@ use App\Models\Overtime;
 use App\Models\OvertimeRequest;
 use App\Models\PayFrequency;
 use App\Models\Payroll;
+use App\Models\PayrollRequest;
 use App\Models\Role;
 use App\Models\SalaryStatement;
 use App\Models\SalaryStatementAttendance;
@@ -86,6 +87,7 @@ class AppServiceProvider extends ServiceProvider
             'overtime_request' => OvertimeRequest::class,
             'leave_request' => LeaveRequest::class,
             'payroll' => Payroll::class,
+            'payroll_request' => PayrollRequest::class,
             'salary_statement' => SalaryStatement::class,
             'salary_statement_attendance' => SalaryStatementAttendance::class,
             'salary_statement_attendance_detail' => SalaryStatementAttendanceDetail::class

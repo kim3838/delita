@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('request_model');
+            $table->boolean('employable')->default(false);
             $table->timestamps();
 
             $table->unique(['company_id', 'request_model']);

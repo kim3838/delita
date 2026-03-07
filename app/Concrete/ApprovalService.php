@@ -68,6 +68,11 @@ class ApprovalService
                     'model' => 'employee'
                 ],
             ]
+        ], [
+            'model_alias' => 'payroll_request',
+            'readable_name' => 'Payroll',
+            'employable' => false,
+            'foreign_path' => '',
         ],
     ];
 
