@@ -48,7 +48,7 @@ class ListTransformer extends TransformerAbstract
             'total_deduction' => $totalDeduction->toScale(2, RoundingMode::HalfUp),
             'total_net' => $totalNet->toScale(2, RoundingMode::HalfUp),
 
-            'date_range_readable' => $payroll->start_date->format('F j, Y') . ' - ' . $payroll->end_date->format('F j, Y'),
+            'date_range_readable' => $payroll->start_date->format('M j, Y') . ' - ' . $payroll->end_date->format('M j, Y'),
         ];
     }
 }
