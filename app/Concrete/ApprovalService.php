@@ -90,6 +90,7 @@ class ApprovalService
      * then use it on requestable final approval action
      *
      * @throws UnexpectedException
+     * @throws BindingResolutionException
      */
     public function chainRequestableWorkflow(RequestApprovalStatus $action, RequestApprovalState $approvalState): array
     {
