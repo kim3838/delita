@@ -3,9 +3,9 @@
 namespace App\Concrete\Repositories;
 
 use App\Blueprint\Repositories\PayrollRepository;
-use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\PayrollStatus;
 use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -180,5 +180,21 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $queryBuilder = $this->baseQueryBuilder($filters, [], ['salary_statement']);
 
         return $this->hydrateItem($queryBuilder->firstOrFail());
+    }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+
+            $payroll = $this->model::query()->findOrfail($id);
+
+            $deletable = $payroll->status == PayrollStatus::DRAFT;
+
+            if($deletable){
+                $this->delete($id);
+            }
+        }
+
+        return 1;
     }
 }

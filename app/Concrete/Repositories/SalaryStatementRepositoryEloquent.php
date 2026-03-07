@@ -10,6 +10,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Enums\FormulableComponentSubType;
+use App\Enums\PayrollStatus;
 use App\Models\SalaryStatement;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -309,5 +310,21 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         }
 
         return $errors;
+    }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+
+            $salaryStatement = $this->model::query()->findOrfail($id);
+
+            $deletable = $salaryStatement->payroll->status == PayrollStatus::DRAFT;
+
+            if($deletable){
+                $this->delete($id);
+            }
+        }
+
+        return 1;
     }
 }
