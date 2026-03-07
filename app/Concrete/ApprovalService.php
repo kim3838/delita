@@ -6,6 +6,7 @@ use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Enums\PayrollStatus;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
@@ -19,6 +20,7 @@ use App\Transformers\LeaveRequest\PatchableTransformer as LeaveRequestPatchableT
 use App\Transformers\OvertimeRequest\PatchableTransformer as OvertimeRequestPatchableTransformer;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
@@ -203,7 +205,7 @@ class ApprovalService
     }
 
     /**
-     * @throws UnexpectedException
+     * @throws UnexpectedException|BindingResolutionException
      */
     public function chainRequestableAction($noValidationError, Model $requestable, RequestApprovalState $approvalState, $patchable): void
     {
@@ -262,6 +264,14 @@ class ApprovalService
                 }, $results);
 
                 $requestable->results()->createMany($mappedResults);
+                break;
+            case 'payroll_request':
+
+                $payroll = $requestable->payroll;
+
+                $payroll->update([
+                    'status' => PayrollStatus::COMPLETED->value,
+                ]);
 
         }
     }
