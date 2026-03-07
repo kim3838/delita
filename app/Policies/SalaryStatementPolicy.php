@@ -37,6 +37,26 @@ class SalaryStatementPolicy extends BasePolicy
             && $this->hasPermission($user, 'view-salary-statement');
     }
 
+    public function update(User $user, SalaryStatement $salaryStatement): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-salary-statement');
+    }
+
+    public function batchUpdate(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+            && $this->hasPermission($user, 'update-salary-statement');
+    }
+
     public function delete(User $user, SalaryStatement $salaryStatement): bool
     {
         if($user->isSuperAdmin()){

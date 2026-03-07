@@ -7,6 +7,7 @@ use App\Exports\SalaryStatementExport;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\SalaryStatement\BatchDestroySalaryStatementRequest;
+use App\Http\Requests\SalaryStatement\BatchUpdateSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ExportSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ListSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ViewSalaryStatementRequest;
@@ -32,6 +33,23 @@ class SalaryStatementController extends Controller
             return ResponseJson::successfulResponse(Fractal::collection(
                 $this->repository->paginate($filters, ['payroll', 'detail_totals']), ListTransformer::class
             ));
+        }
+
+        abort(404);
+    }
+
+    public function batchUpdate(BatchUpdateSalaryStatementRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $salaryStatementIdentifiers = data_get($request->validated(), 'salary_statement_identifiers', []);
+            $attributes = collect($request->validated())->except(['salary_statement_identifiers'])->toArray();
+
+            $batchUpdateErrors = $this->repository->batchUpdate($salaryStatementIdentifiers, $attributes);
+
+            return ResponseJson::successfulResponse([
+                'batch_update_errors' => $batchUpdateErrors
+            ]);
         }
 
         abort(404);

@@ -289,4 +289,25 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
 
         return $queryBuilder->firstOrFail();
     }
+
+    public function batchUpdate($salaryStatementIdentifiers, $attributes): array
+    {
+        $errors = [];
+
+        foreach($salaryStatementIdentifiers as $salaryStatementIdentifier){
+
+            $salaryStatement = $this->model::query()->findOrfail($salaryStatementIdentifier);
+
+            $updateAttributes = [
+
+                ...(!$attributes['keep_is_paid'] ? [
+                    'is_paid' => $attributes['is_paid'] ?? false,
+                ] : []),
+            ];
+
+            $salaryStatement->update($updateAttributes);
+        }
+
+        return $errors;
+    }
 }
