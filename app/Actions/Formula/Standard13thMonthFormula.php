@@ -5,7 +5,6 @@ namespace App\Actions\Formula;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\LeaveRepository;
-use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\SalaryStatementContext;
 use App\Concrete\SalaryStatementModuleServiceConcrete;
 use App\Enums\Compensation as CompensationEnum;
@@ -23,8 +22,6 @@ use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Compensation;
-use App\Models\Employee;
-use App\Models\Payroll;
 use App\Traits\HasPayableDay;
 use App\Traits\WorkPeriod;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
@@ -34,7 +31,6 @@ use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\Collection;
 
 class Standard13thMonthFormula
 {
@@ -265,8 +261,9 @@ class Standard13thMonthFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_NEGATIVE_ADJUSTMENT->value,
-                        '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                        '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
                         '13th_month_actual' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                        '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
                         '13th_month_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                     ];
 
@@ -341,8 +338,9 @@ class Standard13thMonthFormula
                     ){
                         $positiveAdjustmentComponentValues = [
                             'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_POSITIVE_ADJUSTMENT->value,
-                            '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                            '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
                             '13th_month_actual' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                            '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
                             '13th_month_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                         ];
 
