@@ -177,6 +177,7 @@ class StandardWithHoldingTaxCompensationFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_DEFICIT->value,
+                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_adjustment' => $negativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
@@ -210,6 +211,7 @@ class StandardWithHoldingTaxCompensationFormula
                 if($adjustment->isGreaterThan(BigDecimal::zero())){
                     $positiveAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_REFUND->value,
+                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(2, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
