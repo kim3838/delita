@@ -43,6 +43,11 @@ class PayrollRequest extends Model
         return $this->belongsTo(User::class, 'requested_by');
     }
 
+    public function payroll(): BelongsTo
+    {
+        return $this->belongsTo(Payroll::class);
+    }
+
     public function approvalStates(): MorphMany
     {
         return $this->morphMany(RequestApprovalState::class, 'requestable');
