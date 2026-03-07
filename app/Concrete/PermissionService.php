@@ -144,6 +144,10 @@ class PermissionService
                     'key' => 'leave-request',
                     'readable_name' => 'Leave request',
                     'actions' => ['view', 'create', 'delete']
+                ],[
+                    'key' => 'payroll-request',
+                    'readable_name' => 'Payroll request',
+                    'actions' => ['view', 'create', 'delete']
                 ],
             ]
         ],

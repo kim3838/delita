@@ -7,6 +7,7 @@ enum RequestableType: string implements BaseEnum
     case OVERTIME = 'overtime_request';
     case ATTENDANCE_ADJUSTMENT = 'attendance_adjustment_request';
     case LEAVE = 'leave_request';
+    case PAYROLL = 'payroll_request';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum RequestableType: string implements BaseEnum
             self::OVERTIME => 'Overtime request',
             self::ATTENDANCE_ADJUSTMENT => 'Attendance adjustment request',
             self::LEAVE => 'Leave request',
+            self::PAYROLL => 'Payroll',
         };
     }
 

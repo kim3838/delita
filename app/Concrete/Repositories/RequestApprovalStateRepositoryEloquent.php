@@ -57,6 +57,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                         (SELECT companies.account_id FROM overtime_requests LEFT JOIN companies ON companies.id = overtime_requests.company_id WHERE overtime_requests.id = requestable_id)
                     WHEN requestable_type = 'leave_request' THEN
                         (SELECT companies.account_id FROM leave_requests LEFT JOIN companies ON companies.id = leave_requests.company_id WHERE leave_requests.id = requestable_id)
+                    WHEN requestable_type = 'payroll_request' THEN
+                        (SELECT companies.account_id FROM payroll_requests LEFT JOIN companies ON companies.id = payroll_requests.company_id WHERE payroll_requests.id = requestable_id)
                     ELSE '' END AS requestable_account_id
                 "),
                 DB::raw("
@@ -66,6 +68,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                         (SELECT company_id FROM overtime_requests WHERE id = requestable_id)
                     WHEN requestable_type = 'leave_request' THEN
                         (SELECT company_id FROM leave_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'payroll_request' THEN
+                        (SELECT company_id FROM payroll_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_company_id
                 "),
                 DB::raw("
@@ -75,6 +79,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                         (SELECT number FROM overtime_requests WHERE id = requestable_id)
                     WHEN requestable_type = 'leave_request' THEN
                         (SELECT number FROM leave_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'payroll_request' THEN
+                        (SELECT number FROM payroll_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_number
                 "),
                 DB::raw("
@@ -84,6 +90,8 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                         (SELECT date_requested FROM overtime_requests WHERE id = requestable_id)
                     WHEN requestable_type = 'leave_request' THEN
                         (SELECT date_requested FROM leave_requests WHERE id = requestable_id)
+                    WHEN requestable_type = 'payroll_request' THEN
+                        (SELECT date_requested FROM payroll_requests WHERE id = requestable_id)
                     ELSE '' END AS requestable_date_requested
                 "),
                 DB::raw("request_approval_states.order"),

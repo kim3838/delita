@@ -46,6 +46,7 @@ use App\Blueprint\Repositories\OvertimeRequestRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PayrollPayloadRepository;
 use App\Blueprint\Repositories\PayrollRepository;
+use App\Blueprint\Repositories\PayrollRequestRepository;
 use App\Blueprint\Repositories\PermissionRepository;
 use App\Blueprint\Repositories\PrototypeRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
@@ -106,6 +107,7 @@ use App\Concrete\Repositories\OvertimeRequestRepositoryEloquent;
 use App\Concrete\Repositories\PayFrequencyRepositoryEloquent;
 use App\Concrete\Repositories\PayrollPayloadRepositoryEloquent;
 use App\Concrete\Repositories\PayrollRepositoryEloquent;
+use App\Concrete\Repositories\PayrollRequestRepositoryEloquent;
 use App\Concrete\Repositories\PermissionRepositoryEloquent;
 use App\Concrete\Repositories\PrototypeRepositoryEloquent;
 use App\Concrete\Repositories\RequestApprovalStateRepositoryEloquent;
@@ -182,6 +184,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'leave_request' => LeaveRequestRepositoryEloquent::class,
         'user_filed_request' => UserFiledRequestRepositoryEloquent::class,
         'payroll' => PayrollRepositoryEloquent::class,
+        'payroll_request' => PayrollRequestRepositoryEloquent::class,
         'payroll_payload' => PayrollPayloadRepositoryEloquent::class,
         'salary_statement' => SalaryStatementRepositoryEloquent::class,
         'salary_statement_detail' => SalaryStatementDetailRepositoryEloquent::class,
@@ -242,6 +245,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         LeaveRequestRepository::class => LeaveRequestRepositoryEloquent::class,
         UserFiledRequestRepository::class => UserFiledRequestRepositoryEloquent::class,
         PayrollRepository::class => PayrollRepositoryEloquent::class,
+        PayrollRequestRepository::class => PayrollRequestRepositoryEloquent::class,
         PayrollPayloadRepository::class => PayrollPayloadRepositoryEloquent::class,
         SalaryStatementRepository::class => SalaryStatementRepositoryEloquent::class,
         SalaryStatementDetailRepository::class => SalaryStatementDetailRepositoryEloquent::class,
@@ -307,6 +311,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'leave_request',
             'user_filed_request',
             'payroll',
+            'payroll_request',
             'payroll_payload',
             'salary_statement',
             'salary_statement_detail',
@@ -367,6 +372,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             LeaveRequestRepository::class,
             UserFiledRequestRepository::class,
             PayrollRepository::class,
+            PayrollRequestRepository::class,
             PayrollPayloadRepository::class,
             SalaryStatementRepository::class,
             SalaryStatementDetailRepository::class,

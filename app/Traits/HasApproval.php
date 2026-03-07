@@ -38,7 +38,11 @@ trait HasApproval
     {
         $modelApprovalMap = collect(ApprovalService::$seriesMap)->where('model_alias', $modelAlias);
 
-        return $modelApprovalMap->first()[$modelApprovalMap->first()['foreign_path']];
+        $foreignPath = $modelApprovalMap->first()['foreign_path'];
+
+        if(empty($foreignPath)) return null;
+
+        return $modelApprovalMap->first()[$foreignPath];
     }
 
     public function chainForeignPath($modelThroughForeign, $requestableModelAlias)

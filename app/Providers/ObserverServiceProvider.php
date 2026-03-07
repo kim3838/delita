@@ -11,6 +11,7 @@ use App\Observers\LeaveRequestObserver;
 use App\Observers\OrderableObserver;
 use App\Observers\OvertimeRequestObserver;
 use App\Observers\PayrollObserver;
+use App\Observers\PayrollRequestObserver;
 use App\Observers\SalaryStatementAttendanceObserver;
 use App\Observers\SalaryStatementObserver;
 use App\Observers\UserObserver;
@@ -104,6 +105,14 @@ class ObserverServiceProvider extends ServiceProvider
                 ],
                 'observers' => [
                     PayrollObserver::class,
+                ]
+            ),
+            array(
+                'observables' => [
+                    Relation::getMorphedModel('payroll_request'),
+                ],
+                'observers' => [
+                    PayrollRequestObserver::class,
                 ]
             ),
             array(

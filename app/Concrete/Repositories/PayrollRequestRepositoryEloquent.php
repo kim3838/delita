@@ -1,0 +1,200 @@
+<?php
+
+namespace App\Concrete\Repositories;
+
+use App\Blueprint\Repositories\CompanyUserRepository;
+use App\Blueprint\Repositories\PayrollRepository;
+use App\Blueprint\Repositories\PayrollRequestRepository;
+use App\Concrete\BaseRepositoryEloquent;
+use App\Enums\PayrollStatus;
+use App\Enums\RequestApprovalStatus;
+use App\Models\PayrollRequest;
+use App\Models\RequestApprovalState;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+
+class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements PayrollRequestRepository
+{
+    public function model(): string
+    {
+        return PayrollRequest::class;
+    }
+
+    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    {
+        $payrollRepositoryFilter = clone $filters;
+        unset($payrollRepositoryFilter->search);
+        unset($payrollRepositoryFilter->associated_companies);
+
+        $requestedByCompanyUserRepositoryFilter = clone $filters;
+        if(isset(request()->account_id)){
+            $requestedByCompanyUserRepositoryFilter->account_id = request()->account_id;
+        }
+        if(isset($filters->company_id)){
+            $requestedByCompanyUserRepositoryFilter->associated_companies = [$filters->company_id];
+        }
+        unset($requestedByCompanyUserRepositoryFilter->company_id);
+        unset($requestedByCompanyUserRepositoryFilter->user_ids);
+        unset($requestedByCompanyUserRepositoryFilter->search);
+
+        $payrollQueryBuilder = App::make(PayrollRepository::class)->baseQueryBuilder($payrollRepositoryFilter, [], ['salary_statement']);
+
+        $requestedByCompanyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($requestedByCompanyUserRepositoryFilter, []);
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->joinSub($payrollQueryBuilder, 'payroll_sub', function ($join) {
+                $join->on('payroll_sub.id', '=', 'payroll_requests.payroll_id');
+            })
+            ->joinSub($this->statusQueryBuilder(), 'status_sub', function ($join) {
+                $join->on('status_sub.id', '=', 'payroll_requests.id');
+            })
+            ->leftJoinSub($requestedByCompanyUserQueryBuilder, 'requested_by_company_user_sub', function ($join) {
+                $join->on('requested_by_company_user_sub.user_id', '=', 'payroll_requests.requested_by');
+            })
+            ->join('companies', 'payroll_requests.company_id', '=', 'companies.id')
+            ->when(!empty($filters->requested_by_ids) && is_array($filters->requested_by_ids), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_requests.requested_by', $filters->requested_by_ids);
+            })
+            ->when(!empty($filters->statuses) && is_array($filters->statuses), function ($builder) use ($filters) {
+                $builder->whereIn('status_sub.status_summary', $filters->statuses);
+            })
+            ->when(!empty($filters->request_numbers) && is_array($filters->request_numbers), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_requests.number', $filters->request_numbers);
+            })
+            ->when($filters->search ?? false, function ($builder, $value) {
+                $builder->where(function ($clause) use ($value) {
+                    $clause->where('payroll_requests.number', 'LIKE', "%$value%");
+                });
+            })
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
+
+                /**
+                 * Payroll Request
+                 **/
+                'payroll_requests.id AS id',
+                'payroll_requests.company_id AS company_id',
+                'payroll_requests.number AS number',
+                'payroll_requests.requested_by AS requested_by',
+                DB::raw("CONVERT_TZ(payroll_requests.date_requested, 'UTC', companies.timezone) AS date_requested"),
+                'companies.timezone AS company_timezone',
+                'payroll_requests.payroll_id AS payroll_id',
+                'payroll_requests.remarks AS remarks',
+                'status_sub.status_summary AS status_summary',
+
+                /**
+                 * Payroll totals
+                 **/
+                DB::raw("payroll_sub.total_basic_gross"),
+                DB::raw("payroll_sub.total_other_gross"),
+                DB::raw("payroll_sub.total_taxable"),
+                DB::raw("payroll_sub.total_nontaxable"),
+                DB::raw("payroll_sub.total_contribution"),
+                DB::raw("payroll_sub.total_employer_contribution_share"),
+                DB::raw("payroll_sub.total_tax_withheld"),
+                DB::raw("payroll_sub.total_deduction"),
+                DB::raw("payroll_sub.total_net"),
+
+                /**
+                 * Requested by
+                 **/
+                'requested_by_company_user_sub.company_timezone AS requested_by_user_company_timezone',
+                'requested_by_company_user_sub.user_id AS requested_by_user_id',
+                'requested_by_company_user_sub.user_username AS requested_by_user_username',
+                'requested_by_company_user_sub.is_employee AS requested_by_user_is_employee',
+                'requested_by_company_user_sub.company_employee_number AS requested_by_user_company_employee_number',
+                'requested_by_company_user_sub.company_employee_family_name AS requested_by_user_company_employee_family_name',
+                'requested_by_company_user_sub.company_employee_middle_name AS requested_by_user_company_employee_middle_name',
+                'requested_by_company_user_sub.company_employee_given_name AS requested_by_user_company_employee_given_name',
+            ]);
+
+        return $queryBuilder;
+    }
+
+    public function statusQueryBuilder(): QueryBuilder
+    {
+        $declined = RequestApprovalStatus::DECLINED->value;
+        $approved = RequestApprovalStatus::APPROVED->value;
+        $pending = RequestApprovalStatus::PENDING->value;
+
+        $queryBuilder = RequestApprovalState::query()->getQuery()
+            ->where('requestable_type', Relation::getMorphAlias($this->model()))
+            ->select([
+                DB::raw("request_approval_states.requestable_id"),
+                DB::raw("COUNT(*) OVER(PARTITION BY request_approval_states.requestable_id) AS total_approvers"),
+                DB::raw("MAX(request_approval_states.status = " . $declined . ") OVER(PARTITION BY request_approval_states.requestable_id) AS at_least_one_declined"),
+                DB::raw("MIN(request_approval_states.status = " . $approved . ") OVER(PARTITION BY request_approval_states.requestable_id) = 1 AS all_approved"),
+                DB::raw("SUM(request_approval_states.status <> " . $pending . ") OVER(PARTITION BY request_approval_states.requestable_id) = 0 AS all_pending"),
+                DB::raw("MAX(request_approval_states.status = " . $pending . ") OVER(PARTITION BY request_approval_states.requestable_id) AS at_least_one_pending"),
+            ]);
+
+        $queryBuilder = $this->model::query()->getQuery()
+            ->leftJoinSub($queryBuilder, 'status_sub', function ($join) {
+                $join->on('status_sub.requestable_id', '=', 'payroll_requests.id');
+            })
+            ->select([
+                'payroll_requests.id',
+                DB::raw("
+                    CASE WHEN SUM(status_sub.at_least_one_declined) > 0 THEN " . $declined . " ELSE (
+                        CASE WHEN SUM(status_sub.all_approved) = status_sub.total_approvers THEN " . $approved . " ELSE (
+                            CASE WHEN SUM(status_sub.all_pending) = status_sub.total_approvers THEN " . $pending . " ELSE (
+                                CASE WHEN SUM(status_sub.at_least_one_pending) > 0 THEN " . $pending . " ELSE " . $pending . " END
+                            ) END
+                        ) END
+                    )
+                    END AS status_summary
+                "),
+            ]);
+
+        $this->setGroupsOnBuilder($queryBuilder, ['payroll_requests.id']);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters): LengthAwarePaginator
+    {
+        $orders = [
+            ['field' => 'payroll_requests.date_requested', 'direction' => 'DESC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters): Collection
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
+    }
+
+    public function showFromFilters($filters)
+    {
+        return $this->list($filters)->first();
+    }
+
+    public function batchDelete($ids): int
+    {
+        foreach ($ids as $id) {
+
+            $payrollRequest = $this->show($id);
+
+            $payrollRequest->payroll->update([
+                'status' => PayrollStatus::DRAFT->value,
+            ]);
+
+            $this->delete($id);
+        }
+
+        return 1;
+    }
+}

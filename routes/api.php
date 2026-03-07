@@ -54,6 +54,7 @@ use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\Internal\TaxCalculatorController;
+use App\Http\Controllers\PayrollRequestController;
 use App\Http\Controllers\PreGeneratePayrollController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
@@ -561,6 +562,12 @@ Route::group([
     Route::delete('payrolls', [PayrollController::class, 'batchDestroy']);
 
     Route::post('pre-generate-payroll', [PreGeneratePayrollController::class, 'store']);
+
+    //Payroll Request
+    Route::get('payroll-requests', [PayrollRequestController::class, 'index']);
+    Route::get('payroll-request/{requestNumber}', [PayrollRequestController::class, 'show']);
+    Route::post('payroll-request', [PayrollRequestController::class, 'store']);
+    Route::delete('payroll-requests', [PayrollRequestController::class, 'batchDestroy']);
 
     //Salary statement
     Route::get('salary-statements', [SalaryStatementController::class, 'index']);
