@@ -46,20 +46,15 @@ class ListTransformer extends TransformerAbstract
             'company_timezone' => $leaveRequest->requested_by_user_company_timezone,
             'is_employee' => $leaveRequest->requested_by_user_is_employee,
             'company_employee_number' => $leaveRequest->requested_by_user_company_employee_number,
-            'company_employee_family_name' => $leaveRequest->requested_by_user_company_employee_family_name,
-            'company_employee_middle_name' => $leaveRequest->requested_by_user_company_employee_middle_name,
-            'company_employee_given_name' => $leaveRequest->requested_by_user_company_employee_given_name,
+            'company_employee_full_name' => $leaveRequest->requested_by_user_company_employee_full_name,
 
             'user_id' => $leaveRequest->requested_by_user_id,
             'user_username' => $leaveRequest->requested_by_user_username,
         ]);
 
-        $companyUserRequestedByEmployeeFullName = implode(' ', array_filter([
-            $companyUserRequestedByHydrated->company_employee_family_name,
-            $companyUserRequestedByHydrated->company_employee_given_name,
-            $companyUserRequestedByHydrated->company_employee_middle_name
-        ]));
-        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee ? $companyUserRequestedByEmployeeFullName : null;
+        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee
+            ? $companyUserRequestedByHydrated->company_employee_full_name
+            : null;
 
         $approvalStates = Fractal::collection(
             App::make(RequestApprovalStateRepository::class)->list($approvalStateFilters),

@@ -46,9 +46,7 @@ class UserCompanyAssignmentRepositoryEloquent extends BaseRepositoryEloquent imp
                 'company_user.assignment_type AS company_assignment_type',
                 'employees.id AS employee_id',
                 'employees.number AS employee_number',
-                'employees.family_name AS employee_family_name',
-                'employees.middle_name AS employee_middle_name',
-                'employees.given_name AS employee_given_name',
+                DB::raw("CONCAT_WS(' ',employees.family_name,employees.given_name,employees.middle_name) AS employee_full_name"),
             ]);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());

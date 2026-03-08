@@ -44,36 +44,26 @@ class ListTransformer extends TransformerAbstract
             'company_assignment_type' => $requestApprovalState->company_assignment_type,
             'is_employee' => $requestApprovalState->is_employee,
             'company_employee_number' => $requestApprovalState->company_employee_number,
-            'company_employee_family_name' => $requestApprovalState->company_employee_family_name,
-            'company_employee_middle_name' => $requestApprovalState->company_employee_middle_name,
-            'company_employee_given_name' => $requestApprovalState->company_employee_given_name
+            'company_employee_full_name' => $requestApprovalState->company_employee_full_name,
         ]);
 
-        $companyUserApproverEmployeeFullName = implode(' ', array_filter([
-            $companyUserApproverHydrated->company_employee_family_name,
-            $companyUserApproverHydrated->company_employee_given_name,
-            $companyUserApproverHydrated->company_employee_middle_name
-        ]));
-        $companyUserApproverEmployeeFullName = $companyUserApproverHydrated->is_employee ? $companyUserApproverEmployeeFullName : null;
+        $companyUserApproverEmployeeFullName = $companyUserApproverHydrated->is_employee
+            ? $companyUserApproverHydrated->company_employee_full_name
+            : null;
 
         $companyUserApprovedByHydrated = App::make(CompanyUserRepository::class)->hydrateItem([
             'company_timezone' => $requestApprovalState->approved_by_user_company_timezone,
             'is_employee' => $requestApprovalState->approved_by_user_is_employee,
             'company_employee_number' => $requestApprovalState->approved_by_user_company_employee_number,
-            'company_employee_family_name' => $requestApprovalState->approved_by_user_company_employee_family_name,
-            'company_employee_middle_name' => $requestApprovalState->approved_by_user_company_employee_middle_name,
-            'company_employee_given_name' => $requestApprovalState->approved_by_user_company_employee_given_name,
+            'company_employee_full_name' => $requestApprovalState->approved_by_user_company_employee_full_name,
 
             'user_id' => $requestApprovalState->approved_by_user_id,
             'user_username' => $requestApprovalState->approved_by_user_username,
         ]);
 
-        $companyUserApprovedByEmployeeFullName = implode(' ', array_filter([
-            $companyUserApprovedByHydrated->company_employee_family_name,
-            $companyUserApprovedByHydrated->company_employee_given_name,
-            $companyUserApprovedByHydrated->company_employee_middle_name
-        ]));
-        $companyUserApprovedByEmployeeFullName = $companyUserApprovedByHydrated->is_employee ? $companyUserApprovedByEmployeeFullName : null;
+        $companyUserApprovedByEmployeeFullName = $companyUserApprovedByHydrated->is_employee
+            ? $companyUserApprovedByHydrated->company_employee_full_name
+            : null;
 
         return [
             'row_number' => $requestApprovalState->row_number,

@@ -131,8 +131,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
+            ['field' => 'employee_sub.full_name', 'direction' => 'ASC'],
         ];
 
         $groups = [

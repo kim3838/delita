@@ -32,8 +32,6 @@ class UserFiledRequest extends Model
         'company_assignment_type' => CompanyUserAssignmentType::class,
         'is_employee' => 'boolean',
         'company_employee_number' => 'string',
-        'company_employee_family_name' => 'string',
-        'company_employee_middle_name' => 'string',
-        'company_employee_given_name' => 'string',
+        'company_employee_full_name' => 'string',
     ];
 }

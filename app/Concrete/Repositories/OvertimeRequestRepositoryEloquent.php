@@ -156,9 +156,7 @@ class OvertimeRequestRepositoryEloquent extends BaseRepositoryEloquent implement
                 'requested_by_company_user_sub.user_username AS requested_by_user_username',
                 'requested_by_company_user_sub.is_employee AS requested_by_user_is_employee',
                 'requested_by_company_user_sub.company_employee_number AS requested_by_user_company_employee_number',
-                'requested_by_company_user_sub.company_employee_family_name AS requested_by_user_company_employee_family_name',
-                'requested_by_company_user_sub.company_employee_middle_name AS requested_by_user_company_employee_middle_name',
-                'requested_by_company_user_sub.company_employee_given_name AS requested_by_user_company_employee_given_name',
+                'requested_by_company_user_sub.company_employee_full_name AS requested_by_user_company_employee_full_name',
             ]);
 
         return $queryBuilder;

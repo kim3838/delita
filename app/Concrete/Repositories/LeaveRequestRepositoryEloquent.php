@@ -83,9 +83,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                  * Employee
                  **/
                 "employee_sub.number AS employee_number",
-                "employee_sub.family_name AS employee_family_name",
-                "employee_sub.middle_name AS employee_middle_name",
-                "employee_sub.given_name AS employee_given_name",
+                "employee_sub.full_name AS employee_full_name",
 
                 /**
                  * Leave
@@ -118,10 +116,10 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 'requested_by_company_user_sub.user_username AS requested_by_user_username',
                 'requested_by_company_user_sub.is_employee AS requested_by_user_is_employee',
                 'requested_by_company_user_sub.company_employee_number AS requested_by_user_company_employee_number',
-                'requested_by_company_user_sub.company_employee_family_name AS requested_by_user_company_employee_family_name',
-                'requested_by_company_user_sub.company_employee_middle_name AS requested_by_user_company_employee_middle_name',
-                'requested_by_company_user_sub.company_employee_given_name AS requested_by_user_company_employee_given_name',
+                'requested_by_company_user_sub.company_employee_full_name AS requested_by_user_company_employee_full_name',
             ]);
+
+        _log_query_builder_with_bindings($queryBuilder);
 
         return $queryBuilder;
     }

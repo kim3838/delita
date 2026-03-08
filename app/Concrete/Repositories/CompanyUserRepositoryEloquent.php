@@ -123,9 +123,7 @@ class CompanyUserRepositoryEloquent extends BaseRepositoryEloquent implements Co
                 'company_user.assignment_type AS company_assignment_type',
                 DB::raw("employees.id IS NOT NULL AS is_employee"),
                 'employees.number AS company_employee_number',
-                'employees.family_name AS company_employee_family_name',
-                'employees.middle_name AS company_employee_middle_name',
-                'employees.given_name AS company_employee_given_name',
+                DB::raw("CONCAT_WS(' ',employees.family_name,employees.given_name,employees.middle_name) AS company_employee_full_name"),
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

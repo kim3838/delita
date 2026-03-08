@@ -22,11 +22,7 @@ class ListTransformer extends TransformerAbstractConcrete
             'company_assignment_type' => $model->company_assignment_type?->toArray(),
             'is_employee' => $model->is_employee,
             'company_employee_number' => $model->company_employee_number,
-            'company_employee_full_name' => implode(' ', array_filter([
-                $model->company_employee_family_name,
-                $model->company_employee_given_name,
-                $model->company_employee_middle_name
-            ])),
+            'company_employee_full_name' => $model->company_employee_full_name,
 
             'id' => $model->user_id,
             'ulid' => $model->user_ulid,

@@ -210,9 +210,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
                 'approved_by_company_user_sub.user_username AS approved_by_user_username',
                 'approved_by_company_user_sub.is_employee AS approved_by_user_is_employee',
                 'approved_by_company_user_sub.company_employee_number AS approved_by_user_company_employee_number',
-                'approved_by_company_user_sub.company_employee_family_name AS approved_by_user_company_employee_family_name',
-                'approved_by_company_user_sub.company_employee_middle_name AS approved_by_user_company_employee_middle_name',
-                'approved_by_company_user_sub.company_employee_given_name AS approved_by_user_company_employee_given_name',
+                'approved_by_company_user_sub.company_employee_full_name AS approved_by_user_company_employee_full_name',
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);

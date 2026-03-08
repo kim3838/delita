@@ -19,7 +19,7 @@ class ListTransformer extends TransformerAbstract
             'is_employee' => (bool)$model->employee_id,
             'employee_id' => $model->employee_id,
             'employee_number' => $model->employee_number,
-            'employee_full_name' => $model->employeeFullName,
+            'employee_full_name' => $model->employee_full_name,
         ];
     }
 }

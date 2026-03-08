@@ -38,9 +38,7 @@ class ListTransformer extends TransformerAbstract
             'company_timezone' => $payrollRequest->requested_by_user_company_timezone,
             'is_employee' => $payrollRequest->requested_by_user_is_employee,
             'company_employee_number' => $payrollRequest->requested_by_user_company_employee_number,
-            'company_employee_family_name' => $payrollRequest->requested_by_user_company_employee_family_name,
-            'company_employee_middle_name' => $payrollRequest->requested_by_user_company_employee_middle_name,
-            'company_employee_given_name' => $payrollRequest->requested_by_user_company_employee_given_name,
+            'company_employee_full_name' => $payrollRequest->requested_by_user_company_employee_full_name,
 
             'user_id' => $payrollRequest->requested_by_user_id,
             'user_username' => $payrollRequest->requested_by_user_username,
@@ -56,12 +54,9 @@ class ListTransformer extends TransformerAbstract
         $totalDeduction = BigDecimal::of((string)$payrollRequest->total_deduction);
         $totalNet = BigDecimal::of((string)$payrollRequest->total_net);
 
-        $companyUserRequestedByEmployeeFullName = implode(' ', array_filter([
-            $companyUserRequestedByHydrated->company_employee_family_name,
-            $companyUserRequestedByHydrated->company_employee_given_name,
-            $companyUserRequestedByHydrated->company_employee_middle_name
-        ]));
-        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee ? $companyUserRequestedByEmployeeFullName : null;
+        $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee
+            ? $companyUserRequestedByHydrated->company_employee_full_name
+            : null;
 
         $approvalStates = Fractal::collection(
             App::make(RequestApprovalStateRepository::class)->list($approvalStateFilters),

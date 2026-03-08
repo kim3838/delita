@@ -49,8 +49,7 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
+            ['field' => 'employee_sub.full_name', 'direction' => 'ASC'],
             ['field' => 'leave_types.code', 'direction' => 'ASC'],
         ];
 
@@ -118,8 +117,7 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.family_name', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.given_name', 'direction' => 'ASC'],
+            ['field' => 'employee_sub.full_name', 'direction' => 'ASC'],
         ];
 
         $groups = [

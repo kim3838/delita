@@ -36,11 +36,7 @@ class ListTransformer extends TransformerAbstract
                 'company_assignment_type' => $userFiledRequest->company_assignment_type?->toArray(),
                 'is_employee' => $userFiledRequest->is_employee,
                 'company_employee_number' => $userFiledRequest->company_employee_number,
-                'company_employee_full_name' => implode(' ', array_filter([
-                    $userFiledRequest->company_employee_family_name,
-                    $userFiledRequest->company_employee_given_name,
-                    $userFiledRequest->company_employee_middle_name
-                ])),
+                'company_employee_full_name' => $userFiledRequest->company_employee_full_name,
 
                 'id' => $userFiledRequest->user_id,
                 'ulid' => $userFiledRequest->user_ulid,

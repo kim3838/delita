@@ -24,8 +24,6 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 {
     protected array $defaultOrders = [
         ['field' => 'employees.number', 'direction' => 'ASC'],
-        ['field' => 'employees.family_name', 'direction' => 'ASC'],
-        ['field' => 'employees.given_name', 'direction' => 'ASC'],
     ];
 
     public function model(): string
@@ -141,8 +139,20 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
                 "companies.timezone AS company_timezone",
-                "employees.*",
+
+                "employees.id",
+                "employees.user_id",
+                "employees.company_id",
+                "employees.designation_id",
+                "employees.manager_id",
+                "employees.pay_frequency_id",
+                "employees.number",
                 DB::raw("CONCAT_WS(' ',family_name,given_name,middle_name) AS full_name"),
+                "employees.birth_date",
+                "employees.gender",
+                "employees.marital_status",
+                "employees.date_registered",
+                "employees.creation_type",
 
                 ...(in_array('user', $relations) ? [
                     DB::raw("users.id AS user_id"),
@@ -198,8 +208,6 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
     {
         $orders = [
             ['field' => 'employees.number', 'direction' => 'ASC'],
-            ['field' => 'employees.family_name', 'direction' => 'ASC'],
-            ['field' => 'employees.given_name', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->model::query()->getQuery()

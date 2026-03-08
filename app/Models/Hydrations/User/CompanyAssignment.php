@@ -3,7 +3,6 @@
 namespace App\Models\Hydrations\User;
 
 use App\Enums\CompanyUserAssignmentType;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanyAssignment extends Model
@@ -18,19 +17,6 @@ class CompanyAssignment extends Model
         'company_assignment_type' => CompanyUserAssignmentType::class,
         'employee_id' => 'int',
         'employee_number' => 'string',
-        'employee_given_name' => 'string',
-        'employee_middle_name' => 'string',
-        'employee_family_name' => 'string',
+        'employee_full_name' => 'string',
     ];
-
-    protected function employeeFullName(): Attribute
-    {
-        return Attribute::get(function () {
-            return collect([
-                $this->employee_family_name,
-                $this->employee_middle_name,
-                $this->employee_given_name,
-            ])->filter()->implode(' ');
-        });
-    }
 }

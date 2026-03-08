@@ -66,9 +66,7 @@ class CompanyUserRolePermissionRepositoryEloquent extends BaseRepositoryEloquent
                 'user_sub.company_assignment_type',
                 'user_sub.is_employee',
                 'user_sub.company_employee_number',
-                'user_sub.company_employee_family_name',
-                'user_sub.company_employee_middle_name',
-                'user_sub.company_employee_given_name',
+                'user_sub.company_employee_full_name',
                 'permissions.id AS permission_id',
                 'permissions.name AS permission_name',
             ]);

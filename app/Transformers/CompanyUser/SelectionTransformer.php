@@ -16,11 +16,7 @@ class SelectionTransformer extends TransformerAbstractConcrete
             ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
             : null;
 
-        $employeeFullName = implode(' ', array_filter([
-            $model->company_employee_family_name,
-            $model->company_employee_given_name,
-            $model->company_employee_middle_name
-        ]));
+        $employeeFullName = $model->company_employee_full_name;
         $employeeNumberAndFullName = $model->is_employee ? ('(' . $model->company_employee_number . ') '  . $employeeFullName) : null;
 
         $label = implode(PHP_EOL, array_filter([

@@ -61,9 +61,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'company_user_sub.company_assignment_type',
                 'company_user_sub.is_employee',
                 'company_user_sub.company_employee_number',
-                'company_user_sub.company_employee_family_name',
-                'company_user_sub.company_employee_middle_name',
-                'company_user_sub.company_employee_given_name',
+                'company_user_sub.company_employee_full_name',
 
                 'attendance_adjustment_request_sub.company_id AS company_id',
                 DB::raw("'attendance_adjustment_request' AS requestable_type"),
@@ -98,9 +96,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'attendance_adjustment_requests.company_assignment_type',
                 'attendance_adjustment_requests.is_employee',
                 'attendance_adjustment_requests.company_employee_number',
-                'attendance_adjustment_requests.company_employee_family_name',
-                'attendance_adjustment_requests.company_employee_middle_name',
-                'attendance_adjustment_requests.company_employee_given_name',
+                'attendance_adjustment_requests.company_employee_full_name',
             ]);
 
         /**
@@ -129,9 +125,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'company_user_sub.company_assignment_type',
                 'company_user_sub.is_employee',
                 'company_user_sub.company_employee_number',
-                'company_user_sub.company_employee_family_name',
-                'company_user_sub.company_employee_middle_name',
-                'company_user_sub.company_employee_given_name',
+                'company_user_sub.company_employee_full_name',
 
                 'overtime_request_sub.company_id AS company_id',
                 DB::raw("'overtime_request' AS requestable_type"),
@@ -166,9 +160,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'overtime_requests.company_assignment_type',
                 'overtime_requests.is_employee',
                 'overtime_requests.company_employee_number',
-                'overtime_requests.company_employee_family_name',
-                'overtime_requests.company_employee_middle_name',
-                'overtime_requests.company_employee_given_name',
+                'overtime_requests.company_employee_full_name',
             ]);
 
         /**
@@ -197,9 +189,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'company_user_sub.company_assignment_type',
                 'company_user_sub.is_employee',
                 'company_user_sub.company_employee_number',
-                'company_user_sub.company_employee_family_name',
-                'company_user_sub.company_employee_middle_name',
-                'company_user_sub.company_employee_given_name',
+                'company_user_sub.company_employee_full_name',
 
                 'leave_request_sub.company_id AS company_id',
                 DB::raw("'leave_request' AS requestable_type"),
@@ -234,9 +224,7 @@ class UserFiledRequestRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'leave_requests.company_assignment_type',
                 'leave_requests.is_employee',
                 'leave_requests.company_employee_number',
-                'leave_requests.company_employee_family_name',
-                'leave_requests.company_employee_middle_name',
-                'leave_requests.company_employee_given_name',
+                'leave_requests.company_employee_full_name',
             ]);
 
         /**
