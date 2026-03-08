@@ -43,10 +43,14 @@ class ListTransformer extends TransformerAbstract
             'shift_code' => $shiftAssignment->shift_code,
             'shift_name' => $shiftAssignment->shift_name,
 
+            'shift_is_latest' => $shiftAssignment->shift_is_latest,
+
             //Shift assignment settings
             'shift_start_date' => $shiftAssignment->shift_start_date?->format('Y-m-d'),
+            'shift_start_date_readable' => $shiftAssignment->shift_start_date?->format('M j, Y'),
             'shift_stated_shift_end_date' => $shiftAssignment->shift_stated_shift_end_date,
             'shift_end_date' => $shiftAssignment->shift_end_date?->format('Y-m-d'),
+            'shift_end_date_readable' => $shiftAssignment->shift_end_date?->format('M j, Y'),
         ];
     }
 }

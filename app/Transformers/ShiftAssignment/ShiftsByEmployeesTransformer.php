@@ -25,18 +25,22 @@ class ShiftsByEmployeesTransformer extends TransformerAbstract
 
         $employee = Employee::query()->find($shiftsByEmployees->employee_id);
 
+        $shiftCodes = empty($shiftsByEmployees->assigned_shift_codes)
+            ? null
+            : explode(',', $shiftsByEmployees->assigned_shift_codes);
+
         return [
             'row_number' => $shiftsByEmployees->row_number,
             'id' => $shiftsByEmployees->employee_id,
             'employee_id' => $shiftsByEmployees->employee_id,
 
-            'employee_number' => $employee->number,
-            'employee_full_name' => $employee->full_name,
+            'employee_number' => $shiftsByEmployees->employee_number,
+            'employee_full_name' => $shiftsByEmployees->employee_full_name,
             'employee_current_employment_profile' => $currentEmploymentProfile,
             'employee_department' => $employee->departments->first(),
             'employee_designation' => $employee->designation,
 
-            'assigned_shift_codes' => $shiftsByEmployees->assigned_shift_codes,
+            'assigned_shift_codes' => $shiftCodes,
         ];
     }
 }

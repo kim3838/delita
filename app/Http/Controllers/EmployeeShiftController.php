@@ -36,7 +36,7 @@ class EmployeeShiftController extends Controller
 
     public function index(ListEmployeeShiftRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
 
@@ -51,7 +51,7 @@ class EmployeeShiftController extends Controller
 
     public function selection(Request $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
 
@@ -73,9 +73,11 @@ class EmployeeShiftController extends Controller
             $hydrated = $this->repository->hydrateItem($request->validated());
             $patchableShiftSettings = Fractal::item($hydrated, PatchableTransformer::class);
 
-            $this->repository->update($employeeShiftId, $patchableShiftSettings);
+            list($employeeShift, $errors) = $this->repository->update($employeeShiftId, $patchableShiftSettings);
 
-            return ResponseJson::successfulResponse();
+            return ResponseJson::successfulResponse([
+                'errors' => $errors
+            ]);
         }
 
         abort(404);
@@ -83,7 +85,7 @@ class EmployeeShiftController extends Controller
 
     public function shiftsByEmployees(ListEmployeeShiftRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $filters = json_decode($request->get('filters'));
 
@@ -116,7 +118,7 @@ class EmployeeShiftController extends Controller
 
     public function syncWithoutDetaching(SyncWithoutDetachingEmployeeShiftRequest $request)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $employeeIds = data_get($request->validated(), 'employees', []);
             $shiftIds = data_get($request->validated(), 'shifts', []);
@@ -124,9 +126,11 @@ class EmployeeShiftController extends Controller
             $hydratedEmployeeShift = $this->repository->hydrateItem($request->validated());
             $patchableEmployeeShiftSettings = Fractal::item($hydratedEmployeeShift, PatchableTransformer::class);
 
-            $this->repository->syncWithoutDetaching($employeeIds, $shiftIds, $patchableEmployeeShiftSettings);
+            $errors = $this->repository->syncWithoutDetaching($employeeIds, $shiftIds, $patchableEmployeeShiftSettings);
 
-            return ResponseJson::successfulResponse();
+            return ResponseJson::successfulResponse([
+                'errors' => $errors
+            ]);
         }
 
         abort(404);
@@ -134,7 +138,7 @@ class EmployeeShiftController extends Controller
 
     public function detach(DetachAssignedShiftsRequest $request, $morphMapKey)
     {
-        if(request()->expectsJson()){
+        if($request->expectsJson()){
 
             $selectedMorphables = data_get($request->validated(), 'selectedMorphables', []);
 

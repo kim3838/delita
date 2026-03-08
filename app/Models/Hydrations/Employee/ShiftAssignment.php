@@ -18,6 +18,7 @@ class ShiftAssignment extends Model
         'shift_ulid' => 'string',
         'shift_code' => 'string',
         'shift_name' => 'string',
+        'shift_is_latest' => 'boolean',
         'shift_start_date' => 'date',
         'shift_stated_shift_end_date' => 'boolean',
         'shift_end_date' => 'date',
