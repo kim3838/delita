@@ -7,7 +7,6 @@ use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
 use App\Models\Attendance;
-use App\Models\Employee;
 use App\Models\Overtime;
 use App\Transformers\Attendance\BasicTransformer as AttendanceBasicTransformer;
 use App\Transformers\Shift\ItemTransformer as ShiftItemTransformer;
@@ -19,7 +18,7 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(Overtime $overtime): array
     {
-        $employee = Employee::query()->find($overtime->attendance_employee_id);
+        $employee = $overtime->attendance->employee;
 
         $attendance = Fractal::item(
             Attendance::query()->find($overtime->attendance_id),
@@ -56,9 +55,7 @@ class ListTransformer extends TransformerAbstract
             'employee' => [
                 'id' => $employee->id,
                 'number' => $employee->number,
-                'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
+                'full_name' => $employee->full_name_attribute,
             ],
             'attendance' => $attendance,
             'shift' => [

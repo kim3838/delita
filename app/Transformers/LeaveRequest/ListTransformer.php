@@ -6,7 +6,6 @@ use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\Shift;
@@ -25,8 +24,6 @@ class ListTransformer extends TransformerAbstract
 
     public function transform(LeaveRequest $leaveRequest): array
     {
-        $employee = Employee::query()->find($leaveRequest->employee_id);
-
         $leaveType = LeaveType::query()->find($leaveRequest->leave_type_id);
 
         $leaveType = $leaveType ? Fractal::item($leaveType, LeaveTypeItemTransformer::class) : $leaveType;

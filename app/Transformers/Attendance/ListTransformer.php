@@ -9,7 +9,6 @@ use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Facades\Fractal;
 use App\Models\Attendance;
-use App\Models\Employee;
 use App\Transformers\EmployeeShift\ItemTransformer as EmployeeShiftItemTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\BasicListTransformer as SalaryStatementAttendanceBasicListTransformer;
@@ -22,7 +21,7 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(Attendance $attendance): array
     {
-        $employee = Employee::query()->find($attendance->employee_id);
+        $employee = $attendance->employee;
 
         $attendanceShift = null;
         $attendanceShiftAssignment = null;
@@ -129,10 +128,8 @@ class ListTransformer extends TransformerAbstract
             'last_out' => $attendance->last_out?->format('Y-m-d H:i'),
             'status' => $attendance->status?->toArray(),
             'employee' => [
-                'number' => $employee?->number,
-                'full_name' => $employee?->full_name,
-                'department' => $employee?->departments?->first(),
-                'designation' => $employee?->designation,
+                'number' => $employee->number,
+                'full_name' => $employee->full_name_attribute,
             ],
             'shift' => $attendanceShift,
             'shift_schedule' => $shiftSchedule,
