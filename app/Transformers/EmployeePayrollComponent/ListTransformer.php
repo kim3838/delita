@@ -40,16 +40,16 @@ class ListTransformer extends TransformerAbstract
 
             'amountable_start' => $model->amountable_start?->toArray(),
             'start_date' => $model->start_date?->format('Y-m-d'),
+            'start_date_readable' => $model->start_date ? $model->start_date->format('M j,Y') : '--',
 
             'amountable_end' => $model->amountable_end?->toArray(),
             'end_date' => $model->end_date?->format('Y-m-d'),
+            'end_date_readable' => $model->end_date ? $model->end_date->format('M j,Y') : '--',
 
             'employee' => [
-                'ulid' => $employee->ulid,
-                'number' => $employee->number,
-                'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
+                'ulid' => $model->employee_ulid,
+                'number' => $model->employee_number,
+                'full_name' => $model->employee_full_name,
                 'payroll_group' => $payrollGroup,
             ],
         ];

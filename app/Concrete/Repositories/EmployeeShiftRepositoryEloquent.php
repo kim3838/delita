@@ -11,7 +11,7 @@ use App\Models\Hydrations\Employee\ShiftAssignment;
 use App\Models\Hydrations\Employee\ShiftsByEmployees;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -23,13 +23,13 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return EmployeeShift::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = [])
+    public function baseQueryBuilder($filters, $orders = [], $relations = [])
     {
         $employeeRepositoryFilter = clone $filters;
         unset($employeeRepositoryFilter->assigned_shift_ids);
         unset($employeeRepositoryFilter->not_assigned_shift_ids);
 
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], ['current_employment_profile']);
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], $relations);
 
         $queryBuilder = $this->model::query()->getQuery()
             ->joinSub($employeeQueryBuilder, 'employee_sub', function ($join) {
@@ -43,9 +43,15 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
                 'employee_shift.shift_id AS shift_id',
 
                 'employee_sub.number AS employee_number',
-                'employee_sub.employment_status_active AS employee_employment_status_active',
-                'employee_sub.current_employment_status AS employee_current_employment_status',
-                'employee_sub.current_employment_type AS employee_current_employment_type',
+                'employee_sub.full_name AS employee_full_name',
+                'employee_sub.company_timezone AS company_timezone',
+                'employee_sub.local_date AS local_date',
+
+                ...(in_array('current_employment_profile', $relations) ? [
+                    'employee_sub.employment_status_active AS employee_employment_status_active',
+                    'employee_sub.current_employment_status AS employee_current_employment_status',
+                    'employee_sub.current_employment_type AS employee_current_employment_type',
+                ] : []),
 
                 'shifts.ulid AS shift_ulid',
                 'shifts.code AS shift_code',
@@ -76,14 +82,103 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function currentShiftBuilder($filters): QueryBuilder
+    {
+        $localDate = isset($filters->local_date) ? "'$filters->local_date'" : 'employee_shift_sub.local_date';
+
+        $queryBuilder = $this->queryAsSub($this->baseQueryBuilder($filters), 'employee_shift_sub')
+            ->select([
+                DB::raw("$localDate AS local_date"),
+
+                'employee_shift_sub.id AS employee_shift_id',
+                'employee_shift_sub.employee_id AS employee_id',
+                'employee_shift_sub.shift_id AS shift_id',
+                'employee_shift_sub.shift_ulid AS shift_ulid',
+                'employee_shift_sub.shift_code AS shift_code',
+                'employee_shift_sub.shift_name AS shift_name',
+
+                'employee_shift_sub.shift_start_date AS shift_start_date',
+                'employee_shift_sub.shift_stated_shift_end_date AS shift_stated_shift_end_date',
+                'employee_shift_sub.shift_end_date AS shift_end_date',
+            ]);
+
+        $queryBuilder = $this->subQuery($queryBuilder, 'employee_shift_sub')
+            ->where(function ($query) {
+                $query->where('employee_shift_sub.shift_stated_shift_end_date', '=', 0)
+                    ->where('employee_shift_sub.shift_start_date', '<=', DB::raw("employee_shift_sub.local_date"));
+            })
+            ->orWhere(function ($query) {
+                $query->where('employee_shift_sub.shift_stated_shift_end_date', '=', 1)
+                    ->whereBetween(DB::raw("employee_shift_sub.local_date"), [
+                        DB::raw("employee_shift_sub.shift_start_date"), DB::raw("employee_shift_sub.shift_end_date")
+                    ]);
+            })
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(PARTITION BY employee_id ORDER BY shift_start_date DESC) AS `row_number`"),
+                'employee_shift_sub.*'
+            ]);
+
+        $queryBuilder = $this->subQuery($queryBuilder, 'employee_shift_sub')
+            ->where('employee_shift_sub.row_number', 1)
+            ->select([
+                'employee_shift_sub.*'
+            ]);
+
+        return $queryBuilder;
+    }
+
+    public function upcomingShiftBuilder($filters): QueryBuilder
+    {
+        $localDate = isset($filters->local_date) ? "'$filters->local_date'" : 'employee_shift_sub.local_date';
+
+        $queryBuilder = $this->queryAsSub($this->baseQueryBuilder($filters), 'employee_shift_sub')
+            ->select([
+                DB::raw("$localDate AS local_date"),
+
+                'employee_shift_sub.id AS employee_shift_id',
+                'employee_shift_sub.employee_id AS employee_id',
+                'employee_shift_sub.shift_id AS shift_id',
+                'employee_shift_sub.shift_ulid AS shift_ulid',
+                'employee_shift_sub.shift_code AS shift_code',
+                'employee_shift_sub.shift_name AS shift_name',
+
+                'employee_shift_sub.shift_start_date AS shift_start_date',
+                'employee_shift_sub.shift_stated_shift_end_date AS shift_stated_shift_end_date',
+                'employee_shift_sub.shift_end_date AS shift_end_date',
+            ]);
+
+        $queryBuilder = $this->subQuery($queryBuilder, 'employee_shift_sub')
+            ->where('employee_shift_sub.shift_start_date', '>', DB::raw("employee_shift_sub.local_date"))
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where('employee_shift_sub.shift_stated_shift_end_date', '=', 0);
+                })->orWhere(function ($query) {
+                    $query->where('employee_shift_sub.shift_stated_shift_end_date', '=', 1)
+                        ->where('employee_shift_sub.shift_end_date', '>', DB::raw("employee_shift_sub.local_date"));
+                });
+            })
+            ->select([
+                DB::raw("ROW_NUMBER() OVER(PARTITION BY employee_id ORDER BY shift_start_date ASC) AS `row_number`"),
+                'employee_shift_sub.*'
+            ]);
+
+        $queryBuilder = $this->subQuery($queryBuilder, 'employee_shift_sub')
+            ->where('employee_shift_sub.row_number', 1)
+            ->select([
+                'employee_shift_sub.*'
+            ]);
+
+        return $queryBuilder;
+    }
+
+    public function paginate($filters, $relations = []): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'employee_shift_sub.employee_number', 'direction' => 'ASC'],
             ['field' => 'employee_shift_sub.shift_start_date', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->baseQueryBuilder($filters);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
@@ -140,7 +235,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
         $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($filters, [], ['current_employment_profile']);
 
-        $queryBuilder = app(Builder::class)->fromSub($employeeQueryBuilder, 'employee_sub')
+        $queryBuilder = app(QueryBuilder::class)->fromSub($employeeQueryBuilder, 'employee_sub')
             ->leftJoin('employee_shift', 'employee_shift.employee_id', '=', 'employee_sub.id')
             ->leftJoin('shifts', 'shifts.id', '=', 'employee_shift.shift_id')
             ->select([
@@ -228,7 +323,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
             if (count(array_intersect($shiftIds, $existingEmployeeShiftIds)) > 0) {
                 $syncErrors[] = [
-                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                     'error' => 'Shift already assigned',
                 ];
                 continue;
@@ -236,7 +331,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
             if(empty($syncItem)){
                 $syncErrors[] = [
-                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                     'error' => 'Sync error',
                 ];
                 continue;
@@ -275,7 +370,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
                 if($syncItemEndDate->gte($firstEmployeeShift->start_date)){
 
                     $syncErrors[] = [
-                        'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                        'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                         'error' => 'Shift overlaps with existing shift(s)',
                     ];
 
@@ -285,7 +380,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
             if(!$syncItemStatedShiftEndDate){
                 $syncErrors[] = [
-                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                     'error' => 'Shift overlaps with existing shift(s)',
                 ];
 
@@ -297,7 +392,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
             if(!$syncItemStatedShiftEndDate && $syncItemStartDate->lte($latestEmployeeShift->end_date)){
                 $syncErrors[] = [
-                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                    'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                     'error' => 'Shift overlaps with existing shift(s)',
                 ];
 
@@ -308,7 +403,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
                 if(empty($syncItemEndDate)){
                     $syncErrors[] = [
-                        'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                        'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                         'error' => 'Sync error',
                     ];
 
@@ -319,7 +414,7 @@ class EmployeeShiftRepositoryEloquent extends BaseRepositoryEloquent implements 
 
                     if($syncItemStartDate->gte($firstEmployeeShift->start_date) || $syncItemEndDate->gte($firstEmployeeShift->start_date)){
                         $syncErrors[] = [
-                            'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name,
+                            'employee_number' => $employee->number, 'employee_full_name' => $employee->full_name_attribute,
                             'error' => 'Shift overlaps with existing shift(s)',
                         ];
 

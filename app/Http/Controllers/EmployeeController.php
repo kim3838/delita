@@ -34,8 +34,10 @@ class EmployeeController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
+            $relations = ['user', 'department', 'designation', 'current_employment_profile', 'current_shift'];
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                App::make(EmployeeRepository::class)->paginate($filters),
+                App::make(EmployeeRepository::class)->paginate($filters, $relations),
                 ListTransformer::class,
             ));
         }

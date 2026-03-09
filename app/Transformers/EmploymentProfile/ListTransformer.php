@@ -24,7 +24,7 @@ class ListTransformer extends TransformerAbstract
             'employee' => [
                 'ulid' => $model->employee->ulid,
                 'number' => $model->employee->number,
-                'full_name' => $model->employee->full_name,
+                'full_name' => $model->employee->full_name_attribute,
             ],
         ];
     }

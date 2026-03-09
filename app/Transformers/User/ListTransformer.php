@@ -70,7 +70,7 @@ class ListTransformer extends TransformerAbstractConcrete
                     'assignment' => CompanyUserAssignmentType::tryFrom($assignedCompany->pivot->assignment_type)?->toArray() ?? null,
                     'is_employee' => (bool)$employee,
                     'employee_number' => $employee?->number,
-                    'employee_full_name' => $employee?->full_name,
+                    'employee_full_name' => $employee?->full_name_attribute,
                 ];
             })->toArray();
     }

@@ -2,10 +2,11 @@
 
 namespace App\Transformers\SalaryStatement;
 
+use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
+use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\SalaryStatement;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\DetailedListTransformer as SalaryStatementAttendanceDetailedListTransformer;
@@ -21,7 +22,11 @@ class ItemTransformer extends TransformerAbstract
     {
         $payroll = Fractal::item($salaryStatement->payroll, PayrollBasicTransformer::class);
 
-        $employee = Employee::query()->find($salaryStatement->employee_id);
+        $employeeRepositoryFilters = (object)[
+            'employee_ids' => [$salaryStatement->employee_id],
+        ];
+
+        $employee = App::make(EmployeeRepository::class)->list($employeeRepositoryFilters, ['department', 'designation'])->first();
 
         $salaryStatementAttendanceRepositoryFilters = (object)[
             'salary_statement_ids' => [$salaryStatement->id],
@@ -62,8 +67,14 @@ class ItemTransformer extends TransformerAbstract
 
             'employee_number' => $employee->number,
             'employee_full_name' => $employee->full_name,
-            'employee_department' => $employee->departments->first(),
-            'employee_designation' => $employee->designation,
+            'employee_department' => $employee->department_employee_id
+                ? [
+                    'name' => $employee->department_name,
+                    'assignment_type' => DepartmentEmployeeAssignmentType::tryFrom($employee->department_assignment_type)?->toArray()
+                ] : null,
+            'employee_designation' => $employee->designation_id
+                ? ['name' => $employee->designation_name]
+                : null,
 
             'total_days' => $salaryStatement->total_days,
             'total_day_offs' => $salaryStatement->total_day_offs,

@@ -18,6 +18,7 @@ class ListTransformer extends TransformerAbstract
         $currentEmploymentProfileHydrated = App::make(EmploymentProfileRepository::class)->hydrateItem([
             'is_active' => $employee->employment_status_active,
             'status' => $employee->current_employment_status,
+            'employment_type' => $employee->current_employment_type,
         ]);
 
         $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
@@ -27,8 +28,6 @@ class ListTransformer extends TransformerAbstract
             'employee' => [
                 'number' => $employee->number,
                 'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
             ],
             'current_employment_profile' => $currentEmploymentProfile,
         ];

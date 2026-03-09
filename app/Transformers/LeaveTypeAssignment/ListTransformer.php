@@ -4,7 +4,6 @@ namespace App\Transformers\LeaveTypeAssignment;
 
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\Hydrations\Employee\LeaveTypeAssignment;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
 use Illuminate\Support\Facades\App;
@@ -24,8 +23,6 @@ class ListTransformer extends TransformerAbstract
 
         $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
 
-        $employee = Employee::query()->find($leaveTypeAssignment->employee_id);
-
         return [
             'row_number' => $leaveTypeAssignment->row_number,
             'id' => $leaveTypeAssignment->id,
@@ -33,11 +30,9 @@ class ListTransformer extends TransformerAbstract
             'employee_id' => $leaveTypeAssignment->employee_id,
             'leave_type_id' => $leaveTypeAssignment->leave_type_id,
 
-            'employee_number' => $employee->number,
-            'employee_full_name' => $employee->full_name,
+            'employee_number' => $leaveTypeAssignment->employee_number,
+            'employee_full_name' => $leaveTypeAssignment->employee_full_name,
             'employee_current_employment_profile' => $currentEmploymentProfile,
-            'employee_department' => $employee->departments->first(),
-            'employee_designation' => $employee->designation,
 
             'leave_type_ulid' => $leaveTypeAssignment->leave_type_ulid,
             'leave_type_code' => $leaveTypeAssignment->leave_type_code,

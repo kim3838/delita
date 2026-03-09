@@ -33,7 +33,7 @@ class LeaveRunningBalanceByTypeController extends Controller
                 'ids' => $filters->leave_type_ids,
             ]);
 
-            $employees = $this->employeeRepository->paginate($filters);
+            $employees = $this->employeeRepository->paginate($filters, ['current_employment_profile']);
 
             foreach ($employees->items() as $employee){
                 $employee->leave_balance_by_type_date = $date;

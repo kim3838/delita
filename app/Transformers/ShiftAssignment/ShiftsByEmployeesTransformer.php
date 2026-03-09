@@ -4,7 +4,6 @@ namespace App\Transformers\ShiftAssignment;
 
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\Hydrations\Employee\ShiftsByEmployees;
 use App\Transformers\EmploymentProfile\CurrentEmploymentProfileTransformer;
 use Illuminate\Support\Facades\App;
@@ -23,8 +22,6 @@ class ShiftsByEmployeesTransformer extends TransformerAbstract
 
         $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
 
-        $employee = Employee::query()->find($shiftsByEmployees->employee_id);
-
         $shiftCodes = empty($shiftsByEmployees->assigned_shift_codes)
             ? null
             : explode(',', $shiftsByEmployees->assigned_shift_codes);
@@ -37,8 +34,6 @@ class ShiftsByEmployeesTransformer extends TransformerAbstract
             'employee_number' => $shiftsByEmployees->employee_number,
             'employee_full_name' => $shiftsByEmployees->employee_full_name,
             'employee_current_employment_profile' => $currentEmploymentProfile,
-            'employee_department' => $employee->departments->first(),
-            'employee_designation' => $employee->designation,
 
             'assigned_shift_codes' => $shiftCodes,
         ];

@@ -24,12 +24,11 @@ class ListTransformer extends TransformerAbstract
             'id' => $leave->id,
             'ulid' => $leave->ulid,
             'date' => $leave->date->toDateString(),
+            'date_readable' => $leave->date->format('M j, Y'),
             'employee' => [
                 'id' => $employee->id,
-                'number' => $employee->number,
-                'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
+                'number' => $leave->employee_number,
+                'full_name' => $leave->employee_full_name,
             ],
             'leave_type' => $leaveType
         ];

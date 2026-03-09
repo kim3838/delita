@@ -20,7 +20,7 @@ class EmployeeController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
-            $relations = ['user', 'current_employment_profile', 'shift'];
+            $relations = ['user', 'current_employment_profile', 'current_shift', 'upcoming_shift'];
 
             return ResponseJson::successfulResponse(Fractal::collection(
                 App::make(EmployeeRepository::class)->paginate($filters, $relations),

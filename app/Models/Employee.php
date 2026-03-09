@@ -58,10 +58,10 @@ class Employee extends Model
     ];
 
     protected $appends = [
-        'full_name',
+        'full_name_attribute',
     ];
 
-    protected function fullName(): Attribute
+    protected function fullNameAttribute(): Attribute
     {
         return Attribute::get(function () {
             return collect([

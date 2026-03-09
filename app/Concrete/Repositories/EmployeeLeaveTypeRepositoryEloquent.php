@@ -49,7 +49,6 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'employee_sub.full_name', 'direction' => 'ASC'],
             ['field' => 'leave_types.code', 'direction' => 'ASC'],
         ];
 
@@ -62,6 +61,7 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'employee_leave_type.leave_type_id AS leave_type_id',
 
                 'employee_sub.number AS employee_number',
+                'employee_sub.full_name AS employee_full_name',
                 'employee_sub.employment_status_active AS employee_employment_status_active',
                 'employee_sub.current_employment_status AS employee_current_employment_status',
                 'employee_sub.current_employment_type AS employee_current_employment_type',
@@ -133,6 +133,7 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 'employee_sub.id AS employee_id',
                 'employee_sub.number AS employee_number',
+                'employee_sub.full_name AS employee_full_name',
                 DB::raw("MAX(employee_sub.employment_status_active) AS employee_employment_status_active"),
                 DB::raw("MAX(employee_sub.current_employment_status) AS employee_current_employment_status"),
                 DB::raw("MAX(employee_sub.current_employment_type) AS employee_current_employment_type"),

@@ -119,8 +119,6 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                 'requested_by_company_user_sub.company_employee_full_name AS requested_by_user_company_employee_full_name',
             ]);
 
-        _log_query_builder_with_bindings($queryBuilder);
-
         return $queryBuilder;
     }
 

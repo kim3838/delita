@@ -35,7 +35,7 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
                 'cut_off_value' => WeekDay::FRIDAY,
                 'days_span' => 7,
             ],[
-                'code' => 'SEMI_MONTHLY',
+                'code' => 'SEMIMONTHLY',
                 'order' => 2,
                 'type' => PayFrequencyEnum::SEMIMONTHLY,
                 'time_period_preset_id' => $endOfMonthTimePeriodPreset->id,

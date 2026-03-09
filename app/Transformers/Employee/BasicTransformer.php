@@ -13,7 +13,7 @@ class BasicTransformer extends TransformerAbstract
             'id' => $employee->id,
             'ulid' => $employee->ulid,
             'number' => $employee->number,
-            'full_name' => $employee->full_name,
+            'full_name' => $employee->full_name_attribute,
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
+use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Concrete\BaseRepositoryEloquent;
@@ -15,7 +16,9 @@ use App\Enums\PayFrequency;
 use App\Enums\PayPeriod;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
@@ -31,14 +34,23 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         return Employee::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = [], $relations = [])
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
+        $withCurrentEmploymentProfile = in_array('current_employment_profile', $relations);
+
         $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'employees.company_id')
             ->when(in_array('user', $relations), function ($builder) {
                 $builder->leftJoin('users', 'users.id', '=', 'employees.user_id');
             })
-            ->when(in_array('current_employment_profile', $relations), function ($builder) use($filters) {
+            ->when(in_array('department', $relations), function ($builder) {
+                $builder->leftJoin('department_employee', 'department_employee.employee_id', '=', 'employees.id')
+                    ->leftJoin('departments', 'departments.id', '=', 'department_employee.department_id');
+            })
+            ->when(in_array('designation', $relations), function ($builder) {
+                $builder->leftJoin('designations', 'designations.id', '=', 'employees.designation_id');
+            })
+            ->when($withCurrentEmploymentProfile, function ($builder) use($filters) {
 
                 $currentEmploymentProfile = App::make(EmploymentProfileRepository::class)->currentEmploymentProfileBuilder($filters);
 
@@ -47,8 +59,21 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                         ->where('current_employment_profile.row_number', 1);
                 });
             })
-            ->when(in_array('shift', $relations), function ($builder) use($filters) {
-                $builder->leftJoin('employee_shift', 'employee_shift.employee_id', '=', 'employees.id');
+            ->when(in_array('current_shift', $relations), function ($builder) use($filters) {
+                $currentShiftFilters = $filters;
+                $currentShift = App::make(EmployeeShiftRepository::class)->currentShiftBuilder($currentShiftFilters);
+
+                $builder->leftJoinSub($currentShift, 'current_shift_sub', function ($join) {
+                    $join->on('employees.id', '=', 'current_shift_sub.employee_id');
+                });
+            })
+            ->when(in_array('upcoming_shift', $relations), function ($builder) use($filters) {
+                $upcomingShiftFilters = $filters;
+                $upcomingShift = App::make(EmployeeShiftRepository::class)->upcomingShiftBuilder($upcomingShiftFilters);
+
+                $builder->leftJoinSub($upcomingShift, 'upcoming_shift_sub', function ($join) {
+                    $join->on('employees.id', '=', 'upcoming_shift_sub.employee_id');
+                });
             })
             ->when($filters->company_id ?? false, function ($builder, $value) {
                 $builder->where(DB::raw("employees.company_id"), $value);
@@ -62,10 +87,10 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when(!empty($filters->employee_ulids) && is_array($filters->employee_ulids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.ulid"), $filters->employee_ulids);
             })
-            ->when(!empty($filters->employment_status) && is_array($filters->employment_status), function ($builder) use ($filters) {
+            ->when($withCurrentEmploymentProfile && !empty($filters->employment_status) && is_array($filters->employment_status), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("COALESCE(current_employment_profile.status, " . EmploymentStatus::INACTIVE->value . ")"), $filters->employment_status);
             })
-            ->when(!empty($filters->employment_type) && is_array($filters->employment_type), function ($builder) use ($filters) {
+            ->when($withCurrentEmploymentProfile && !empty($filters->employment_type) && is_array($filters->employment_type), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("current_employment_profile.employment_type"), $filters->employment_type);
             })
             ->when(!empty($filters->pay_frequency_ids) && is_array($filters->pay_frequency_ids), function ($builder) use ($filters) {
@@ -141,6 +166,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 "companies.timezone AS company_timezone",
 
                 "employees.id",
+                "employees.ulid",
                 "employees.user_id",
                 "employees.company_id",
                 "employees.designation_id",
@@ -163,6 +189,17 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                     DB::raw("users.timezone AS user_timezone"),
                 ] : []),
 
+                ...(in_array('department', $relations) ? [
+                    DB::raw("department_employee.id AS department_employee_id"),
+                    DB::raw("department_employee.department_assignment_type AS department_assignment_type"),
+                    DB::raw("department_employee.department_id AS department_id"),
+                    DB::raw("departments.name AS department_name"),
+                ] : []),
+
+                ...(in_array('designation', $relations) ? [
+                    DB::raw("designations.name AS designation_name"),
+                ] : []),
+
                 ...(in_array('current_employment_profile', $relations) ? [
                     DB::raw("CASE WHEN current_employment_profile.id IS NULL OR COALESCE(current_employment_profile.status, 200) = 200 THEN 0 ELSE 1 END AS employment_status_active"),
                     DB::raw("current_employment_profile.id AS employment_profile_id"),
@@ -174,19 +211,27 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                     DB::raw("current_employment_profile.end_date AS current_employment_end_date"),
                 ] : []),
 
-                ...(in_array('shift', $relations) ? [
-                    'employee_shift.id AS employee_shift_id',
-                    'employee_shift.shift_id AS shift_id',
-                    'employee_shift.start_date AS shift_start_date',
-                    'employee_shift.stated_shift_end_date AS shift_stated_shift_end_date',
-                    'employee_shift.end_date AS shift_end_date',
+                ...(in_array('current_shift', $relations) ? [
+                    'current_shift_sub.employee_shift_id AS current_employee_shift_id',
+                    'current_shift_sub.shift_id AS current_shift_id',
+                    'current_shift_sub.shift_start_date AS current_shift_start_date',
+                    'current_shift_sub.shift_stated_shift_end_date AS current_shift_stated_shift_end_date',
+                    'current_shift_sub.shift_end_date AS current_shift_end_date',
+                ] : []),
+
+                ...(in_array('upcoming_shift', $relations) ? [
+                    'upcoming_shift_sub.employee_shift_id AS upcoming_employee_shift_id',
+                    'upcoming_shift_sub.shift_id AS upcoming_shift_id',
+                    'upcoming_shift_sub.shift_start_date AS upcoming_shift_start_date',
+                    'upcoming_shift_sub.shift_stated_shift_end_date AS upcoming_shift_stated_shift_end_date',
+                    'upcoming_shift_sub.shift_end_date AS upcoming_shift_end_date',
                 ] : []),
             ]);
 
         return $queryBuilder;
     }
 
-    public function paginate($filters, $relations = ['user', 'current_employment_profile']): LengthAwarePaginator
+    public function paginate($filters, $relations = []): LengthAwarePaginator
     {
         $queryBuilder = $this->baseQueryBuilder($filters, $this->defaultOrders, $relations);
 
@@ -195,6 +240,13 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters, $relations = []): Collection
+    {
+        $queryBuilder = $this->baseQueryBuilder($filters, [], $relations);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function queryBuilderCursor($filters): LazyCollection
@@ -225,7 +277,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                     ->orWhere('employees.number', 'LIKE', "%$value%");
             })
             ->select([
-                "employees.*"
+                "employees.*",
+                DB::raw("CONCAT_WS(' ',employees.family_name,employees.given_name,employees.middle_name) AS full_name"),
             ]);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
@@ -328,7 +381,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                             $employeeAmountableCompensationsAreValidWithNewPayFrequency = false;
                             $errors[] = [
                                 'employee_number' => $employee->number,
-                                'employee_full_name' => $employee->fullName,
+                                'employee_full_name' => $employee->full_name_attribute,
                                 'error' => 'Unable to apply weekly payroll group if employee has semi-monthly or monthly compensation amount pay period.'
                             ];
                         }

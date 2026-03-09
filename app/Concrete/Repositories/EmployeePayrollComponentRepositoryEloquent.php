@@ -49,7 +49,9 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
                 $builder->whereIn('employee_payroll_components.pay_type', $filters->pay_types);
             })
             ->select([
+                "employee_sub.ulid AS employee_ulid",
                 "employee_sub.number AS employee_number",
+                "employee_sub.full_name AS employee_full_name",
                 DB::raw("
                     CASE
                         WHEN employee_payroll_components.payroll_componentable_type = 'compensation' THEN compensations.component_sub_type

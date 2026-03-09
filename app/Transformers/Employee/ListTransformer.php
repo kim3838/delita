@@ -7,6 +7,7 @@ use App\Blueprint\Repositories\EmploymentProfileRepository;
 use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
 use App\Blueprint\Repositories\UserRepository;
+use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Transformers\EmployeeShift\ItemTransformer as EmployeeShiftItemTransformer;
@@ -46,26 +47,48 @@ class ListTransformer extends TransformerAbstract
 
         $currentEmploymentProfile = Fractal::item($currentEmploymentProfileHydrated, CurrentEmploymentProfileTransformer::class);
 
-        $employeeModelHasEmployeeShiftId = $employee->employee_shift_id ?? null;
+        $hasCurrentShift = $employee->current_employee_shift_id ?? null;
 
-        if($employeeModelHasEmployeeShiftId){
+        if($hasCurrentShift){
 
-            $employeeShiftHydrated = App::make(EmployeeShiftRepository::class)->hydrateItem([
-                'start_date' => $employee->shift_start_date,
-                'stated_shift_end_date' => $employee->shift_stated_shift_end_date,
-                'end_date' => $employee->shift_end_date,
+            $currentEmployeeShiftHydrated = App::make(EmployeeShiftRepository::class)->hydrateItem([
+                'start_date' => $employee->current_shift_start_date,
+                'stated_shift_end_date' => $employee->current_shift_stated_shift_end_date,
+                'end_date' => $employee->current_shift_end_date,
             ]);
 
-            $employeeShiftAssignment = Fractal::item($employeeShiftHydrated, EmployeeShiftItemTransformer::class);
+            $currentEmployeeShiftAssignment = Fractal::item($currentEmployeeShiftHydrated, EmployeeShiftItemTransformer::class);
 
-            $shift = App::make(ShiftRepository::class)->model()::query()->find($employee->shift_id);
-            $shiftScheduleFilters = (object)[
-                'shift_id' => $shift->id
+            $currentShift = App::make(ShiftRepository::class)->model()::query()->find($employee->current_shift_id);
+            $currentShiftScheduleFilters = (object)[
+                'shift_id' => $currentShift->id
             ];
-            $shiftSchedules = App::make(ShiftScheduleRepository::class)->list($shiftScheduleFilters);
-            $shiftSchedules = Fractal::collection($shiftSchedules, ShiftScheduleListTransformer::class)['data'];
+            $currentShiftSchedules = App::make(ShiftScheduleRepository::class)->list($currentShiftScheduleFilters);
+            $currentShiftSchedules = Fractal::collection($currentShiftSchedules, ShiftScheduleListTransformer::class)['data'];
 
-            $shift = $shift ? Fractal::item($shift, ShiftItemTransformer::class) : $shift;
+            $currentShift = $currentShift ? Fractal::item($currentShift, ShiftItemTransformer::class) : $currentShift;
+        }
+
+        $hasUpcomingShift = $employee->upcoming_employee_shift_id ?? null;
+
+        if($hasUpcomingShift){
+
+            $upcomingEmployeeShiftHydrated = App::make(EmployeeShiftRepository::class)->hydrateItem([
+                'start_date' => $employee->upcoming_shift_start_date,
+                'stated_shift_end_date' => $employee->upcoming_shift_stated_shift_end_date,
+                'end_date' => $employee->upcoming_shift_end_date,
+            ]);
+
+            $upcomingEmployeeShiftAssignment = Fractal::item($upcomingEmployeeShiftHydrated, EmployeeShiftItemTransformer::class);
+
+            $upcomingShift = App::make(ShiftRepository::class)->model()::query()->find($employee->upcoming_shift_id);
+            $upcomingShiftScheduleFilters = (object)[
+                'shift_id' => $upcomingShift->id
+            ];
+            $upcomingShiftSchedules = App::make(ShiftScheduleRepository::class)->list($upcomingShiftScheduleFilters);
+            $upcomingShiftSchedules = Fractal::collection($upcomingShiftSchedules, ShiftScheduleListTransformer::class)['data'];
+
+            $upcomingShift = $upcomingShift ? Fractal::item($upcomingShift, ShiftItemTransformer::class) : $upcomingShift;
         }
 
         $payrollGroup = $employee->payFrequency ? Fractal::item($employee->payFrequency, PayFrequencyItemTransformer::class) : null;
@@ -78,20 +101,36 @@ class ListTransformer extends TransformerAbstract
             'full_name' => $employee->full_name,
             'gender' => $employee->gender?->toArray(),
             'marital_status' => $employee->marital_status?->toArray(),
-            'department' => $employee->departments->first(),
-            'designation' => $employee->designation,
+            'department' => $employee->department_employee_id
+                ? [
+                    'name' => $employee->department_name,
+                    'assignment_type' => DepartmentEmployeeAssignmentType::tryFrom($employee->department_assignment_type)?->toArray()
+                ] : null,
+            'designation' => $employee->designation_id
+                ? ['name' => $employee->designation_name]
+                : null,
             'manager' => $employee->manager,
             'pay_frequency_id' => $employee->pay_frequency_id,
             'payroll_group' => $payrollGroup,
             'contact' => $employee->contact,
             'current_employment_profile' => $currentEmploymentProfile,
             'user' => $employeeUser,
-            'has_shift' => boolval($employeeModelHasEmployeeShiftId),
-            ...($employeeModelHasEmployeeShiftId ? [
-                'shift' => $shift,
-                'shift_schedules' => $shiftSchedules,
-                'shift_assignment' => $employeeShiftAssignment
-            ] : [])
+            'has_current_shift' => boolval($hasCurrentShift),
+            'current_shift' => [
+                ...($hasCurrentShift ? [
+                    'shift' => $currentShift,
+                    'shift_schedules' => $currentShiftSchedules,
+                    'shift_assignment' => $currentEmployeeShiftAssignment
+                ] : [])
+            ],
+            'has_upcoming_shift' => boolval($hasUpcomingShift),
+            'upcoming_shift' => [
+                ...($hasUpcomingShift ? [
+                    'shift' => $upcomingShift,
+                    'shift_schedules' => $upcomingShiftSchedules,
+                    'shift_assignment' => $upcomingEmployeeShiftAssignment
+                ] : [])
+            ]
         ];
     }
 }

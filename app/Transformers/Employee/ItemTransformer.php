@@ -27,7 +27,7 @@ class ItemTransformer extends TransformerAbstract
             'pay_frequency_id' => $employee->pay_frequency_id,
             'payroll_group' => $payrollGroup,
             'number' => $employee->number,
-            'full_name' => $employee->full_name,
+            'full_name' => $employee->full_name_attribute,
             'given_name' => $employee->given_name,
             'middle_name' => $employee->middle_name,
             'family_name' => $employee->family_name,

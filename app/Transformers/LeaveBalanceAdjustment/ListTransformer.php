@@ -3,7 +3,6 @@
 namespace App\Transformers\LeaveBalanceAdjustment;
 
 use App\Facades\Fractal;
-use App\Models\Employee;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Transformers\LeaveType\ItemTransformer as LeaveTypeItemTransformer;
@@ -13,8 +12,6 @@ class ListTransformer extends TransformerAbstract
 {
     public function transform(LeaveBalanceAdjustment $leaveBalanceAdjustment): array
     {
-        $employee = Employee::query()->find($leaveBalanceAdjustment->employee_id);
-
         $leaveType = LeaveType::query()->find($leaveBalanceAdjustment->leave_type_id);
 
         $leaveType = $leaveType ? Fractal::item($leaveType, LeaveTypeItemTransformer::class) : $leaveType;
@@ -29,11 +26,10 @@ class ListTransformer extends TransformerAbstract
             'balance' => $leaveBalanceAdjustment->balance,
             'remarks' => $leaveBalanceAdjustment->remarks,
             'effective_date' => $leaveBalanceAdjustment->effective_date->toDateString(),
+            'effective_date_readable' => $leaveBalanceAdjustment->effective_date->format('M j, Y'),
             'employee' => [
-                'number' => $employee->number,
-                'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
+                'number' => $leaveBalanceAdjustment->employee_number,
+                'full_name' => $leaveBalanceAdjustment->employee_full_name,
             ],
             'leave_type' => $leaveType
         ];

@@ -41,7 +41,7 @@ class EmployeeShiftController extends Controller
             $filters = json_decode($request->get('filters'));
 
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters),
+                $this->repository->paginate($filters, ['current_employment_profile']),
                 ListTransformer::class
             ));
         }

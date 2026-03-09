@@ -50,6 +50,7 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "employee_sub.number AS employee_number",
+                "employee_sub.full_name AS employee_full_name",
 
                 "leaves.id AS id",
                 "leaves.ulid AS ulid",
