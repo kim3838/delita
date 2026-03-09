@@ -174,7 +174,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         return $queryBuilder;
     }
 
-    public function paginate($filters, $relations): LengthAwarePaginator
+    public function paginate($filters, $relations = []): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'leave_requests.date_requested', 'direction' => 'DESC'],

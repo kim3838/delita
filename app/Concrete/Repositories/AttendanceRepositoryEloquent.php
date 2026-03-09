@@ -73,6 +73,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
             })
             ->select([
                 "employee_sub.number AS employee_number",
+                "employee_sub.full_name AS employee_full_name",
                 "employee_sub.company_id AS employee_company_id",
 
                 "attendances.id AS id",
