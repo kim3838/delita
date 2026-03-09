@@ -81,7 +81,7 @@ class PreGeneratePayrollController extends Controller
                 if(true || $debugEnabled){
 
                     _debug([
-                        'Pre-generate payroll check' => $employee->number . ' ' .$employee->full_name,
+                        'Pre-generate payroll check' => $employee->number . ' ' .$employee->full_name_attribute,
                         'Date' => $payrollHydration->start_date->toDateString(),
                         'Has final pay before payroll start date' => $hasFinalPayBeforeDate,
                     ]);
