@@ -23,7 +23,7 @@ class LeaveController extends Controller
             $filters = json_decode($request->get('filters'));
             $relations = [];
             $orders = [
-                ['field' => 'leaves.date', 'direction' => 'DESC'],
+                ['field' => 'leaves.date', 'direction' => 'ASC'],
             ];
 
             return ResponseJson::successfulResponse(Fractal::collection(

@@ -101,7 +101,9 @@ class ListTransformer extends TransformerAbstract
 
             'company_timezone' => $leaveRequest->company_timezone,
             'date_from' => $leaveRequest->date_from->toDateString(),
+            'date_from_readable' => $leaveRequest->date_from->format('M j, Y'),
             'date_to' => $leaveRequest->date_to->toDateString(),
+            'date_to_readable' => $leaveRequest->date_to->format('M j, Y'),
             'remarks' => $leaveRequest->remarks,
             'status_summary' => $leaveRequest->status_summary?->toArray(),
 

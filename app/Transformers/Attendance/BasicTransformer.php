@@ -13,6 +13,7 @@ class BasicTransformer extends TransformerAbstract
             'id' => $attendance->id,
             'ulid' => $attendance->ulid,
             'date' => $attendance->date->toDateString(),
+            'date_readable' => $attendance->date->format('M j, Y'),
             'first_in' => $attendance->first_in->format('Y-m-d H:i'),
             'lunch_out' => $attendance->lunch_out?->format('Y-m-d H:i'),
             'lunch_in' => $attendance->lunch_in?->format('Y-m-d H:i'),

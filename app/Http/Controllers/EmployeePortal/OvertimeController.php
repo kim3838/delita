@@ -22,7 +22,7 @@ class OvertimeController extends Controller
             $filters = json_decode($request->get('filters'));
             $relations = [];
             $orders = [
-                ['field' => 'date', 'direction' => 'DESC'],
+                ['field' => 'date', 'direction' => 'ASC'],
             ];
 
             return ResponseJson::successfulResponse(Fractal::collection(
