@@ -23,6 +23,7 @@ use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchabl
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Carbon\Carbon;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 
@@ -302,7 +303,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
 
     /**
      *
-     * @throws UnexpectedException
+     * @throws UnexpectedException|BindingResolutionException
      */
     public function resolvedData($data, $companyId): array
     {
