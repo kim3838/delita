@@ -25,8 +25,10 @@ class LeaveRequestController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
+            $relations = ['department', 'designation'];
+
             return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters),
+                $this->repository->paginate($filters, $relations),
                 ListTransformer::class
             ));
         }

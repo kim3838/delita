@@ -23,7 +23,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         return LeaveRequest::class;
     }
 
-    public function baseQueryBuilder($filters, $orders = []): QueryBuilder
+    public function baseQueryBuilder($filters, $orders = [], $relations = []): QueryBuilder
     {
         $employeeRepositoryFilter = clone $filters;
 
@@ -46,7 +46,7 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         unset($requestedByCompanyUserRepositoryFilter->user_ids);
         unset($requestedByCompanyUserRepositoryFilter->search);
 
-        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, []);
+        $employeeQueryBuilder = App::make(EmployeeRepository::class)->baseQueryBuilder($employeeRepositoryFilter, [], $relations);
 
         $requestedByCompanyUserQueryBuilder = App::make(CompanyUserRepository::class)->baseQueryBuilder($requestedByCompanyUserRepositoryFilter, []);
 
@@ -84,6 +84,18 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
                  **/
                 "employee_sub.number AS employee_number",
                 "employee_sub.full_name AS employee_full_name",
+
+                ...(in_array('department', $relations) ? [
+                    DB::raw("employee_sub.department_employee_id AS employee_department_employee_id"),
+                    DB::raw("employee_sub.department_assignment_type AS employee_department_assignment_type"),
+                    DB::raw("employee_sub.department_id AS employee_department_id"),
+                    DB::raw("employee_sub.department_name AS employee_department_name"),
+                ] : []),
+
+                ...(in_array('designation', $relations) ? [
+                    DB::raw("employee_sub.designation_id AS employee_designation_id"),
+                    DB::raw("employee_sub.designation_name AS employee_designation_name"),
+                ] : []),
 
                 /**
                  * Leave
@@ -162,13 +174,13 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         return $queryBuilder;
     }
 
-    public function paginate($filters): LengthAwarePaginator
+    public function paginate($filters, $relations): LengthAwarePaginator
     {
         $orders = [
             ['field' => 'leave_requests.date_requested', 'direction' => 'DESC'],
         ];
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 
@@ -177,15 +189,15 @@ class LeaveRequestRepositoryEloquent extends BaseRepositoryEloquent implements L
         return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function list($filters): Collection
+    public function list($filters, $relations = []): Collection
     {
-        $queryBuilder = $this->baseQueryBuilder($filters);
+        $queryBuilder = $this->baseQueryBuilder($filters, [], $relations);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
-    public function showFromFilters($filters)
+    public function showFromFilters($filters, $relations = [])
     {
-        return $this->list($filters)->first();
+        return $this->list($filters, $relations)->first();
     }
 }

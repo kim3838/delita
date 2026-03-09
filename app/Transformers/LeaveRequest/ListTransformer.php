@@ -4,6 +4,7 @@ namespace App\Transformers\LeaveRequest;
 
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
@@ -67,11 +68,17 @@ class ListTransformer extends TransformerAbstract
             'row_number' => $leaveRequest->row_number,
 
             'employee' => [
-                'id' => $employee->id,
-                'number' => $employee->number,
-                'full_name' => $employee->full_name,
-                'department' => $employee->departments->first(),
-                'designation' => $employee->designation,
+                'id' => $leaveRequest->employee_id,
+                'number' => $leaveRequest->employee_number,
+                'full_name' => $leaveRequest->employee_full_name,
+                'employee_department' => $leaveRequest->employee_department_employee_id
+                    ? [
+                        'name' => $leaveRequest->employee_department_name,
+                        'assignment_type' => DepartmentEmployeeAssignmentType::tryFrom($leaveRequest->employee_department_assignment_type)?->toArray()
+                    ] : null,
+                'employee_designation' => $leaveRequest->employee_designation_id
+                    ? ['name' => $leaveRequest->employee_designation_name]
+                    : null,
             ],
 
             'shift' => [

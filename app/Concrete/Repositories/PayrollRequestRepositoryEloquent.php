@@ -186,9 +186,12 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
 
             $payrollRequest = $this->show($id);
 
-            $payrollRequest->payroll->update([
-                'status' => PayrollStatus::DRAFT->value,
-            ]);
+            if(!in_array($payrollRequest->payroll->status, [PayrollStatus::COMPLETED])){
+
+                $payrollRequest->payroll->update([
+                    'status' => PayrollStatus::DRAFT->value,
+                ]);
+            }
 
             $this->delete($id);
         }

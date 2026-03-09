@@ -2,20 +2,12 @@
 
 namespace App\Http\Requests\PayrollRequest;
 
-use App\Blueprint\PayrollServiceInterface;
-use App\Blueprint\Repositories\PayrollRepository;
 use App\Enums\PayrollStatus;
-use App\Models\Company;
-use App\Models\Employee;
-use App\Models\LeaveRequest;
-use App\Models\LeaveType;
+use App\Models\Payroll;
 use App\Models\PayrollRequest;
 use App\Traits\HasApproval;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
 use Illuminate\Validation\Validator;
 
 class BaseStorePayrollRequestRequest extends FormRequest
@@ -42,11 +34,20 @@ class BaseStorePayrollRequestRequest extends FormRequest
 
             $payrollRequestAlreadyExists = PayrollRequest::query()->where('payroll_id', $this->input('payroll_id'))->first();
 
+            $payrollIsCompleted = Payroll::query()->where('id', $this->input('payroll_id'))->where('status', PayrollStatus::COMPLETED->value)->first();
+
             if ($payrollRequestAlreadyExists) {
 
                 $validator->errors()->add(
                     'payroll_request',
                     'Payroll request already exists.'
+                );
+            }
+
+            if ($payrollIsCompleted) {
+                $validator->errors()->add(
+                    'payroll_request',
+                    'Payroll is already completed.'
                 );
             }
         });
