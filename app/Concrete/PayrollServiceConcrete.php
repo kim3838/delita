@@ -2,6 +2,7 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
@@ -30,6 +31,7 @@ use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\Employee;
+use App\Models\EmployeeShift;
 use App\Models\Hydrations\Payroll\PayrollPayload;
 use App\Models\PayFrequency as PayFrequencyModel;
 use App\Models\Payroll;
@@ -394,11 +396,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             ]);
 
             $employee = app(EmployeeRepository::class)->hydrateItem($employee);
-            $employeeShift = $employee->shifts->first();
 
             list(
-                $periodDaysSummary, $salaryStatementAttendancesArray
-            ) = $this->buildEmployeeSalaryStatementAttendances($employee, $employeeShift);
+                $employeeService, $employeeShifts, $periodDaysSummary, $salaryStatementAttendancesArray
+            ) = $this->buildEmployeeSalaryStatementAttendances($employee);
 
             /**
              * Set salary statement period days summary
@@ -410,6 +411,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 $salaryStatementAttendance = $salaryStatement->salaryStatementAttendances()->create($salaryStatementAttendanceArray);
 
                 if($salaryStatementAttendance->day_type == SalaryStatementAttendanceDayType::DAY_OFF) continue;
+
+                $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $salaryStatementAttendance->date);
+
+                if(empty($employeeShiftPivot)) continue;
+
+                $employeeShift = $employeeShiftPivot->shift;
 
                 $attendanceArray = $salaryStatementAttendance->attendance?->toArray();
                 $attendanceDetailsArray = $salaryStatementAttendance->attendance?->details?->toArray();
@@ -478,6 +485,9 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $employee = $salaryStatementCursor->employee;
 
+            $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+            $employeeShifts = EmployeeShift::where('employee_id', $employee->id)->get();
+
             foreach($salaryStatementCursor->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
 
                 /**
@@ -497,12 +507,18 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ];
                 $employeePerDayableCompensations = app(EmployeePayrollComponentRepository::class)->list($employeePayrollComponentFilters);
 
+                $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $salaryStatementAttendance->date);
+
+                if(empty($employeeShiftPivot)) continue;
+
+                $employeeShift = $employeeShiftPivot->shift;
+
                 /**
                  * Create pay items for each salary statement attendance
                  **/
                 $this->createSalaryStatementAttendancePayItems(
                     $salaryStatementAttendance,
-                    $employee->shifts->first(),
+                    $employeeShift,
                     $employeePerDayableCompensations,
                     $companyPerDayAbleGlobalCompensations
                 );
@@ -1008,9 +1024,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     /**
      * @throws UnexpectedException
      */
-    public function buildEmployeeSalaryStatementAttendances(Employee $employee, ?Shift $employeeShift): array
+    public function buildEmployeeSalaryStatementAttendances(Employee $employee): array
     {
         $debugEnabled = false;
+
+        $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+        $employeeShifts = EmployeeShift::where('employee_id', $employee->id)->get();
 
         $periodDaysSummary = [
             'total_days' => 0,
@@ -1060,7 +1079,11 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         foreach($datePeriod as $date){
 
-            if(empty($employeeShift)) continue;
+            $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+
+            if(empty($employeeShiftPivot)) continue;
+
+            $employeeShift = $employeeShiftPivot->shift;
 
             $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
             $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
@@ -1175,6 +1198,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
 
         return [
+            $employeeService,
+            $employeeShifts,
             $periodDaysSummary,
             $salaryStatementAttendances
         ];

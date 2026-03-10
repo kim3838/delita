@@ -2,6 +2,7 @@
 
 namespace App\Actions\Formula;
 
+use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\LeaveRepository;
@@ -22,6 +23,7 @@ use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Compensation;
+use App\Models\EmployeeShift;
 use App\Traits\HasPayableDay;
 use App\Traits\WorkPeriod;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
@@ -460,6 +462,9 @@ class Standard13thMonthFormula
 
     }
 
+    /**
+     * @throws UnexpectedException
+     */
     public function projectBasicPayOfTheRestOfCalendarYear(SalaryStatementContext $context): array
     {
         $debugEnabled = false;
@@ -472,10 +477,16 @@ class Standard13thMonthFormula
         //Set company night hours
         $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
 
+        $employeeService = app(EmployeeServiceInterface::class, [$context->employee]);
+        $employeeShifts = EmployeeShift::where('employee_id', $context->employee->id)->get();
+
         $payrollService = app(PayrollServiceInterface::class, [$context->company]);
         $payrollService->setCustomDate($context->payroll->end_date);
+
         $payrollPayFrequency = $context->payroll->pay_frequency;
+
         $currentUpToEndOfYear = $payrollService->getCurrentUpToEndOfYear($context->company->id, $context->payroll->year, [$payrollPayFrequency->value]);
+
         $nextPayrolls = Fractal::collection($currentUpToEndOfYear['next'], PayrollPayloadListTransformer::class)['data'];
         foreach($nextPayrolls as $nextPayroll){
             _debug([
@@ -488,7 +499,6 @@ class Standard13thMonthFormula
         }
 
         $nextPayrolls = $currentUpToEndOfYear['next'];
-        $employeeShift = $context->employee->shifts->first();
 
         $employeeDatePeriodUnpaidLeaves = app(LeaveRepository::class)
             ->model()::join('leave_types', 'leave_types.id', '=', 'leaves.leave_type_id')
@@ -512,16 +522,11 @@ class Standard13thMonthFormula
 
             foreach($datePeriod as $date){
 
-                if(empty($employeeShift))continue;
+                $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
 
-                //Skip if employee shift is not assigned to a date range
-                if($employeeShift->pivot->stated_shift_end_date){
-                    if(!$date->between($employeeShift->pivot->start_date, $employeeShift->pivot->end_date)){
-                        continue;
-                    }
-                }
+                if(empty($employeeShiftPivot))continue;
 
-                if(!$employeeShift->pivot->stated_shift_end_date && $date->lt($employeeShift->pivot->start_date))continue;
+                $employeeShift = $employeeShiftPivot->shift;
 
                 $unpaidLeaves = collect($employeeDatePeriodUnpaidLeaves)->where('date', $date->toDateString());
                 $hasUnpaidLeave = $unpaidLeaves->isNotEmpty();
@@ -555,6 +560,9 @@ class Standard13thMonthFormula
 
                 $startingDateHolidayType = $this->getDateHolidayType($date->toDateString());
                 $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+
+                $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+                $employeeShift = $employeeShiftPivot->shift;
 
                 $this->setShift($employeeShift);
                 $this->setAttendanceSchedule($date);

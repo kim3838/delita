@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\AttendanceSplitterInterface;
+use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
@@ -13,6 +14,7 @@ use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Models\Company;
+use App\Models\EmployeeShift;
 use App\Traits\WorkPeriod;
 use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
@@ -73,7 +75,13 @@ class AutoCreateAttendanceConcrete
         foreach($employeeLazyCollection as $employee){
 
             $employee = app(EmployeeRepository::class)->hydrateItem($employee);
-            $employeeShift = $employee->shifts->first();
+            $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+            $employeeShifts = EmployeeShift::where('employee_id', $employee->id)->get();
+
+            if(empty($employee)){
+                throw new UnexpectedException("Employee not found: C.Auto create attendance [" . __LINE__ . "]");
+            }
+
             $employeeDatePeriodLeaves = app(LeaveRepository::class)
                 ->model()::where('employee_id', $employee->id)
                 ->whereBetween('date', [$dateFrom->toDateString(), $dateTo->toDateString()])
@@ -94,61 +102,33 @@ class AutoCreateAttendanceConcrete
                 if($isDateOnAnyPayrollStatementAttendance){
                     $errors[] = [
                         'employee_number' => $employee->number,
-                        'employee_full_name' => $employee->fullName,
+                        'employee_full_name' => $employee->full_name,
                         'date' => $date->toDateString(),
                         'error' => 'Date is payroll generated.'
                     ];
                     continue;
                 }
 
-                //Skip if employee is not assigned to any shift
-                if(empty($employeeShift)){
+                $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+
+                //Skip if employee is not assigned to any shift on this date
+                if(empty($employeeShiftPivot)){
                     $errors[] = [
                         'employee_number' => $employee->number,
-                        'employee_full_name' => $employee->fullName,
+                        'employee_full_name' => $employee->full_name,
                         'date' => $date->toDateString(),
                         'error' => 'Shift not found.'
                     ];
                     continue;
                 }
 
-                //Skip if employee shift is not assigned to a date range
-                if($employeeShift->pivot->stated_shift_end_date){
-
-                    if(!$date->between($employeeShift->pivot->start_date, $employeeShift->pivot->end_date)){
-                        $errors[] = [
-                            'employee_number' => $employee->number,
-                            'employee_full_name' => $employee->fullName,
-                            'date' => $date->toDateString(),
-                            'error' => 'Date is not in date range of employee shift assignment.'
-                        ];
-                        continue;
-                    }
-                }
-
-                if(!$employeeShift->pivot->stated_shift_end_date && $date->lt($employeeShift->pivot->start_date)) {
-                    $errors[] = [
-                        'employee_number' => $employee->number,
-                        'employee_full_name' => $employee->fullName,
-                        'date' => $date->toDateString(),
-                        'error' => 'Date is not in date range of employee shift assignment.'
-                    ];
-                    continue;
-                }
+                $employeeShift = $employeeShiftPivot->shift;
 
                 $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
                 $hasLeave = $leave->isNotEmpty();
 
                 //Skip if employee has a leave on this date
-                if($hasLeave){
-                    $errors[] = [
-                        'employee_number' => $employee->number,
-                        'employee_full_name' => $employee->fullName,
-                        'date' => $date->toDateString(),
-                        'error' => 'Employee is on leave.'
-                    ];
-                    continue;
-                }
+                if($hasLeave) continue;
 
                 $this->setShift($employeeShift);
                 $this->setAttendanceSchedule($date);
@@ -205,14 +185,10 @@ class AutoCreateAttendanceConcrete
                     }
                 }
 
-                if(empty($employeeShift->pivot)){
-                    throw new UnexpectedException("Attendance shift assignment not found: C.Auto create attendance [" . __LINE__ . "]");
-                }
-
                 $shiftScheduleHydrated = $shiftSchedule->hydrateItem($this->attendanceSchedule);
 
                 $shiftDetail = [
-                    ...Fractal::item($employeeShift->pivot, EmployeeShiftPatchableTransformer::class),
+                    ...Fractal::item($employeeShiftPivot, EmployeeShiftPatchableTransformer::class),
                     ...Fractal::item($this->shift, ShiftPatchableTransformer::class),
                     ...Fractal::item($shiftScheduleHydrated, ShiftSchedulePatchableTransformer::class)
                 ];

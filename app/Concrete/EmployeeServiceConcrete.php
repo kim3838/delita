@@ -8,8 +8,10 @@ use App\Enums\EmploymentStatus;
 use App\Enums\SalaryStatementType;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\EmployeeShift;
 use App\Models\Payroll;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class EmployeeServiceConcrete implements EmployeeServiceInterface
 {
@@ -111,5 +113,23 @@ class EmployeeServiceConcrete implements EmployeeServiceInterface
             $hasAtLeastOneEmployment,
             $hasEmploymentProfileWithinPayrollPeriod
         ];
+    }
+
+    public function getEmployeeShiftFromEmployeeShiftCollection(Collection $employeeShifts, Carbon $date): ?EmployeeShift
+    {
+        $employeeShiftByDate = $employeeShifts->filter(function ($employeeShift) use ($date){
+
+            $dateIsWithinRange = $employeeShift?->stated_shift_end_date &&
+                $employeeShift?->start_date?->lte($date) && $employeeShift?->end_date?->gte($date);
+
+            $dateIsEqualOrAfterNonEndStatedShift = !$employeeShift?->stated_shift_end_date &&
+                $date?->gte($employeeShift->start_date);
+
+            return $dateIsWithinRange || $dateIsEqualOrAfterNonEndStatedShift;
+        });
+
+        $employeeShiftPivot = $employeeShiftByDate->first();
+
+        return $employeeShiftPivot instanceof EmployeeShift ? $employeeShiftPivot : null;
     }
 }
