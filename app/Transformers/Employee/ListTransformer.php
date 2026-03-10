@@ -101,6 +101,8 @@ class ListTransformer extends TransformerAbstract
             'full_name' => $employee->full_name,
             'gender' => $employee->gender?->toArray(),
             'marital_status' => $employee->marital_status?->toArray(),
+            'birth_date' => $employee->birth_date?->toDateString(),
+            'birth_date_readable' => $employee->birth_date?->format('M j, Y') ?? '--',
             'department' => $employee->department_employee_id
                 ? [
                     'name' => $employee->department_name,
