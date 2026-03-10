@@ -58,6 +58,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
                  * Shift
                  **/
                 "attendance_sub.shift_max_overtime AS attendance_shift_max_overtime",
+                "attendance_sub.shift_holiday_policy AS attendance_shift_holiday_policy",
 
                 /**
                  * Shift Schedule
