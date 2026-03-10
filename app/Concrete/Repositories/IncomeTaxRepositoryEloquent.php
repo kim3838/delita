@@ -21,8 +21,8 @@ class IncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implements Inco
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("income_taxes.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('income_taxes.company_id', $filters->company_id ?? null);
             })
             ->when(isset($filters->assignable), function ($builder) use($filters){
                 $builder->where(DB::raw("income_taxes.assignable"), intval($filters->assignable));

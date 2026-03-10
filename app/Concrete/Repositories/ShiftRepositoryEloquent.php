@@ -53,8 +53,8 @@ class ShiftRepositoryEloquent extends BaseRepositoryEloquent implements ShiftRep
         ];
 
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where('shifts.company_id', $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('shifts.company_id', $filters->company_id ?? null);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($query) use ($value) {

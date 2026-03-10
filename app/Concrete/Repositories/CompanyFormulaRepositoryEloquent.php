@@ -70,8 +70,8 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
         $queryBuilder = $this->model::query()->getQuery()
             ->leftJoin('formulas', 'formulas.id', '=', 'company_formula.formula_id')
             ->leftJoin('companies', 'companies.id', '=', 'company_formula.company_id')
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where('companies.id', $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('companies.id', $filters->company_id ?? null);
             })
             ->when(
                 isset($filters->formulable_type) && Formulable::tryFrom($filters->formulable_type) !== null,

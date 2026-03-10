@@ -56,8 +56,8 @@ class DepartmentRepositoryEloquent extends BaseRepositoryEloquent implements Dep
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("departments.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('departments.company_id', $filters->company_id ?? null);
             })
             ->when(isset($filters->is_parent), function ($builder) use($filters){
 

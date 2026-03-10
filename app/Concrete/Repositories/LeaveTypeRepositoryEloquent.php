@@ -81,8 +81,8 @@ class LeaveTypeRepositoryEloquent extends BaseRepositoryEloquent implements Leav
         ];
 
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where('leave_types.company_id', $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('leave_types.company_id', $filters->company_id ?? null);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($query) use ($value) {

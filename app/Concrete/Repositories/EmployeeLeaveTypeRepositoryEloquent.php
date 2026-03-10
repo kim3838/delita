@@ -91,11 +91,11 @@ class EmployeeLeaveTypeRepositoryEloquent extends BaseRepositoryEloquent impleme
         $queryBuilder = $this->model::query()->getQuery()
             ->join('leave_types', 'leave_types.id', '=', 'employee_leave_type.leave_type_id')
             ->join('companies', 'companies.id', '=', 'leave_types.company_id')
-            ->when(property_exists($filters, 'employee_id'), function ($builder) use($filters){
-                $builder->where('employee_leave_type.employee_id', $filters->employee_id ?? null);
-            })
             ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
                 $builder->where('leave_types.company_id', $filters->company_id ?? null);
+            })
+            ->when(property_exists($filters, 'employee_id'), function ($builder) use($filters){
+                $builder->where('employee_leave_type.employee_id', $filters->employee_id ?? null);
             })
             ->when(!empty($filters->leave_type_id) && !is_array($filters->leave_type_id), function ($builder) use($filters){
                 $builder->where('employee_leave_type.leave_type_id', $filters->leave_type_id);

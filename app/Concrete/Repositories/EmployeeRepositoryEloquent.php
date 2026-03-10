@@ -75,8 +75,8 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                     $join->on('employees.id', '=', 'upcoming_shift_sub.employee_id');
                 });
             })
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("employees.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('employees.company_id', $filters->company_id ?? null);
             })
             ->when(!empty($filters->employee_ids) && is_array($filters->employee_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.id"), $filters->employee_ids);

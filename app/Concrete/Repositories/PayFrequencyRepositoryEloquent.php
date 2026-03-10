@@ -73,8 +73,8 @@ class PayFrequencyRepositoryEloquent extends BaseRepositoryEloquent implements P
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("pay_frequencies.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('pay_frequencies.company_id', $filters->company_id ?? null);
             })
             ->when(!empty($filters->frequency_types) && is_array($filters->frequency_types), function ($builder) use ($filters) {
                 $builder->whereIn('pay_frequencies.type', $filters->frequency_types);

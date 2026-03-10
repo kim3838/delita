@@ -37,8 +37,8 @@ class EmployeeGroupRepositoryEloquent extends GroupRepositoryEloquent implements
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("groups.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('groups.company_id', $filters->company_id ?? null);
             })
             ->where("groups.type", GroupType::EMPLOYEE)
             ->when($filters->search ?? false, function($builder, $value){

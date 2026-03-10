@@ -49,11 +49,11 @@ class HolidayRepositoryEloquent extends BaseRepositoryEloquent implements Holida
         ];
 
         $queryBuilder = $this->model::query()->getQuery()
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('holidays.company_id', $filters->company_id ?? null);
+            })
             ->when(!empty($filters->id) && is_array($filters->id), function ($builder) use ($filters) {
                 $builder->whereIn('holidays.id', $filters->id);
-            })
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where('holidays.company_id', $value);
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($query) use ($value) {

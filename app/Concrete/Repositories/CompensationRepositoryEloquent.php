@@ -21,8 +21,8 @@ class CompensationRepositoryEloquent extends BaseRepositoryEloquent implements C
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("compensations.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('compensations.company_id', $filters->company_id ?? null);
             })
             ->when(isset($filters->assignable), function ($builder) use($filters){
                 $builder->where(DB::raw("compensations.assignable"), intval($filters->assignable));
