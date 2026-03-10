@@ -263,14 +263,17 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
         ];
 
         $queryBuilder = $this->model::query()->getQuery()
-            ->when($filters->company_id ?? false, function ($builder, $value) {
-                $builder->where(DB::raw("employees.company_id"), $value);
+            ->when(property_exists($filters, 'company_id'), function ($builder) use($filters){
+                $builder->where('employees.company_id', $filters->company_id ?? null);
+            })
+            ->when(!empty($filters->id) && !is_array($filters->id), function ($builder) use($filters){
+                $builder->where('employees.id', $filters->id);
             })
             ->when(!empty($filters->id) && is_array($filters->id), function ($builder) use ($filters) {
                 $builder->whereIn('employees.id', $filters->id);
             })
-            ->when(!empty($filters->except_id) && is_array($filters->except_id), function ($builder) use ($filters) {
-                $builder->whereNotIn('employees.id', $filters->except_id);
+            ->when(!empty($filters->except_ids) && is_array($filters->except_ids), function ($builder) use ($filters) {
+                $builder->whereNotIn('employees.id', $filters->except_ids);
             })
             ->when($filters->search ?? false, function($builder, $value){
                 $builder->whereRaw("CONCAT_WS(' ', family_name, middle_name, given_name) LIKE ?", ["%{$value}%"])
