@@ -53,6 +53,8 @@ class EmployeeLeaveTypeController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
+            $this->resolveFilterValueFromRequestFacadeIfNotSet($filters, 'company_id');
+
             return ResponseJson::successfulResponse([
                 'selection' => Fractal::collection(
                     $this->repository->selection($filters),
