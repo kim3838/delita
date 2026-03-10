@@ -2,12 +2,15 @@
 
 namespace App\Traits;
 
+use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
+use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\EmployeeShift;
 use App\Models\Leave;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use Carbon\CarbonPeriod;
@@ -35,6 +38,9 @@ trait HasLeave
         })->values()->toArray();
     }
 
+    /**
+     * @throws UnexpectedException
+     */
     public function leaveInquiryMap($companyId, $employeeId, $shiftId, CarbonPeriod $datePeriod): array
     {
         $this->setShift($shiftId);
@@ -96,19 +102,78 @@ trait HasLeave
         $dayOffOrHoliday = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
         $hasLeave = $leaves->where('date', $date->toDateString())->isNotEmpty();
 
-        $message = $dayOff ? 'Day off' :
-            ($attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff ? 'Holiday' :
-                ($hasLeave ? 'Leave claimed' : 'Claimable'));
-
         $payrollService = app(PayrollServiceInterface::class, [Company::query()->find($companyId)]);
         $employee = Employee::query()->find($employeeId);
 
-        $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
-        $message = $isDateOnAnyPayrollStatementAttendance ? 'Payroll generated' : $message;
-
-        return [
-            'message' => $message,
-            'is_claimable' => !$dayOffOrHoliday && !$hasLeave && !$isDateOnAnyPayrollStatementAttendance,
+        $result = [
+            'message' => 'Claimable',
+            'is_claimable' => true,
         ];
+
+        /**
+         * Validate if the shift assignment is valid
+         **/
+        $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+        $employeeShifts = EmployeeShift::where('employee_id', $employee->id)
+            ->where('shift_id', $this->shift->id)->get();
+
+        $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+
+        if(empty($employeeShiftPivot)){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Out of shift schedule';
+        }
+
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if date is on any payroll statement attendance
+         **/
+        $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+        if($isDateOnAnyPayrollStatementAttendance){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Payroll generated';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if the date is a day off
+         **/
+        if($dayOff){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Day off';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if the date is a holiday and shift holiday policy is a day off
+         **/
+        if($attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Holiday';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if date has leave claim
+         **/
+        if($hasLeave){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Leave claimed';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if attendance exists
+         **/
+        $attendance = Attendance::query()->where('employee_id', $employeeId)
+            ->where('date', $date->toDateString())
+            ->where('shift_id', $this->shift->id)->first();
+        if(!empty($attendance)){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Attendance exists';
+        }
+
+        return $result;
     }
 }
