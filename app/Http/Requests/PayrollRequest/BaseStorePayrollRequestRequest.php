@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\PayrollRequest;
 
+use App\Blueprint\Repositories\PayrollRequestRepository;
 use App\Enums\PayrollStatus;
+use App\Enums\RequestApprovalStatus;
 use App\Models\Payroll;
 use App\Models\PayrollRequest;
 use App\Traits\HasApproval;
@@ -32,17 +34,26 @@ class BaseStorePayrollRequestRequest extends FormRequest
     {
         $validator->after(function ($validator) {
 
-            $payrollRequestAlreadyExists = PayrollRequest::query()->where('payroll_id', $this->input('payroll_id'))->first();
+            $pendingPayrollRequestFilters = (object)[
+                'payroll_ids' => [$this->input('payroll_id')],
+                'company_id' => $this->input('company_id'),
+                'statuses' => [RequestApprovalStatus::PENDING->value]
+            ];
 
-            $payrollIsCompleted = Payroll::query()->where('id', $this->input('payroll_id'))->where('status', PayrollStatus::COMPLETED->value)->first();
+            $pendingPayrollRequest = app(PayrollRequestRepository::class)->list($pendingPayrollRequestFilters)->first();
 
-            if ($payrollRequestAlreadyExists) {
+            if (!empty($pendingPayrollRequest)) {
 
                 $validator->errors()->add(
                     'payroll_request',
-                    'Payroll request already exists.'
+                    'Pending payroll request already exists.'
                 );
             }
+
+            $payrollIsCompleted = Payroll::query()
+                ->where('id', $this->input('payroll_id'))
+                ->where('status', PayrollStatus::COMPLETED->value)
+                ->first();
 
             if ($payrollIsCompleted) {
                 $validator->errors()->add(

@@ -65,6 +65,9 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
             ->when(!empty($filters->request_numbers) && is_array($filters->request_numbers), function ($builder) use ($filters) {
                 $builder->whereIn('payroll_requests.number', $filters->request_numbers);
             })
+            ->when(!empty($filters->payroll_ids) && is_array($filters->payroll_ids), function ($builder) use ($filters) {
+                $builder->whereIn('payroll_requests.payroll_id', $filters->payroll_ids);
+            })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
                     $clause->where('payroll_requests.number', 'LIKE', "%$value%");
