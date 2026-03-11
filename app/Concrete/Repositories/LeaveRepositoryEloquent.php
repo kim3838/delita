@@ -12,6 +12,7 @@ use App\Models\LeaveType;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
@@ -40,6 +41,9 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
             })
             ->when(!empty($filters->leave_type_ids) && is_array($filters->leave_type_ids), function ($builder) use ($filters) {
                 $builder->whereIn('leaves.leave_type_id', $filters->leave_type_ids);
+            })
+            ->when(!empty($filters->leave_ids) && is_array($filters->leave_ids), function ($builder) use ($filters) {
+                $builder->whereIn('leaves.id', $filters->leave_ids);
             })
             ->when((
                 (isset($filters->date_from) && Carbon::createFromFormat('Y-m-d', $filters->date_from)) &&
@@ -76,6 +80,20 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function list($filters, $relations = []): Collection
+    {
+        $orders = [
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+            ['field' => 'leaves.date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        return $this->hydrateCollection($queryBuilder->get(), $this->model());
     }
 
     public function store($attributes): array

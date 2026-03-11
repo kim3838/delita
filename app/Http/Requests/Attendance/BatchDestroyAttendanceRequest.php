@@ -51,7 +51,7 @@ class BatchDestroyAttendanceRequest extends FormRequest
                 if($isDateOnAnyPayrollStatementAttendance){
                     $validator->errors()->add(
                         $attendance->employee->number . $attendance->date->toDateString(),
-                        'Unable to delete ' . $attendance->employee->number . "'s " . $attendance->date->toDateString() . ', payroll generated.'
+                        'Unable to delete ' . $attendance->employee->number . "'s " . $attendance->date->toDateString() . ' attendance, payroll generated.'
                     );
                 }
             }
