@@ -54,6 +54,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'companies.address_line_1 as company_address_line_1',
                 'companies.address_line_2 as company_address_line_2',
                 'countries.name as country_name',
+                'countries.iso2 as country_iso2',
                 'companies.currency as company_currency',
                 'companies.timezone as company_timezone',
                 'company_user.assignment_type as assignment_type',
@@ -74,6 +75,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
 
         $queryBuilder = CompanyUser::query()->getQuery()
             ->leftJoin('companies', 'companies.id', '=', 'company_user.company_id')
+            ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
             ->when($filters->user_id ?? false, function ($builder, $value) {
                 $builder->where('company_user.user_id', $value);
             })
@@ -91,6 +93,7 @@ class AssociatedCompanyRepositoryEloquent extends BaseRepositoryEloquent impleme
                 'companies.name as company_name',
                 'companies.currency as company_currency',
                 'companies.timezone as company_timezone',
+                'countries.iso2 as country_iso2',
                 'company_user.assignment_type as assignment_type',
             ]);
 

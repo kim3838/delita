@@ -21,6 +21,9 @@ class SelectionTransformer extends TransformerAbstract
                 'ulid' => $model->ulid,
                 'currency' => $model->currency,
                 'timezone' => $model->timezone,
+                'country' => [
+                    'iso2' =>$model->country_iso2
+                ],
                 'account' => $account,
             ]
         ];

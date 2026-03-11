@@ -35,6 +35,9 @@ class SelectionTransformer extends TransformerAbstract
                 'assignment_type' => $model->assignment_type?->toArray(),
                 'is_employee' => $isEmployeeAtCompany,
                 'employee' => $employee,
+                'country' => [
+                    'iso2' =>$model->country_iso2
+                ],
                 'account' => $account,
             ]
         ];

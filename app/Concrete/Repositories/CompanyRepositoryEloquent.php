@@ -45,6 +45,7 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
                 'companies.address_line_2 as company_address_line_2',
                 'companies.name as company_name',
                 'countries.name as country_name',
+                'countries.iso2 as country_iso2',
                 'companies.currency as company_currency',
                 'companies.timezone as company_timezone',
             ]);
@@ -59,11 +60,13 @@ class CompanyRepositoryEloquent extends BaseRepositoryEloquent implements Compan
     public function selection($filters): Collection
     {
         $queryBuilder = $this->model::query()->getQuery()
+            ->leftJoin('countries', 'countries.id', '=', 'companies.country_id')
             ->when(!empty($filters->account_ids) && is_array($filters->account_ids), function ($builder) use ($filters) {
                 $builder->whereIn('companies.account_id', $filters->account_ids);
             })
             ->select([
                 'companies.*',
+                'countries.iso2 as country_iso2',
             ]);
 
         return $this->hydrateCollection($queryBuilder->get(), $this->model());
