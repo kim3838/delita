@@ -168,6 +168,7 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
                     'office_email' => $row['office_email'],
                     'family_name' => $row['family_name'],
                     'given_name' => $row['given_name'],
+                    'employable' => true
                 ]);
             }
 
