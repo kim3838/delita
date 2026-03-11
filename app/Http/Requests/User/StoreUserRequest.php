@@ -40,6 +40,7 @@ class StoreUserRequest extends FormRequest
             ],
             'status' => 'required|numeric',
             'timezone' => 'required|string',
+            'employable' => 'required|boolean',
             'role_ids' => 'array',
         ];
     }

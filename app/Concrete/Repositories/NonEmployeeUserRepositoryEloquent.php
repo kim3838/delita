@@ -24,6 +24,9 @@ class NonEmployeeUserRepositoryEloquent extends BaseRepositoryEloquent implement
                 $join->on(DB::raw("employees.user_id"), '=', DB::raw("users.id"))
                     ->where(DB::raw("employees.company_id"), '=', DB::raw("company_user.company_id"));
             })
+            ->when(!empty($filters->employables) && is_array($filters->employables), function ($builder) use ($filters) {
+                $builder->whereIn('users.employable', $filters->employables);
+            })
             ->when(!empty($filters->status) && is_array($filters->status), function ($builder) use ($filters) {
                 $builder->whereIn('users.status', $filters->status);
             })

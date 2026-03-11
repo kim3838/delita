@@ -30,6 +30,7 @@ return new class extends Migration
             $table->smallInteger('type')->default(UserType::DEFAULT);
             $table->smallInteger('status')->default(UserStatus::ACTIVE);
             $table->string('timezone')->default('UTC');
+            $table->boolean('employable')->default(false);
             $table->rememberToken();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

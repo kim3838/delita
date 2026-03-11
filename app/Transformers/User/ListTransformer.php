@@ -47,6 +47,7 @@ class ListTransformer extends TransformerAbstractConcrete
             'email_verified_at' => $model->email_verified_at?->toDateTimeString(),
             'email_verified' => !empty($model->email_verified_at),
             'timezone' => $model->timezone,
+            'employable' => $model->employable,
             'created_by' => $model->createdBy?->name ?? '',
             'associated_companies' => $mappedAssociatedCompanies,
             'account_roles_summary' => $accountRoles,

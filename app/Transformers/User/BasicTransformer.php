@@ -20,6 +20,7 @@ class BasicTransformer extends TransformerAbstract
             'email_verified' => $emailVerified,
             'email_verified_readable' => $emailVerifiedReadable,
             'timezone' => $model->timezone,
+            'employable' => $model->employable,
         ];
     }
 }

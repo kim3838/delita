@@ -15,5 +15,6 @@ class AssociatedUser extends Model
         'user_status' => UserStatus::class,
         'user_email_verified_at' => 'datetime:Y-m-d H:i:s',
         'user_timezone' => 'string',
+        'user_employable' => 'boolean',
     ];
 }

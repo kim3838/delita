@@ -65,6 +65,7 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'users.status',
                 'users.email_verified_at',
                 'users.timezone',
+                'users.employable',
                 'users.created_by',
             ]);
 
@@ -95,7 +96,8 @@ class AssociatedUserRepositoryEloquent extends BaseRepositoryEloquent implements
                 'user_sub.email as user_email',
                 'user_sub.status as user_status',
                 'user_sub.email_verified_at as user_email_verified_at',
-                'user_sub.timezone as user_timezone'
+                'user_sub.timezone as user_timezone',
+                'user_sub.employable as user_employable',
             ]);
 
         $this->setGroupsOnBuilder($queryBuilder, ['user_sub.id']);

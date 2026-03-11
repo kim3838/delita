@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'type',
         'status',
         'timezone',
+        'employable',
         'created_by',
     ];
 
@@ -67,8 +68,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'type' => UserType::class,
-            //Todo: If theres no company left assigned to a user, mark status as inactive
             'status' => UserStatus::class,
+            'employable' => 'boolean',
         ];
     }
 

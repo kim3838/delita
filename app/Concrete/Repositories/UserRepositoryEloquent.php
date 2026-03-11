@@ -62,6 +62,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
                 'users.status',
                 'users.email_verified_at',
                 'users.timezone',
+                'users.employable',
                 'users.created_by',
             ]);
 
@@ -91,6 +92,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
                 'user_sub.status as status',
                 'user_sub.email_verified_at as email_verified_at',
                 'user_sub.timezone as timezone',
+                'user_sub.employable as employable',
                 'user_sub.created_by as created_by',
             ]);
 
@@ -137,6 +139,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     {
         $companyId = $data['company_id'];
         $officeEmail = $data['office_email'];
+        $employable = $data['employable'];
 
         $companyTimezone = Company::query()->find($companyId)->timezone;
 
@@ -150,6 +153,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
             'password' => Hash::make($password),
             'status' => UserStatus::ACTIVE->value,
             'timezone' => $companyTimezone,
+            'employable' => $employable,
         ]);
     }
 

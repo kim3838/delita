@@ -26,7 +26,8 @@ class StoreAutogenerateUserRequest extends FormRequest
                 ...(App::environment('production') ? [
                     Rule::unique('users', 'email')
                 ] : [])
-            ]
+            ],
+            'employable' => 'required|boolean',
         ];
     }
 

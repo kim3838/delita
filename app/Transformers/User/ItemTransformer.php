@@ -18,6 +18,7 @@ class ItemTransformer extends TransformerAbstract
             'email_verified_at' => $model->email_verified_at?->toDateTimeString(),
             'email_verified' => !empty($model->email_verified_at),
             'timezone' => $model->timezone,
+            'employable' => $model->employable,
             'roles' => $model->roles
         ];
     }
