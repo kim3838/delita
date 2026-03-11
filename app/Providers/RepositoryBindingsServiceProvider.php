@@ -25,6 +25,7 @@ use App\Blueprint\Repositories\DepartmentRepository;
 use App\Blueprint\Repositories\DesignationRepository;
 use App\Blueprint\Repositories\EmployeeContactRepository;
 use App\Blueprint\Repositories\EmployeeGroupRepository;
+use App\Blueprint\Repositories\EmployeeIdentificationRepository;
 use App\Blueprint\Repositories\EmployeeLeaveTypeRepository;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
@@ -86,6 +87,7 @@ use App\Concrete\Repositories\DepartmentRepositoryEloquent;
 use App\Concrete\Repositories\DesignationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeContactRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeGroupRepositoryEloquent;
+use App\Concrete\Repositories\EmployeeIdentificationRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeLeaveTypeRepositoryEloquent;
 use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
@@ -152,6 +154,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'employee_group' => EmployeeGroupRepositoryEloquent::class,
         'employee' => EmployeeRepositoryEloquent::class,
         'employment_profile' => EmploymentProfileRepositoryEloquent::class,
+        'employee_identification' => EmployeeIdentificationRepositoryEloquent::class,
         'employee_contact' => EmployeeContactRepositoryEloquent::class,
         'employee_payroll_component' => EmployeePayrollComponentRepositoryEloquent::class,
         'employee_shift' => EmployeeShiftRepositoryEloquent::class,
@@ -210,6 +213,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         EmployeeGroupRepository::class => EmployeeGroupRepositoryEloquent::class,
         EmployeeRepository::class => EmployeeRepositoryEloquent::class,
         EmploymentProfileRepository::class => EmploymentProfileRepositoryEloquent::class,
+        EmployeeIdentificationRepository::class => EmployeeIdentificationRepositoryEloquent::class,
         EmployeeContactRepository::class => EmployeeContactRepositoryEloquent::class,
         EmployeePayrollComponentRepository::class => EmployeePayrollComponentRepositoryEloquent::class,
         EmployeeShiftRepository::class => EmployeeShiftRepositoryEloquent::class,
@@ -279,6 +283,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'employee_group',
             'employee',
             'employment_profile',
+            'employee_identification',
             'employee_contact',
             'employee_payroll_component',
             'employee_shift',
@@ -340,6 +345,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             EmployeeGroupRepository::class,
             EmployeeRepository::class,
             EmploymentProfileRepository::class,
+            EmployeeIdentificationRepository::class,
             EmployeeContactRepository::class,
             EmployeePayrollComponentRepository::class,
             EmployeeShiftRepository::class,

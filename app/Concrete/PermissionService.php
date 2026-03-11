@@ -38,7 +38,11 @@ class PermissionService
                     'key' => 'employee-employment-profile',
                     'readable_name' => 'Employee employment profile',
                     'actions' => ['view', 'create', 'update', 'delete']
-                ], [
+                ],[
+                    'key' => 'employee-identification',
+                    'readable_name' => 'Employee identification',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
                     'key' => 'department',
                     'readable_name' => 'Department',
                     'actions' => ['view', 'create', 'update', 'delete']
@@ -46,7 +50,7 @@ class PermissionService
                     'key' => 'designation',
                     'readable_name' => 'Designation',
                     'actions' => ['view', 'create', 'update', 'delete']
-                ], [
+                ],[
                     'key' => 'attendance',
                     'readable_name' => 'Attendance',
                     'actions' => ['view', 'create', 'update', 'delete']

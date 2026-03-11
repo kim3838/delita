@@ -30,6 +30,7 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
+use App\Http\Controllers\EmployeeIdentificationController;
 use App\Http\Controllers\EmployeeImportTemplateController;
 use App\Http\Controllers\EmployeeLeaveTypeController;
 use App\Http\Controllers\EmployeePayrollComponentController;
@@ -391,6 +392,14 @@ Route::group([
     Route::post('employment-profile-import-validate', [EmploymentProfileImportController::class, 'read']);
     Route::post('employment-profile-import-re-validate', [EmploymentProfileImportController::class, 'reValidate']);
     Route::post('employment-profile-import-save', [EmploymentProfileImportController::class, 'save']);
+
+    //Employee Identification
+    Route::get('employee-identifications', [EmployeeIdentificationController::class, 'index']);
+    Route::get('employee-identifications-gate', [EmployeeIdentificationController::class, 'indexGate']);
+    Route::post('employee-identification-validate', [EmployeeIdentificationController::class, 'validate']);
+    Route::post('employee-identification', [EmployeeIdentificationController::class, 'store']);
+    Route::patch('employee-identification/{employeeIdentificationId}', [EmployeeIdentificationController::class, 'update']);
+    Route::delete('employee-identifications', [EmployeeIdentificationController::class, 'batchDestroy']);
 
     //Employee Payroll Component
     Route::get('employee-payroll-components', [EmployeePayrollComponentController::class, 'index']);

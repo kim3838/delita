@@ -87,6 +87,11 @@ class Employee extends Model
         return $this->hasMany(EmploymentProfile::class);
     }
 
+    public function identifications(): HasMany
+    {
+        return $this->hasMany(EmployeeIdentification::class);
+    }
+
     public function currentEmploymentProfile(): null | EmploymentProfile
     {
         $now = Carbon::now()
