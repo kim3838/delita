@@ -104,6 +104,15 @@ class ApprovalService
 
             if($action == RequestApprovalStatus::DECLINED){
 
+                switch($approvalState->requestable_type){
+                    case 'payroll_request':
+                        $payroll = $requestable->payroll;
+
+                        $payroll->update([
+                            'status' => PayrollStatus::DRAFT->value,
+                        ]);
+                        break;
+                }
                 return [empty($validationErrors), null];
             }
 
