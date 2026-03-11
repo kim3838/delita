@@ -103,7 +103,20 @@ if (!function_exists('isNameInEnum')){
     {
         return in_array($name, array_map(fn($c) => $c->name, $enumClass::cases()), true);
     }
+}
 
+if (!function_exists('isValueInEnum')){
+    /**
+     * Check if the value is one of the cases values
+     *
+     * @param $enumClass
+     * @param $value
+     * @return bool
+     */
+    function isValueInEnum($enumClass, $value): bool
+    {
+        return in_array($value, array_map(fn($c) => $c['value'], $enumClass::all()), true);
+    }
 }
 
 if (!function_exists('arrayOfNumbersHasDuplicates')){
