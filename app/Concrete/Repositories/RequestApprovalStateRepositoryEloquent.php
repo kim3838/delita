@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\RequestApprovalState;
 use App\Traits\HasPolicy;
 use Carbon\Carbon;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -248,6 +249,7 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
 
     /**
      * @throws UnexpectedException
+     * @throws BindingResolutionException
      */
     public function applyWorkflow($accountId, $companyId, RequestApprovalStatus $action, $remarks, $approvalStates): array
     {
