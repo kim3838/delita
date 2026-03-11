@@ -353,6 +353,10 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
 
                 ...((!$attributes['keep_manager'] && $identifier!== $attributes['manager_id']) ? [
                     'manager_id' => $attributes['manager_id'] ?? null,
+                ] : []),
+
+                ...($attributes['unlink_user_account'] ? [
+                    'user_id' => null,
                 ] : [])
             ];
 

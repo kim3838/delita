@@ -30,6 +30,8 @@ class BatchUpdateEmployeeRequest extends FormRequest
             'keep_pay_frequency' => 'required|boolean',
             'pay_frequency_id' => 'nullable|numeric|integer',
 
+            'unlink_user_account' => 'required|boolean',
+
             'employee_identifiers' => 'required|array',
         ];
     }
@@ -45,6 +47,8 @@ class BatchUpdateEmployeeRequest extends FormRequest
             'keep_manager.required' => 'Keep manager flag is required',
 
             'keep_pay_frequency.required' => 'Keep manager flag is required',
+
+            'unlink_user_account.required' => 'Unlink user account flag is required',
 
             'employee_identifiers.required' => 'Employees are required'
         ];
