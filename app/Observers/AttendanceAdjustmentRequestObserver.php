@@ -57,7 +57,7 @@ class AttendanceAdjustmentRequestObserver
             ->selectRaw("MAX(RIGHT(attendance_adjustment_requests.number, " . $seriesLength . ")) as max_series")
             ->value('max_series');
 
-        $series = $series + $seriesUpToDate;
+        $series = $series + (int)$seriesUpToDate;
 
         $yearCreating = $dateRequested->year;
         $series = str_pad($series,$seriesLength, '0',STR_PAD_LEFT);
