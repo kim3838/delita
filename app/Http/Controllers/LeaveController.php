@@ -57,9 +57,9 @@ class LeaveController extends Controller
     {
         if($request->expectsJson()){
 
-            $attendanceIds = data_get($request->validated(), 'leave_ids', []);
+            $leaveIds = data_get($request->validated(), 'leave_ids', []);
 
-            $this->repository->batchDelete($attendanceIds);
+            $this->repository->batchDelete($leaveIds);
 
             return ResponseJson::successfulResponse();
         }
