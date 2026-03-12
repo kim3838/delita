@@ -808,8 +808,8 @@ trait WorkPeriod
     protected function getSplitTypeBaseMultiplier(ShiftBreakDownSplitType $splitType): float
     {
         $baseMultiplier = match($splitType){
-            ShiftBreakDownSplitType::WORK => $this->basicPayRegularRates->where('hourly_rate_type', HourlyRateType::REGULAR)->first()?->value ?? 1.0,
-            ShiftBreakDownSplitType::OVERTIME => $this->overtimeRegularRates->where('hourly_rate_type', HourlyRateType::OVERTIME_REGULAR)->first()?->value ?? 1.0,
+            ShiftBreakDownSplitType::WORK => $this->basicPayRegularRates?->where('hourly_rate_type', HourlyRateType::REGULAR)->first()?->value ?? 1.0,
+            ShiftBreakDownSplitType::OVERTIME => $this->overtimeRegularRates?->where('hourly_rate_type', HourlyRateType::OVERTIME_REGULAR)->first()?->value ?? 1.0,
             default => 1.0,
         };
 
