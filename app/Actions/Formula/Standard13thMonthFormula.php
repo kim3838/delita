@@ -96,7 +96,7 @@ class Standard13thMonthFormula
 
         $this->prorate13thMonth = !$this->context->isPayrollYearEnd && $isFinalPayState;
 
-        if (true || $debugEnabled) {
+        if ($debugEnabled) {
 
             _debug([
                 'Formula settings payroll month' => $this->formulaSettingsPayrollMonth,
@@ -186,7 +186,7 @@ class Standard13thMonthFormula
             $totalNontaxableBonus = $totalNontaxableBonus->plus($subjectNontaxable);
             $totalTaxableBonus = $totalTaxableBonus->plus($subjectTaxable);
 
-            if (true || $debugEnabled) {
+            if ($debugEnabled) {
 
                 _debug([
                     'Formula slug' => $this->slug,
@@ -213,7 +213,7 @@ class Standard13thMonthFormula
              **/
             if ($reconcilePayrollMonthTrigger) {
 
-                if (true || $debugEnabled) {
+                if ($debugEnabled) {
 
                     _debug([
                         '13th month Reconciliation' => 'Start',
@@ -229,7 +229,7 @@ class Standard13thMonthFormula
                 /**
                  * If adjustment is negative, this means that the employee's 13th month is overpaid and needed negative adjustment
                  **/
-                if($adjustment->isLessThan(BigDecimal::zero())){
+                if($adjustment->toScale(2, RoundingMode::HalfUp)->isLessThan(BigDecimal::zero())){
 
                     $assumedActualWithProjected13thMonthWithNonstatutoryBonus = $assumedActualWithProjected13thMonth->plus($payrollYearNonstatutoryBonus);
                     $absoluteAdjustment = $adjustment->abs();
@@ -273,7 +273,7 @@ class Standard13thMonthFormula
                         ? $taxableNegativeAdjustment->negated()
                         : BigDecimal::zero();
 
-                    if (true || $debugEnabled) {
+                    if ($debugEnabled) {
                         _debug([
                             'Taxable negative adjustment' => $taxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                             'Nontaxable negative adjustment' => $nontaxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
@@ -346,7 +346,7 @@ class Standard13thMonthFormula
                             '13th_month_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                         ];
 
-                        if (true || $debugEnabled) {
+                        if ($debugEnabled) {
                             _debug([
                                 'Taxable positive adjustment' => $taxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                                 'Nontaxable positive adjustment' => $nontaxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
@@ -370,12 +370,13 @@ class Standard13thMonthFormula
                     }
                 }
 
-                if (true || $debugEnabled) {
+                if ($debugEnabled) {
                     _debug([
                         'Payroll year nonstatutory bonus' => $payrollYearNonstatutoryBonus->toScale(2, RoundingMode::HalfUp)->toString(),
                         'Assumed actual with projected 13th month' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
                         'New 13th month with adjustment' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'Adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'Adjustment' => $adjustment->toString(),
+                        'Adjustment scale' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
                     ]);
                 }
             }

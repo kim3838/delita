@@ -91,16 +91,22 @@ class SalaryStatementContext
         $updateReference = true
     ): array{
 
+        $debugEnabled = false;
+
         $chain = $subject->plus($addChain);
         $subjectNontaxable = BigDecimal::zero();
         $subjectTaxable = BigDecimal::zero();
 
-        _debug([
-            'Subject' => $subject->toString(),
-            'Add chain' => $addChain->toString(),
-            'Chain' => $chain->toString(),
-            'Chain over 90,000' => $chain->isGreaterThan($taxExempt) ? 'Yes' : 'No'
-        ]);
+        if($debugEnabled){
+
+            _debug([
+                'Subject' => $subject->toString(),
+                'Add chain' => $addChain->toString(),
+                'Chain' => $chain->toString(),
+                'Chain over 90,000' => $chain->isGreaterThan($taxExempt) ? 'Yes' : 'No'
+            ]);
+        }
+
 
         if($chain->isGreaterThan($taxExempt)){
 
@@ -108,10 +114,14 @@ class SalaryStatementContext
 
             $subjectNontaxable = $subject->minus($subjectTaxable);
 
-            _debug([
-                'Subject taxable' => $subjectTaxable->toString(),
-                'Subject nontaxable' => $subjectNontaxable->toString(),
-            ]);
+            if($debugEnabled){
+
+                _debug([
+                    'Subject taxable' => $subjectTaxable->toString(),
+                    'Subject nontaxable' => $subjectNontaxable->toString(),
+                ]);
+            }
+
 
             if($updateReference){
                 $taxableReference = $taxableReference->plus($subjectTaxable);
@@ -122,18 +132,26 @@ class SalaryStatementContext
 
             $subjectNontaxable = $subject;
 
-            _debug([
-                'Subject nontaxable' => $subjectNontaxable->toString(),
-            ]);
+            if($debugEnabled){
+
+                _debug([
+                    'Subject nontaxable' => $subjectNontaxable->toString(),
+                ]);
+
+            }
 
             if($updateReference){
                 $nontaxableReference = $nontaxableReference->plus($subjectNontaxable);
             }
         }
 
-        _debug([
-            'Next chain' => $addChain->plus($subjectNontaxable)->toString(),
-        ]);
+        if($debugEnabled){
+
+            _debug([
+                'Next chain' => $addChain->plus($subjectNontaxable)->toString(),
+            ]);
+
+        }
 
         return [
             $addChain->plus($subjectNontaxable),
