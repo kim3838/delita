@@ -2,6 +2,7 @@
 
 use App\Facades\ResponseJson;
 use App\Helpers\CookieHelper;
+use App\Models\ThrownLog;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -68,9 +69,20 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             if(!$logExempt){
+
                 $logAction = _is_instance_of_any($throwable, [
                     ValidationException::class
                 ]) ? 'notice' : 'error';
+
+                ThrownLog::query()->create([
+                    'thrown' => get_class($throwable),
+                    'is_exception' => $throwable instanceof Exception,
+                    'is_error' => $throwable instanceof Error,
+                    'message' => $throwable->getMessage(),
+                    'file' => $throwable->getFile(),
+                    'line' => $throwable->getLine(),
+                    'request' => Request::url(),
+                ]);
 
                 Log::channel('error')->{$logAction}([
                     ('thrown') => get_class($throwable),
