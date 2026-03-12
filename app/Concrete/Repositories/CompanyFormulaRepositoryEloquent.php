@@ -117,7 +117,10 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
             if($formula->formulable_type->value == Formulable::EARNINGS->value){
 
-                $compensations = Compensation::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $compensations = Compensation::query()
+                    ->where('company_id', $companyId)
+                    ->where('company_formula_id', $companyFormulaPivot->id)
+                    ->get();
 
                 foreach ($compensations as $compensation) {
 
@@ -126,7 +129,10 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
             } else if($formula->formulable_type->value == Formulable::DEDUCTIONS->value){
 
-                $deductions = Deduction::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $deductions = Deduction::query()
+                    ->where('company_id', $companyId)
+                    ->where('company_formula_id', $companyFormulaPivot->id)
+                    ->get();
 
                 foreach ($deductions as $deduction) {
 
@@ -135,7 +141,10 @@ class CompanyFormulaRepositoryEloquent extends BaseRepositoryEloquent implements
 
             } else if($formula->formulable_type->value == Formulable::INCOME_TAX->value){
 
-                $incomeTaxes = IncomeTax::query()->where('company_id', $companyId)->where('company_formula_id', $companyFormulaPivot->id)->get();
+                $incomeTaxes = IncomeTax::query()
+                    ->where('company_id', $companyId)
+                    ->where('company_formula_id', $companyFormulaPivot->id)
+                    ->get();
 
                 foreach ($incomeTaxes as $incomeTax) {
 
