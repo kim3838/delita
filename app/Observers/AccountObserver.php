@@ -42,10 +42,11 @@ class AccountObserver
         $series = $series + $seriesUpToDate;
 
         $yearCreating = $dateCreating->year;
-        $series = str_pad($series,3, '0',STR_PAD_LEFT);
-        $prefix = _str_random(8) . _now_timestamp();
+        $yearSeries = str_pad($series,3, '0',STR_PAD_LEFT);
+        $randomSeries = substr((string) crc32($series), -4);
+        $prefix = _str_random(8);
 
-        $number = "{$prefix}{$yearCreating}-{$series}";
+        $number = "{$prefix}{$yearSeries}{$randomSeries}";
 
         $account->{$this->customNumberAttribute} = $number;
 
