@@ -38,6 +38,7 @@ class CompanyDeductionRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'deductions.order AS order',
                 'deductions.assignable AS assignable',
                 'deductions.type AS type',
+                'deductions.component_sub_type AS component_sub_type',
                 'deductions.company_formula_id AS company_formula_id',
                 'formulas.name AS formula',
                 'company_formula.settings AS settings'

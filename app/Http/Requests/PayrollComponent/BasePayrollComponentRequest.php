@@ -13,6 +13,7 @@ class BasePayrollComponentRequest extends FormRequest
             'name' => 'required|string|max:255',
             'assignable' => 'required|boolean',
             'type' => 'required|numeric',
+            'component_sub_type' => 'required|string',
             'company_formula_id' => 'required|numeric',
         ];
     }
@@ -23,6 +24,7 @@ class BasePayrollComponentRequest extends FormRequest
             'name.required' => 'Name is required',
             'assignable.required' => 'Assignable is required',
             'type.required' => 'Type is required',
+            'component_sub_type.required' => 'Component sub type is required',
             'company_formula_id.required' => 'Formula is required',
         ];
     }

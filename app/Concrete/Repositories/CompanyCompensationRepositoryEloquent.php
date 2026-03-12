@@ -38,6 +38,7 @@ class CompanyCompensationRepositoryEloquent extends BaseRepositoryEloquent imple
                 'compensations.order AS order',
                 'compensations.assignable AS assignable',
                 'compensations.type AS type',
+                'compensations.component_sub_type AS component_sub_type',
                 'compensations.company_formula_id AS company_formula_id',
                 'formulas.name AS formula',
                 'company_formula.settings AS settings'

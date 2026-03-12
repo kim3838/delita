@@ -38,6 +38,7 @@ class CompanyIncomeTaxRepositoryEloquent extends BaseRepositoryEloquent implemen
                 'income_taxes.order AS order',
                 'income_taxes.assignable AS assignable',
                 'income_taxes.type AS type',
+                'income_taxes.component_sub_type AS component_sub_type',
                 'income_taxes.company_formula_id AS company_formula_id',
                 'formulas.name AS formula',
                 'company_formula.settings AS settings'

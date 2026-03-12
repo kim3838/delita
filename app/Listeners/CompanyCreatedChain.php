@@ -42,16 +42,6 @@ class CompanyCreatedChain
 
         /**
          * Sync basic formulas with default settings
-         * Standard-Basic-Pay
-         * Standard-Allowance
-         * Standard-Overtime
-         * Standard-Leave-Pay
-         * Standard-Holiday-Pay
-         * Standard-13th-Month
-         * Standard-Taxable-Income
-         * Standard-Nontaxable-Income
-         * Standard-Compensation-Tax
-         * Standard-Net-Income
          **/
         $formulas = [];
 
