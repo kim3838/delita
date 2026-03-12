@@ -78,7 +78,7 @@ class PreGeneratePayrollController extends Controller
                     $hasFinalPayBeforeDate, $finalPaySalaryStatement
                 ) = $employeeService->hasFinalPayBeforeDate($employee, $payrollHydration->start_date);
 
-                if(true || $debugEnabled){
+                if($debugEnabled){
 
                     _debug([
                         'Pre-generate payroll check' => $employee->number . ' ' .$employee->full_name_attribute,
@@ -100,7 +100,7 @@ class PreGeneratePayrollController extends Controller
                     $isYearEnd, $currentEndingOrNoUpcomingEmployment, $hasAtLeastOneEmployment, $hasEmploymentProfileWithinPayrollPeriod
                 ) = $employeeService->getPayrollAndEmploymentPayload($payrollHydration);
 
-                if(true || $debugEnabled){
+                if($debugEnabled){
 
                     _debug([
                         'Has current ending and no upcoming employment' => $currentEndingOrNoUpcomingEmployment,
