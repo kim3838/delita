@@ -83,7 +83,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
             })
             ->when($filters->search ?? false, function ($builder, $value) {
                 $builder->where(function ($clause) use ($value) {
-                    $clause->where('payrolls.number', 'LIKE', "%$value%");
+                    $clause->where('payrolls.number', 'LIKE', "%$value%")
+                        ->orWhere('payrolls.remarks', 'LIKE', "%$value%");
                 });
             })
             ->select([
