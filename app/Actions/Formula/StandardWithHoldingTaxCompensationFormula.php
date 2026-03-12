@@ -22,7 +22,7 @@ class StandardWithHoldingTaxCompensationFormula
 
     public function handle(SalaryStatementContext $context, $next)
     {
-        $debugEnabled = false;
+        $debugEnabled = true;
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formulableModel = $pipelinePayload['formulable_model'];
         $companyFormula = $formulableModel->companyFormula;
@@ -171,7 +171,7 @@ class StandardWithHoldingTaxCompensationFormula
                 /**
                  * If adjustment is negative, this means that the employee's annual tax is underpaid and needed negative adjustment
                  **/
-                if($adjustment->isLessThan(BigDecimal::zero())){
+                if($adjustment->toScale(2, RoundingMode::HalfUp)->isLessThan(BigDecimal::zero())){
 
                     $negativeAdjustment = $adjustment->abs();
 
@@ -208,7 +208,7 @@ class StandardWithHoldingTaxCompensationFormula
                 /**
                  * If adjustment is positive, this means that the employee's annual tax is overpaid and needed positive adjustment
                  **/
-                if($adjustment->isGreaterThan(BigDecimal::zero())){
+                if($adjustment->toScale(2, RoundingMode::HalfUp)->isGreaterThan(BigDecimal::zero())){
                     $positiveAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_REFUND->value,
                         'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
