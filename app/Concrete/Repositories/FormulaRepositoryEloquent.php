@@ -89,6 +89,7 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
                 'Standard-Holiday-Pay',
                 'Standard-Taxable-Income',
                 'Standard-Nontaxable-Income',
+                'Manual-Deduction',
                 'Standard-Net-Income',
             ])
             ->orderBy('formulas.formulable_type', 'ASC')
