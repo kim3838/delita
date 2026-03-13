@@ -12,6 +12,7 @@ class SalaryStatementDetail extends Model
 {
     protected $fillable = [
         'salary_statement_id',
+        'statement_level',
         'formulable_type',
         'component_type',
         'component_sub_type',
@@ -33,7 +34,8 @@ class SalaryStatementDetail extends Model
     ];
 
     protected $casts = [
-        'salary_statement_attendance_id' => 'int',
+        'salary_statement_id' => 'int',
+        'statement_level' => 'boolean',
         'formulable_type' => Formulable::class,
         'component_type' => FormulaComponentType::class,
         'component_sub_type' => FormulableComponentSubType::class,

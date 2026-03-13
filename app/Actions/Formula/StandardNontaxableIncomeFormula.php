@@ -38,6 +38,7 @@ class StandardNontaxableIncomeFormula
 
             $statementDetail = [
                 'id' => null,
+                'statement_level' => true,
                 'formulable_type' => $formula->formulable_type->value,
                 'component_type' => null,
                 'component_name' => null,

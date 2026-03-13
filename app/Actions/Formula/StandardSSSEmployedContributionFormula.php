@@ -72,6 +72,7 @@ class StandardSSSEmployedContributionFormula
 
             $statementDetail = [
                 'id' => null,
+                'statement_level' => true,
                 'formulable_type' => $formula->formulable_type->value,
                 'component_type' => $formula->component_type->value,
                 'component_sub_type' => FormulableComponentSubType::PH_SSS->value,

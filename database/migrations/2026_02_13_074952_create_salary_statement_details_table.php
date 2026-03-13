@@ -19,6 +19,7 @@ return new class extends Migration
                 ->on('salary_statements')
                 ->cascadeOnDelete();
 
+            $table->boolean('statement_level')->default(false);
             $table->smallInteger('formulable_type');
             $table->smallInteger('component_type')->nullable();
             $table->string('component_sub_type')->nullable();

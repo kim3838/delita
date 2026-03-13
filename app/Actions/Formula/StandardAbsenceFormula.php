@@ -36,6 +36,7 @@ class StandardAbsenceFormula
 
         $statementDetail = [
             'id' => null,
+            'statement_level' => true,
             'formulable_type' => $formula->formulable_type->value,
             'component_type' => $formula->component_type->value,
             'component_name' => $formulableModel->name,

@@ -22,7 +22,7 @@ class StandardWithHoldingTaxCompensationFormula
 
     public function handle(SalaryStatementContext $context, $next)
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
         $pipelinePayload = $context->pipelinePayload->where('formula_slug', $this->slug)->first();
         $formulableModel = $pipelinePayload['formulable_model'];
         $companyFormula = $formulableModel->companyFormula;
@@ -100,6 +100,7 @@ class StandardWithHoldingTaxCompensationFormula
 
             $statementDetail = [
                 'id' => null,
+                'statement_level' => true,
                 'formulable_type' => $formula->formulable_type->value,
                 'component_type' => $formula->component_type->value,
                 'component_sub_type' => FormulableComponentSubType::PH_WITHHOLDING_TAX_COMPENSATION->value,
