@@ -9,6 +9,7 @@ class OrderableObserver
     public function creating(Model $model)
     {
         $last = $model
+            ->query()
             ->where('company_id', $model->company_id)
             ->orderBy('order', 'DESC')
             ->first();

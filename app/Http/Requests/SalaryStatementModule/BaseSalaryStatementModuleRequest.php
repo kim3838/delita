@@ -13,6 +13,7 @@ class BaseSalaryStatementModuleRequest extends FormRequest
             'name' => 'required|string|max:255',
             'formulable_type' => 'required|numeric|integer',
             'aggregation' => 'required|boolean',
+            'statement_level' => 'required|boolean',
             'property' => 'required|string|max:255',
             'attribute' => 'required|string|max:255',
             'conditions' => 'nullable|string',

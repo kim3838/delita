@@ -45,10 +45,13 @@ class SalaryStatementModuleController extends Controller
             $hydrated = App::make(SalaryStatementModuleRepository::class)->hydrateItem($request->validated());
             $patchable = Fractal::item($hydrated, PatchableTransformer::class);
 
+            $patchable = collect($patchable)->except(['id'])->toArray();
+
+            $salaryStatementModule = App::make(SalaryStatementModuleRepository::class)->store($patchable);
+
             return ResponseJson::successfulResponse([
                 'salary_statement_module' => Fractal::item(
-                    App::make(SalaryStatementModuleRepository::class)->store($patchable),
-                    ItemTransformer::class
+                    $salaryStatementModule, ItemTransformer::class
                 )
             ]);
         }
