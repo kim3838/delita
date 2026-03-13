@@ -219,8 +219,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 8,
-                'key' => 'manual_nonstatutory_deductions',
-                'name' => 'Manual nonstatutory deductions',
+                'key' => 'manual_deductions',
+                'name' => 'Manual deductions',
                 'formulable_type' => Formulable::DEDUCTIONS,
                 'statement_level' => true,
                 'aggregation' => false,
