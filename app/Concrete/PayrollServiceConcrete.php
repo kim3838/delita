@@ -35,6 +35,7 @@ use App\Models\EmployeeShift;
 use App\Models\Hydrations\Payroll\PayrollPayload;
 use App\Models\PayFrequency as PayFrequencyModel;
 use App\Models\Payroll;
+use App\Models\SalaryStatement;
 use App\Models\SalaryStatementAttendance;
 use App\Models\Shift;
 use App\Traits\HasPayableDay;
@@ -474,7 +475,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ->count();
 
             /**
-             * Include paid holidays on the working day count, to prevent basic pay overflow when on  semimonthly or monthly pay period
+             * Include paid holidays on the working day count, to prevent basic pay overflow when on semimonthly or monthly pay period
              **/
             $this->frequencyWorkingDayCount += $salaryStatementCursor->salaryStatementAttendances->filter(function($salaryStatementAttendance){
                 $statusDayOff = $salaryStatementAttendance->status == SalaryStatementAttendanceStatus::DAY_OFF;
@@ -531,71 +532,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
          **/
         foreach($payroll->salaryStatements()->cursor() as $salaryStatementCursor) {
 
-            $salaryStatementDetails = [];
-
-            foreach($salaryStatementCursor->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
-
-                $payrollComponents = $salaryStatementAttendance->payrollComponents->sortBy(function($payrollComponent){
-                    return $payrollComponent->component_type->value;
-                }, SORT_NUMERIC);
-
-                foreach($payrollComponents as $payrollComponent){
-
-                    if(!isset($salaryStatementDetails[$payrollComponent->component_sub_type])){
-
-                        $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
-
-                        $salaryStatementDetails[$payrollComponent->component_sub_type] = [
-                            'formulable_type' => $payrollComponent->formulable_type->value,
-                            'component_type' => $payrollComponent->component_type->value,
-                            'component_sub_type' => $payrollComponent->component_sub_type,
-                            'component_name' => $payrollComponent->component_name,
-                            'component_values' => [
-                                'type' => $componentValueType?->value,
-                                'regular_pay' => new MutableBigDecimal(),
-                                'night_differential_pay' => new MutableBigDecimal(),
-                                'rest_day_pay' => new MutableBigDecimal(),
-                                'total' => new MutableBigDecimal(),
-                            ],
-                            'taxable' => new MutableBigDecimal(),
-                        ];
-                    }
-
-                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
-                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
-                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
-                    $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
-
-                    $salaryStatementDetails[$payrollComponent->component_sub_type]['taxable'] = $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total'];
-                }
-            }
-
-            foreach($salaryStatementDetails as $salaryStatementDetail){
-
-                $componentValues = null;
-
-                if(in_array($salaryStatementDetail['component_type'], [
-                    CompensationEnum::BASIC_PAY->value,
-                    CompensationEnum::OVERTIME->value,
-                ])){
-                    $componentValues = [
-                        'type' => $salaryStatementDetail['component_values']['type'] ?? null,
-                        'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
-                    ];
-                }
-
-                $salaryStatementCursor->details()->create([
-                    'formulable_type' => $salaryStatementDetail['formulable_type'],
-                    'component_type' => $salaryStatementDetail['component_type'],
-                    'component_sub_type' => $salaryStatementDetail['component_sub_type'],
-                    'component_name' => $salaryStatementDetail['component_name'],
-                    'component_values' => $componentValues,
-                    'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(2, RoundingMode::HalfUp)->toString()
-                ]);
-            }
+            $this->salaryStatementCreateDetails($salaryStatementCursor);
         }
 
         /**
@@ -606,6 +543,93 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $salaryStatementModuleService->setEmployee($employee);
 
             $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
+        }
+    }
+
+    public function salaryStatementCreateDetails(SalaryStatement $salaryStatement): void
+    {
+        $debugEnabled = false;
+        $salaryStatementDetails = [];
+
+        /**
+         * Sum payroll items from attendance into $salaryStatementDetails with component_sub_type as key
+         **/
+        foreach($salaryStatement->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
+
+            $payrollComponents = $salaryStatementAttendance->payrollComponents->sortBy(function($payrollComponent){
+                return $payrollComponent->component_type->value;
+            }, SORT_NUMERIC);
+
+            foreach($payrollComponents as $payrollComponent){
+
+                if(!isset($salaryStatementDetails[$payrollComponent->component_sub_type])){
+
+                    $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
+
+                    $salaryStatementDetails[$payrollComponent->component_sub_type] = [
+                        'formulable_type' => $payrollComponent->formulable_type->value,
+                        'component_type' => $payrollComponent->component_type->value,
+                        'component_sub_type' => $payrollComponent->component_sub_type,
+                        'component_name' => $payrollComponent->component_name,
+                        'component_values' => [
+                            'type' => $componentValueType?->value,
+                            'regular_pay' => new MutableBigDecimal(),
+                            'night_differential_pay' => new MutableBigDecimal(),
+                            'rest_day_pay' => new MutableBigDecimal(),
+                            'total' => new MutableBigDecimal(),
+                        ],
+                        'taxable' => new MutableBigDecimal(),
+                    ];
+                }
+
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
+
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['taxable'] = $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total'];
+            }
+        }
+
+        /**
+         * Add component values (breakdown pay splits) for basic pay and overtime
+         **/
+        foreach($salaryStatementDetails as $salaryStatementDetail){
+
+            $componentValues = null;
+
+            if(in_array($salaryStatementDetail['component_type'], [
+                CompensationEnum::BASIC_PAY->value,
+                CompensationEnum::OVERTIME->value,
+            ])){
+                $componentValues = [
+                    'type' => $salaryStatementDetail['component_values']['type'] ?? null,
+                    'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                    'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                    'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                    'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(2, RoundingMode::HalfUp)->toString(),
+                ];
+            }
+
+            $salaryStatement->details()->create([
+                'statement_level' => false,
+                'formulable_type' => $salaryStatementDetail['formulable_type'],
+                'component_type' => $salaryStatementDetail['component_type'],
+                'component_sub_type' => $salaryStatementDetail['component_sub_type'],
+                'component_name' => $salaryStatementDetail['component_name'],
+                'component_values' => $componentValues,
+                'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(2, RoundingMode::HalfUp)->toString()
+            ]);
+        }
+
+        if($debugEnabled){
+
+            _debug([
+                'SalaryStatement create details' => [
+                    'SalaryStatement' => $salaryStatement->toArray(),
+                    'Details' => $salaryStatement->details->toArray(),
+                ]
+            ]);
         }
     }
 
