@@ -75,6 +75,9 @@ class FormulaSeeder extends Seeder
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_withholding_tax_compensation')->first()->path)
             ],
 
+            //Manual Deduction
+            ['name' => 'Manual-Deduction', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::MANUAL_DEDUCTION, 'aggregation' => false],
+
             //Net Income
             ['name' => 'Standard-Net-Income', 'formulable_type' => Formulable::NET_INCOME ,'component_type' => null, 'aggregation' => true]
         ];

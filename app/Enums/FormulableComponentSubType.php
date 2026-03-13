@@ -21,6 +21,7 @@ enum FormulableComponentSubType: string implements BaseEnum
     case PH_PHILHEALTH = '200.200.3';
     case PH_PAG_IBIG = '200.200.4';
     case DEDUCTION = '200.210.1';
+    case MANUAL_DEDUCTION = '200.211.1';
     case TAX_DEFICIT = '200.1000.1';
     case STATUTORY_BENEFIT_13TH_MONTH_NEGATIVE_ADJUSTMENT = '200.2000.2';
 
@@ -46,6 +47,7 @@ enum FormulableComponentSubType: string implements BaseEnum
             self::PH_PHILHEALTH => 'Philhealth (PHIC)',
             self::PH_PAG_IBIG => 'Pag-IBIG (HDMF)',
             self::DEDUCTION => 'Deduction',
+            self::MANUAL_DEDUCTION => 'Manual deduction',
             self::TAX_DEFICIT => 'Tax deficit',
             self::STATUTORY_BENEFIT_13TH_MONTH_NEGATIVE_ADJUSTMENT => '13th month excess deduction',
 

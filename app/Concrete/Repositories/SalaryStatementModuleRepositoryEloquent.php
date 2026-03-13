@@ -219,6 +219,36 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 8,
+                'key' => 'manual_nonstatutory_deductions',
+                'name' => 'Manual nonstatutory deductions',
+                'formulable_type' => Formulable::DEDUCTIONS,
+                'statement_level' => true,
+                'aggregation' => false,
+                'property' => 'company',
+                'attribute' => 'formulas',
+                'conditions' => [
+                    [
+                        'order' => 1,
+                        'property' => 'aggregation',
+                        'operator' => '=',
+                        'value' => false,
+                    ],
+                    [
+                        'order' => 2,
+                        'property' => 'formulable_type',
+                        'operator' => '=',
+                        'value' => Formulable::DEDUCTIONS,
+                    ],
+                    [
+                        'order' => 3,
+                        'property' => 'component_type',
+                        'operator' => '=',
+                        'value' => Deduction::MANUAL_DEDUCTION,
+                    ],
+                ]
+            ],
+            [
+                'order' => 9,
                 'key' => 'net_income',
                 'name' => 'Net income',
                 'formulable_type' => Formulable::NET_INCOME,

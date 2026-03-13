@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Formula\InitializeSalaryStatementFormula;
+use App\Actions\Formula\ManualDeductionFormula;
 use App\Actions\Formula\Standard13thMonthFormula;
 use App\Actions\Formula\StandardAbsenceFormula;
 use App\Actions\Formula\StandardAllowanceFormula;
@@ -44,6 +45,7 @@ class FormulaBindingsServiceProvider extends ServiceProvider
         'standard-taxable-income'=> StandardTaxableIncomeFormula::class,
         'standard-nontaxable-income' => StandardNontaxableIncomeFormula::class,
         'standard-withholding-tax-compensation' => StandardWithHoldingTaxCompensationFormula::class,
+        'manual-deduction' => ManualDeductionFormula::class,
         'standard-net-income' => StandardNetIncomeFormula::class,
     ];
 
