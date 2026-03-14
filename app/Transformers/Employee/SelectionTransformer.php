@@ -16,6 +16,10 @@ class SelectionTransformer extends TransformerAbstract
         return [
             'value' => $employee->id,
             'text' => "($employee->number) " . $employee->full_name,
+            'payload' => [
+                'number' => $employee->number,
+                'full_name' => $employee->full_name,
+            ],
             'payroll_group' => $payrollGroup ? [
                 'value' => $payrollGroup['id'] ?? null,
                 'type_value' => $payrollGroup['type']['value'] ?? null
