@@ -280,7 +280,7 @@ class ApprovalService
                 $payroll = $requestable->payroll;
 
                 $payroll->update([
-                    'status' => PayrollStatus::COMPLETED->value,
+                    'status' => PayrollStatus::COMPLETE->value,
                 ]);
 
         }

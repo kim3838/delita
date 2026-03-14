@@ -52,7 +52,7 @@ class BaseStorePayrollRequestRequest extends FormRequest
 
             $payrollIsCompleted = Payroll::query()
                 ->where('id', $this->input('payroll_id'))
-                ->where('status', PayrollStatus::COMPLETED->value)
+                ->where('status', PayrollStatus::COMPLETE->value)
                 ->first();
 
             if ($payrollIsCompleted) {

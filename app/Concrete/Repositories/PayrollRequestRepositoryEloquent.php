@@ -189,7 +189,7 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
 
             $payrollRequest = $this->show($id);
 
-            if(!in_array($payrollRequest->payroll->status, [PayrollStatus::COMPLETED])){
+            if(!in_array($payrollRequest->payroll->status, [PayrollStatus::COMPLETE])){
 
                 $payrollRequest->payroll->update([
                     'status' => PayrollStatus::DRAFT->value,
