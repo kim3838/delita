@@ -128,8 +128,8 @@ class ListTransformer extends TransformerAbstract
             'last_out' => $attendance->last_out?->format('Y-m-d H:i'),
             'status' => $attendance->status?->toArray(),
             'employee' => [
-                'number' => $employee->number,
-                'full_name' => $employee->full_name_attribute,
+                'number' => $employee?->number,
+                'full_name' => $employee?->full_name_attribute,
             ],
             'shift' => $attendanceShift,
             'shift_schedule' => $shiftSchedule,
