@@ -15,13 +15,14 @@ enum FormulableComponentSubType: string implements BaseEnum
     case NONSTATUTORY_BENEFIT_BONUS = '100.130.1';
     case LEAVE_PAY = '100.200.1';
     case HOLIDAY_PAY = '100.300.1';
+    case MANUAL_EARNING = '100.400.1';
     case TAX_REFUND = '100.1000.1';
 
     case PH_SSS = '200.200.2';
     case PH_PHILHEALTH = '200.200.3';
     case PH_PAG_IBIG = '200.200.4';
     case DEDUCTION = '200.210.1';
-    case MANUAL_DEDUCTION = '200.211.1';
+    case MANUAL_DEDUCTION = '200.400.1';
     case TAX_DEFICIT = '200.1000.1';
     case STATUTORY_BENEFIT_13TH_MONTH_NEGATIVE_ADJUSTMENT = '200.2000.2';
 
@@ -41,6 +42,7 @@ enum FormulableComponentSubType: string implements BaseEnum
             self::NONSTATUTORY_BENEFIT_BONUS => 'Bonus',
             self::LEAVE_PAY => 'Leave pay',
             self::HOLIDAY_PAY => 'Holiday pay',
+            self::MANUAL_EARNING => 'Manual earning',
             self::TAX_REFUND => 'Tax refund',
 
             self::PH_SSS => 'SSS contribution',

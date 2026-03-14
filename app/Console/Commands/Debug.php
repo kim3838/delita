@@ -13,6 +13,7 @@ use App\Blueprint\Repositories\UserFiledRequestRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\AutoCreateAttendanceConcrete;
 use App\Concrete\LeaveService;
+use App\Concrete\SalaryStatementModuleServiceConcrete;
 use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Exceptions\UnexpectedException;
@@ -20,6 +21,7 @@ use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveType;
+use App\Models\SalaryStatement;
 use App\Transformers\SalaryStatementAttendance\ListTransformer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
@@ -45,6 +47,27 @@ class Debug extends Command
      */
     public function handle()
     {
+
+    }
+
+    private function salarySatementManualAddDetail()
+    {
+        $salaryStatement = SalaryStatement::query()->find(286);
+        $payroll = $salaryStatement->payroll;
+        $employee = $salaryStatement->employee;
+
+        $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($payroll, $payroll->company);
+        $salaryStatementModuleService->setEmployee($employee);
+        $manualSalaryStatementItems = [
+            '200.211.1' => [
+                [
+                    'component_name' => 'Manual deduction example',
+                    'deduction' => 100
+                ]
+            ]
+        ];
+
+        $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatement, true, $manualSalaryStatementItems);
     }
 
     private function salaryStatementAttendance()

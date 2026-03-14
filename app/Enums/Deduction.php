@@ -6,7 +6,7 @@ enum Deduction: int implements BaseEnum
 {
     case STATUTORY_CONTRIBUTION = 200;
     case DEDUCTION = 210;
-    case MANUAL_DEDUCTION = 211;
+    case MANUAL_DEDUCTION = 400;
     case TAX_ADJUSTMENT = 1000;
     case THIRTEENTH_MONTH_ADJUSTMENT = 2000;
 
