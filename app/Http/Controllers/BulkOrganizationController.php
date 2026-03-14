@@ -11,6 +11,7 @@ use App\Blueprint\Repositories\EmployeeGroupRepository;
 use App\Blueprint\Repositories\IncomeTaxRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Enums\Compensation as CompensationEnum;
+use App\Enums\Deduction;
 use App\Enums\PayFrequency;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
@@ -62,7 +63,21 @@ class BulkOrganizationController extends Controller
             $incomeTaxes = App::make(EnumInterface::class)->selection('income_tax');
 
             $assignableCompensations = collect($compensations::all())->filter(function($compensation){
-               return !in_array($compensation['value'], [CompensationEnum::LEAVE_PAY->value, CompensationEnum::HOLIDAY_PAY->value]);
+               return !in_array($compensation['value'], [
+                   CompensationEnum::LEAVE_PAY->value,
+                   CompensationEnum::HOLIDAY_PAY->value,
+                   CompensationEnum::MANUAL_EARNING->value,
+                   CompensationEnum::TAX_ADJUSTMENT->value,
+                   CompensationEnum::THIRTEENTH_MONTH_ADJUSTMENT->value,
+               ]);
+            })->values()->toArray();
+
+            $assignableDeductions = collect($deductions::all())->filter(function($deduction){
+               return !in_array($deduction['value'], [
+                   Deduction::MANUAL_DEDUCTION->value,
+                   Deduction::TAX_ADJUSTMENT->value,
+                   Deduction::THIRTEENTH_MONTH_ADJUSTMENT->value,
+               ]);
             })->values()->toArray();
 
             return ResponseJson::successfulResponse([
@@ -71,7 +86,7 @@ class BulkOrganizationController extends Controller
                 'designations' => $designationSelection,
                 'pay_frequencies' => $payFrequencySelection,
                 'payroll_component' => [
-                    'type' => array_merge($assignableCompensations, $deductions::all(), $incomeTaxes::all()),
+                    'type' => array_merge($assignableCompensations, $assignableDeductions, $incomeTaxes::all()),
                     'names' => array_merge($compensationNames, $deductionNames, $incomeTaxNames)
                 ]
             ]);
