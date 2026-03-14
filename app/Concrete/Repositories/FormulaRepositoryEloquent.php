@@ -87,6 +87,7 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
                 'Standard-Overtime',
                 'Standard-Leave-Pay',
                 'Standard-Holiday-Pay',
+                'Manual-Earning',
                 'Standard-Taxable-Income',
                 'Standard-Nontaxable-Income',
                 'Manual-Deduction',

@@ -44,6 +44,9 @@ class FormulaSeeder extends Seeder
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],
 
+            //Manual Earning
+            ['name' => 'Manual-Earning', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::MANUAL_EARNING, 'aggregation' => false],
+
             //Deductions
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
                 'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_tardiness')->first()->path)

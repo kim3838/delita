@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Formula\InitializeSalaryStatementFormula;
 use App\Actions\Formula\ManualDeductionFormula;
+use App\Actions\Formula\ManualEarningFormula;
 use App\Actions\Formula\Standard13thMonthFormula;
 use App\Actions\Formula\StandardAbsenceFormula;
 use App\Actions\Formula\StandardAllowanceFormula;
@@ -38,6 +39,7 @@ class FormulaBindingsServiceProvider extends ServiceProvider
         'standard-absence' => StandardAbsenceFormula::class,
         'standard-undertime' => StandardUndertimeFormula::class,
         'standard-tardiness' => StandardTardinessFormula::class,
+        'manual-earning' => ManualEarningFormula::class,
         'standard-sss-employed-contribution' => StandardSSSEmployedContributionFormula::class,
         'standard-philhealth-contribution' => StandardPhilhealthContributionFormula::class,
         'standard-pag-ibig-contribution' => StandardPagIBIGContributionFormula::class,
