@@ -7,6 +7,7 @@ use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
+use App\Concrete\SalaryStatementModuleServiceConcrete;
 use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Enums\FormulableComponentSubType;
@@ -326,5 +327,16 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         }
 
         return 1;
+    }
+
+    public function manualAddDetails($salaryStatement, $items): void
+    {
+        $payroll = $salaryStatement->payroll;
+        $employee = $salaryStatement->employee;
+
+        $salaryStatementModuleService = new SalaryStatementModuleServiceConcrete($payroll, $payroll->company);
+        $salaryStatementModuleService->setEmployee($employee);
+
+        $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatement, true, $items);
     }
 }

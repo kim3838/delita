@@ -92,6 +92,7 @@ use App\Http\Controllers\RequestApprovalStateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryStatementAttendanceController;
 use App\Http\Controllers\SalaryStatementController;
+use App\Http\Controllers\SalaryStatementManualAddDetailController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
@@ -591,6 +592,8 @@ Route::group([
     Route::get('salary-statements-export', [SalaryStatementController::class, 'export']);
     Route::get('salary-statement/{ulid}', [SalaryStatementController::class, 'show']);
     Route::delete('salary-statements', [SalaryStatementController::class, 'batchDestroy']);
+
+    Route::post('salary-statement-manual-add-details/{salaryStatementUlid}', [SalaryStatementManualAddDetailController::class, 'store']);
 
     Route::get('employee-portal-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
     Route::get('employee-portal-salary-statement/{ulid}', [EmployeeSalaryStatementController::class, 'show']);

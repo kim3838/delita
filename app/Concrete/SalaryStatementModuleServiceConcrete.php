@@ -67,9 +67,14 @@ class SalaryStatementModuleServiceConcrete
             ->sortBy('order');
     }
 
-    public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement): void
+    public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement, $rebuildStatementLevel = false, $manualSalaryStatementItems = []): void
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
+
+        if($rebuildStatementLevel){
+
+            $salaryStatement->details()->where('statement_level', true)->delete();
+        }
 
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
@@ -131,10 +136,7 @@ class SalaryStatementModuleServiceConcrete
 
                     foreach($moduleComponents as $moduleComponent)
                     {
-                        /**
-                         * Aggregation formulas doesnt have formula settings
-                         **/
-                        if($moduleComponent instanceof Formula && $moduleComponent->aggregation){
+                        if($moduleComponent instanceof Formula){
 
                             $formula = $moduleComponent;
 
@@ -156,41 +158,51 @@ class SalaryStatementModuleServiceConcrete
         $pipeline = $pipelinePayload->map(fn($payload) => app($payload['formula_slug']))->values()->toArray();
         $statementDetails = Fractal::collection($salaryStatement->details, PipelineChainableTransformer::class)['data'];
 
-        $isWeekly = $this->payroll->pay_frequency == PayFrequency::WEEKLY;
+        $isWeekly = $salaryStatement->payroll->pay_frequency == PayFrequency::WEEKLY;
         $isWeeklyAndIsLastSplitOfMonth = false;
 
         if($isWeekly){
 
             $weekSpan = 7;
-            $nextWeeklyPayrollEndDate = $this->payroll->end_date->copy()->addDays($weekSpan);
+            $nextWeeklyPayrollEndDate = $salaryStatement->payroll->end_date->copy()->addDays($weekSpan);
 
-            $nextWeeklyPayrollIsSameYearMonthAsIntermediate = $nextWeeklyPayrollEndDate->year == $this->payroll->end_date->year &&
-                $nextWeeklyPayrollEndDate->month == $this->payroll->end_date->month;
+            $nextWeeklyPayrollIsSameYearMonthAsIntermediate = $nextWeeklyPayrollEndDate->year == $salaryStatement->payroll->end_date->year &&
+                $nextWeeklyPayrollEndDate->month == $salaryStatement->payroll->end_date->month;
 
             $isWeeklyAndIsLastSplitOfMonth = !$nextWeeklyPayrollIsSameYearMonthAsIntermediate;
         }
 
         $flags = [
-            'is_monthly' => $this->payroll->pay_frequency == PayFrequency::MONTHLY,
-            'is_semimonthly_and_is_1st_half' => $this->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
-                $this->payroll->frequency_sequence == SemiMonthlySequence::FIRST_HALF,
-            'is_semimonthly_and_is_2nd_half' => $this->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
-                $this->payroll->frequency_sequence == SemiMonthlySequence::SECOND_HALF,
+            'is_monthly' => $salaryStatement->payroll->pay_frequency == PayFrequency::MONTHLY,
+            'is_semimonthly_and_is_1st_half' => $salaryStatement->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
+                $salaryStatement->payroll->frequency_sequence == SemiMonthlySequence::FIRST_HALF,
+            'is_semimonthly_and_is_2nd_half' => $salaryStatement->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
+                $salaryStatement->payroll->frequency_sequence == SemiMonthlySequence::SECOND_HALF,
             'is_weekly_and_is_last_split_of_month' => $isWeeklyAndIsLastSplitOfMonth
         ];
 
         $pipelineContext = new SalaryStatementContext(
-            $this->company,
-            $this->payroll,
+            $salaryStatement->payroll->company,
+            $salaryStatement->payroll,
             $salaryStatement,
             $additionalSalaryStatements,
-            $this->employee,
+            $salaryStatement->employee,
             $pipelinePayload,
             $flags,
-            $statementDetails
+            $statementDetails,
+            $manualSalaryStatementItems
         );
 
         array_unshift($pipeline, app('initialize-salary-statement'));
+
+        if($debugEnabled){
+            _debug([
+                'Pre-pipeline' => [
+                    'Pipeline' => array_map(fn($pipelineItem) => get_class($pipelineItem), $pipeline),
+                    'Should be non statement level salary statement details' => count($statementDetails),
+                ]
+            ]);
+        }
 
         $salaryStatementContext = Pipeline::send($pipelineContext)
             ->through($pipeline)

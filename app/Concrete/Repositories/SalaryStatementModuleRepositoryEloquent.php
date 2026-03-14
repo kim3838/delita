@@ -34,8 +34,8 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
         return [
             [
                 'order' => 1,
-                'key' => 'basic_pay_allowances_and_overtime',
-                'name' => 'Basic pay, allowances, and overtime',
+                'key' => 'per_day_earnings',
+                'name' => 'Per day earnings',
                 'formulable_type' => Formulable::EARNINGS,
                 'statement_level' => false,
                 'aggregation' => false,
@@ -45,6 +45,36 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
             ],
             [
                 'order' => 2,
+                'key' => 'manual_earnings',
+                'name' => 'Manual earnings',
+                'formulable_type' => Formulable::EARNINGS,
+                'statement_level' => true,
+                'aggregation' => false,
+                'property' => 'company',
+                'attribute' => 'formulas',
+                'conditions' => [
+                    [
+                        'order' => 1,
+                        'property' => 'aggregation',
+                        'operator' => '=',
+                        'value' => false,
+                    ],
+                    [
+                        'order' => 2,
+                        'property' => 'formulable_type',
+                        'operator' => '=',
+                        'value' => Formulable::EARNINGS,
+                    ],
+                    [
+                        'order' => 3,
+                        'property' => 'component_type',
+                        'operator' => '=',
+                        'value' => Compensation::MANUAL_EARNING,
+                    ],
+                ]
+            ],
+            [
+                'order' => 3,
                 'key' => 'statutory_contributions',
                 'name' => 'Statutory contributions',
                 'formulable_type' => Formulable::DEDUCTIONS,
@@ -78,7 +108,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 3,
+                'order' => 4,
                 'key' => 'statutory_benefits',
                 'name' => 'Statutory Benefits',
                 'formulable_type' => Formulable::EARNINGS,
@@ -112,7 +142,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 4,
+                'order' => 5,
                 'key' => 'taxable_income',
                 'name' => 'Taxable income',
                 'formulable_type' => Formulable::TAXABLE_INCOME,
@@ -136,7 +166,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 5,
+                'order' => 6,
                 'key' => 'nontaxable_income',
                 'name' => 'Nontaxable income',
                 'formulable_type' => Formulable::NONTAXABLE_INCOME,
@@ -160,7 +190,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 6,
+                'order' => 7,
                 'key' => 'income_taxes',
                 'name' => 'Income taxes',
                 'formulable_type' => Formulable::INCOME_TAX,
@@ -184,7 +214,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 7,
+                'order' => 8,
                 'key' => 'nonstatutory_deductions',
                 'name' => 'Nonstatutory deductions',
                 'formulable_type' => Formulable::DEDUCTIONS,
@@ -218,7 +248,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 8,
+                'order' => 9,
                 'key' => 'manual_deductions',
                 'name' => 'Manual deductions',
                 'formulable_type' => Formulable::DEDUCTIONS,
@@ -248,7 +278,7 @@ class SalaryStatementModuleRepositoryEloquent extends BaseRepositoryEloquent imp
                 ]
             ],
             [
-                'order' => 9,
+                'order' => 10,
                 'key' => 'net_income',
                 'name' => 'Net income',
                 'formulable_type' => Formulable::NET_INCOME,

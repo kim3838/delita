@@ -28,6 +28,7 @@ class SalaryStatementContext
         public Collection $pipelinePayload,
         public array $flags = [],
         public array $statementDetails,
+        public array $manualSalaryStatementItems = [],
         public array $totals = [],
         public SalaryStatementType $type = SalaryStatementType::DEFAULT
     ){
