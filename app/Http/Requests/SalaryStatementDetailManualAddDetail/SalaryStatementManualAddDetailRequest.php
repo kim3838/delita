@@ -22,6 +22,7 @@ class SalaryStatementManualAddDetailRequest extends FormRequest
         return [
             'account_id' => 'required|numeric|exists:accounts,id',
             'company_id' => 'required|numeric|exists:companies,id',
+            'refetch_payroll_ulid' => 'sometimes|required|string|exists:payrolls,ulid',
             'manual_add_details' => [
                 'array'
             ],
@@ -79,6 +80,9 @@ class SalaryStatementManualAddDetailRequest extends FormRequest
         return [
             'company_id.required' => 'Company id is required',
             'company_id.exists' => 'Company does not exist',
+            'refetch_payroll_ulid.required' => 'Refetch payroll ulid is required',
+            'refetch_payroll_ulid.exists' => 'Refetch payroll does not exist',
+            'refetch_payroll_ulid.string' => 'Refetch payroll ulid must be a string',
             'account_id.required' => 'Account id is required',
             'account_id.exists' => 'Account does not exist',
             'approval_setting_id.required' => 'Approval setting id is required',

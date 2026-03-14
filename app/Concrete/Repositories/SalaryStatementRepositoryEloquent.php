@@ -69,49 +69,55 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         'salary_statement_details.salary_statement_id',
                         DB::raw("CAST(component_values->>'$.employer_share.total' AS DECIMAL(21,6)) AS total_employer_share"),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value]) .")
                             THEN CAST(component_values->>'$.regular_pay' AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_basic_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::LEAVE_PAY->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::LEAVE_PAY->value]) .")
                             THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_leave_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value]) .")
                             THEN CAST(component_values->>'$.rest_day_pay' AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_rest_day_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::BASIC_PAY->value]) .")
                             THEN CAST(component_values->>'$.night_differential_pay' AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_night_differential_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::REGULAR_ALLOWANCE->value, Compensation::OVERTIME->value, Compensation::HOLIDAY_PAY->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_type IN (". implode(",", [Compensation::REGULAR_ALLOWANCE->value, Compensation::OVERTIME->value, Compensation::HOLIDAY_PAY->value]) .")
                             THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_non_basic_pay
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type IN ('". implode("','", [FormulableComponentSubType::MANUAL_EARNING->value]) ."')
+                            THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_manual_non_basic_pay
+                        "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value]) .")
                             THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_taxable_nonstatutory_bonus
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::BENEFIT->value]) .")
                             THEN CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_nontaxable_nonstatutory_bonus
                         "),
                         DB::raw("
-                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value])  .")
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::STATUTORY_BENEFIT_13TH_MONTH->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::STATUTORY_BENEFIT->value]) .")
                             THEN CAST(salary_statement_details.taxable AS DECIMAL(21,6)) + CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_13th_month_amount
@@ -129,6 +135,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         DB::raw("SUM(details_total_sub.total_rest_day_pay) AS total_rest_day_pay"),
                         DB::raw("SUM(details_total_sub.total_night_differential_pay) AS total_night_differential_pay"),
                         DB::raw("SUM(details_total_sub.total_non_basic_pay) AS total_non_basic_pay"),
+                        DB::raw("SUM(details_total_sub.total_manual_non_basic_pay) AS total_manual_non_basic_pay"),
 
                         DB::raw("SUM(details_total_sub.total_taxable_nonstatutory_bonus) AS total_taxable_nonstatutory_bonus"),
                         DB::raw("SUM(details_total_sub.total_nontaxable_nonstatutory_bonus) AS total_nontaxable_nonstatutory_bonus"),
@@ -145,6 +152,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             (
                                 details_total_sub.total_rest_day_pay +
                                 details_total_sub.total_night_differential_pay +
+                                details_total_sub.total_manual_non_basic_pay +
                                 details_total_sub.total_non_basic_pay
                             ) AS total_other_gross
                         "),

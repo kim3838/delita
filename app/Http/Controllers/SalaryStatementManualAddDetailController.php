@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\FormulableComponentSubType;
+use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\SalaryStatementDetailManualAddDetail\SalaryStatementManualAddDetailRequest;
 use App\Models\SalaryStatement;
+use App\Transformers\Payroll\ItemTransformer as PayrollItemTransformer;
 
 class SalaryStatementManualAddDetailController extends Controller
 {
@@ -19,6 +22,8 @@ class SalaryStatementManualAddDetailController extends Controller
         if($request->expectsJson()){
 
             $manualAddDetails = data_get($request->validated(), 'manual_add_details', []);
+            $refetchPayrollUlid = data_get($request->validated(), 'refetch_payroll_ulid', null);
+            $payroll = null;
 
             $manualSalaryStatementItems = collect($manualAddDetails)
                 ->groupBy('component_sub_type')
@@ -43,7 +48,16 @@ class SalaryStatementManualAddDetailController extends Controller
 
             $this->repository->manualAddDetails($salaryStatement, $manualSalaryStatementItems);
 
-            return ResponseJson::successfulResponse();
+            if(!empty($refetchPayrollUlid)){
+
+                $payroll = app(PayrollRepository::class)->show($refetchPayrollUlid);
+
+                $payroll = $payroll ? Fractal::item($payroll, PayrollItemTransformer::class) : $payroll;
+            }
+
+            return ResponseJson::successfulResponse([
+                'payroll' => $payroll,
+            ]);
         }
 
         abort(404);
