@@ -6,14 +6,14 @@ enum PayrollStatus: int implements BaseEnum
 {
     case DRAFT = 100;
     case WORKFLOW_IN_PROGRESS = 200;
-    case COMPLETED = 300;
+    case COMPLETE = 300;
 
     public function label(): string
     {
         return match ($this) {
             self::DRAFT => 'Draft',
             self::WORKFLOW_IN_PROGRESS => 'WiP',
-            self::COMPLETED => 'Completed',
+            self::COMPLETE => 'Complete',
         };
     }
 
