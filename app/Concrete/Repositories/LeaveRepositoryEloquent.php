@@ -51,6 +51,9 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
             ),function($builder) use ($filters){
                 $builder->whereBetween('leaves.date', [$filters->date_from, $filters->date_to]);
             })
+            ->when(isset($filters->date_from_onwards) && Carbon::createFromFormat('Y-m-d', $filters->date_from_onwards), function($builder) use ($filters){
+                $builder->where('leaves.date', '>=', $filters->date_from_onwards);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
                 "employee_sub.number AS employee_number",
@@ -82,12 +85,12 @@ class LeaveRepositoryEloquent extends BaseRepositoryEloquent implements LeaveRep
         return $this->hydratePaginationItems($paginator, $this->model());
     }
 
-    public function list($filters, $relations = []): Collection
+    public function list($filters, $relations = [], $orders = []): Collection
     {
-        $orders = [
+        $orders = empty($orders) ? [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
             ['field' => 'leaves.date', 'direction' => 'ASC'],
-        ];
+        ]: $orders;
 
         $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 

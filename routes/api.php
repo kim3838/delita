@@ -57,6 +57,7 @@ use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\Imports\EmployeeIdentificationController as EmployeeIdentificationImportController;
 use App\Http\Controllers\Internal\TaxCalculatorController;
+use App\Http\Controllers\LeaveTodayAndUpcomingController;
 use App\Http\Controllers\PayrollRequestController;
 use App\Http\Controllers\PreGeneratePayrollController;
 use App\Http\Controllers\HolidayController;
@@ -534,6 +535,8 @@ Route::group([
     Route::get('leaves-gate', [LeaveController::class, 'indexGate']);
     Route::post('leave', [LeaveController::class, 'store']);
     Route::delete('leaves', [LeaveController::class, 'batchDestroy']);
+
+    Route::get('leave-today-and-upcoming', [LeaveTodayAndUpcomingController::class, 'index']);
 
     Route::get('employee-portal-leaves', [EmployeePortalLeaveController::class, 'index']);
 
