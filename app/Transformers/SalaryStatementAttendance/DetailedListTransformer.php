@@ -31,7 +31,8 @@ class DetailedListTransformer extends TransformerAbstract
         return [
             'row_number' => $salaryStatementAttendance->row_number,
             'id' => $salaryStatementAttendance->id,
-            'date' => $salaryStatementAttendance->date->format('M j, Y'),
+            'date' => $salaryStatementAttendance->date->toDateString(),
+            'date_readable' => $salaryStatementAttendance->date->format('M j, Y'),
             'week_day_name' => $salaryStatementAttendance->date->format('l'),
             'status' => $salaryStatementAttendance->status?->toArray(),
             'day_type' => $salaryStatementAttendance->day_type?->toArray(),
