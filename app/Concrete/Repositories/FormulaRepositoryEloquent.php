@@ -5,7 +5,9 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Models\Formula;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements FormulaRepository
@@ -78,7 +80,7 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
         return $queryBuilder->first();
     }
 
-    public function defaultPresets()
+    public function defaultPresets(): Collection
     {
         return $this->model::query()
             ->whereIn('name', [
@@ -97,5 +99,21 @@ class FormulaRepositoryEloquent extends BaseRepositoryEloquent implements Formul
             ->orderBy('formulas.component_type', 'ASC')
             ->orderBy('formulas.name', 'ASC')
             ->get();
+    }
+
+    public function formulableComponentSubTypeFormula(FormulableComponentSubType $componentSubType): ?Formula
+    {
+        $formulaName = null;
+
+        switch($componentSubType){
+            case FormulableComponentSubType::MANUAL_EARNING:
+                $formulaName = 'Manual-Earning';
+                break;
+            case FormulableComponentSubType::MANUAL_DEDUCTION:
+                $formulaName = 'Manual-Deduction';
+                break;
+        }
+
+        return $this->model::query()->where('name', $formulaName)->first();
     }
 }

@@ -69,7 +69,7 @@ class SalaryStatementModuleServiceConcrete
 
     public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement, $rebuildStatementLevel = false, $manualSalaryStatementItems = []): void
     {
-        $debugEnabled = false;
+        $debugEnabled = true;
 
         if($rebuildStatementLevel){
 

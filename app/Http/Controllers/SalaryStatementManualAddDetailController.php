@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Enums\FormulableComponentSubType;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\SalaryStatementDetailManualAddDetail\SalaryStatementManualAddDetailRequest;
+use App\Models\CompanyFormula;
 use App\Models\SalaryStatement;
 use App\Transformers\Payroll\ItemTransformer as PayrollItemTransformer;
 
@@ -20,6 +22,10 @@ class SalaryStatementManualAddDetailController extends Controller
     public function store(SalaryStatementManualAddDetailRequest $request, $salaryStatementUlid)
     {
         if($request->expectsJson()){
+
+            $companyId = data_get($request->validated(), 'company_id');
+            $companyFormulaCollection = CompanyFormula::query()->where('company_id', $companyId)->get();
+            $companyFormulaIds = $companyFormulaCollection->pluck('formula_id')->toArray();
 
             $manualAddDetails = data_get($request->validated(), 'manual_add_details', []);
             $refetchPayrollUlid = data_get($request->validated(), 'refetch_payroll_ulid', null);
@@ -43,6 +49,23 @@ class SalaryStatementManualAddDetailController extends Controller
                     });
                 })
                 ->toArray();
+
+            $formulaRepository = app(FormulaRepository::class);
+
+            foreach($manualSalaryStatementItems as $componentSubType => $items){
+
+                $formulableComponentSubType = FormulableComponentSubType::tryFrom($componentSubType);
+
+                $formula = $formulaRepository->formulableComponentSubTypeFormula($formulableComponentSubType);
+
+                if(empty($formula)){
+                    return ResponseJson::notFoundResponse('Formula not found');
+                }
+
+                if(!in_array($formula->id, $companyFormulaIds)){
+                    return ResponseJson::notFoundResponse('Company formula not found');
+                }
+            }
 
             $salaryStatement = SalaryStatement::query()->where('ulid', $salaryStatementUlid)->firstOrFail();
 
