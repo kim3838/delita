@@ -75,20 +75,20 @@ class Development extends Seeder
 
         //Account 1001
         $account1001 = Account::query()->firstOrCreate(
-            ['number' => 'ACCOUNT20251001'],
-            ['number' => 'ACCOUNT20251001', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString()]
+            ['number' => 'HGT0KA4Q0048008'],
+            ['number' => 'HGT0KA4Q0048008', 'ulid' => Str::ulid(), 'email' => 'hgt0ka4q0048008@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString()]
         );
 
         //Account 1002
         $account1002 = Account::query()->firstOrCreate(
-            ['number' => 'ACCOUNT20251002'],
-            ['number' => 'ACCOUNT20251002', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'SAEHWA4Q0055342'],
+            ['number' => 'SAEHWA4Q0055342', 'ulid' => Str::ulid(), 'email' => 'saehwa4q0055342@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
         //Account 1003
         $account1003 = Account::query()->firstOrCreate(
-            ['number' => 'ACCOUNT20251003'],
-            ['number' => 'ACCOUNT20251003', 'ulid' => Str::ulid(), 'email' => 'luxere20@gmail.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'DSNVHF4Q0060294'],
+            ['number' => 'DSNVHF4Q0060294', 'ulid' => Str::ulid(), 'email' => '	dsnvhf4q0060294@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
          //Account chain, role creation
