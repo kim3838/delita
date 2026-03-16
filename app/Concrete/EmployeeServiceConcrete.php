@@ -45,12 +45,12 @@ class EmployeeServiceConcrete implements EmployeeServiceInterface
         $debugEnabled = false;
 
         $hasAtLeastOneEmployment = true;
-        $hasEmploymentProfileWithinPayrollPeriod = true;
+        $hasEmploymentProfileWithinPayrollPeriod = false;
 
         if($this->employee->employmentProfiles->isEmpty()){
             $hasAtLeastOneEmployment = false;
 
-            return [$payroll->isYearEnd, false, $hasAtLeastOneEmployment];
+            return [$payroll->isYearEnd, false, $hasAtLeastOneEmployment, $hasEmploymentProfileWithinPayrollPeriod];
         }
 
         $payrollStartDate = $payroll->start_date;
