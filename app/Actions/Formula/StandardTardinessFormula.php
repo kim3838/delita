@@ -38,7 +38,7 @@ class StandardTardinessFormula
             'component_values' => null,
             'taxable' => 0.0,
             'nontaxable' => 0.0,
-            'deduction' => 20.0,
+            'deduction' => 0.0,
             'contribution' => 0.0,
             'withholding_tax' => 0.0,
             'net' => 0.0,

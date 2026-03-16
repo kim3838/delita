@@ -138,9 +138,16 @@ class StandardWithHoldingTaxCompensationFormula
 
             if($taxAnnualize || $isFinalPayState){
 
-                $payrollYearSalaryStatements = $context->getPayrollYearSalaryStatements($context->payroll, $context->employee);
+                $payrollYearSalaryStatements = $context->getPayrollYearSalaryStatements($context->payroll, $context->employee, $context->salaryStatement, $context->flags['rebuild_statement_level']);
                 $payrollYearTotalTaxable = $context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'taxable');
                 $payrollYearTotalTaxWithheld = $context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'withholding_tax');
+
+                if ($debugEnabled) {
+                    _debug([
+                        'Payroll year (w/o period) total taxable' => $payrollYearTotalTaxable->toString(),
+                        'Payroll year (w/o period) total tax withheld' => $payrollYearTotalTaxWithheld->toString(),
+                    ]);
+                }
 
                 $payrollPeriodTotalTaxable = $totalTaxable;
                 $payrollPeriodWithholdingTax = BigDecimal::of($withholdingTax);
@@ -155,6 +162,7 @@ class StandardWithHoldingTaxCompensationFormula
 
                 if ($debugEnabled) {
                     _debug([
+                        'Rebuild statement level' => $context->flags['rebuild_statement_level'],
                         'Annual cutoff month' => $this->formulaSettingsPayrollCalendarMonth,
                         'Annual cutoff day' => $this->formulaSettingsPayrollCalendarMonthDay,
                         'Annual cutoff' => $annualCutoff->toDateString(),
@@ -192,6 +200,7 @@ class StandardWithHoldingTaxCompensationFormula
 
                     $context->statementDetails[] = [
                         'id' => null,
+                        'statement_level' => true,
                         'formulable_type' => Formulable::DEDUCTIONS->value,
                         'component_type' => DeductionEnum::TAX_ADJUSTMENT->value,
                         'component_sub_type' => FormulableComponentSubType::TAX_DEFICIT->value,
@@ -199,7 +208,7 @@ class StandardWithHoldingTaxCompensationFormula
                         'component_values' => $negativeAdjustmentComponentValues,
                         'taxable' => 0.0,
                         'nontaxable' => 0.0,
-                        'deduction' => $negativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'deduction' => $negativeAdjustment->toScale(6, RoundingMode::HalfUp)->toString(),
                         'contribution' => 0.0,
                         'withholding_tax' => 0.0,
                         'net' => 0.0,
@@ -233,13 +242,14 @@ class StandardWithHoldingTaxCompensationFormula
 
                     $context->statementDetails[] = [
                         'id' => null,
+                        'statement_level' => true,
                         'formulable_type' => Formulable::EARNINGS->value,
                         'component_type' => CompensationEnum::TAX_ADJUSTMENT->value,
                         'component_sub_type' => FormulableComponentSubType::TAX_REFUND->value,
                         'component_name' => FormulableComponentSubType::TAX_REFUND->label(),
                         'component_values' => $positiveAdjustmentComponentValues,
                         'taxable' => 0.0,
-                        'nontaxable' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'nontaxable' => $adjustment->toScale(6, RoundingMode::HalfUp)->toString(),
                         'deduction' => 0.0,
                         'contribution' => 0.0,
                         'withholding_tax' => 0.0,

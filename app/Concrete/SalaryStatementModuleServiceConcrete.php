@@ -71,10 +71,11 @@ class SalaryStatementModuleServiceConcrete
     {
         $debugEnabled = true;
 
-        if($rebuildStatementLevel){
-
-            $salaryStatement->details()->where('statement_level', true)->delete();
-        }
+        /**
+         * Rebuilding statement as isolated function only deletes statement details and not the totals from salary statement
+         * Requiring the exception of the currents period so it won't duplicate
+         **/
+        if($rebuildStatementLevel){$salaryStatement->details()->where('statement_level', '=', 1)->delete();}
 
         $statementLevelModules = $this->salaryStatementModules->where('statement_level', true);
 
@@ -178,7 +179,8 @@ class SalaryStatementModuleServiceConcrete
                 $salaryStatement->payroll->frequency_sequence == SemiMonthlySequence::FIRST_HALF,
             'is_semimonthly_and_is_2nd_half' => $salaryStatement->payroll->pay_frequency == PayFrequency::SEMIMONTHLY &&
                 $salaryStatement->payroll->frequency_sequence == SemiMonthlySequence::SECOND_HALF,
-            'is_weekly_and_is_last_split_of_month' => $isWeeklyAndIsLastSplitOfMonth
+            'is_weekly_and_is_last_split_of_month' => $isWeeklyAndIsLastSplitOfMonth,
+            'rebuild_statement_level' => $rebuildStatementLevel,
         ];
 
         $pipelineContext = new SalaryStatementContext(

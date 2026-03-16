@@ -49,7 +49,7 @@ class SalaryStatementContext
         ]);
     }
 
-    public function getPayrollYearSalaryStatements(?Payroll $payroll, ?Employee $employee): Collection
+    public function getPayrollYearSalaryStatements(?Payroll $payroll, ?Employee $employee, ?SalaryStatement $salaryStatement = null, $rebuildStatementLevel = false): Collection
     {
         $payroll = $payroll ?? $this->payroll;
         $employee = $employee ?? $this->employee;
@@ -58,11 +58,21 @@ class SalaryStatementContext
             'payroll_from_month' => $payroll->year . '-01',
             'payroll_to_month' => $payroll->year . '-' . str_pad($payroll->month, 2, '0', STR_PAD_LEFT)
         ];
+
         $calendarYearSalaryStatementFilters = (object)[
             'company_ids' => [$payroll->company->id],
             'payroll_year' => $payroll->year,
             ...$payrollMonthRange,
             'employee_ids' => [$employee->id],
+
+            /**
+             * Exclude current periods statement if rebuild statement level is enabled,
+             * Rebuilding statement as isolated function only deletes statement details and not the totals from salary statement
+             * Requiring the exception of the currents period so it won't duplicate
+             **/
+            ...($rebuildStatementLevel && !empty($salaryStatement) ? [
+                'not_salary_statement_ids' => [$salaryStatement->id]
+            ] : [])
         ];
 
         $calendarYearSalaryStatements = app(SalaryStatementRepository::class)
