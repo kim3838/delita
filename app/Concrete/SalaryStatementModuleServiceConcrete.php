@@ -69,7 +69,7 @@ class SalaryStatementModuleServiceConcrete
 
     public function processPipelineOfFormulasAndUpdateStatementSummary(SalaryStatement $salaryStatement, $rebuildStatementLevel = false, $manualSalaryStatementItems = []): void
     {
-        $debugEnabled = true;
+        $debugEnabled = false;
 
         /**
          * Rebuilding statement as isolated function only deletes statement details and not the totals from salary statement
