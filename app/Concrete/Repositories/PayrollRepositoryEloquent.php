@@ -109,7 +109,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                     DB::raw("COALESCE(SUM(salary_statement_sub.nontaxable), '0.000000') AS total_nontaxable"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.contribution), '0.000000') AS total_contribution"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
-                    DB::raw("COALESCE(SUM(salary_statement_sub.withholding_tax), '0.000000') AS total_tax_withheld"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.withholding_tax), '0.000000') AS total_withholding_tax"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.deduction), '0.000000') AS total_deduction"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_net"),
                 ] : []),

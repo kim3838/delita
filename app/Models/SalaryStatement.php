@@ -78,7 +78,7 @@ class SalaryStatement extends Model
         'total_nontaxable' => 'decimal:6',
         'total_contribution' => 'decimal:6',
         'total_employer_contribution_share' => 'decimal:6',
-        'total_tax_withheld' => 'decimal:6',
+        'total_withholding_tax' => 'decimal:6',
         'total_deduction' => 'decimal:6',
         'total_net' => 'decimal:6',
 

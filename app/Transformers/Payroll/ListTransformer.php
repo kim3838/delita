@@ -18,7 +18,7 @@ class ListTransformer extends TransformerAbstract
         $totalNontaxable = BigDecimal::of((string)$payroll->total_nontaxable);
         $totalContribution = BigDecimal::of((string)$payroll->total_contribution);
         $totalEmployerContributionShare = BigDecimal::of((string)$payroll->total_employer_contribution_share);
-        $totalTaxWithheld = BigDecimal::of((string)$payroll->total_tax_withheld);
+        $totalWithholdingTax = BigDecimal::of((string)$payroll->total_withholding_tax);
         $totalDeduction = BigDecimal::of((string)$payroll->total_deduction);
         $totalNet = BigDecimal::of((string)$payroll->total_net);
 
@@ -44,11 +44,11 @@ class ListTransformer extends TransformerAbstract
             'total_nontaxable' => $totalNontaxable->toScale(4, RoundingMode::HalfUp),
             'total_contribution' => $totalContribution->toScale(4, RoundingMode::HalfUp),
             'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
-            'total_tax_withheld' => $totalTaxWithheld->toScale(4, RoundingMode::HalfUp),
+            'total_withholding_tax' => $totalWithholdingTax->toScale(4, RoundingMode::HalfUp),
             'total_deduction' => $totalDeduction->toScale(4, RoundingMode::HalfUp),
             'total_net' => $totalNet->toScale(4, RoundingMode::HalfUp),
 
-            'date_range_readable' => $payroll->start_date->format('M j, Y') . ' - ' . $payroll->end_date->format('M j, Y'),
+            'date_range_readable' => $payroll->start_date->format('M d, Y') . ' - ' . $payroll->end_date->format('M d, Y'),
         ];
     }
 }

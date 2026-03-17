@@ -98,7 +98,7 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
                 DB::raw("payroll_sub.total_nontaxable"),
                 DB::raw("payroll_sub.total_contribution"),
                 DB::raw("payroll_sub.total_employer_contribution_share"),
-                DB::raw("payroll_sub.total_tax_withheld"),
+                DB::raw("payroll_sub.total_withholding_tax"),
                 DB::raw("payroll_sub.total_deduction"),
                 DB::raw("payroll_sub.total_net"),
 

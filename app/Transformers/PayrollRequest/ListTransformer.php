@@ -50,7 +50,7 @@ class ListTransformer extends TransformerAbstract
         $totalNontaxable = BigDecimal::of((string)$payrollRequest->total_nontaxable);
         $totalContribution = BigDecimal::of((string)$payrollRequest->total_contribution);
         $totalEmployerContributionShare = BigDecimal::of((string)$payrollRequest->total_employer_contribution_share);
-        $totalTaxWithheld = BigDecimal::of((string)$payrollRequest->total_tax_withheld);
+        $totalWithholdingTax = BigDecimal::of((string)$payrollRequest->total_withholding_tax);
         $totalDeduction = BigDecimal::of((string)$payrollRequest->total_deduction);
         $totalNet = BigDecimal::of((string)$payrollRequest->total_net);
 
@@ -74,7 +74,7 @@ class ListTransformer extends TransformerAbstract
                 'total_nontaxable' => $totalNontaxable->toScale(4, RoundingMode::HalfUp),
                 'total_contribution' => $totalContribution->toScale(4, RoundingMode::HalfUp),
                 'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
-                'total_tax_withheld' => $totalTaxWithheld->toScale(4, RoundingMode::HalfUp),
+                'total_withholding_tax' => $totalWithholdingTax->toScale(4, RoundingMode::HalfUp),
                 'total_deduction' => $totalDeduction->toScale(4, RoundingMode::HalfUp),
                 'total_net' => $totalNet->toScale(4, RoundingMode::HalfUp),
             ],

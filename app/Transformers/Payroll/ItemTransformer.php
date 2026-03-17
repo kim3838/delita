@@ -13,7 +13,7 @@ class ItemTransformer extends TransformerAbstract
     public function transform(Payroll $payroll): array
     {
         $totalEmployerContributionShare = BigDecimal::of((string)$payroll->total_employer_contribution_share);
-        $totalTaxWithheld = BigDecimal::of((string)$payroll->total_tax_withheld);
+        $totalWithholdingTax = BigDecimal::of((string)$payroll->total_withholding_tax);
         $totalNet = BigDecimal::of((string)$payroll->total_net);
 
         return [
@@ -33,10 +33,10 @@ class ItemTransformer extends TransformerAbstract
             'status' => $payroll->status?->toArray(),
 
             'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
-            'total_tax_withheld' => $totalTaxWithheld->toScale(4, RoundingMode::HalfUp),
+            'total_withholding_tax' => $totalWithholdingTax->toScale(4, RoundingMode::HalfUp),
             'total_net' => $totalNet->toScale(4, RoundingMode::HalfUp),
 
-            'date_range_readable' => $payroll->start_date->format('F j, Y') . ' - ' . $payroll->end_date->format('F j, Y'),
+            'date_range_readable' => $payroll->start_date->format('F d, Y') . ' - ' . $payroll->end_date->format('F d, Y'),
         ];
     }
 }
