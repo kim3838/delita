@@ -12,6 +12,7 @@ use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Enums\FormulableComponentSubType;
 use App\Enums\PayrollStatus;
+use App\Models\Hydrations\SalaryStatementTotals;
 use App\Models\SalaryStatement;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -270,6 +271,47 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function paginateWithTotals($filters, $relations = [], $orders = []): array
+    {
+        $orders = empty($orders) ? [
+            ...(in_array('payroll', $relations) ? [
+                ['field' => 'payroll_sub.year', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.month', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.pay_frequency', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.frequency_sequence', 'direction' => 'ASC'],
+                ['field' => 'payroll_sub.start_date', 'direction' => 'ASC'],
+
+            ] : []),
+
+            ['field' => 'employee_sub.number', 'direction' => 'ASC'],
+        ]: $orders;
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        /**
+         * Get totals before calling createPaginationFromBuilder
+         **/
+        $totals = $this->queryAsSub($queryBuilder, 'salary_statements_sub')
+            ->select([
+                DB::raw("SUM(salary_statements_sub.total_basic_gross) AS total_basic_gross"),
+                DB::raw("SUM(salary_statements_sub.taxable) AS total_taxable"),
+                DB::raw("SUM(salary_statements_sub.withholding_tax) AS total_withholding_tax"),
+                DB::raw("SUM(salary_statements_sub.net) AS total_net"),
+            ]);
+
+        /**
+         * Get paginator
+         **/
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return [
+            $this->hydratePaginationItems($paginator, $this->model()),
+            $this->hydrateCollection($totals->get(), SalaryStatementTotals::class),
+        ];
     }
 
     public function list($filters, $relations = []): Collection

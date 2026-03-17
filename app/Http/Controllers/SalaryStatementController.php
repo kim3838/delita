@@ -14,6 +14,7 @@ use App\Http\Requests\SalaryStatement\ViewSalaryStatementRequest;
 use App\Transformers\SalaryStatement\ExportTransformer;
 use App\Transformers\SalaryStatement\ItemTransformer;
 use App\Transformers\SalaryStatement\ListTransformer;
+use App\Transformers\SalaryStatement\TotalsTransformer;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as ExcelFacade;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -30,9 +31,15 @@ class SalaryStatementController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
-            return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters, ['payroll', 'detail_totals']), ListTransformer::class
-            ));
+            list($paginator, $totals) = $this->repository->paginateWithTotals($filters, ['payroll', 'detail_totals']);
+
+            $salaryStatements = Fractal::collection($paginator, ListTransformer::class);
+            $salaryStatementTotals = Fractal::item($totals->first(), TotalsTransformer::class);
+
+            return ResponseJson::successfulResponse([
+                'salary_statement_totals' => $salaryStatementTotals,
+                'salary_statements' => $salaryStatements,
+            ]);
         }
 
         abort(404);
