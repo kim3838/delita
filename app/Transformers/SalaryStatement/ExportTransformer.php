@@ -59,14 +59,14 @@ class ExportTransformer extends TransformerAbstract
             'type' => $salaryStatement->type?->label(),
             'is_paid' => $salaryStatement->is_paid ? 'Yes' : 'No',
 
-            'basic_gross' => $basicGross->toScale(2, RoundingMode::HalfUp),
-            'other_gross' => $otherGross->toScale(2, RoundingMode::HalfUp),
-            'taxable' => $taxable->toScale(2, RoundingMode::HalfUp),
-            'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp),
-            'contribution' => $contribution->toScale(2, RoundingMode::HalfUp),
-            'withholding_tax' => $withholding_tax->toScale(2, RoundingMode::HalfUp),
-            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp),
-            'net' => $net->toScale(2, RoundingMode::HalfUp),
+            'basic_gross' => $basicGross->toScale(4, RoundingMode::HalfUp),
+            'other_gross' => $otherGross->toScale(4, RoundingMode::HalfUp),
+            'taxable' => $taxable->toScale(4, RoundingMode::HalfUp),
+            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp),
+            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp),
+            'withholding_tax' => $withholding_tax->toScale(4, RoundingMode::HalfUp),
+            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp),
+            'net' => $net->toScale(4, RoundingMode::HalfUp),
         ];
     }
 }

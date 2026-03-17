@@ -66,9 +66,9 @@ class StandardNetIncomeFormula
 
         $componentValues = [
             'type' => SalaryStatementDetailComponentValueType::NET->value,
-            'gross' => $gross->toScale(2, RoundingMode::HalfUp)->toString(),
-            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp)->toString(),
-            'net' => $totalNet->toScale(2, RoundingMode::HalfUp)->toString(),
+            'gross' => $gross->toScale(4, RoundingMode::HalfUp)->toString(),
+            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp)->toString(),
+            'net' => $totalNet->toScale(4, RoundingMode::HalfUp)->toString(),
         ];
 
         $statementDetail = [

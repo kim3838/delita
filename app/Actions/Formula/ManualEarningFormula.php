@@ -54,7 +54,7 @@ class ManualEarningFormula
                             'component_sub_type' => $componentSubType,
                             'component_name' => $name,
                             'component_values' => null,
-                            'taxable' => $taxableEarning->toScale(2, RoundingMode::HalfUp)->toString(),
+                            'taxable' => $taxableEarning->toScale(4, RoundingMode::HalfUp)->toString(),
                             'nontaxable' => 0.0,
                             'deduction' => 0.0,
                             'contribution' => 0.0,
@@ -68,7 +68,7 @@ class ManualEarningFormula
             }
         }
 
-        $context->totals['taxable'] = $totalTaxable->toScale(2, RoundingMode::HalfUp)->toString();
+        $context->totals['taxable'] = $totalTaxable->toScale(4, RoundingMode::HalfUp)->toString();
 
         return $next($context);
     }

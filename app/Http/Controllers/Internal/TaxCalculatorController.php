@@ -89,14 +89,14 @@ class TaxCalculatorController extends Controller
             return ResponseJson::successfulResponse([
                 'result' => [
                     'contributions' => [
-                        'sss' => $sssContribution->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'philhealth' => $philHealthContribution->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'pag_ibig' => $pagIbigContribution->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'sss' => $sssContribution->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'philhealth' => $philHealthContribution->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'pag_ibig' => $pagIbigContribution->toScale(4, RoundingMode::HalfUp)->toString(),
                     ],
                     'taxable' => [
-                        'taxable' => $taxable->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax' => $withholdingTaxCompensation->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'net' => $net->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'taxable' => $taxable->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax' => $withholdingTaxCompensation->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'net' => $net->toScale(4, RoundingMode::HalfUp)->toString(),
                     ]
                 ]
             ]);

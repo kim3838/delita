@@ -32,9 +32,9 @@ class ItemTransformer extends TransformerAbstract
             'remarks' => $payroll->remarks,
             'status' => $payroll->status?->toArray(),
 
-            'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(2, RoundingMode::HalfUp),
-            'total_tax_withheld' => $totalTaxWithheld->toScale(2, RoundingMode::HalfUp),
-            'total_net' => $totalNet->toScale(2, RoundingMode::HalfUp),
+            'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
+            'total_tax_withheld' => $totalTaxWithheld->toScale(4, RoundingMode::HalfUp),
+            'total_net' => $totalNet->toScale(4, RoundingMode::HalfUp),
 
             'date_range_readable' => $payroll->start_date->format('F j, Y') . ' - ' . $payroll->end_date->format('F j, Y'),
         ];

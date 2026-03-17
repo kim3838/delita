@@ -92,12 +92,12 @@ class ItemTransformer extends TransformerAbstract
             'total_leave_with_pay' => $salaryStatement->total_leave_with_pay,
             'total_absent' => $salaryStatement->total_absent,
 
-            'taxable' => $taxable->toScale(2, RoundingMode::HalfUp),
-            'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp),
-            'contribution' => $contribution->toScale(2, RoundingMode::HalfUp),
-            'withholding_tax' => $withholding_tax->toScale(2, RoundingMode::HalfUp),
-            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp),
-            'net' => $net->toScale(2, RoundingMode::HalfUp),
+            'taxable' => $taxable->toScale(4, RoundingMode::HalfUp),
+            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp),
+            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp),
+            'withholding_tax' => $withholding_tax->toScale(4, RoundingMode::HalfUp),
+            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp),
+            'net' => $net->toScale(4, RoundingMode::HalfUp),
 
             'statement_attendances' => $statementAttendances,
             'statement_details' => $statementDetails,

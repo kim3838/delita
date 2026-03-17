@@ -162,13 +162,13 @@ class StandardPagIBIGContributionFormula
 
         $contributionPercentage = $employeeShareValue->plus($employerShareValue);
 
-        $result['total'] = (string)$premiumBaseCredit->multipliedBy($contributionPercentage)->toScale(2, RoundingMode::HalfUp);
+        $result['total'] = (string)$premiumBaseCredit->multipliedBy($contributionPercentage)->toScale(4, RoundingMode::HalfUp);
 
-        $employeeShareRegular = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(2, RoundingMode::HalfUp);
+        $employeeShareRegular = (string)$premiumBaseCredit->multipliedBy($employeeShareValue)->toScale(4, RoundingMode::HalfUp);
         $result['employee_share']['regular'] = $employeeShareRegular;
         $result['employee_share']['total'] = $employeeShareRegular;
 
-        $employerShareRegular = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(2, RoundingMode::HalfUp);
+        $employerShareRegular = (string)$premiumBaseCredit->multipliedBy($employerShareValue)->toScale(4, RoundingMode::HalfUp);
         $result['employer_share']['regular'] = $employerShareRegular;
         $result['employer_share']['total'] = $employerShareRegular;
 

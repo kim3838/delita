@@ -25,10 +25,10 @@ class NonComputableListTransformer extends TransformerAbstract
             'component_sub_type' => $salaryStatementAttendancePayrollComponent->component_sub_type,
             'component_name' => $salaryStatementAttendancePayrollComponent->component_name,
 
-            'regular_pay' => $regularPay->isZero() ? '--' : $regularPay->toScale(2, RoundingMode::HalfUp),
-            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : $nightDifferentialPay->toScale(2, RoundingMode::HalfUp),
-            'rest_day_pay' => $restDayPay->isZero() ? '--' : $restDayPay->toScale(2, RoundingMode::HalfUp),
-            'total' => $total->isZero() ? '--' : $total->toScale(2, RoundingMode::HalfUp),
+            'regular_pay' => $regularPay->isZero() ? '--' : $regularPay->toScale(4, RoundingMode::HalfUp),
+            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : $nightDifferentialPay->toScale(4, RoundingMode::HalfUp),
+            'rest_day_pay' => $restDayPay->isZero() ? '--' : $restDayPay->toScale(4, RoundingMode::HalfUp),
+            'total' => $total->isZero() ? '--' : $total->toScale(4, RoundingMode::HalfUp),
         ];
     }
 }

@@ -178,15 +178,15 @@ class StandardPagIBIGContributionTests
             $testCaseExpected = [
                 'employee_share' =>
                     [
-                        'regular' => BigDecimal::of($testCase['expected']['employee_share']['regular'])->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'total' => BigDecimal::of($testCase['expected']['employee_share']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+                        'regular' => BigDecimal::of($testCase['expected']['employee_share']['regular'])->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'total' => BigDecimal::of($testCase['expected']['employee_share']['total'])->toScale(4, RoundingMode::HalfUp)->toString()
                     ],
                 'employer_share' =>
                     [
-                        'regular' => BigDecimal::of($testCase['expected']['employer_share']['regular'])->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'total' => BigDecimal::of($testCase['expected']['employer_share']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+                        'regular' => BigDecimal::of($testCase['expected']['employer_share']['regular'])->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'total' => BigDecimal::of($testCase['expected']['employer_share']['total'])->toScale(4, RoundingMode::HalfUp)->toString()
                     ],
-                'total' => BigDecimal::of($testCase['expected']['total'])->toScale(2, RoundingMode::HalfUp)->toString()
+                'total' => BigDecimal::of($testCase['expected']['total'])->toScale(4, RoundingMode::HalfUp)->toString()
             ];
 
             if(

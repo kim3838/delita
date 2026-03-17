@@ -29,12 +29,12 @@ class ListTransformer extends TransformerAbstract
             'component_name' => $salaryStatementDetail->component_name,
             'component_value_type' => $componentValueType,
             'component_values' => empty($componentValues) ? [] : [$componentValues],
-            'taxable' => $taxable->isZero() ? '--' : $taxable->toScale(2, RoundingMode::HalfUp),
-            'nontaxable' => $nontaxable->isZero() ? '--' : $nontaxable->toScale(2, RoundingMode::HalfUp),
-            'contribution' => $contribution->isZero() ? '--' : $contribution->toScale(2, RoundingMode::HalfUp),
-            'withholding_tax' => $withholding_tax->isZero() ? '--' : $withholding_tax->toScale(2, RoundingMode::HalfUp),
-            'deduction' => $deduction->isZero() ? '--' : $deduction->toScale(2, RoundingMode::HalfUp),
-            'net' => $net->isZero() ? '--' : $net->toScale(2, RoundingMode::HalfUp),
+            'taxable' => $taxable->isZero() ? '--' : $taxable->toScale(4, RoundingMode::HalfUp),
+            'nontaxable' => $nontaxable->isZero() ? '--' : $nontaxable->toScale(4, RoundingMode::HalfUp),
+            'contribution' => $contribution->isZero() ? '--' : $contribution->toScale(4, RoundingMode::HalfUp),
+            'withholding_tax' => $withholding_tax->isZero() ? '--' : $withholding_tax->toScale(4, RoundingMode::HalfUp),
+            'deduction' => $deduction->isZero() ? '--' : $deduction->toScale(4, RoundingMode::HalfUp),
+            'net' => $net->isZero() ? '--' : $net->toScale(4, RoundingMode::HalfUp),
         ];
     }
 }

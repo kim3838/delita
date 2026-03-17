@@ -33,10 +33,10 @@ class ListTransformer extends TransformerAbstract
             'component_type' => $salaryStatementAttendance->component_type?->toArray(),
             'component_name' => $salaryStatementAttendance->component_name,
 
-            'regular_pay' => $regularPay->toScale(2, RoundingMode::HalfUp)->toString(),
-            'night_differential_pay' => $nightDifferentialPay->toScale(2, RoundingMode::HalfUp)->toString(),
-            'rest_day_pay' => $restDayPay->toScale(2, RoundingMode::HalfUp)->toString(),
-            'total' => $total->toScale(2, RoundingMode::HalfUp)->toString(),
+            'regular_pay' => $regularPay->toScale(4, RoundingMode::HalfUp)->toString(),
+            'night_differential_pay' => $nightDifferentialPay->toScale(4, RoundingMode::HalfUp)->toString(),
+            'rest_day_pay' => $restDayPay->toScale(4, RoundingMode::HalfUp)->toString(),
+            'total' => $total->toScale(4, RoundingMode::HalfUp)->toString(),
         ];
     }
 }

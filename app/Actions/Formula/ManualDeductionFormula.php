@@ -52,7 +52,7 @@ class ManualDeductionFormula
                             'component_values' => null,
                             'taxable' => 0.0,
                             'nontaxable' => 0.0,
-                            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp)->toString(),
+                            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp)->toString(),
                             'contribution' => 0.0,
                             'withholding_tax' => 0.0,
                             'net' => 0.0,

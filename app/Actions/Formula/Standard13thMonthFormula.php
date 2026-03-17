@@ -147,7 +147,7 @@ class Standard13thMonthFormula
 
                     if ($debugEnabled) {
                         _debug([
-                            'Projected basic pay of month ' . $month => $projectedBasic->toScale(2, RoundingMode::HalfUp)->toString() . ''
+                            'Projected basic pay of month ' . $month => $projectedBasic->toScale(4, RoundingMode::HalfUp)->toString() . ''
                         ]);
                     }
 
@@ -195,15 +195,15 @@ class Standard13thMonthFormula
                     'Reconcile payroll month' => $this->formulaSettingsReconcilePayrollMonth,
                     'Payroll year' => $context->payroll->year,
                     'Payroll month' => $context->payroll->month,
-                    'Total actual basic gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
-                    'Projected basic gross' => $projectedBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
+                    'Total actual basic gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'Projected basic gross' => $projectedBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
 
-                    'Payroll year nonstatutory nontaxable bonus' => $payrollYearNonTaxableNonstatutoryBonus->toScale(2, RoundingMode::HalfUp)->toString(),
-                    'Total nontaxable bonus' => $totalNontaxableBonus->toScale(2, RoundingMode::HalfUp)->toString(),
-                    'Total taxable bonus' => $totalTaxableBonus->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th month' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th month non taxable' => $_13thMonthNonTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th month taxable' => $_13thMonthTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
+                    'Payroll year nonstatutory nontaxable bonus' => $payrollYearNonTaxableNonstatutoryBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'Total nontaxable bonus' => $totalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'Total taxable bonus' => $totalTaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th month' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th month non taxable' => $_13thMonthNonTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th month taxable' => $_13thMonthTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
                 ]);
             }
 
@@ -263,10 +263,10 @@ class Standard13thMonthFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_NEGATIVE_ADJUSTMENT->value,
-                        '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
-                        '13th_month_actual' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                        '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                        '13th_month_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+                        '13th_month_actual' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                        '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                        '13th_month_adjustment' => $adjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                     ];
 
                     $taxableNegativeAdjustment = $taxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->isGreaterthan(BigDecimal::zero())
@@ -275,8 +275,8 @@ class Standard13thMonthFormula
 
                     if ($debugEnabled) {
                         _debug([
-                            'Taxable negative adjustment' => $taxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
-                            'Nontaxable negative adjustment' => $nontaxableNegativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                            'Taxable negative adjustment' => $taxableNegativeAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
+                            'Nontaxable negative adjustment' => $nontaxableNegativeAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                         ]);
                     }
 
@@ -341,16 +341,16 @@ class Standard13thMonthFormula
                     ){
                         $positiveAdjustmentComponentValues = [
                             'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_POSITIVE_ADJUSTMENT->value,
-                            '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
-                            '13th_month_actual' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                            '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                            '13th_month_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                            '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+                            '13th_month_actual' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                            '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                            '13th_month_adjustment' => $adjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                         ];
 
                         if ($debugEnabled) {
                             _debug([
-                                'Taxable positive adjustment' => $taxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
-                                'Nontaxable positive adjustment' => $nontaxableAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                                'Taxable positive adjustment' => $taxableAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
+                                'Nontaxable positive adjustment' => $nontaxableAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                             ]);
                         }
 
@@ -374,11 +374,11 @@ class Standard13thMonthFormula
 
                 if ($debugEnabled) {
                     _debug([
-                        'Payroll year nonstatutory bonus' => $payrollYearNonstatutoryBonus->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'Assumed actual with projected 13th month' => $assumedActualWithProjected13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'New 13th month with adjustment' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'Payroll year nonstatutory bonus' => $payrollYearNonstatutoryBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'Assumed actual with projected 13th month' => $assumedActualWithProjected13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'New 13th month with adjustment' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
                         'Adjustment' => $adjustment->toString(),
-                        'Adjustment scale' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'Adjustment scale' => $adjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                     ]);
                 }
             }
@@ -415,10 +415,10 @@ class Standard13thMonthFormula
                     'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH->value,
                     '13th_month_is_prorated' => $this->prorate13thMonth,
                     '13th_month_is_projected' => $projectedBasicGross->isGreaterThan(BigDecimal::zero()),
-                    '13th_month_actual_basic_gross' => $actualTotalBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th_month_projected_basic_gross' => $projectedBasicGross->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th_month_total_basic_gross' => $actualTotalBasicGross->plus($projectedBasicGross)->toScale(2, RoundingMode::HalfUp)->toString(),
-                    '13th_month_amount' => $_13thMonth->toScale(2, RoundingMode::HalfUp)->toString(),
+                    '13th_month_actual_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th_month_projected_basic_gross' => $projectedBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th_month_total_basic_gross' => $actualTotalBasicGross->plus($projectedBasicGross)->toScale(4, RoundingMode::HalfUp)->toString(),
+                    '13th_month_amount' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
                 ];
 
                 $statementDetail['component_values'] = $componentValues;

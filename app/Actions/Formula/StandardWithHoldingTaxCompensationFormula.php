@@ -186,15 +186,15 @@ class StandardWithHoldingTaxCompensationFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_DEFICIT->value,
-                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_adjustment' => $negativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_adjustment' => $negativeAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                     ];
 
                     if ($debugEnabled) {
                         _debug([
-                            'Withholding tax negative adjustment' => $negativeAdjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                            'Withholding tax negative adjustment' => $negativeAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                         ]);
                     }
 
@@ -221,15 +221,15 @@ class StandardWithHoldingTaxCompensationFormula
                 if($adjustment->toScale(2, RoundingMode::HalfUp)->isGreaterThan(BigDecimal::zero())){
                     $positiveAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_REFUND->value,
-                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(2, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax_adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_adjustment' => $adjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                     ];
 
                     if ($debugEnabled) {
                         _debug([
-                            'Withholding tax positive adjustment' => $adjustment->toScale(2, RoundingMode::HalfUp)->toString(),
+                            'Withholding tax positive adjustment' => $adjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                         ]);
                     }
 

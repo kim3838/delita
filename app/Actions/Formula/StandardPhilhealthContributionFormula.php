@@ -155,13 +155,13 @@ class StandardPhilhealthContributionFormula
             $premium = $compensation->multipliedBy($rateValue);
         }
 
-        $result['total'] = (string)$premium->toScale(2, RoundingMode::HalfUp);
+        $result['total'] = (string)$premium->toScale(4, RoundingMode::HalfUp);
 
-        $employeeShareRegular = (string)$premium->multipliedBy($employeeShareValue)->toScale(2, RoundingMode::HalfUp);
+        $employeeShareRegular = (string)$premium->multipliedBy($employeeShareValue)->toScale(4, RoundingMode::HalfUp);
         $result['employee_share']['regular'] = $employeeShareRegular;
         $result['employee_share']['total'] = $employeeShareRegular;
 
-        $employerShareRegular = (string)$premium->multipliedBy($employerShareValue)->toScale(2, RoundingMode::HalfUp);
+        $employerShareRegular = (string)$premium->multipliedBy($employerShareValue)->toScale(4, RoundingMode::HalfUp);
         $result['employer_share']['regular'] = $employerShareRegular;
         $result['employer_share']['total'] = $employerShareRegular;
 
