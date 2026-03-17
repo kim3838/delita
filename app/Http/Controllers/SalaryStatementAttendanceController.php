@@ -10,6 +10,7 @@ use App\Http\Requests\SalaryStatement\ExportSalaryStatementRequest;
 use App\Http\Requests\SalaryStatement\ListSalaryStatementRequest;
 use App\Transformers\SalaryStatementAttendance\ListTransformer;
 use App\Transformers\SalaryStatementAttendance\PerDayStatementTotalsExportTransformer;
+use App\Transformers\SalaryStatementAttendance\TotalsTransformer;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as ExcelFacade;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -31,9 +32,15 @@ class SalaryStatementAttendanceController extends Controller
                 unset($filters->employee_ids);
             }
 
-            return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters, ['salary_statement', 'payroll_components']), ListTransformer::class
-            ));
+            list($paginator, $totals) = $this->repository->paginateWithTotals($filters, ['salary_statement', 'payroll_components']);
+
+            $perDayStatements = Fractal::collection($paginator, ListTransformer::class);
+            $perDayStatementTotals = Fractal::item($totals->first(), TotalsTransformer::class);
+
+            return ResponseJson::successfulResponse([
+                'per_day_statement_totals' => $perDayStatementTotals,
+                'per_day_statements' => $perDayStatements,
+            ]);
         }
 
         abort(404);

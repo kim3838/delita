@@ -297,10 +297,10 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
          **/
         $totals = $this->queryAsSub($queryBuilder, 'salary_statements_sub')
             ->select([
-                DB::raw("SUM(salary_statements_sub.total_basic_gross) AS total_basic_gross"),
-                DB::raw("SUM(salary_statements_sub.taxable) AS total_taxable"),
-                DB::raw("SUM(salary_statements_sub.withholding_tax) AS total_withholding_tax"),
-                DB::raw("SUM(salary_statements_sub.net) AS total_net"),
+                DB::raw("SUM(salary_statements_sub.total_basic_gross) AS basic_gross"),
+                DB::raw("SUM(salary_statements_sub.taxable) AS taxable"),
+                DB::raw("SUM(salary_statements_sub.withholding_tax) AS withholding_tax"),
+                DB::raw("SUM(salary_statements_sub.net) AS net"),
             ]);
 
         /**

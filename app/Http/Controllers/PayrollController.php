@@ -13,10 +13,10 @@ use App\Http\Requests\Payroll\ListPayrollRequest;
 use App\Http\Requests\Payroll\StorePayrollRequest;
 use App\Http\Requests\Payroll\ViewPayrollRequest;
 use App\Models\Company;
-use App\Transformers\Payroll\BasicTransformer;
 use App\Transformers\Payroll\ItemTransformer;
 use App\Transformers\Payroll\ListTransformer;
 use App\Transformers\Payroll\SelectionTransformer;
+use App\Transformers\Payroll\TotalsTransformer;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -31,10 +31,15 @@ class PayrollController extends Controller
 
             $filters = json_decode($request->get('filters'));
 
-            return ResponseJson::successfulResponse(Fractal::collection(
-                $this->repository->paginate($filters, ['salary_statement']),
-                ListTransformer::class
-            ));
+            list($paginator, $totals) = $this->repository->paginateWithTotals($filters, ['salary_statement']);
+
+            $payrolls = Fractal::collection($paginator, ListTransformer::class);
+            $payrollTotals = Fractal::item($totals->first(), TotalsTransformer::class);
+
+            return ResponseJson::successfulResponse([
+                'payroll_totals' => $payrollTotals,
+                'payrolls' => $payrolls,
+            ]);
         }
 
         abort(404);

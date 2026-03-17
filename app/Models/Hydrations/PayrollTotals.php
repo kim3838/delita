@@ -4,11 +4,10 @@ namespace App\Models\Hydrations;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SalaryStatementTotals extends Model
+class PayrollTotals extends Model
 {
     protected $casts = [
-        'basic_gross' => 'decimal:6',
-        'taxable' => 'decimal:6',
+        'employer_contribution_share' => 'decimal:6',
         'withholding_tax' => 'decimal:6',
         'net' => 'decimal:6',
     ];

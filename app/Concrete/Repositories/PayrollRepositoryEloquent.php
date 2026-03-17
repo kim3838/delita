@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\PayrollStatus;
+use App\Models\Hydrations\PayrollTotals;
 use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -137,6 +138,42 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function paginateWithTotals($filters, $relations): array
+    {
+        $orders = [
+            ['field' => 'payrolls.year', 'direction' => 'ASC'],
+            ['field' => 'payrolls.month', 'direction' => 'ASC'],
+            ['field' => 'payrolls.pay_frequency', 'direction' => 'ASC'],
+            ['field' => 'payrolls.frequency_sequence', 'direction' => 'ASC'],
+            ['field' => 'payrolls.start_date', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
+
+        $this->setOrdersOnBuilder($queryBuilder, $orders);
+
+        /**
+         * Get totals before calling createPaginationFromBuilder
+         **/
+        $totals = $this->queryAsSub($queryBuilder, 'payrolls_sub')
+            ->select([
+                DB::raw("SUM(payrolls_sub.total_employer_contribution_share) AS employer_contribution_share"),
+                DB::raw("SUM(payrolls_sub.total_taxable) AS taxable"),
+                DB::raw("SUM(payrolls_sub.total_withholding_tax) AS withholding_tax"),
+                DB::raw("SUM(payrolls_sub.total_net) AS net"),
+            ]);
+
+        /**
+         * Get paginator
+         **/
+        $paginator = $this->createPaginationFromBuilder($queryBuilder);
+
+        return [
+            $this->hydratePaginationItems($paginator, $this->model()),
+            $this->hydrateCollection($totals->get(), PayrollTotals::class),
+        ];
     }
 
     public function list($filters): Collection

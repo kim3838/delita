@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Transformers\SalaryStatement;
+namespace App\Transformers\Payroll;
 
-use App\Models\Hydrations\SalaryStatementTotals;
+use App\Models\Hydrations\PayrollTotals;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class TotalsTransformer extends TransformerAbstract
 {
-    public function transform(SalaryStatementTotals $salaryStatementTotals): array
+    public function transform(PayrollTotals $salaryStatementTotals): array
     {
-        $totalBasicGross = BigDecimal::of($salaryStatementTotals->basic_gross);
+        $totalEmployerContributionShare = BigDecimal::of($salaryStatementTotals->employer_contribution_share);
         $totalTaxable = BigDecimal::of($salaryStatementTotals->taxable);
         $totalWithholdingTax = BigDecimal::of($salaryStatementTotals->withholding_tax);
         $totalNet = BigDecimal::of($salaryStatementTotals->net);
 
         return [
-            'basic_gross' => $totalBasicGross->toScale(4, RoundingMode::HalfUp),
+            'employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
             'taxable' => $totalTaxable->toScale(4, RoundingMode::HalfUp),
             'withholding_tax' => $totalWithholdingTax->toScale(4, RoundingMode::HalfUp),
             'net' => $totalNet->toScale(4, RoundingMode::HalfUp),
