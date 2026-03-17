@@ -25,7 +25,7 @@ class BasicTransformer extends TransformerAbstract
             'remarks' => $payroll->remarks,
             'status' => $payroll->status?->toArray(),
 
-            'date_range_readable' => $payroll->start_date->format('M j, Y') . ' - ' . $payroll->end_date->format('M j, Y'),
+            'date_range_readable' => $payroll->start_date->format('M d, Y') . ' - ' . $payroll->end_date->format('M d, Y'),
         ];
     }
 }

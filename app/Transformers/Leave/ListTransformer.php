@@ -24,7 +24,7 @@ class ListTransformer extends TransformerAbstract
             'id' => $leave->id,
             'ulid' => $leave->ulid,
             'date' => $leave->date->toDateString(),
-            'date_readable' => $leave->date->format('M j, Y'),
+            'date_readable' => $leave->date->format('M d, Y'),
             'week_day_name' => $leave->date->format('l'),
             'employee' => [
                 'id' => $employee->id,

@@ -36,10 +36,10 @@ class ExportTransformer extends TransformerAbstract
         $payrollPayFrequencySequenceReadable = empty($payrollPayFrequencySequence) ? '' : $payrollPayFrequencySequence->label();
 
         $payrollStartDate = Carbon::parse($salaryStatement->payroll_start_date);
-        $payrollStartDateReadable = $payrollStartDate->format('M j, Y');
+        $payrollStartDateReadable = $payrollStartDate->format('M d, Y');
 
         $payrollEndDate = Carbon::parse($salaryStatement->payroll_end_date);
-        $payrollEndDateReadable = $payrollEndDate->format('M j, Y');
+        $payrollEndDateReadable = $payrollEndDate->format('M d, Y');
 
         return [
             'payroll_number' => $salaryStatement->payroll_number,

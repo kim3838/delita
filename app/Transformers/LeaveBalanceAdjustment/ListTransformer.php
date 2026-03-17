@@ -26,7 +26,7 @@ class ListTransformer extends TransformerAbstract
             'balance' => $leaveBalanceAdjustment->balance,
             'remarks' => $leaveBalanceAdjustment->remarks,
             'effective_date' => $leaveBalanceAdjustment->effective_date->toDateString(),
-            'effective_date_readable' => $leaveBalanceAdjustment->effective_date->format('M j, Y'),
+            'effective_date_readable' => $leaveBalanceAdjustment->effective_date->format('M d, Y'),
             'employee' => [
                 'number' => $leaveBalanceAdjustment->employee_number,
                 'full_name' => $leaveBalanceAdjustment->employee_full_name,

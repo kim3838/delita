@@ -17,11 +17,11 @@ class ListTransformer extends TransformerAbstract
             'type' => $model->type?->toArray(),
             'holiday_pay_forfeiture' => $model->holiday_pay_forfeiture,
             'date' => $model->date->toDateString(),
-            'date_readable' => $model->date->format('M j, Y'),
+            'date_readable' => $model->date->format('M d, Y'),
             'recurring' => intval($model->recurring),
             'active' => intval($model->active),
             'effective_date' => $model->effective_date->toDateString(),
-            'effective_date_readable' => $model->date->format('M j, Y'),
+            'effective_date_readable' => $model->date->format('M d, Y'),
         ];
     }
 }

@@ -24,7 +24,7 @@ class ListTransformer extends TransformerAbstract
             'employee_full_name' => $salaryStatementAttendance->employee_full_name,
 
             'date' => $salaryStatementAttendance->date?->toDateString(),
-            'date_readable' => $salaryStatementAttendance->date?->format('M j, Y'),
+            'date_readable' => $salaryStatementAttendance->date?->format('M d, Y'),
             'week_day_name' => $salaryStatementAttendance->date?->format('l'),
             'status' => $salaryStatementAttendance->status?->toArray(),
             'day_type' => $salaryStatementAttendance->day_type?->toArray(),

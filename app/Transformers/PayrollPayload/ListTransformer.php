@@ -34,7 +34,7 @@ class ListTransformer extends TransformerAbstract
 
         $startDate = $payload->start->format('Ymd');
         $endDate = $payload->end->format('Ymd');
-        $dateRangeReadable = $payload->start->format('M j, Y') . ' - ' . $payload->end->format('M j, Y');
+        $dateRangeReadable = $payload->start->format('M d, Y') . ' - ' . $payload->end->format('M d, Y');
 
         return [
             'id' => "{$year}-{$month}-{$payFrequencyLabelUppercase}" . ($frequencySequenceFlag ? "-{$frequencySequenceFlag}" : '') . ("-{$startDate}-{$endDate}"),
@@ -47,9 +47,9 @@ class ListTransformer extends TransformerAbstract
             'frequency_sequence' => $payload->frequency_sequence?->toArray(),
             'frequency_sequence_readable' => $payload->frequency_sequence?->label(),
             'start' => $payload->start?->toDateString(),
-            'start_readable' => $payload->start?->format('M j, Y'),
+            'start_readable' => $payload->start?->format('M d, Y'),
             'end' => $payload->end?->toDateString(),
-            'end_readable' => $payload->end?->format('M j, Y'),
+            'end_readable' => $payload->end?->format('M d, Y'),
             'date_range_readable' => $dateRangeReadable,
             'remarks' => $payload->remarks ?? '',
             'payroll' => $payload->payroll,
