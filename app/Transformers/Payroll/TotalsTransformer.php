@@ -11,10 +11,10 @@ class TotalsTransformer extends TransformerAbstract
 {
     public function transform(PayrollTotals $salaryStatementTotals): array
     {
-        $totalEmployerContributionShare = BigDecimal::of($salaryStatementTotals->employer_contribution_share);
-        $totalTaxable = BigDecimal::of($salaryStatementTotals->taxable);
-        $totalWithholdingTax = BigDecimal::of($salaryStatementTotals->withholding_tax);
-        $totalNet = BigDecimal::of($salaryStatementTotals->net);
+        $totalEmployerContributionShare = BigDecimal::of($salaryStatementTotals->employer_contribution_share ?? 0);
+        $totalTaxable = BigDecimal::of($salaryStatementTotals->taxable ?? 0);
+        $totalWithholdingTax = BigDecimal::of($salaryStatementTotals->withholding_tax ?? 0);
+        $totalNet = BigDecimal::of($salaryStatementTotals->net ?? 0);
 
         return [
             'employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),

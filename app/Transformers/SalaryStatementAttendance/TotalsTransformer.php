@@ -11,10 +11,10 @@ class TotalsTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatementAttendanceTotals $salaryStatementAttendanceTotals): array
     {
-        $totalRegularPay = BigDecimal::of($salaryStatementAttendanceTotals->regular_pay);
-        $totalNightDifferentialPay = BigDecimal::of($salaryStatementAttendanceTotals->night_differential_pay);
-        $totalRestDayPay = BigDecimal::of($salaryStatementAttendanceTotals->rest_day_pay);
-        $total = BigDecimal::of($salaryStatementAttendanceTotals->total);
+        $totalRegularPay = BigDecimal::of($salaryStatementAttendanceTotals->regular_pay ?? 0);
+        $totalNightDifferentialPay = BigDecimal::of($salaryStatementAttendanceTotals->night_differential_pay ?? 0);
+        $totalRestDayPay = BigDecimal::of($salaryStatementAttendanceTotals->rest_day_pay ?? 0);
+        $total = BigDecimal::of($salaryStatementAttendanceTotals->total ?? 0);
 
         return [
             'regular_pay' => $totalRegularPay->toScale(4, RoundingMode::HalfUp),

@@ -11,10 +11,10 @@ class TotalsTransformer extends TransformerAbstract
 {
     public function transform(SalaryStatementTotals $salaryStatementTotals): array
     {
-        $totalBasicGross = BigDecimal::of($salaryStatementTotals->basic_gross);
-        $totalTaxable = BigDecimal::of($salaryStatementTotals->taxable);
-        $totalWithholdingTax = BigDecimal::of($salaryStatementTotals->withholding_tax);
-        $totalNet = BigDecimal::of($salaryStatementTotals->net);
+        $totalBasicGross = BigDecimal::of($salaryStatementTotals->basic_gross ?? 0);
+        $totalTaxable = BigDecimal::of($salaryStatementTotals->taxable ?? 0);
+        $totalWithholdingTax = BigDecimal::of($salaryStatementTotals->withholding_tax ?? 0);
+        $totalNet = BigDecimal::of($salaryStatementTotals->net ?? 0);
 
         return [
             'basic_gross' => $totalBasicGross->toScale(4, RoundingMode::HalfUp),
