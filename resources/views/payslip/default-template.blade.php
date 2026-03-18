@@ -28,7 +28,6 @@
             font-family: "Roboto", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
-            font-variation-settings: "wdth" 100;
         }
 
         .font-numeric {
@@ -158,12 +157,8 @@
             background: oklch(96.7% 0.003 264.542);
         }
 
-        .value-box {
-            min-width: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+        .payroll-item-value-row {
+            min-height: 2.25rem;
         }
     </style>
 </head>
@@ -237,7 +232,7 @@
                 <div class="flex flex-row-reverse text-base">
                     <div class="item-label">{{$earning['payroll_item_name']}}</div>
                 </div>
-                <div class="flex flex-row-reverse gap-2 text-right border-1 border-dashed border-gray-200">
+                <div class="flex flex-row-reverse gap-2 payroll-item-value-row text-right border-1 border-dashed border-gray-200">
                     <div class="flex-none flex items-center text-center justify-center min-w-120">
                         <div class="text-base font-medium font-numeric">{{$earning['payroll_item_value']}}</div>
                     </div>
@@ -263,7 +258,7 @@
                         <div class="item-label">{{$deduction['payroll_item_name']}}</div>
                     </div>
 
-                    <div class="flex flex-row gap-2 text-left border-1 border-dashed border-gray-200">
+                    <div class="flex flex-row gap-2 payroll-item-value-row text-left border-1 border-dashed border-gray-200">
                         <div class="flex-none flex items-center text-center justify-center min-w-120">
                             <div class="text-base font-medium font-numeric">{{$deduction['payroll_item_value']}}</div>
                         </div>
