@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payslip - {{ $payroll_month }} {{$payroll_frequency}}</title>
+    <title>PS-{{$employee_number}}-{{$payroll_number}}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +47,7 @@
         }
 
         .sub-text-color {
-            color: #86888b;
+            color: #6c6e70;
         }
 
         .payslip-container {
