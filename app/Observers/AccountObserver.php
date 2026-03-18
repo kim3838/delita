@@ -43,10 +43,16 @@ class AccountObserver
 
         $yearCreating = $dateCreating->year;
         $yearSeries = str_pad($series,3, '0',STR_PAD_LEFT);
-        $randomSeries = substr((string) crc32($series), -4);
-        $prefix = _str_random(8);
 
-        $number = "{$prefix}{$yearSeries}{$randomSeries}";
+        do {
+            $randomSeries = substr((string) crc32($series), -4);
+            $prefix = _str_random(8);
+
+            $number = "{$prefix}{$yearSeries}{$randomSeries}";
+
+            $exists = Account::query()->where('number', $number)->exists();
+
+        } while ($exists);
 
         $account->{$this->customNumberAttribute} = $number;
 
