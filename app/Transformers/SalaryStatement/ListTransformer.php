@@ -85,6 +85,7 @@ class ListTransformer extends TransformerAbstract
             'total_special_holidays' => $salaryStatement->total_special_holidays,
             'total_legal_holidays' => $salaryStatement->total_legal_holidays,
             'total_double_holidays' => $salaryStatement->total_double_holidays,
+            'total_legal_and_double_holidays' => $salaryStatement->total_legal_holidays + $salaryStatement->total_double_holidays,
             'total_present' => $salaryStatement->total_full_present + $salaryStatement->total_present_with_irregularity,
             'total_full_present' => $salaryStatement->total_full_present,
             'total_present_with_irregularity' => $salaryStatement->total_present_with_irregularity,
