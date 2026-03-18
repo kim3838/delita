@@ -39,6 +39,7 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
 
                 "salary_statement_details.formulable_type",
                 "salary_statement_details.component_type",
+                "salary_statement_details.component_sub_type",
                 "salary_statement_details.component_name",
                 "salary_statement_details.component_values",
                 "salary_statement_details.taxable",

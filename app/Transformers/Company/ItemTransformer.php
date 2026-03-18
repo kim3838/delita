@@ -2,13 +2,17 @@
 
 namespace App\Transformers\Company;
 
+use App\Facades\Fractal;
 use App\Models\Company;
+use App\Transformers\Country\ItemTransformer as CountryItemTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ItemTransformer extends TransformerAbstract
 {
     public function transform(Company $model): array
     {
+        $country = Fractal::item($model->country, CountryItemTransformer::class);
+
         return [
             'id' => $model->id,
             'ulid' => $model->ulid,
@@ -18,6 +22,7 @@ class ItemTransformer extends TransformerAbstract
             'short_name' => $model->short_name,
             'address_line_1' => $model->address_line_1,
             'address_line_2' => $model->address_line_2,
+            'country' => $country,
             'name' => $model->name,
             'currency' => $model->currency,
             'timezone' => $model->timezone,
