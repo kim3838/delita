@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\PayslipServiceInterface;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\EmployeeServiceConcrete;
 use App\Concrete\PayrollServiceConcrete;
+use App\Concrete\PayslipServiceConcrete;
 use Illuminate\Support\ServiceProvider;
 
 class BindingsServiceProvider extends ServiceProvider
@@ -36,6 +38,13 @@ class BindingsServiceProvider extends ServiceProvider
             list($employee) = $parameters;
 
             return new EmployeeServiceConcrete($employee);
+        });
+
+        $this->app->bind(PayslipServiceInterface::class, function ($app, $parameters) {
+
+            list($company) = $parameters;
+
+            return new PayslipServiceConcrete($company);
         });
     }
 

@@ -59,6 +59,7 @@ use App\Http\Controllers\Imports\EmployeeIdentificationController as EmployeeIde
 use App\Http\Controllers\Internal\TaxCalculatorController;
 use App\Http\Controllers\LeaveTodayAndUpcomingController;
 use App\Http\Controllers\PayrollRequestController;
+use App\Http\Controllers\PayslipPreviewController;
 use App\Http\Controllers\PreGeneratePayrollController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Imports\AttendanceController as AttendanceImportController;
@@ -596,6 +597,8 @@ Route::group([
     Route::get('salary-statement/{ulid}', [SalaryStatementController::class, 'show']);
     Route::delete('salary-statements', [SalaryStatementController::class, 'batchDestroy']);
 
+    Route::get('payslip-preview/{ulid}', PayslipPreviewController::class);
+    
     Route::post('salary-statement-manual-add-details/{salaryStatementUlid}', [SalaryStatementManualAddDetailController::class, 'store']);
 
     Route::get('employee-portal-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
