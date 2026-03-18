@@ -200,7 +200,7 @@
             <tbody>
             <tr><td class="sub-text-color">Payroll #:</td><td class="pl-2">{{$payroll_number}}</td></tr>
             <tr><td class="sub-text-color">Statement type:</td><td class="pl-2">{{$salary_statement_type}}</td></tr>
-            <tr><td class="sub-text-color">Month:</td><td class="pl-2">{{$payroll_month}}</td></tr>
+            <tr><td class="sub-text-color">Month:</td><td class="pl-2">{{$payroll_year_month}}</td></tr>
             <tr><td class="sub-text-color">Sequence:</td><td class="pl-2">{{$payroll_frequency}}</td></tr>
             <tr><td class="sub-text-color">Period:</td><td class="pl-2">{{$payroll_period}}</td></tr>
             </tbody>
