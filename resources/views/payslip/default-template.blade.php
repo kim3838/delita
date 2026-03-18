@@ -20,8 +20,8 @@
 
         * {
             box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            -webkit-print-color-adjust: economy !important;
+            print-color-adjust: economy !important;
         }
 
         .roboto {
@@ -43,11 +43,11 @@
         }
 
         .text-color {
-            color: #36373a;
+            color: #1c1c1c;
         }
 
         .sub-text-color {
-            color: #6c6e70;
+            color: #5c5c5c;
         }
 
         .payslip-container {
