@@ -20,8 +20,8 @@
 
         * {
             box-sizing: border-box;
-            -webkit-print-color-adjust: economy !important;
-            print-color-adjust: economy !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .roboto {
@@ -175,7 +175,7 @@
             <div class="text-base">
                 <div>{{$company_address_line_1}}</div>
                 <div>{{$company_address_line_2}}</div>
-                <div>{{$company_country_subregion_name}}</div>
+                <div>{{$company_country}}</div>
             </div>
         </div>
     </div>

@@ -153,6 +153,7 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             'company_name' => $companyName,
             'company_address_line_1' => $companyAddressLine1,
             'company_address_line_2' => $companyAddressLine2,
+            'company_country' => $companyCountryName,
             'company_country_subregion_name' => $companyCountryName . ', ' . $companyCountrySubregionName,
 
             'employee_number' => $employeeNumber,
