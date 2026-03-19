@@ -20,6 +20,8 @@ return new class extends Migration
 
             $table->smallInteger('type')->default(SalaryStatementType::DEFAULT);
             $table->boolean('is_paid')->default(false);
+            $table->string('payslip_disk')->nullable();
+            $table->string('payslip_path')->nullable();
 
             $table->tinyInteger('total_days')->default(0);
             $table->tinyInteger('total_day_offs')->default(0);

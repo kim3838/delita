@@ -15,6 +15,8 @@ class SalaryStatement extends Model
 
         'type',
         'is_paid',
+        'payslip_disk',
+        'payslip_path',
 
         'total_days',
         'total_day_offs',
@@ -50,6 +52,8 @@ class SalaryStatement extends Model
 
         'type' => SalaryStatementType::class,
         'is_paid' => 'boolean',
+        'payslip_disk' => 'string',
+        'payslip_path' => 'string',
 
         'total_days' => 'int',
         'total_day_offs' => 'int',
