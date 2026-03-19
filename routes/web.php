@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Internal\UtilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,3 +34,5 @@ Route::group([
 Route::get('/admin/error-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadErrors'])->name('download.logs.errors');
 Route::get('/admin/debug-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadDebugs'])->name('download.logs.debugs');
 Route::get('/admin/auth-logs/download', [\App\Http\Controllers\Internal\LogDownloadController::class, 'downloadAuths'])->name('download.logs.auth');
+
+Route::get('/payslip/view/{salaryStatementUlid}', [UtilityController::class, 'viewPayslip']);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Internal;
 
+use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\PrototypeInterface;
+use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Models\Prototype;
@@ -20,6 +22,13 @@ class UtilityController extends Controller
     public function post(Request $request)
     {
         return ResponseJson::successfulResponse();
+    }
+
+    public function viewPayslip(Request $request, $salaryStatementUlid)
+    {
+        $salaryStatement = app(SalaryStatementRepository::class)->show($salaryStatementUlid);
+
+        return app(PayrollServiceInterface::class, [$salaryStatement->payroll->company])->view($salaryStatement);
     }
 
     public function debug(Request $request)
