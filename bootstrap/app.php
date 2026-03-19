@@ -1,8 +1,10 @@
 <?php
 
+use App\Concrete\LogContext;
 use App\Facades\ResponseJson;
 use App\Helpers\CookieHelper;
 use App\Models\ThrownLog;
+use App\Notifications\ErrorLogNotification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -15,6 +17,7 @@ use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
@@ -83,6 +86,18 @@ return Application::configure(basePath: dirname(__DIR__))
                     'line' => $throwable->getLine(),
                     'request' => Request::url(),
                 ]);
+
+                NotificationFacade::route('mail',
+                    ['info@kunsel-erp.com' => 'Kim De Guzman']
+                )->notify(new ErrorLogNotification(new LogContext(
+                    get_class($throwable),
+                    $throwable instanceof Exception,
+                    $throwable instanceof Error,
+                    $throwable->getMessage(),
+                    $throwable->getFile(),
+                    $throwable->getLine(),
+                    Request::url()
+                )));
 
                 Log::channel('error')->{$logAction}([
                     ('thrown') => get_class($throwable),

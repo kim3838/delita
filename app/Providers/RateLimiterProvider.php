@@ -32,5 +32,9 @@ class RateLimiterProvider extends ServiceProvider
         RateLimiter::for('new_user_credentials_notification', function (object $job) {
             return Limit::perMinute(15);
         });
+
+        RateLimiter::for('error_log_notification', function (object $job) {
+            return Limit::perMinute(30);
+        });
     }
 }
