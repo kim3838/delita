@@ -10,6 +10,7 @@ use App\Enums\PayrollStatus;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
+use App\Jobs\MailEmployeePayslip;
 use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\RequestApprovalState;
@@ -279,9 +280,20 @@ class ApprovalService
 
                 $payroll = $requestable->payroll;
 
+                /**
+                 * Update payroll status to complete
+                 **/
                 $payroll->update([
                     'status' => PayrollStatus::COMPLETE->value,
                 ]);
+
+                /**
+                 * Notify employee that their payroll is ready
+                 **/
+                foreach($payroll->salaryStatements as $salaryStatement){
+
+                    MailEmployeePayslip::dispatch($salaryStatement);
+                }
 
         }
     }
