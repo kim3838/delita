@@ -18,9 +18,11 @@ use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
+use App\Jobs\MailEmployeePayslip;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveType;
+use App\Models\Payroll;
 use App\Models\SalaryStatement;
 use App\Transformers\SalaryStatementAttendance\ListTransformer;
 use Illuminate\Console\Command;
@@ -48,6 +50,14 @@ class Debug extends Command
     public function handle()
     {
 
+    }
+
+    private function notifyEmployeesPayslip(Payroll $payroll): void
+    {
+        foreach($payroll->salaryStatements as $salaryStatement){
+
+            MailEmployeePayslip::dispatch($salaryStatement);
+        }
     }
 
     private function salarySatementManualAddDetail()
