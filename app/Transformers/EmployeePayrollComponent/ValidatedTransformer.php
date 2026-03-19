@@ -3,9 +3,10 @@
 namespace App\Transformers\EmployeePayrollComponent;
 
 use App\Facades\Fractal;
-use App\Facades\TimeZoneConverterFacade;
 use App\Models\EmployeePayrollComponent;
 use App\Transformers\PayFrequency\ItemTransformer as PayFrequencyItemTransformer;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class ValidatedTransformer extends TransformerAbstract
@@ -13,6 +14,10 @@ class ValidatedTransformer extends TransformerAbstract
     public function transform(EmployeePayrollComponent $model)
     {
         $payFrequency = $model->payFrequency ? Fractal::item($model->payFrequency, PayFrequencyItemTransformer::class) : null;
+
+        $amount = is_numeric($model->amount)
+            ? BigDecimal::of($model->amount)->toScale(2, RoundingMode::HalfUp)->toString()
+            : $model->amount;
 
         return [
             'id' => $model->id ? (int)$model->id : null,
@@ -24,7 +29,7 @@ class ValidatedTransformer extends TransformerAbstract
                 'name' => $model->payrollComponentable->name,
                 'type' => $model->payrollComponentable->type?->toArray(),
             ],
-            'amount' => $model->amount,
+            'amount' => $amount,
             'currency' => $model->currency,
             'pay_period' => $model->pay_period?->toArray(),
             'pay_type' => $model->pay_type?->toArray(),
