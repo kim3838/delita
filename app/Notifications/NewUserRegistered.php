@@ -6,10 +6,15 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\Middleware\RateLimited;
 
 class NewUserRegistered extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public int $tries = 5;
+    public int $backoff = 5;
+    public int $timeout = 30;
 
     /**
      * Create a new notification instance.
@@ -61,5 +66,15 @@ class NewUserRegistered extends Notification implements ShouldQueue
         return [
             //
         ];
+    }
+
+    public function middleware(object $notifiable, string $channel): array
+    {
+        return match ($channel) {
+            'mail' => [
+                new RateLimited('new_user_credentials_notification')
+            ],
+            default => [],
+        };
     }
 }
