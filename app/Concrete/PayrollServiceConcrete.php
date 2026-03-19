@@ -592,6 +592,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
 
         /**
+         * Order salary statement details by component_sub_type
+         **/
+        $salaryStatementDetails = collect($salaryStatementDetails)
+            ->sortBy('component_sub_type', SORT_NATURAL)->values()->toArray();
+
+        /**
          * Add component values (breakdown pay splits) for basic pay and overtime
          **/
         foreach($salaryStatementDetails as $salaryStatementDetail){
