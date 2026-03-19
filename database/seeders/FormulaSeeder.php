@@ -26,22 +26,22 @@ class FormulaSeeder extends Seeder
         $formulaPresets = [
             //Earnings
             ['name' => 'Standard-Basic-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::BASIC_PAY, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_basic_pay')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_basic_pay')->first()->path)
             ],
             ['name' => 'Standard-Allowance', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::REGULAR_ALLOWANCE, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_allowance')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_allowance')->first()->path)
             ],
             ['name' => 'Standard-Overtime', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::OVERTIME, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_overtime')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_overtime')->first()->path)
             ],
             ['name' => 'Standard-Leave-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::LEAVE_PAY, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_leave_pay')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_leave_pay')->first()->path)
             ],
             ['name' => 'Standard-Holiday-Pay', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::HOLIDAY_PAY, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_holiday_pay')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_holiday_pay')->first()->path)
             ],
             ['name' => 'Standard-13th-Month', 'formulable_type' => Formulable::EARNINGS ,'component_type' => Compensation::STATUTORY_BENEFIT, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_13th_month')->first()->path)
             ],
 
             //Manual Earning
@@ -49,22 +49,22 @@ class FormulaSeeder extends Seeder
 
             //Deductions
             ['name' => 'Standard-Tardiness', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_tardiness')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_tardiness')->first()->path)
             ],
             ['name' => 'Standard-Undertime', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_undertime')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_undertime')->first()->path)
             ],
             ['name' => 'Standard-Absence', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::DEDUCTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_absence')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_absence')->first()->path)
             ],
             ['name' => 'Standard-SSS-Employed-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_sss_employed_contribution')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_sss_employed_contribution')->first()->path)
             ],
             ['name' => 'Standard-Philhealth-Contribution', 'formulable_type' => Formulable::DEDUCTIONS  ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_philhealth_contribution')->first()->path)
             ],
             ['name' => 'Standard-Pag-IBIG-Contribution', 'formulable_type' => Formulable::DEDUCTIONS ,'component_type' => Deduction::STATUTORY_CONTRIBUTION, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_pag_ibig_contribution')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_pag_ibig_contribution')->first()->path)
             ],
 
             //Taxable Income
@@ -75,7 +75,7 @@ class FormulaSeeder extends Seeder
 
             //Withholding Tax on compensation
             ['name' => 'Standard-Withholding-Tax-Compensation', 'formulable_type' => Formulable::INCOME_TAX ,'component_type' => IncomeTax::WITHHOLDING_TAX, 'aggregation' => false,
-                'default_settings' => Storage::disk('presets')->json(JsonPreset::where('key', 'standard_withholding_tax_compensation')->first()->path)
+                'default_settings' => Storage::json(JsonPreset::where('key', 'standard_withholding_tax_compensation')->first()->path)
             ],
 
             //Manual Deduction

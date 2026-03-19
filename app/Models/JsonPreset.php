@@ -167,16 +167,16 @@ class JsonPreset extends Model
             array_map(function($preset){
                 return [
                     'key' => $preset['key'],
-                    'disk' => 'presets',
-                    'path' => 'json/time_period/' . $preset['file'],
+                    'disk' => 's3',
+                    'path' => 'config/json/time_period/' . $preset['file'],
                 ];
             }, self::timePeriodPresets()),
 
             array_map(function($preset){
                 return [
                     'key' => $preset['key'],
-                    'disk' => 'presets',
-                    'path' => 'json/formula/' . $preset['file'],
+                    'disk' => 's3',
+                    'path' => 'config/json/formula/' . $preset['file'],
                 ];
             }, self::formulableSettingPresets()),
 

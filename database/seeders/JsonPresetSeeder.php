@@ -19,16 +19,26 @@ class JsonPresetSeeder extends Seeder
         //Json Preset Files
         foreach (JsonPreset::timePeriodPresets() as $jsonPreset){
 
-            $filePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
+            $resourceFilePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
 
-            Storage::disk('presets')->put('json/time_period/' . $jsonPreset['file'], $this->getJsonContent($filePath));
+            $diskFilePath = 'config/json/time_period/' . $jsonPreset['file'];
+
+            if(Storage::missing($diskFilePath)){
+
+                Storage::put($diskFilePath, $this->getJsonContent($resourceFilePath));
+            }
         }
 
         foreach (JsonPreset::formulableSettingPresets() as $jsonPreset){
 
-            $filePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
+            $resourceFilePath = $jsonPreset['resource_preset_path'] . '/' . $jsonPreset['file'];
 
-            Storage::disk('presets')->put('json/formula/' . $jsonPreset['file'], $this->getJsonContent($filePath));
+            $diskFilePath = 'config/json/formula/' . $jsonPreset['file'];
+
+            if(Storage::missing($diskFilePath)){
+
+                Storage::put($diskFilePath, $this->getJsonContent($resourceFilePath));
+            }
         }
 
         //Json Presets
