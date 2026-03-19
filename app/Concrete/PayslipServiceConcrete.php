@@ -41,9 +41,25 @@ class PayslipServiceConcrete implements PayslipServiceInterface
 
     public function getSigned(SalaryStatement $salaryStatement): string
     {
-        $this->generate($salaryStatement);
+        $payslipPathStored = !empty($salaryStatement->payslip_path);
 
-        return Storage::disk('s3')->temporaryUrl($this->filePath(), now()->addSeconds($this->signSeconds));
+        $signed = '';
+
+        $expiration = now()->addSeconds($this->signSeconds);
+
+        if(!$payslipPathStored){
+
+            $this->generate($salaryStatement);
+
+            $signed = Storage::temporaryUrl($this->filePath(), $expiration);
+        }
+
+        if($payslipPathStored && Storage::exists($salaryStatement->payslip_path)){
+
+            $signed = Storage::temporaryUrl($salaryStatement->payslip_path, $expiration);
+        }
+
+        return $signed;
     }
 
     public function generate(SalaryStatement $salaryStatement): static
