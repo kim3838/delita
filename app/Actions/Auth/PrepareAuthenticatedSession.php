@@ -9,19 +9,26 @@ class PrepareAuthenticatedSession
 {
     public function handle(Request $request, $next)
     {
-        Log::channel('auth')->info([
-            'method' => basename(__FILE__) . '@' . __FUNCTION__,
-            'line' => __LINE__,
-            'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
-            'session' => collect($request->session()->all())->only(['_token'])->all(),
-            'cookies' => $request->cookies->all(),
-            'Request has session?' => ($request->hasSession() ? 'TRUE' : 'FALSE'),
-            'BEFORE session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
-            'BEFORE session regenerate: cookies' => $request->cookies->all(),
-        ]);
+        $debugEnabled = false;
 
-        //Update session's CSRF token
-        //Which then use by the client application to update X-XSRF-TOKEN
+        if($debugEnabled){
+
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
+                'line' => __LINE__,
+                'user password_hash' => $request->user() ? $request->user()->getAuthPassword() : 'Not authenticated',
+                'session' => collect($request->session()->all())->only(['_token'])->all(),
+                'cookies' => $request->cookies->all(),
+                'Request has session?' => ($request->hasSession() ? 'TRUE' : 'FALSE'),
+                'BEFORE session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
+                'BEFORE session regenerate: cookies' => $request->cookies->all(),
+            ]);
+        }
+
+        /**
+         * Update session's CSRF token
+         * Which then use by the client application to update X-XSRF-TOKEN
+         **/
         $request->session()->regenerate();
 
         if($request->user()){
@@ -32,10 +39,13 @@ class PrepareAuthenticatedSession
             ]);
         }
 
-        Log::channel('auth')->info([
-            'AFTER session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
-            'AFTER session regenerate: cookies' => $request->cookies->all(),
-        ]);
+        if($debugEnabled){
+
+            Log::channel('auth')->info([
+                'AFTER session regenerate:' => collect($request->session()->all())->only(['_token'])->all(),
+                'AFTER session regenerate: cookies' => $request->cookies->all(),
+            ]);
+        }
 
         return $next($request);
     }

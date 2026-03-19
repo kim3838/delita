@@ -18,6 +18,8 @@ class TwoFactorChallenge
      */
     public function handle(Request $request, $next)
     {
+        $debugEnabled = false;
+
         $identifierField = filter_var($request->input('identifier'), FILTER_VALIDATE_EMAIL)
             ? 'email'
             : 'name';
@@ -35,11 +37,14 @@ class TwoFactorChallenge
             }
         });
 
-        Log::channel('auth')->info([
-            'method' => basename(__FILE__) . '@' . __FUNCTION__,
-            'line' => __LINE__,
-            'user' => $user->toArray()
-        ]);
+        if($debugEnabled){
+
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
+                'line' => __LINE__,
+                'user' => $user->toArray()
+            ]);
+        }
 
         RateLimiter::clear(Throttle::key($request));
 
@@ -48,13 +53,16 @@ class TwoFactorChallenge
         $hasTwoFactorAuthenticatableTrait = in_array(TwoFactorAuthenticatable::class, class_uses_recursive($user));
         $twoFactorChallenge = array_product([$twoFactorEnabled, $twoFactorConfirmed, $hasTwoFactorAuthenticatableTrait]);
 
-        Log::channel('auth')->info([
-            'method' => basename(__FILE__) . '@' . __FUNCTION__,
-            'line' => __LINE__,
-            'two factor enabled' => ($twoFactorEnabled ? 'TRUE' : 'FALSE'),
-            'two factor confirmed' => ($twoFactorConfirmed ? 'TRUE' : 'FALSE'),
-            'challenge the authenticating user?>' => ($twoFactorChallenge ? 'TRUE' : 'FALSE'),
-        ]);
+        if($debugEnabled){
+
+            Log::channel('auth')->info([
+                'method' => basename(__FILE__) . '@' . __FUNCTION__,
+                'line' => __LINE__,
+                'two factor enabled' => ($twoFactorEnabled ? 'TRUE' : 'FALSE'),
+                'two factor confirmed' => ($twoFactorConfirmed ? 'TRUE' : 'FALSE'),
+                'challenge the authenticating user?>' => ($twoFactorChallenge ? 'TRUE' : 'FALSE'),
+            ]);
+        }
 
         if ($twoFactorChallenge) {
 
@@ -63,12 +71,15 @@ class TwoFactorChallenge
                 'login.remember' => $request->boolean('remember')
             ]);
 
-            Log::channel('auth')->info([
-                'method' => basename(__FILE__) . '@' . __FUNCTION__,
-                'line' => __LINE__,
-                'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
-                'cookies' => $request->cookies->all(),
-            ]);
+            if($debugEnabled){
+
+                Log::channel('auth')->info([
+                    'method' => basename(__FILE__) . '@' . __FUNCTION__,
+                    'line' => __LINE__,
+                    'session' => collect($request->session()->all())->except(['_previous', '_flash'])->all(),
+                    'cookies' => $request->cookies->all(),
+                ]);
+            }
 
             TwoFactorAuthenticationChallenged::dispatch($user);
 
