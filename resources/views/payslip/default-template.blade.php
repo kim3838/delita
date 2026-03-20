@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
     <style>
         html, body {
@@ -24,8 +25,8 @@
             print-color-adjust: exact !important;
         }
 
-        .roboto {
-            font-family: "Roboto", sans-serif;
+        .font {
+            font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
         }
@@ -65,9 +66,11 @@
         .flex-auto { flex: 1 1 auto; }
         .flex-none { flex: 0 0 auto; }
         .items-center { align-items: center; }
+        .items-end { align-items: flex-end; }
         .justify-between { justify-content: space-between; }
         .justify-around { justify-content: space-around; }
         .justify-center { justify-content: center; }
+        .gap-1 { gap: 0.25rem; }
         .gap-2 { gap: 0.5rem; }
         .gap-4 { gap: 1rem; }
         .gap-6 { gap: 1.5rem; }
@@ -149,12 +152,15 @@
             text-align: center;
         }
 
+        .header-bg {
+            background: oklch(0.98 0 0);
+        }
+
         .item-label {
             font-size: 0.875rem;
             min-width: 120px;
             text-align: center;
             padding: 0 0.5rem;
-            background: oklch(96.7% 0.003 264.542);
         }
 
         .payroll-item-value-row {
@@ -164,7 +170,7 @@
 </head>
 <body class="payslip-body text-color">
 
-<div class="payslip-container roboto">
+<div class="payslip-container font">
     <!-- Company details -->
     <div class="flex justify-between items-center">
         <div class="logo-box">
@@ -230,7 +236,7 @@
             @foreach($earnings as $earning)
             <div class="flex flex-col">
                 <div class="flex flex-row-reverse text-base">
-                    <div class="item-label">{{$earning['payroll_item_name']}}</div>
+                    <div class="item-label header-bg">{{$earning['payroll_item_name']}}</div>
                 </div>
                 <div class="flex flex-row-reverse gap-2 payroll-item-value-row text-right border-1 border-dashed border-gray-200">
                     <div class="flex-none flex items-center text-center justify-center min-w-120">
@@ -255,7 +261,7 @@
             @foreach($deductions as $deduction)
                 <div class="flex flex-col">
                     <div class="flex flex-row text-base">
-                        <div class="item-label">{{$deduction['payroll_item_name']}}</div>
+                        <div class="item-label header-bg">{{$deduction['payroll_item_name']}}</div>
                     </div>
 
                     <div class="flex flex-row gap-2 payroll-item-value-row text-left border-1 border-dashed border-gray-200">
@@ -276,7 +282,7 @@
 
     <!-- Payroll summary -->
     <div class="flex flex-col">
-        <div class="flex-1 text-sm text-center bg-gray-100">
+        <div class="flex-1 text-sm text-center header-bg">
             Summary
         </div>
         <div class="flex justify-center border-l-r-b border-dashed border-gray-200 divide-x divide-dashed">
@@ -317,13 +323,19 @@
 
     <!-- Signatories -->
     <div class="flex gap-6 justify-around">
-        <div class="flex-auto basis-7/12">
-            <div class="min-w-180 min-h-200 border-1 border-dashed border-gray-200"></div>
+        <div class="flex-auto basis-7/12 flex items-end">
+            <div class="min-w-180 min-h-400 flex flex-row" style="padding: 0.25rem">
+                <img src="data:image/svg+xml;base64, {{ $state_breakdown_link_qr_code_base64 }}" width="75" height="75" alt="Statement breakdown">
+                <div class="flex flex-col pl-2 gap-1">
+                    <div class="text-sm font-medium">View full statement breakdown</div>
+                    <div class="text-xs font-medium sub-text-color">Scan this QR code with your phone.</div>
+                </div>
+            </div>
         </div>
 
         <div class="flex-auto basis-5/12 flex gap-6 justify-around items-center">
-            <div class="flex-auto min-w-200 min-h-80 border-1 border-dashed border-gray-200"></div>
-            <div class="flex-auto min-w-200 min-h-80 border-1 border-dashed border-gray-200"></div>
+            <div class="flex-auto min-w-200 min-h-200 border-1 border-dashed border-gray-200"></div>
+            <div class="flex-auto min-w-200 min-h-200 border-1 border-dashed border-gray-200"></div>
         </div>
     </div>
 </div>
