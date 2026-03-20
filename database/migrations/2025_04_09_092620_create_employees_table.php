@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('given_name');
             $table->string('middle_name')->nullable();
             $table->string('family_name');
-            $table->date('birth_date')->nullable();
+            $table->date('birth_date')->nullable()->default('1926-01-01');
             $table->smallInteger('gender')->default(Gender::NOT_SPECIFIED);
             $table->smallInteger('marital_status')->default(MaritalStatus::NOT_SPECIFIED);
             $table->date('date_registered')->useCurrent();
