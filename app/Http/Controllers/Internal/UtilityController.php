@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Internal;
 
-use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\PayslipServiceInterface;
 use App\Blueprint\PrototypeInterface;
 use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Facades\ResponseJson;
@@ -28,7 +28,7 @@ class UtilityController extends Controller
     {
         $salaryStatement = app(SalaryStatementRepository::class)->show($salaryStatementUlid);
 
-        return app(PayrollServiceInterface::class, [$salaryStatement->payroll->company])->view($salaryStatement);
+        return app(PayslipServiceInterface::class, [$salaryStatement->payroll->company])->view($salaryStatement);
     }
 
     public function debug(Request $request)
