@@ -17,6 +17,7 @@ return [
 
     'paths' => [
         'api/*',
+        'public/*',
         'sanctum/csrf-cookie',
         'forgot-password',
         'reset-password'

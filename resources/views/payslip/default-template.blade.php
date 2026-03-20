@@ -79,6 +79,8 @@
         .w-400 { width: 400px; }
         .h-140 { height: 140px; }
         .min-w-120 { min-width: 120px; }
+        .min-w-110 { min-width: 110px; }
+        .min-w-100 { min-width: 100px; }
         .min-w-180 { min-width: 180px; }
         .min-w-200 { min-width: 200px; }
         .min-h-80 { min-height: 80px; }
@@ -163,6 +165,10 @@
             padding: 0 0.5rem;
         }
 
+        .text-condensed {
+            letter-spacing: -0.5px;
+        }
+
         .payroll-item-value-row {
             min-height: 2.25rem;
         }
@@ -244,7 +250,7 @@
                     </div>
                     @foreach($earning['payroll_item_sub_values'] as $earningSubValue)
                     <div class="flex-auto">
-                        <div class="text-xs sub-text-color">{{$earningSubValue['label']}}</div>
+                        <div class="text-condensed text-xs sub-text-color">{{$earningSubValue['label']}}</div>
                         <div class="text-xs font-numeric">{{$earningSubValue['value']}}</div>
                     </div>
                     @endforeach
@@ -270,7 +276,7 @@
                         </div>
                         @foreach($deduction['payroll_item_sub_values'] as $deductionSubValue)
                         <div class="flex-auto">
-                            <div class="text-xs sub-text-color">{{$deductionSubValue['label']}}</div>
+                            <div class="text-condensed text-xs sub-text-color">{{$deductionSubValue['label']}}</div>
                             <div class="text-xs font-numeric">{{$deductionSubValue['value']}}</div>
                         </div>
                         @endforeach
@@ -291,7 +297,7 @@
                     <div class="section-title">Gross</div>
                 </div>
                 <div class="flex justify-center gap-4 text-right">
-                    <div class="flex-none flex items-center text-center justify-center min-w-120">
+                    <div class="flex-none flex items-center text-center justify-center">
                         <div class="text-base font-medium font-numeric">{{$summary['gross']}}</div>
                     </div>
                 </div>
@@ -302,7 +308,7 @@
                     <div class="section-title">Deduction</div>
                 </div>
                 <div class="flex justify-center gap-4 text-left">
-                    <div class="flex-none flex items-center text-center justify-center min-w-120">
+                    <div class="flex-none flex items-center text-center justify-center">
                         <div class="text-base font-medium font-numeric">{{$summary['deduction']}}</div>
                     </div>
                 </div>
@@ -313,7 +319,7 @@
                     <div class="section-title">Net salary</div>
                 </div>
                 <div class="flex justify-center gap-4 text-left">
-                    <div class="flex-none flex items-center text-center justify-center min-w-120">
+                    <div class="flex-none flex items-center text-center justify-center">
                         <div class="text-base font-medium font-numeric">{{$summary['net']}}</div>
                     </div>
                 </div>
@@ -325,10 +331,11 @@
     <div class="flex gap-6 justify-around">
         <div class="flex-auto basis-7/12 flex items-end">
             <div class="min-w-180 min-h-400 flex flex-row" style="padding: 0.25rem">
-                <img src="data:image/svg+xml;base64, {{ $state_breakdown_link_qr_code_base64 }}" width="75" height="75" alt="Statement breakdown">
+                <img src="data:image/svg+xml;base64, {{ $state_breakdown_link_qr_code_base64 }}" width="100" height="100" alt="Statement breakdown">
                 <div class="flex flex-col pl-2 gap-1">
                     <div class="text-sm font-medium">View full statement breakdown</div>
                     <div class="text-xs font-medium sub-text-color">Scan this QR code with your phone.</div>
+                    <div class="text-xs sub-text-color">Link expires in 24 hours</div>
                 </div>
             </div>
         </div>

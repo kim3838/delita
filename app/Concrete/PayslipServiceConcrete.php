@@ -8,6 +8,11 @@ use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\SalaryStatement;
 use App\Transformers\SalaryStatement\PayslipTransformer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use Carbon\Carbon;
 use DevRaeph\PDFPasswordProtect\Exceptions\InputFileNotFoundException;
 use DevRaeph\PDFPasswordProtect\Exceptions\InputFileNotSetException;
 use DevRaeph\PDFPasswordProtect\Exceptions\OutputFileNotSetException;
@@ -101,10 +106,15 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             ->format($this->defaultFormat)
             ->save($this->filePath());
 
-        PDFPasswordProtect::setInputFile($this->filePath(), 's3')
-            ->setOutputFile($this->filePath(), 's3')
-            ->setPassword($this->generatePassword($salaryStatement))
-            ->secure();
+        $password = $this->generatePassword($salaryStatement);
+
+        if(!empty($password)){
+
+            PDFPasswordProtect::setInputFile($this->filePath(), 's3')
+                ->setOutputFile($this->filePath(), 's3')
+                ->setPassword($password)
+                ->secure();
+        }
 
         return $this;
     }
@@ -200,6 +210,32 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             ]);
         }
 
+        $renderer = new ImageRenderer(
+            new RendererStyle(100, 0),
+            new SvgImageBackEnd()
+        );
+        $writer = new Writer($renderer);
+
+        $ulid = $salaryStatement['ulid'];
+
+        $expires = Carbon::now()->addHours(24)->timestamp;
+        $payload = "{$ulid}|{$expires}";
+        $signature = substr(hash_hmac('sha256', $payload, config('app.key')), 0, 8);
+
+        $token = base64_encode("{$payload}|{$signature}");
+
+        $publicSalaryStatementBreakdownUrl = config('app.frontend_url') . "/temp/salary-statement/$token";
+
+        if($debugEnabled){
+
+            _debug([
+                'Salary Statement Breakdown URL' => $publicSalaryStatementBreakdownUrl,
+            ]);
+        }
+
+        $svgString = $writer->writeString($publicSalaryStatementBreakdownUrl);
+        $statementBreakdownLinkBase64Svg  = base64_encode($svgString);
+
         $params = [
             'company_name' => $companyName,
             'company_address_line_1' => $companyAddressLine1,
@@ -234,6 +270,8 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             'earnings' => $earnings,
             'deductions' => $deductions,
             'summary' => $summary,
+
+            'state_breakdown_link_qr_code_base64' => $statementBreakdownLinkBase64Svg,
         ];
 
         $this->params = $params;
