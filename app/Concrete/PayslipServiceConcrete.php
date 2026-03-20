@@ -38,7 +38,7 @@ class PayslipServiceConcrete implements PayslipServiceInterface
     public function __construct(
         protected ?Company $company
     ){
-        $this->path = $this->company->account->number. '/' . $this->company->id. '/payslips/';
+        $this->path = $this->company->account->number. '/' . $this->company->code. '/payslips/';
     }
 
     public function filePath(): string
@@ -165,9 +165,9 @@ class PayslipServiceConcrete implements PayslipServiceInterface
         $totalAbsent = $salaryStatement['total_absent'];
 
         /**
-         * Concat employee id
+         * Concat employee ulid
          **/
-        $this->path = $this->path . $employee->id . '/';
+        $this->path = $this->path . $employee->ulid . '/';
 
         $this->filename = $employeeNumber . '-' . $payrollNumber  . '.pdf';
 
