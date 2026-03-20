@@ -33,12 +33,12 @@ class PayslipServiceConcrete implements PayslipServiceInterface
     public string $path = '';
     public string $filename = '';
     public array $params = [];
-    public int $signSeconds = 10;
+    public int $signSeconds = 30;
 
     public function __construct(
         protected ?Company $company
     ){
-        $this->path = $this->company->account->number. '/payslips/';
+        $this->path = $this->company->account->number. '/' . $this->company->id. '/payslips/';
     }
 
     public function filePath(): string
@@ -123,6 +123,8 @@ class PayslipServiceConcrete implements PayslipServiceInterface
     {
         $debugEnabled = false;
 
+        $employee = $salaryStatement->employee;
+
         $salaryStatement = is_array($salaryStatement)
             ? $salaryStatement
             : Fractal::item($salaryStatement, PayslipTransformer::class);
@@ -163,16 +165,9 @@ class PayslipServiceConcrete implements PayslipServiceInterface
         $totalAbsent = $salaryStatement['total_absent'];
 
         /**
-         * Concat year, month number and month readable
+         * Concat employee id
          **/
-        $this->path = $this->path . $payrollYear . '/' . $payrollMonth . '.' . $payrollMonthReadable . '/';
-
-        /**
-         * Is there is month sequence, concat sequence
-         **/
-        if(!empty($payrollFrequencySequence)){
-            $this->path = $this->path . $payrollFrequencySequence . '/';
-        }
+        $this->path = $this->path . $employee->id . '/';
 
         $this->filename = $employeeNumber . '-' . $payrollNumber  . '.pdf';
 
