@@ -21,6 +21,15 @@
 
             <p>Please find your payslip attached to this email for your reference.</p>
 
+            <p>Your password is:</p>
+            <ul style="line-height: 1.6;">
+                <li>last name in lower case without space</li>
+                <li>followed by employee number in lower case</li>
+                <li>followed by your date of birth in this format: YYYYMMDD</li>
+            </ul>
+
+            <p>Example password: <strong>delacruzemp100019920101</strong></p>
+
             <p>Thank you for your continued hard work and dedication.</p>
 
             <p>Best regards,</p>

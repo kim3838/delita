@@ -8,8 +8,17 @@ use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\SalaryStatement;
 use App\Transformers\SalaryStatement\PayslipTransformer;
+use DevRaeph\PDFPasswordProtect\Exceptions\InputFileNotFoundException;
+use DevRaeph\PDFPasswordProtect\Exceptions\InputFileNotSetException;
+use DevRaeph\PDFPasswordProtect\Exceptions\OutputFileNotSetException;
+use DevRaeph\PDFPasswordProtect\Exceptions\PasswordNotSetException;
+use DevRaeph\PDFPasswordProtect\Facade\PDFPasswordProtect;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Storage;
+use Mpdf\MpdfException;
+use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
+use setasign\Fpdi\PdfParser\PdfParserException;
+use setasign\Fpdi\PdfParser\Type\PdfTypeException;
 use Spatie\LaravelPdf\Facades\Pdf;
 
 class PayslipServiceConcrete implements PayslipServiceInterface
@@ -62,6 +71,27 @@ class PayslipServiceConcrete implements PayslipServiceInterface
         return $signed;
     }
 
+    public function generatePassword(SalaryStatement $salaryStatement): string
+    {
+        $employee = $salaryStatement->employee;
+
+        $password = preg_replace('/\s+/', '', strtolower($employee->family_name)) .
+            preg_replace('/\s+/', '', strtolower($employee->number)) .
+            $employee->birth_date?->format('Ymd');
+
+        return $password;
+    }
+
+    /**
+     * @throws InputFileNotFoundException
+     * @throws OutputFileNotSetException
+     * @throws PdfTypeException
+     * @throws CrossReferenceException
+     * @throws MpdfException
+     * @throws PasswordNotSetException
+     * @throws PdfParserException
+     * @throws InputFileNotSetException
+     */
     public function generate(SalaryStatement $salaryStatement): static
     {
         $this->prepareTemplateParameters($salaryStatement);
@@ -70,6 +100,11 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             ->disk('s3')
             ->format($this->defaultFormat)
             ->save($this->filePath());
+
+        PDFPasswordProtect::setInputFile($this->filePath(), 's3')
+            ->setOutputFile($this->filePath(), 's3')
+            ->setPassword($this->generatePassword($salaryStatement))
+            ->secure();
 
         return $this;
     }
