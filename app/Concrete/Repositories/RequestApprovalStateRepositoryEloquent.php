@@ -9,6 +9,7 @@ use App\Concrete\BaseRepositoryEloquent;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
 use App\Models\Company;
+use App\Models\Hydrations\PendingApprovalStatesTotals;
 use App\Models\RequestApprovalState;
 use App\Traits\HasPolicy;
 use Carbon\Carbon;
@@ -232,6 +233,27 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
         $paginator = $this->createPaginationFromBuilder($queryBuilder);
 
         return $this->hydratePaginationItems($paginator, $this->model());
+    }
+
+    public function totals($filters): Collection
+    {
+        $orders = [
+            ['field' => 'request_approval_states_sub.requestable_date_requested', 'direction' => 'DESC'],
+            ['field' => 'request_approval_states_sub.requestable_id', 'direction' => 'DESC'],
+            ['field' => 'request_approval_states_sub.order', 'direction' => 'ASC'],
+        ];
+
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+
+        $totals = $this->queryAsSub($queryBuilder, 'request_approval_states_sub')
+            ->select([
+                DB::raw("SUM(CASE WHEN request_approval_states_sub.requestable_type = 'attendance_adjustment_request' THEN 1 ELSE 0 END) AS total_pending_attendance_adjustment"),
+                DB::raw("SUM(CASE WHEN request_approval_states_sub.requestable_type = 'overtime_request' THEN 1 ELSE 0 END) AS total_pending_overtime"),
+                DB::raw("SUM(CASE WHEN request_approval_states_sub.requestable_type = 'leave_request' THEN 1 ELSE 0 END) AS total_pending_leave"),
+                DB::raw("SUM(CASE WHEN request_approval_states_sub.requestable_type = 'payroll_request' THEN 1 ELSE 0 END) AS total_pending_payroll"),
+            ]);
+
+        return $this->hydrateCollection($totals->get(), PendingApprovalStatesTotals::class);
     }
 
     public function list($filters): Collection

@@ -91,6 +91,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PayrollInquiryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RequestApprovalStateController;
+use App\Http\Controllers\PendingRequestApprovalStateTotalsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryStatementAttendanceController;
 use App\Http\Controllers\SalaryStatementController;
@@ -305,6 +306,7 @@ Route::group([
 
     //Approval States
     Route::get('approval-states', [RequestApprovalStateController::class, 'index']);
+    Route::get('pending-approval-state-totals', [PendingRequestApprovalStateTotalsController::class, 'index']);
     //Apply approval workflow
     Route::post('approval-states-workflow', [RequestApprovalStateController::class, 'applyWorkflow']);
 
@@ -598,7 +600,7 @@ Route::group([
     Route::delete('salary-statements', [SalaryStatementController::class, 'batchDestroy']);
 
     Route::get('payslip-preview/{ulid}', PayslipPreviewController::class);
-    
+
     Route::post('salary-statement-manual-add-details/{salaryStatementUlid}', [SalaryStatementManualAddDetailController::class, 'store']);
 
     Route::get('employee-portal-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
