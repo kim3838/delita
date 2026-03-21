@@ -4,6 +4,7 @@ namespace App\Transformers\PayrollRequest;
 
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\RequestInterface;
 use App\Facades\Fractal;
 use App\Models\PayrollRequest;
 use App\Traits\HasTime;
@@ -24,10 +25,13 @@ class ListTransformer extends TransformerAbstract
     {
         $payroll = Fractal::item($payrollRequest->payroll, PayrollBasicTransformer::class);
 
-        $filters = json_decode(request()->get('filters'));
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+        $filters = $requestInterface->filters;
 
         $approvalStateFilters = (object)[
-            'account_id' => request()->account_id,
+            'account_id' => $accountId,
             'associated_companies' => [$filters->company_id],
             'requestable_type' => Relation::getMorphAlias( PayrollRequest::class),
             'requestable_ids' => [$payrollRequest->id],

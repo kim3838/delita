@@ -2,6 +2,7 @@
 
 namespace App\Transformers\ApprovalSetting;
 
+use App\Blueprint\RequestInterface;
 use App\Concrete\ApprovalService;
 use App\Facades\Fractal;
 use App\Models\ApprovalSetting;

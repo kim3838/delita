@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\PayFrequency;
 use App\Models\User;
 
@@ -13,7 +14,7 @@ class PayFrequencyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-payroll-frequency');
     }
 
@@ -23,7 +24,7 @@ class PayFrequencyPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-payroll-frequency');
     }
 }

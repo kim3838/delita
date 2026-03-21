@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\SalaryStatement;
 use App\Models\User;
 
@@ -13,7 +14,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-salary-statement');
     }
 
@@ -23,7 +24,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'export-salary-statement');
     }
 
@@ -33,7 +34,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-salary-statement');
     }
 
@@ -43,7 +44,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-salary-statement');
     }
 
@@ -53,7 +54,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-salary-statement');
     }
 
@@ -63,7 +64,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-salary-statement');
     }
 
@@ -73,7 +74,7 @@ class SalaryStatementPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-salary-statement');
     }
 }

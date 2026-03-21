@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\Attendance;
 use App\Models\User;
 
@@ -13,7 +14,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-attendance');
     }
 
@@ -23,7 +24,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-attendance');
     }
 
@@ -33,7 +34,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'create-attendance');
     }
 
@@ -43,7 +44,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-attendance');
     }
 
@@ -53,7 +54,7 @@ class AttendancePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-attendance');
     }
 }

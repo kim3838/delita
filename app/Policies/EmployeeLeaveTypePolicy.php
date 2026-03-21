@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\EmployeeLeaveType;
 use App\Models\User;
 
@@ -13,7 +14,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-employee-leave-type-assignment');
     }
 
@@ -23,7 +24,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-employee-leave-type-assignment');
     }
 
@@ -33,7 +34,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-leave-type-assignment');
     }
 
@@ -43,7 +44,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-leave-type-assignment');
     }
 
@@ -53,7 +54,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'create-employee-leave-type-assignment')
             && $this->hasPermission($user, 'update-employee-leave-type-assignment');
     }
@@ -64,7 +65,7 @@ class EmployeeLeaveTypePolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-leave-type-assignment');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Blueprint\EnumInterface;
+use App\Blueprint\RequestInterface;
 use App\Enums\Compensation as CompensationEnum;
 use App\Facades\ResponseJson;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,8 @@ class EnumController extends Controller
     public function selection($enum): JsonResponse
     {
         $selection = [];
-        $filters = json_decode(request()->get('filters'));
+
+        $filters = app(RequestInterface::class)->filters;
 
         switch($enum){
             case 'compensation':

@@ -5,6 +5,7 @@ namespace App\Concrete\Repositories;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Blueprint\RequestInterface;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\BaseRepositoryEloquent;
 use App\Exceptions\UnexpectedException;
@@ -151,7 +152,7 @@ class OvertimeRepositoryEloquent extends BaseRepositoryEloquent implements Overt
     public function batchDelete($ids, ?AttendanceSplitter $splitterInterface = null): int
     {
         $attendanceSplitter = $splitterInterface
-            ?: app(AttendanceSplitterInterface::class, [Company::query()->find(request()->input('company_id'))]);
+            ?: app(AttendanceSplitterInterface::class, [Company::query()->find(app(RequestInterface::class)->companyId)]);
 
         foreach ($ids as $id) {
 

@@ -2,6 +2,7 @@
 
 namespace App\Transformers\AssociatedUser;
 
+use App\Blueprint\RequestInterface;
 use App\Concrete\TransformerAbstractConcrete;
 use App\Models\Hydrations\AssociatedUser;
 use App\Models\User;
@@ -16,8 +17,12 @@ class ListTransformer extends TransformerAbstractConcrete
 
         $mappedAssociatedCompanies = new UserListTransformer()->mapAssociatedCompanies($associatedCompanies);
 
-        $accountRoles = request()->account_id
-            ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+
+        $accountRoles = $accountId
+            ? $this->collectionSummary($user->roles->where('account_id', $accountId)->values(), 'name', '')
             : null;
 
         $associatedCompaniesSummary = $this->collectionSummary($associatedCompanies, 'short_name');

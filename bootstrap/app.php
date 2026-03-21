@@ -50,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append([
+            \App\Http\Middleware\RequestBoot::class,
             \App\Http\Middleware\TransformQueryParameters::class
         ]);
 

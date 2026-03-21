@@ -2,6 +2,7 @@
 
 namespace App\Transformers\CompanyUser;
 
+use App\Blueprint\RequestInterface;
 use App\Concrete\TransformerAbstractConcrete;
 use App\Models\Hydrations\CompanyUser;
 use App\Models\User;
@@ -12,8 +13,12 @@ class ListTransformer extends TransformerAbstractConcrete
     {
         $user = User::query()->find($model->user_id);
 
-        $accountRoles = request()->account_id
-            ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+
+        $accountRoles = $accountId
+            ? $this->collectionSummary($user->roles->where('account_id', $accountId)->values(), 'name', '')
             : null;
 
         return [

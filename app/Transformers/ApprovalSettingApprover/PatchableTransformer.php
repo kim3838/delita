@@ -2,6 +2,7 @@
 
 namespace App\Transformers\ApprovalSettingApprover;
 
+use App\Blueprint\RequestInterface;
 use App\Concrete\TransformerAbstractConcrete;
 use App\Enums\ApproverType;
 use App\Enums\CompanyUserAssignmentType;
@@ -12,7 +13,10 @@ class PatchableTransformer extends TransformerAbstractConcrete
 {
     public function transform(ApprovalSettingApprover $model): array
     {
-        $filters = json_decode(request()->get('filters'));
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+        $filters = $requestInterface->filters;
 
         $companyId = null;
         $companyName = null;
@@ -32,8 +36,8 @@ class PatchableTransformer extends TransformerAbstractConcrete
 
             $mappedAssociatedCompanies = collect(new UserListTransformer()->mapAssociatedCompanies($associatedCompanies));
 
-            $accountRoles = request()->account_id
-                ? $this->collectionSummary($user->roles->where('account_id', request()->account_id)->values(), 'name', '')
+            $accountRoles = $accountId
+                ? $this->collectionSummary($user->roles->where('account_id', $accountId)->values(), 'name', '')
                 : null;
 
             if($mappedAssociatedCompanies->first()){

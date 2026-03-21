@@ -2,6 +2,7 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\RequestInterface;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use Illuminate\Container\Container as Application;
@@ -31,8 +32,10 @@ abstract class BaseRepositoryEloquent
 
     /**
      */
-    public function __construct(Application $app)
-    {
+    public function __construct(
+        Application $app,
+        public readonly RequestInterface $requestInterface
+    ){
         try {
 
             $this->app = $app;

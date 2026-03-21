@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\User;
 
 class LeaveRunningBalanceReportPolicy extends BasePolicy
@@ -12,7 +13,7 @@ class LeaveRunningBalanceReportPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-leave-running-balance');
     }
 }

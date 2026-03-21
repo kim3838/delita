@@ -4,6 +4,7 @@ namespace App\Transformers\LeaveRequest;
 
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\RequestInterface;
 use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
 use App\Models\LeaveRequest;
@@ -30,10 +31,13 @@ class ListTransformer extends TransformerAbstract
 
         $shift = Shift::query()->find($leaveRequest->shift_id);
 
-        $filters = json_decode(request()->get('filters'));
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+        $filters = $requestInterface->filters;
 
         $approvalStateFilters = (object)[
-            'account_id' => request()->account_id,
+            'account_id' => $accountId,
             'associated_companies' => [$filters->company_id],
             'requestable_type' => Relation::getMorphAlias( LeaveRequest::class),
             'requestable_ids' => [$leaveRequest->id],

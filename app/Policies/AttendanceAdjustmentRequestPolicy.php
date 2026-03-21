@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\User;
 
 class AttendanceAdjustmentRequestPolicy extends BasePolicy
@@ -12,7 +13,7 @@ class AttendanceAdjustmentRequestPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-attendance-adjustment-request');
     }
 
@@ -22,7 +23,7 @@ class AttendanceAdjustmentRequestPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'create-attendance-adjustment-request');
     }
 
@@ -32,7 +33,7 @@ class AttendanceAdjustmentRequestPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-attendance-adjustment-request');
     }
 }

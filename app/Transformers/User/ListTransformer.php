@@ -2,6 +2,7 @@
 
 namespace App\Transformers\User;
 
+use App\Blueprint\RequestInterface;
 use App\Concrete\TransformerAbstractConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Models\Employee;
@@ -11,7 +12,7 @@ class ListTransformer extends TransformerAbstractConcrete
 {
     public function transform(User $model): array
     {
-        $filters = json_decode(request()->get('filters'));
+        $filters = app(RequestInterface::class)->filters;
 
         $associatedCompanies = $model->companies->sortBy('code')->values();
 

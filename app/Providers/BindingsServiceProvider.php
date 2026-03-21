@@ -6,10 +6,12 @@ use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\PayslipServiceInterface;
+use App\Blueprint\RequestInterface;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\EmployeeServiceConcrete;
 use App\Concrete\PayrollServiceConcrete;
 use App\Concrete\PayslipServiceConcrete;
+use App\Concrete\RequestConcrete;
 use Illuminate\Support\ServiceProvider;
 
 class BindingsServiceProvider extends ServiceProvider
@@ -19,6 +21,11 @@ class BindingsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singletonIf(RequestInterface::class, function($app){
+
+            return new RequestConcrete();
+        });
+
         $this->app->bind(AttendanceSplitterInterface::class, function ($app, $parameters) {
 
             list($company) = $parameters;

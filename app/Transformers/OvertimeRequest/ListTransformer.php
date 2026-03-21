@@ -5,6 +5,7 @@ namespace App\Transformers\OvertimeRequest;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\RequestInterface;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
 use App\Models\OvertimeRequest;
@@ -63,10 +64,13 @@ class ListTransformer extends TransformerAbstract
 
         $attendance = Fractal::item($attendanceHydrated, AttendanceItemTransformer::class);
 
-        $filters = json_decode(request()->get('filters'));
+        $requestInterface = app(RequestInterface::class);
+
+        $accountId = $requestInterface->accountId;
+        $filters = $requestInterface->filters;
 
         $approvalStateFilters = (object)[
-            'account_id' => request()->account_id,
+            'account_id' => $accountId,
             'associated_companies' => [$filters->company_id],
             'requestable_type' => Relation::getMorphAlias( OvertimeRequest::class),
             'requestable_ids' => [$overtimeRequest->id],

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Blueprint\RequestInterface;
 use App\Models\EmployeeShift;
 use App\Models\User;
 
@@ -13,7 +14,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'view-employee-shift-assignment');
     }
 
@@ -23,7 +24,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'update-employee-shift-assignment');
     }
 
@@ -33,7 +34,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 
@@ -43,7 +44,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 
@@ -53,7 +54,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'create-employee-shift-assignment')
             && $this->hasPermission($user, 'update-employee-shift-assignment')
             && $this->hasPermission($user, 'delete-employee-shift-assignment');
@@ -65,7 +66,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'create-employee-shift-assignment');
     }
 
@@ -75,7 +76,7 @@ class EmployeeShiftPolicy extends BasePolicy
             return true;
         }
 
-        return $this->userIsAdminInCompany($user, request()->input('company_id'))
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
             && $this->hasPermission($user, 'delete-employee-shift-assignment');
     }
 }

@@ -31,8 +31,8 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
         unset($payrollRepositoryFilter->associated_companies);
 
         $requestedByCompanyUserRepositoryFilter = clone $filters;
-        if(isset(request()->account_id)){
-            $requestedByCompanyUserRepositoryFilter->account_id = request()->account_id;
+        if(isset($this->requestInterface->accountId)){
+            $requestedByCompanyUserRepositoryFilter->account_id = $this->requestInterface->accountId;
         }
         if(isset($filters->company_id)){
             $requestedByCompanyUserRepositoryFilter->associated_companies = [$filters->company_id];
