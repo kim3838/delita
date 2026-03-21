@@ -14,6 +14,6 @@ class BlankEmployeeTemplateExport implements FromArray, WithHeadings
 
     public function headings(): array
     {
-        return ['Number', 'Family name', 'Given name', 'Payroll Group', 'Office email'];
+        return ['Number', 'Family name', 'Given name', 'Birth Date', 'Payroll Group', 'Office email'];
     }
 }

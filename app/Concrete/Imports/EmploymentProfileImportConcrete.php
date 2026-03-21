@@ -84,6 +84,7 @@ class EmploymentProfileImportConcrete extends BaseImportConcrete implements Empl
 
                 } catch (\Exception $e) {
                     $validationErrors[] = 'Start date invalid.' ;
+                    $row['start_date'] = null;
                 }
             }
 
