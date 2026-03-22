@@ -30,17 +30,20 @@ abstract class BaseRepositoryEloquent
      */
     abstract public function model(): string;
 
+    protected RequestInterface $requestInterface;
+
     /**
      */
     public function __construct(
-        Application $app,
-        public readonly RequestInterface $requestInterface
+        Application $app
     ){
         try {
 
             $this->app = $app;
             $this->makeModel();
             $this->makeModelAlias();
+
+            $this->requestInterface = $app->make(RequestInterface::class);
         } catch (UnexpectedException|BindingResolutionException $e) {
 
         }
