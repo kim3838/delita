@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionAndRoleSeeder::class);
         $this->call(ApprovalSettingSeeder::class);
 
-        if(false && App::environment('development', 'staging')){
+        if(true && App::environment('development', 'staging')){
             $this->call(Development::class);
         }
     }
