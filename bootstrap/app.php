@@ -1,8 +1,14 @@
 <?php
 
+use App\Concrete\FractalTransformer;
+use App\Concrete\JsonResponseScaffolder;
 use App\Concrete\LogContext;
+use App\Concrete\TimeZoneConverter;
 use App\Facades\ResponseJson;
 use App\Helpers\CookieHelper;
+use App\Http\Middleware\EnsureEmailIsVerified;
+use App\Http\Middleware\RequestBoot;
+use App\Http\Middleware\TransformQueryParameters;
 use App\Models\ThrownLog;
 use App\Notifications\ErrorLogNotification;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -31,9 +37,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withBindings([
-        'response_json' => fn() => new App\Concrete\JsonResponseScaffolder(),
-        'fractal' => fn() => new App\Concrete\FractalTransformer(),
-        'time_zone_converter' => fn() => new App\Concrete\TimeZoneConverter(),
+        'response_json' => fn() => new JsonResponseScaffolder(),
+        'fractal' => fn() => new FractalTransformer(),
+        'time_zone_converter' => fn() => new TimeZoneConverter(),
     ])
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -51,12 +57,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append([
-            \App\Http\Middleware\RequestBoot::class,
-            \App\Http\Middleware\TransformQueryParameters::class
+            RequestBoot::class,
+            TransformQueryParameters::class
         ]);
 
         $middleware->alias([
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'verified' => EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
