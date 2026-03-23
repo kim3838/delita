@@ -48,7 +48,7 @@ class JsonPresetRepositoryEloquent extends BaseRepositoryEloquent implements Jso
 
         $jsonPreset = [
             'key' => $attributes['key'] ?? null,
-            'disk' => 'presets',
+            'disk' => 's3',
             'path' => $attributes['path'] ?? null,
         ];
 
