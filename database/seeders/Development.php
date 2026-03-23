@@ -173,12 +173,11 @@ class Development extends Seeder
         }
 
         //Account 1002User01
-        $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(),]);
-        $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User05 = User::query()->firstOrCreate(['name' => '1002.user.5'],[...User::factory()->definition(), 'name' => '1002.user.5', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $user11 = User::query()->firstOrCreate(['name' => 'user.11'],[...User::factory()->definition(), 'name' => 'user.11', 'email' => 'luxere20@gmail.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'hgt0ka4q0048008@kunsel-erp.com', 'ulid' => Str::ulid(),]);
+        $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'saehwa4q0055342@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'dsnvhf4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'lfures4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User05 = User::query()->firstOrCreate(['name' => '1002.user.5'],[...User::factory()->definition(), 'name' => '1002.user.5', 'email' => 'asdcdw4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
         //Company MAC Shifts
         //Regular no lunch out/in
