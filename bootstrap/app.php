@@ -16,6 +16,7 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Routing\Exceptions\BackedEnumCaseNotFoundException;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Illuminate\Support\Facades\Request;
@@ -88,17 +89,20 @@ return Application::configure(basePath: dirname(__DIR__))
                     'request' => Request::url(),
                 ]);
 
-                NotificationFacade::route('mail',
-                    ['info@kunsel-erp.com' => 'Kim De Guzman']
-                )->notify(new ErrorLogNotification(new LogContext(
-                    get_class($throwable),
-                    $throwable instanceof Exception,
-                    $throwable instanceof Error,
-                    $throwable->getMessage(),
-                    $throwable->getFile(),
-                    $throwable->getLine(),
-                    Request::url()
-                )));
+                if(App::environment('production')){
+
+                    NotificationFacade::route('mail',
+                        ['info@kunsel-erp.com' => 'Kim De Guzman']
+                    )->notify(new ErrorLogNotification(new LogContext(
+                        get_class($throwable),
+                        $throwable instanceof Exception,
+                        $throwable instanceof Error,
+                        $throwable->getMessage(),
+                        $throwable->getFile(),
+                        $throwable->getLine(),
+                        Request::url()
+                    )));
+                }
 
                 Log::channel('error')->{$logAction}([
                     ('thrown') => get_class($throwable),
