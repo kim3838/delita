@@ -5,7 +5,6 @@ namespace App\Http\Requests\User;
 use App\Enums\RegexValidation;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
@@ -29,9 +28,7 @@ class StoreUserRequest extends FormRequest
             'email' => [
                 'required',
                 'email:rfc,dns',
-                ...(App::environment('production') ? [
-                    Rule::unique('users')
-                ] : [])
+                Rule::unique('users')
             ],
             'password' => [
                 'required',

@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests\Account;
 
-use App\Models\Account;
+use App\Concrete\ContactConcrete;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
 
 class BaseAccountRequest extends FormRequest
 {
@@ -15,7 +14,13 @@ class BaseAccountRequest extends FormRequest
                 'required',
                 'email:rfc,dns',
                 function ($attribute, $value, $fail) {
-                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
+
+                    $contactService = new ContactConcrete();
+
+                    $exceptAccountId = $this->route('accountId');
+
+                    if ($contactService->isEmailTakenAsAccountEmail($value, $exceptAccountId)) {
+
                         $fail('Email has already been taken');
                     }
                 },
@@ -78,12 +83,5 @@ class BaseAccountRequest extends FormRequest
         ];
     }
 
-    private function isEmailTaken(string $email): bool
-    {
-        $queryBuilder = Account::query()
-            ->where('id', '!=', $this->route('accountId'))
-            ->where('email', $email);
 
-        return $queryBuilder->exists();
-    }
 }

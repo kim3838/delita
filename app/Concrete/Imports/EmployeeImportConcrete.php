@@ -7,18 +7,17 @@ use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\UserCompanyAssignmentRepository;
 use App\Blueprint\Repositories\UserRepository;
 use App\Concrete\BaseImportConcrete;
+use App\Concrete\ContactConcrete;
 use App\Enums\CompanyUserAssignmentType;
 use App\Enums\CreationType;
 use App\Enums\PayFrequency as PayFrequencyEnum;
 use App\Enums\RegexValidation;
 use App\Exports\BlankEmployeeTemplateExport;
-use App\Http\Requests\EmployeeContact\StoreEmployeeContactRequest;
 use App\Models\Employee;
 use App\Models\PayFrequency;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImport
 {
@@ -122,31 +121,28 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
 
                 $officeEmailValidation = Validator::make($row,[
                     'office_email' => [
-                        'email:rfc,dns',
-                        ...(App::environment('production') ? [
-                            Rule::unique('users', 'email')
-                        ] : [])
+                        'email:rfc,dns'
                     ],
                 ]);
                 $officeEmailValidation->setCustomMessages([
-                    'office_email.email' => 'Invalid email.',
-                    'office_email.unique' => 'Email has already been taken.',
+                    'office_email.email' => 'Invalid email.'
                 ]);
 
-                if(App::environment('production') && $this->isEmailTakenAsEmployeeContact($row['office_email'])) {
+                $contactService = new ContactConcrete();
+
+                if ($contactService->isEmailTaken($row['office_email'])) {
+
                     $validationErrors[] = 'Email has already been taken.';
                 }
 
                 if ($officeEmailValidation->fails()) {
                     $validationErrors[] = $officeEmailValidation->errors()->first();
                 } else {
-                    if(App::environment('production')){
 
-                        if (in_array($row['office_email'], $fileOfficeEmails)) {
-                            $validationErrors[] = 'Duplicate office email.';
-                        } else {
-                            $fileOfficeEmails[] = $row['office_email'];
-                        }
+                    if (in_array($row['office_email'], $fileOfficeEmails)) {
+                        $validationErrors[] = 'Duplicate office email.';
+                    } else {
+                        $fileOfficeEmails[] = $row['office_email'];
                     }
                 }
             }
@@ -165,11 +161,6 @@ class EmployeeImportConcrete extends BaseImportConcrete implements EmployeeImpor
             ->where('company_id', $companyId)
             ->pluck('number')
             ->toArray();
-    }
-
-    public function isEmailTakenAsEmployeeContact(string $email): bool
-    {
-        return new StoreEmployeeContactRequest()->isEmailTaken($email);
     }
 
     public function resolvedData($data, $companyId): array

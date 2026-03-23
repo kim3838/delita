@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\User;
 
+use App\Concrete\ContactConcrete;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
-use Illuminate\Validation\Rule;
 
 class StoreAutogenerateUserRequest extends FormRequest
 {
@@ -22,10 +21,15 @@ class StoreAutogenerateUserRequest extends FormRequest
             'given_name' => 'required|string|max:255',
             'office_email' => [
                 'required',
-                'email:rfc,dns',
-                ...(App::environment('production') ? [
-                    Rule::unique('users', 'email')
-                ] : [])
+                function ($attribute, $value, $fail) {
+
+                    $contactService = new ContactConcrete();
+
+                    if ($contactService->isEmailTaken($value)) {
+
+                        $fail('Email has already been taken');
+                    }
+                },
             ],
             'employable' => 'required|boolean',
         ];

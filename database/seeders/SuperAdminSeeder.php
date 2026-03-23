@@ -18,10 +18,10 @@ class SuperAdminSeeder extends Seeder
     public function run(): void
     {
         User::query()->firstOrCreate([
-            'name' => 'kim.123',
+            'name' => 'superadmin',
         ],[
             ...User::factory()->definition(),
-            'name' => 'kim.123',
+            'name' => 'superadmin',
             'type' => UserType::SUPER_ADMIN,
             'email' => 'luxere20@gmail.com',
             'timezone' => 'Asia/Manila',

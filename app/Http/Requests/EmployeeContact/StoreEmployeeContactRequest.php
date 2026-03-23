@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\EmployeeContact;
 
+use App\Concrete\ContactConcrete;
 use App\Models\EmployeeContact;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
 
 class StoreEmployeeContactRequest extends FormRequest
 {
@@ -23,7 +23,15 @@ class StoreEmployeeContactRequest extends FormRequest
                 'email:rfc,dns',
                 'different:personal_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
+
+                    $employeeId = $this->input('employee_id');
+
+                    $contactService = new ContactConcrete();
+
+                    $taken = $contactService->isEmailTaken($value, $employeeId);
+
+                    if ($taken) {
+
                         $fail('Office email has already been taken');
                     }
                 },
@@ -33,7 +41,13 @@ class StoreEmployeeContactRequest extends FormRequest
                 'email:rfc,dns',
                 'different:office_email',
                 function ($attribute, $value, $fail) {
-                    if ($value && (App::environment('production') && $this->isEmailTaken($value))) {
+
+                    $employeeId = $this->input('employee_id');
+
+                    $contactService = new ContactConcrete();
+
+                    if ($contactService->isEmailTaken($value, $employeeId)) {
+
                         $fail('Personal email has already been taken');
                     }
                 },
@@ -44,8 +58,14 @@ class StoreEmployeeContactRequest extends FormRequest
                 'max:255',
                 'different:personal_phone',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isPhoneTaken($value)) {
-                        $fail('Personal phone has already been taken');
+
+                    $contactService = new ContactConcrete();
+
+                    $taken = $contactService->isPhoneTaken($value);
+
+                    if ($taken) {
+
+                        $fail('Office phone has already been taken');
                     }
                 },
             ],
@@ -55,7 +75,13 @@ class StoreEmployeeContactRequest extends FormRequest
                 'max:255',
                 'different:office_phone',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->isPhoneTaken($value)) {
+
+                    $contactService = new ContactConcrete();
+
+                    $taken = $contactService->isPhoneTaken($value);
+
+                    if ($taken) {
+
                         $fail('Personal phone has already been taken');
                     }
                 },
@@ -76,22 +102,5 @@ class StoreEmployeeContactRequest extends FormRequest
             'personal_phone.different' => 'The personal phone and office phone must be different',
         ];
 
-    }
-
-    public function isEmailTaken(string $email): bool
-    {
-        $queryBuilder = EmployeeContact::query()
-            ->where('office_email', $email)
-            ->orWhere('personal_email', $email);
-
-        return $queryBuilder->exists();
-    }
-
-    private function isPhoneTaken(string $phone): bool
-    {
-        $queryBuilder = EmployeeContact::query()->where('office_phone', $phone)
-            ->orWhere('personal_phone', $phone);
-
-        return $queryBuilder->exists();
     }
 }
