@@ -4,7 +4,6 @@ use App\Enums\UserStatus;
 use App\Enums\UserType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,13 +17,7 @@ return new class extends Migration
             $table->id();
             $table->ulid()->unique()->index();
             $table->string('name');
-
-            if(App::environment('development', 'staging')){
-                $table->string('email');
-            } else {
-                $table->string('email')->unique();
-            }
-
+            $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->smallInteger('type')->default(UserType::DEFAULT);

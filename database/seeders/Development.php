@@ -76,19 +76,19 @@ class Development extends Seeder
         //Account 1001
         $account1001 = Account::query()->firstOrCreate(
             ['number' => 'HGT0KA4Q0048008'],
-            ['number' => 'HGT0KA4Q0048008', 'ulid' => Str::ulid(), 'email' => 'hgt0ka4q0048008@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString()]
+            ['number' => 'HGT0KA4Q0048008', 'ulid' => Str::ulid(), 'email' => 'email-alias-001@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString()]
         );
 
         //Account 1002
         $account1002 = Account::query()->firstOrCreate(
             ['number' => 'SAEHWA4Q0055342'],
-            ['number' => 'SAEHWA4Q0055342', 'ulid' => Str::ulid(), 'email' => 'saehwa4q0055342@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'SAEHWA4Q0055342', 'ulid' => Str::ulid(), 'email' => 'email-alias-002@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
         //Account 1003
         $account1003 = Account::query()->firstOrCreate(
             ['number' => 'DSNVHF4Q0060294'],
-            ['number' => 'DSNVHF4Q0060294', 'ulid' => Str::ulid(), 'email' => '	dsnvhf4q0060294@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'DSNVHF4Q0060294', 'ulid' => Str::ulid(), 'email' => '	email-alias-003@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
          //Account chain, role creation
@@ -173,11 +173,11 @@ class Development extends Seeder
         }
 
         //Account 1002User01
-        $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'hgt0ka4q0048008@kunsel-erp.com', 'ulid' => Str::ulid(),]);
-        $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'saehwa4q0055342@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'dsnvhf4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'lfures4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
-        $account1002User05 = User::query()->firstOrCreate(['name' => '1002.user.5'],[...User::factory()->definition(), 'name' => '1002.user.5', 'email' => 'asdcdw4q0060294@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User01 = User::query()->firstOrCreate(['name' => '1002.user.1'],[...User::factory()->definition(), 'name' => '1002.user.1', 'email' => 'email-alias-004@kunsel-erp.com', 'ulid' => Str::ulid(),]);
+        $account1002User02 = User::query()->firstOrCreate(['name' => '1002.user.2'],[...User::factory()->definition(), 'name' => '1002.user.2', 'email' => 'email-alias-005@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User03 = User::query()->firstOrCreate(['name' => '1002.user.3'],[...User::factory()->definition(), 'name' => '1002.user.3', 'email' => 'email-alias-006@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User04 = User::query()->firstOrCreate(['name' => '1002.user.4'],[...User::factory()->definition(), 'name' => '1002.user.4', 'email' => 'email-alias-007@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
+        $account1002User05 = User::query()->firstOrCreate(['name' => '1002.user.5'],[...User::factory()->definition(), 'name' => '1002.user.5', 'email' => 'email-alias-008@kunsel-erp.com', 'ulid' => Str::ulid(), 'created_by' => $account1002User01->id,]);
 
         //Company MAC Shifts
         //Regular no lunch out/in
