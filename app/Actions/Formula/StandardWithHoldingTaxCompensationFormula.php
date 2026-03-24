@@ -142,10 +142,21 @@ class StandardWithHoldingTaxCompensationFormula
                 $payrollYearTotalTaxable = $context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'taxable');
                 $payrollYearTotalTaxWithheld = $context->getTotalFromSalaryStatementCollection($payrollYearSalaryStatements, 'withholding_tax');
 
+                /**
+                 * Get the employee's previous employers total taxable, total taxable from bonus, and total tax withheld
+                 **/
+                $employeeExternalYearTaxHistory = $context->employee->externalTaxHistories()->where('year', $context->payroll->year)->first();
+                $previousEmployerTotalTaxable = BigDecimal::of($employeeExternalYearTaxHistory->total_taxable ?? '0');
+                $previousEmployerTotalTaxableFromBonus = BigDecimal::of($employeeExternalYearTaxHistory->total_taxable_from_bonus ?? '0');
+                $previousEmployerTotalTaxWithheld = BigDecimal::of($employeeExternalYearTaxHistory->total_tax_withheld ?? '0');
+
                 if ($debugEnabled) {
                     _debug([
                         'Payroll year (w/o period) total taxable' => $payrollYearTotalTaxable->toString(),
                         'Payroll year (w/o period) total tax withheld' => $payrollYearTotalTaxWithheld->toString(),
+                        'Previous employer total taxable' => $previousEmployerTotalTaxable->toString(),
+                        'Previous employer total taxable from bonus' => $previousEmployerTotalTaxableFromBonus->toString(),
+                        'Previous employer total tax withheld' => $previousEmployerTotalTaxWithheld->toString(),
                     ]);
                 }
 
@@ -154,6 +165,15 @@ class StandardWithHoldingTaxCompensationFormula
 
                 $payrollYearTotalTaxable = $payrollYearTotalTaxable->plus($payrollPeriodTotalTaxable);
                 $payrollYearTotalTaxWithheld = $payrollYearTotalTaxWithheld->plus($payrollPeriodWithholdingTax);
+
+                /**
+                 * Add the employee's previous employers total taxable, total taxable from bonus, and total tax withheld
+                 * to the total taxable and tax withheld as grand annual
+                 **/
+                $previousEmployerTotalTaxableAndTotalTaxableFromBonus = $previousEmployerTotalTaxable->plus($previousEmployerTotalTaxableFromBonus);
+
+                $payrollYearTotalTaxable = $payrollYearTotalTaxable->plus($previousEmployerTotalTaxableAndTotalTaxableFromBonus);
+                $payrollYearTotalTaxWithheld = $payrollYearTotalTaxWithheld->plus($previousEmployerTotalTaxWithheld);
 
                 $annualWithholdingTax = $this->getIntended($formulaSettings->cast, $payrollYearTotalTaxable->toString(), null, 'annual');
                 $annualWithholdingTax = BigDecimal::of($annualWithholdingTax);
@@ -186,6 +206,10 @@ class StandardWithHoldingTaxCompensationFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_DEFICIT->value,
+
+                        'withholding_tax_previous_employer_total_taxable' => $previousEmployerTotalTaxableAndTotalTaxableFromBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_previous_employer_total_tax_withheld' => $previousEmployerTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
+
                         'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
@@ -221,6 +245,10 @@ class StandardWithHoldingTaxCompensationFormula
                 if($adjustment->toScale(2, RoundingMode::HalfUp)->isGreaterThan(BigDecimal::zero())){
                     $positiveAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_WITHHOLDING_TAX_REFUND->value,
+
+                        'withholding_tax_previous_employer_total_taxable' => $previousEmployerTotalTaxableAndTotalTaxableFromBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'withholding_tax_previous_employer_total_tax_withheld' => $previousEmployerTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
+
                         'withholding_tax_total_annual_taxable' => $payrollYearTotalTaxable->toScale(4, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_withheld' => $payrollYearTotalTaxWithheld->toScale(4, RoundingMode::HalfUp)->toString(),
                         'withholding_tax_actual_annual_tax' => $annualWithholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),

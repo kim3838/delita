@@ -163,12 +163,41 @@ class Standard13thMonthFormula
             $totalNontaxableBonus = BigDecimal::of($context->totals['nontaxable_bonus'] ?? '0');
             $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
 
+            /**
+             * Add the employee's previous employers total nontaxable bonus and total taxable from bonus
+             **/
+            $employeeExternalYearTaxHistory = $this->context->employee->externalTaxHistories()->where('year', $context->payroll->year)->first();
+            $previousEmployerTotalNontaxableBonus = BigDecimal::of($employeeExternalYearTaxHistory->total_nontaxable_bonus ?? 0);
+
+            if ($debugEnabled) {
+                _debug([
+                    'Previous employer total nontaxable bonus' => $previousEmployerTotalNontaxableBonus->toString(),
+                ]);
+            }
+
+            $totalNontaxableBonusWithExternal = $totalNontaxableBonus->plus($previousEmployerTotalNontaxableBonus);
+
             list(
                 $nextChainNontaxable,$subjectNontaxable,$subjectTaxable
-            ) = $this->context->chainNontaxable($totalNontaxableBonus, $payrollYearNonTaxableNonstatutoryBonus,
+            ) = $this->context->chainNontaxable($totalNontaxableBonusWithExternal, $payrollYearNonTaxableNonstatutoryBonus,
                 $totalNontaxableBonus, $totalTaxableBonus, $this->taxExempt, false);
-            $totalNontaxableBonus = $subjectNontaxable;
+
+            /**
+             * Deduct the previous employer total nontaxable bonus
+             * because we just need to identify which part of the current 13th month is taxable or not
+             *
+             * Total nontaxable bonus must not be negative
+             * Total taxable bonus must not include the over tax exempt of previous employer's total nontaxable bonus'
+             **/
+            $totalNontaxableBonus = $subjectNontaxable->minus($previousEmployerTotalNontaxableBonus);
+            $totalNontaxableBonus = $totalNontaxableBonus->isNegative() ? BigDecimal::zero() : $totalNontaxableBonus;
+
             $totalTaxableBonus = $subjectTaxable;
+            $previousEmployerTotalNontaxableBonusOverTaxExempt = $previousEmployerTotalNontaxableBonus->minus($this->taxExempt);
+
+            if($previousEmployerTotalNontaxableBonusOverTaxExempt->toScale(2)->isGreaterthan(BigDecimal::zero())){
+                $totalTaxableBonus = $totalTaxableBonus->minus($previousEmployerTotalNontaxableBonusOverTaxExempt);
+            }
 
             /**
              * Chain the nontaxable total of payroll year total nontaxable nonstatutory bonus and context total nontaxable bonus
@@ -199,6 +228,7 @@ class Standard13thMonthFormula
                     'Projected basic gross' => $projectedBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
 
                     'Payroll year nonstatutory nontaxable bonus' => $payrollYearNonTaxableNonstatutoryBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'Previous employer total nontaxable bonus' => $previousEmployerTotalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                     'Total nontaxable bonus' => $totalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                     'Total taxable bonus' => $totalTaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                     '13th month' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
@@ -232,6 +262,16 @@ class Standard13thMonthFormula
                 if($adjustment->toScale(2, RoundingMode::HalfUp)->isLessThan(BigDecimal::zero())){
 
                     $assumedActualWithProjected13thMonthWithNonstatutoryBonus = $assumedActualWithProjected13thMonth->plus($payrollYearNonstatutoryBonus);
+
+                    $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal = $assumedActualWithProjected13thMonthWithNonstatutoryBonus->plus($previousEmployerTotalNontaxableBonus);
+
+                    if ($debugEnabled) {
+                        _debug([
+                            'Assumed actual with projected 13th month with nonstatutory bonus' => $assumedActualWithProjected13thMonthWithNonstatutoryBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                            'Assumed actual with projected 13th month with nonstatutory bonus with external' => $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->toScale(4, RoundingMode::HalfUp)->toString(),
+                        ]);
+                    }
+
                     $absoluteAdjustment = $adjustment->abs();
                     $nontaxableNegativeAdjustment = BigDecimal::zero();
                     $taxableNegativeAdjustment = BigDecimal::zero();
@@ -240,9 +280,9 @@ class Standard13thMonthFormula
                      * Check if some of the total bonus that are paid on 13th month trigger are taxable,
                      * If there is, then negative adjustment will have a max taxable negative adjustment of what's been over tax-exempt
                      **/
-                    if ($assumedActualWithProjected13thMonthWithNonstatutoryBonus->isGreaterThan($this->taxExempt)) {
+                    if ($assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->isGreaterThan($this->taxExempt)) {
 
-                        $taxableBonusExcess = $assumedActualWithProjected13thMonthWithNonstatutoryBonus->minus($this->taxExempt);
+                        $taxableBonusExcess = $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->minus($this->taxExempt);
 
                         if($absoluteAdjustment->isGreaterThan($taxableBonusExcess)){
 
@@ -263,6 +303,7 @@ class Standard13thMonthFormula
 
                     $negativeAdjustmentComponentValues = [
                         'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_NEGATIVE_ADJUSTMENT->value,
+                        '13th_month_previous_employer_total_nontaxable_bonus' => $previousEmployerTotalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                         '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
                         '13th_month_actual' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
                         '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
@@ -280,7 +321,9 @@ class Standard13thMonthFormula
                         ]);
                     }
 
-                    //Update total taxable
+                    /**
+                     * Update total taxable
+                     **/
                     $totalTaxable = BigDecimal::of($context->totals['taxable'] ?? '0');
                     $context->totals = [
                         ...$context->totals,
@@ -314,13 +357,22 @@ class Standard13thMonthFormula
 
                     $assumedActualWithProjected13thMonthWithNonstatutoryBonus = $assumedActualWithProjected13thMonth->plus($payrollYearNonstatutoryBonus);
 
-                    if ($assumedActualWithProjected13thMonthWithNonstatutoryBonus->isGreaterThan($this->taxExempt)) {
+                    $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal = $assumedActualWithProjected13thMonthWithNonstatutoryBonus->plus($previousEmployerTotalNontaxableBonus);
+
+                    if ($debugEnabled) {
+                        _debug([
+                            'Assumed actual with projected 13th month with nonstatutory bonus' => $assumedActualWithProjected13thMonthWithNonstatutoryBonus->toScale(4, RoundingMode::HalfUp)->toString(),
+                            'Assumed actual with projected 13th month with nonstatutory bonus with external' => $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->toScale(4, RoundingMode::HalfUp)->toString(),
+                        ]);
+                    }
+
+                    if ($assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->isGreaterThan($this->taxExempt)) {
 
                         $taxableAdjustment = $taxableAdjustment->plus($adjustment);
 
                     } else {
 
-                        $calendarYearBonus = $assumedActualWithProjected13thMonthWithNonstatutoryBonus->plus($adjustment);
+                        $calendarYearBonus = $assumedActualWithProjected13thMonthWithNonstatutoryBonusWithExternal->plus($adjustment);
 
                         if ($calendarYearBonus->isGreaterThan($this->taxExempt)) {
 
@@ -341,6 +393,7 @@ class Standard13thMonthFormula
                     ){
                         $positiveAdjustmentComponentValues = [
                             'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH_POSITIVE_ADJUSTMENT->value,
+                            '13th_month_previous_employer_total_nontaxable_bonus' => $previousEmployerTotalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                             '13th_month_actual_total_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
                             '13th_month_actual' => $_13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
                             '13th_month_projected' => $assumedActualWithProjected13thMonth->toScale(4, RoundingMode::HalfUp)->toString(),
@@ -353,6 +406,18 @@ class Standard13thMonthFormula
                                 'Nontaxable positive adjustment' => $nontaxableAdjustment->toScale(4, RoundingMode::HalfUp)->toString(),
                             ]);
                         }
+
+                        /**
+                         * Update total nontaxable bonus and taxable bonus
+                         **/
+                        $totalNontaxableBonus = BigDecimal::of($context->totals['nontaxable_bonus'] ?? '0');
+                        $totalTaxableBonus = BigDecimal::of($context->totals['taxable_bonus'] ?? '0');
+
+                        $context->totals = [
+                            ...$context->totals,
+                            'nontaxable_bonus' => $totalNontaxableBonus->plus($nontaxableAdjustment)->toScale(6, RoundingMode::HalfUp)->toString(),
+                            'taxable_bonus' => $totalTaxableBonus->plus($taxableAdjustment)->toScale(6, RoundingMode::HalfUp)->toString(),
+                        ];
 
                         $context->statementDetails[] = [
                             'id' => null,
@@ -413,6 +478,7 @@ class Standard13thMonthFormula
 
                 $componentValues = [
                     'type' => SalaryStatementDetailComponentValueType::PH_BONUS_13TH_MONTH->value,
+                    '13th_month_previous_employer_total_nontaxable_bonus' => $previousEmployerTotalNontaxableBonus->toScale(4, RoundingMode::HalfUp)->toString(),
                     '13th_month_is_prorated' => $this->prorate13thMonth,
                     '13th_month_is_projected' => $projectedBasicGross->isGreaterThan(BigDecimal::zero()),
                     '13th_month_actual_basic_gross' => $actualTotalBasicGross->toScale(4, RoundingMode::HalfUp)->toString(),
