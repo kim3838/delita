@@ -219,4 +219,9 @@ class Employee extends Model
     {
         return $this->hasMany(SalaryStatement::class);
     }
+
+    public function externalTaxHistories(): HasMany
+    {
+        return $this->hasMany(ExternalTaxHistory::class);
+    }
 }
