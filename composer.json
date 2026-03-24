@@ -8,6 +8,7 @@
         "php": "^8.2",
         "bacon/bacon-qr-code": "^3.0",
         "brick/math": "^0.14.8",
+        "brick/money": "^0.11.2",
         "devraeph/laravel-pdf-protect": "^3.2",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^12.0",
