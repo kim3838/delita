@@ -212,6 +212,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     "details_total_sub.total_13th_month_amount AS total_13th_month_amount",
                 ] : []),
 
+                "employee_sub.company_currency_code AS company_currency_code",
                 "employee_sub.number AS employee_number",
                 "employee_sub.full_name AS employee_full_name",
 

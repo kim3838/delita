@@ -37,6 +37,10 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
                 "salary_statement_details.id AS id",
                 "salary_statement_details.salary_statement_id AS salary_statement_id",
 
+                ...(in_array('salary_statement', $relations) ? [
+                    "salary_statement_sub.company_currency_code AS company_currency_code",
+                ]: []),
+
                 "salary_statement_details.formulable_type",
                 "salary_statement_details.component_type",
                 "salary_statement_details.component_sub_type",
