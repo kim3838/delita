@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class HasUlid
 {
-    public function creating(Model $model)
+    public function creating(Model $model): true
     {
         if (empty($model->ulid)) {
             $model->ulid = (string) Str::ulid();

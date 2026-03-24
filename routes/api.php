@@ -52,6 +52,7 @@ use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\EmploymentProfileController;
 use App\Http\Controllers\EmploymentProfileImportTemplateController;
 use App\Http\Controllers\EnumController;
+use App\Http\Controllers\ExternalTaxHistoryController;
 use App\Http\Controllers\FormModuleController;
 use App\Http\Controllers\FormulaController;
 use App\Http\Controllers\EmployeeGroupController;
@@ -610,6 +611,12 @@ Route::group([
     //Salary statement attendance
     Route::get('per-day-salary-statement-totals', [SalaryStatementAttendanceController::class, 'index']);
     Route::get('per-day-salary-statement-totals-export', [SalaryStatementAttendanceController::class, 'export']);
+
+    //External tax history
+    Route::get('external-tax-histories', [ExternalTaxHistoryController::class, 'index']);
+    Route::post('external-tax-history', [ExternalTaxHistoryController::class, 'store']);
+    Route::patch('external-tax-history/{externalTaxHistoryUlid}', [ExternalTaxHistoryController::class, 'update']);
+    Route::delete('external-tax-histories', [ExternalTaxHistoryController::class, 'batchDestroy']);
 });
 
 Route::group([

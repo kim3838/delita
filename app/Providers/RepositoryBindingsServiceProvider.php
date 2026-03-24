@@ -31,6 +31,7 @@ use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\EmployeeShiftRepository;
 use App\Blueprint\Repositories\EmploymentProfileRepository;
+use App\Blueprint\Repositories\ExternalTaxHistoryRepository;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\GroupRepository;
 use App\Blueprint\Repositories\HolidayRepository;
@@ -93,6 +94,7 @@ use App\Concrete\Repositories\EmployeePayrollComponentRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeRepositoryEloquent;
 use App\Concrete\Repositories\EmployeeShiftRepositoryEloquent;
 use App\Concrete\Repositories\EmploymentProfileRepositoryEloquent;
+use App\Concrete\Repositories\ExternalTaxHistoryRepositoryEloquent;
 use App\Concrete\Repositories\FormulaRepositoryEloquent;
 use App\Concrete\Repositories\GroupRepositoryEloquent;
 use App\Concrete\Repositories\HolidayRepositoryEloquent;
@@ -194,6 +196,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         'salary_statement_attendance' => SalaryStatementAttendanceRepositoryEloquent::class,
         'salary_statement_attendance_detail' => SalaryStatementAttendanceDetailRepositoryEloquent::class,
         'salary_statement_attendance_payroll_component' => SalaryStatementAttendancePayrollComponentRepositoryEloquent::class,
+        'external_tax_history' => ExternalTaxHistoryRepositoryEloquent::class,
         AccountRepository::class => AccountRepositoryEloquent::class,
         AccountSubscriptionRepository::class => AccountSubscriptionRepositoryEloquent::class,
         AssociatedAccountRepository::class => AssociatedAccountRepositoryEloquent::class,
@@ -256,6 +259,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
         SalaryStatementAttendanceRepository::class => SalaryStatementAttendanceRepositoryEloquent::class,
         SalaryStatementAttendanceDetailRepository::class => SalaryStatementAttendanceDetailRepositoryEloquent::class,
         SalaryStatementAttendancePayrollComponentRepository::class => SalaryStatementAttendancePayrollComponentRepositoryEloquent::class,
+        ExternalTaxHistoryRepository::class => ExternalTaxHistoryRepositoryEloquent::class,
     ];
 
     public function provides(): array
@@ -323,6 +327,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             'salary_statement_attendance',
             'salary_statement_attendance_detail',
             'salary_statement_attendance_payroll_component',
+            'external_tax_history',
             AccountRepository::class,
             AccountSubscriptionRepository::class,
             AssociatedAccountRepository::class,
@@ -385,6 +390,7 @@ class RepositoryBindingsServiceProvider extends ServiceProvider implements Defer
             SalaryStatementAttendanceRepository::class,
             SalaryStatementAttendanceDetailRepository::class,
             SalaryStatementAttendancePayrollComponentRepository::class,
+            ExternalTaxHistoryRepository::class,
         ];
     }
 }

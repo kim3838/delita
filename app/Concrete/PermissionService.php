@@ -115,6 +115,10 @@ class PermissionService
                     'readable_name' => 'Payroll',
                     'actions' => ['view', 'create', 'delete']
                 ],[
+                    'key' => 'external-tax-history',
+                    'readable_name' => 'External tax history',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
                     'key' => 'salary-statement',
                     'readable_name' => 'Salary statement',
                     'actions' => ['view', 'update', 'delete', 'export']

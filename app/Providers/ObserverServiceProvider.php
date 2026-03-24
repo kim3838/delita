@@ -144,6 +144,7 @@ class ObserverServiceProvider extends ServiceProvider
                     Relation::getMorphedModel('leave_type'),
                     Relation::getMorphedModel('leave'),
                     Relation::getMorphedModel('leave_balance_adjustment'),
+                    Relation::getMorphedModel('external_tax_history'),
                 ],
                 'observers' => [
                     HasUlid::class,

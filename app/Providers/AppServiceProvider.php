@@ -13,6 +13,7 @@ use App\Models\Deduction;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
+use App\Models\ExternalTaxHistory;
 use App\Models\Formula;
 use App\Models\Group;
 use App\Models\Holiday;
@@ -88,7 +89,8 @@ class AppServiceProvider extends ServiceProvider
             'payroll_request' => PayrollRequest::class,
             'salary_statement' => SalaryStatement::class,
             'salary_statement_attendance' => SalaryStatementAttendance::class,
-            'salary_statement_attendance_detail' => SalaryStatementAttendanceDetail::class
+            'salary_statement_attendance_detail' => SalaryStatementAttendanceDetail::class,
+            'external_tax_history' => ExternalTaxHistory::class,
         ]);
     }
 }
