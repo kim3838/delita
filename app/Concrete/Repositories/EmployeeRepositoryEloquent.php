@@ -164,6 +164,7 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
                 DB::raw("ROW_NUMBER() OVER(" . $this->rowNumberOrder($orders) . ") AS `row_number`"),
                 DB::raw("DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', companies.timezone)) AS local_date"),
                 "companies.timezone AS company_timezone",
+                "companies.currency AS company_currency_code",
 
                 "employees.id",
                 "employees.ulid",
