@@ -6,6 +6,7 @@ use App\Blueprint\Repositories\SalaryStatementRepository;
 use App\Concrete\SalaryStatementContext;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
+use App\Enums\FormulableComponentSubType;
 use App\Enums\PayFrequency;
 use App\Enums\SemiMonthlySequence;
 use Brick\Math\BigDecimal;
@@ -58,6 +59,7 @@ class InitializeSalaryStatementFormula
                 'id' => null,
                 'formulable_type' => Formulable::EARNINGS->value,
                 'component_type' => CompensationEnum::BENEFIT->value,
+                'component_sub_type' => FormulableComponentSubType::NONSTATUTORY_BENEFIT_BONUS->value,
                 'component_name' => 'Bonus',
                 'component_values' => null,
                 'taxable' => $totalTaxableBonus->toScale(6, RoundingMode::HalfUp)->toString(),
