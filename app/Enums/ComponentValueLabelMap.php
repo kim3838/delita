@@ -16,7 +16,7 @@ enum ComponentValueLabelMap: string implements BaseEnum
             self::REGULAR, self::REGULAR_PAY => 'Regular',
             self::REST => 'Rest day pay',
             self::NIGHT => 'Night diff. pay',
-            self::MPF => 'Mandatory Provident Fund (MPF)',
+            self::MPF => 'MPF',
         };
     }
 

@@ -6,12 +6,11 @@ use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Facades\Fractal;
+use App\Facades\MoneyFormat;
 use App\Models\SalaryStatement;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementAttendance\BasicListTransformer as SalaryStatementAttendanceBasicListTransformer;
 use App\Transformers\SalaryStatementDetail\ListTransformer as SalaryStatementDetailListTransformer;
-use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -54,14 +53,14 @@ class ListTransformer extends TransformerAbstract
             SalaryStatementDetailListTransformer::class
         )['data'];
 
-        $basicGross = BigDecimal::of($salaryStatement->total_basic_gross);
-        $otherGross = BigDecimal::of($salaryStatement->total_other_gross);
-        $taxable = BigDecimal::of($salaryStatement->taxable);
-        $nontaxable = BigDecimal::of($salaryStatement->nontaxable);
-        $contribution = BigDecimal::of($salaryStatement->contribution);
-        $withholding_tax = BigDecimal::of($salaryStatement->withholding_tax);
-        $deduction = BigDecimal::of($salaryStatement->deduction);
-        $net = BigDecimal::of($salaryStatement->net);
+        $basicGross = MoneyFormat::toLocale($salaryStatement->total_basic_gross, $salaryStatement->company_currency_code);
+        $otherGross = MoneyFormat::toLocale($salaryStatement->total_other_gross, $salaryStatement->company_currency_code);
+        $taxable = MoneyFormat::toLocale($salaryStatement->taxable, $salaryStatement->company_currency_code);
+        $nontaxable = MoneyFormat::toLocale($salaryStatement->nontaxable, $salaryStatement->company_currency_code);
+        $contribution = MoneyFormat::toLocale($salaryStatement->contribution, $salaryStatement->company_currency_code);
+        $withholding_tax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $salaryStatement->company_currency_code);
+        $deduction = MoneyFormat::toLocale($salaryStatement->deduction, $salaryStatement->company_currency_code);
+        $net = MoneyFormat::toLocale($salaryStatement->net, $salaryStatement->company_currency_code);
 
         return [
             'row_number' => $salaryStatement->row_number,
@@ -74,6 +73,7 @@ class ListTransformer extends TransformerAbstract
 
             'payroll' => $payroll,
 
+            'company_currency_code' => $salaryStatement->company_currency_code,
             'employee_number' => $salaryStatement->employee_number,
             'employee_full_name' => $salaryStatement->employee_full_name,
 
@@ -94,14 +94,14 @@ class ListTransformer extends TransformerAbstract
             'total_leave_with_pay' => $salaryStatement->total_leave_with_pay,
             'total_absent' => $salaryStatement->total_absent,
 
-            'basic_gross' => $basicGross->toScale(4, RoundingMode::HalfUp),
-            'other_gross' => $otherGross->toScale(4, RoundingMode::HalfUp),
-            'taxable' => $taxable->toScale(4, RoundingMode::HalfUp),
-            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp),
-            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp),
-            'withholding_tax' => $withholding_tax->toScale(4, RoundingMode::HalfUp),
-            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp),
-            'net' => $net->toScale(4, RoundingMode::HalfUp),
+            'basic_gross' => $basicGross,
+            'other_gross' => $otherGross,
+            'taxable' => $taxable,
+            'nontaxable' => $nontaxable,
+            'contribution' => $contribution,
+            'withholding_tax' => $withholding_tax,
+            'deduction' => $deduction,
+            'net' => $net,
 
             'statement_attendances' => $statementAttendances,
             'statement_details' => $statementDetails,

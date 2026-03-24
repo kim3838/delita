@@ -190,6 +190,19 @@ class PayslipServiceConcrete implements PayslipServiceInterface
                         $summary['net'] = $salaryStatementDetail['payslip_payload']['summary']['net'];
                         break;
                 }
+
+                $split = $salaryStatementDetail['payslip_payload']['split'];
+
+                if(!empty($split)){
+                    switch($split['column']){
+                        case PayslipColumn::EARNINGS:
+                            $earnings[] = $split;
+                            break;
+                        case PayslipColumn::DEDUCTIONS:
+                            $deductions[] = $split;
+                            break;
+                    }
+                }
             }
         }
 

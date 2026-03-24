@@ -6,12 +6,11 @@ use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\SalaryStatementDetailRepository;
 use App\Enums\DepartmentEmployeeAssignmentType;
 use App\Facades\Fractal;
+use App\Facades\MoneyFormat;
 use App\Models\SalaryStatement;
 use App\Transformers\Company\ItemTransformer as CompanyItemTransformer;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\SalaryStatementDetail\PayslipTransformer as SalaryStatementDetailPayslipTransformer;
-use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\App;
 use League\Fractal\TransformerAbstract;
 
@@ -42,12 +41,12 @@ class PayslipTransformer extends TransformerAbstract
             SalaryStatementDetailPayslipTransformer::class
         )['data'];
 
-        $taxable = BigDecimal::of($salaryStatement->taxable);
-        $nontaxable = BigDecimal::of($salaryStatement->nontaxable);
-        $contribution = BigDecimal::of($salaryStatement->contribution);
-        $withholding_tax = BigDecimal::of($salaryStatement->withholding_tax);
-        $deduction = BigDecimal::of($salaryStatement->deduction);
-        $net = BigDecimal::of($salaryStatement->net);
+        $taxable = MoneyFormat::toLocale($salaryStatement->taxable, $company['currency']);
+        $nontaxable = MoneyFormat::toLocale($salaryStatement->nontaxable, $company['currency']);
+        $contribution = MoneyFormat::toLocale($salaryStatement->contribution, $company['currency']);
+        $withholding_tax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $company['currency']);
+        $deduction = MoneyFormat::toLocale($salaryStatement->deduction, $company['currency']);
+        $net = MoneyFormat::toLocale($salaryStatement->net, $company['currency']);
 
         return [
             'id' => $salaryStatement->id,
@@ -88,12 +87,12 @@ class PayslipTransformer extends TransformerAbstract
             'total_leave_with_pay' => $salaryStatement->total_leave_with_pay,
             'total_absent' => $salaryStatement->total_absent,
 
-            'taxable' => $taxable->toScale(2, RoundingMode::HalfUp)->toString(),
-            'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp)->toString(),
-            'contribution' => $contribution->toScale(2, RoundingMode::HalfUp)->toString(),
-            'withholding_tax' => $withholding_tax->toScale(2, RoundingMode::HalfUp)->toString(),
-            'deduction' => $deduction->toScale(2, RoundingMode::HalfUp)->toString(),
-            'net' => $net->toScale(2, RoundingMode::HalfUp)->toString(),
+            'taxable' => $taxable,
+            'nontaxable' => $nontaxable,
+            'contribution' => $contribution,
+            'withholding_tax' => $withholding_tax,
+            'deduction' => $deduction,
+            'net' => $net,
 
             'statement_details' => $statementDetails,
         ];

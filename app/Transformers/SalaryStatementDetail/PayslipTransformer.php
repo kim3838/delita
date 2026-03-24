@@ -8,6 +8,7 @@ use App\Enums\Deduction;
 use App\Enums\Formulable;
 use App\Enums\IncomeTax;
 use App\Enums\PayslipColumn;
+use App\Facades\MoneyFormat;
 use App\Models\SalaryStatementDetail;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -34,6 +35,9 @@ class PayslipTransformer extends TransformerAbstract
         $payslipItemSubValues = [];
         $summary = [];
 
+        //Create split, If payroll needs to be present on another payslip column
+        $split = null;
+
         switch($salaryStatementDetail->formulable_type)
         {
             case Formulable::EARNINGS:
@@ -50,7 +54,7 @@ class PayslipTransformer extends TransformerAbstract
                             if(isValueInEnum(ComponentValueLabelMap::class, $key)){
                                 $payslipItemSubValues[] = [
                                     'label' => ComponentValueLabelMap::from($key)->label(),
-                                    'value' => BigDecimal::of($componentValues[$key])->toScale(2, RoundingMode::HalfUp)->toString()
+                                    'value' => MoneyFormat::toLocale($componentValues[$key], $salaryStatementDetail->company_currency_code)
                                 ];
                             }
                         }
@@ -97,7 +101,7 @@ class PayslipTransformer extends TransformerAbstract
                                 if(isValueInEnum(ComponentValueLabelMap::class, $key)){
                                     $payslipItemSubValues[] = [
                                         'label' => ComponentValueLabelMap::from($key)->label(),
-                                        'value' => BigDecimal::of($employeeShare[$key])->toScale(2, RoundingMode::HalfUp)->toString()
+                                        'value' => MoneyFormat::toLocale($employeeShare[$key], $salaryStatementDetail->company_currency_code)
                                     ];
                                 }
                             }
@@ -108,9 +112,26 @@ class PayslipTransformer extends TransformerAbstract
                     case Deduction::MANUAL_DEDUCTION:
                     case Deduction::TAX_ADJUSTMENT:
                     case Deduction::THIRTEENTH_MONTH_ADJUSTMENT:
+                        $payslipColumn = PayslipColumn::EARNINGS;
+
                         $payslipViewable = true;
                         $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
-                        $payslipItemValue = $deduction;
+                        $payslipItemValue = $taxable;
+
+                        /**
+                         * Add another payroll item for deduction column
+                         **/
+                        if($deduction->isGreaterThan(BigDecimal::zero())){
+
+                            $split = [
+                                'viewable' => true,
+                                'column' => PayslipColumn::DEDUCTIONS,
+                                'payroll_item_name' => $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label(),
+                                'payroll_item_value' => MoneyFormat::toLocale($deduction, $salaryStatementDetail->company_currency_code),
+                                'payroll_item_sub_values' => [],
+                            ];
+                        }
+
                         break;
                 }
                 break;
@@ -134,7 +155,7 @@ class PayslipTransformer extends TransformerAbstract
 
                     if(in_array($key, ['gross', 'deduction', 'net'])){
 
-                        $summary[$key] = BigDecimal::of($componentValues[$key])->toScale(2, RoundingMode::HalfUp)->toString();
+                        $summary[$key] = MoneyFormat::toLocale($componentValues[$key], $salaryStatementDetail->company_currency_code);
                     }
                 }
                 break;
@@ -155,9 +176,11 @@ class PayslipTransformer extends TransformerAbstract
                 'viewable' => $payslipViewable,
                 'column' => $payslipColumn,
                 'payroll_item_name' => $payslipItemName,
-                'payroll_item_value' => $payslipItemValue->toScale(2, RoundingMode::HalfUp)->toString(),
+                'payroll_item_value' => MoneyFormat::toLocale($payslipItemValue, $salaryStatementDetail->company_currency_code),
                 'payroll_item_sub_values' => $payslipItemSubValues,
                 'summary' => $summary,
+
+                'split' => $split
             ],
 
             'taxable' => $taxable->toScale(2, RoundingMode::HalfUp)->toString(),
