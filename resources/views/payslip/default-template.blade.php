@@ -227,7 +227,7 @@
             <tr><td class="sub-text-color">Present:</td><td class="pl-2 font-numeric">{{$total_present}}</td></tr>
             <tr><td class="sub-text-color">Lwp:</td><td class="pl-2 font-numeric">{{$total_leave_with_pay}}</td></tr>
             <tr><td class="sub-text-color">Lwop:</td><td class="pl-2 font-numeric">{{$total_leave_without_pay}}</td></tr>
-            <tr><td class="sub-text-color">Awol:</td><td class="pl-2 font-numeric">{{$total_absent}}</td></tr>
+            <tr><td class="sub-text-color">Absent:</td><td class="pl-2 font-numeric">{{$total_absent}}</td></tr>
             </tbody>
         </table>
     </div>
