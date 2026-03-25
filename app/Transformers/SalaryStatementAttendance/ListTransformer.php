@@ -2,9 +2,9 @@
 
 namespace App\Transformers\SalaryStatementAttendance;
 
+use App\Facades\MoneyFormat;
 use App\Models\SalaryStatementAttendance;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
@@ -33,10 +33,10 @@ class ListTransformer extends TransformerAbstract
             'component_type' => $salaryStatementAttendance->component_type?->toArray(),
             'component_name' => $salaryStatementAttendance->component_name,
 
-            'regular_pay' => $regularPay->toScale(4, RoundingMode::HalfUp)->toString(),
-            'night_differential_pay' => $nightDifferentialPay->toScale(4, RoundingMode::HalfUp)->toString(),
-            'rest_day_pay' => $restDayPay->toScale(4, RoundingMode::HalfUp)->toString(),
-            'total' => $total->toScale(4, RoundingMode::HalfUp)->toString(),
+            'regular_pay' => MoneyFormat::numberFormat($regularPay, 4),
+            'night_differential_pay' => MoneyFormat::numberFormat($nightDifferentialPay, 4),
+            'rest_day_pay' => MoneyFormat::numberFormat($restDayPay, 4),
+            'total' => MoneyFormat::numberFormat($total, 4),
         ];
     }
 }

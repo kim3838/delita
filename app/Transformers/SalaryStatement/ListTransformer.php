@@ -53,14 +53,14 @@ class ListTransformer extends TransformerAbstract
             SalaryStatementDetailListTransformer::class
         )['data'];
 
-        $basicGross = MoneyFormat::toLocale($salaryStatement->total_basic_gross, $salaryStatement->company_currency_code);
-        $otherGross = MoneyFormat::toLocale($salaryStatement->total_other_gross, $salaryStatement->company_currency_code);
-        $taxable = MoneyFormat::toLocale($salaryStatement->taxable, $salaryStatement->company_currency_code);
-        $nontaxable = MoneyFormat::toLocale($salaryStatement->nontaxable, $salaryStatement->company_currency_code);
-        $contribution = MoneyFormat::toLocale($salaryStatement->contribution, $salaryStatement->company_currency_code);
-        $withholding_tax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $salaryStatement->company_currency_code);
-        $deduction = MoneyFormat::toLocale($salaryStatement->deduction, $salaryStatement->company_currency_code);
-        $net = MoneyFormat::toLocale($salaryStatement->net, $salaryStatement->company_currency_code);
+        $basicGross = MoneyFormat::numberFormat($salaryStatement->total_basic_gross);
+        $otherGross = MoneyFormat::numberFormat($salaryStatement->total_other_gross);
+        $taxable = MoneyFormat::numberFormat($salaryStatement->taxable);
+        $nontaxable = MoneyFormat::numberFormat($salaryStatement->nontaxable);
+        $contribution = MoneyFormat::numberFormat($salaryStatement->contribution);
+        $withholding_tax = MoneyFormat::numberFormat($salaryStatement->withholding_tax);
+        $deduction = MoneyFormat::numberFormat($salaryStatement->deduction);
+        $net = MoneyFormat::numberFormat($salaryStatement->net);
 
         return [
             'row_number' => $salaryStatement->row_number,

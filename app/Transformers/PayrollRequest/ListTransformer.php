@@ -6,12 +6,11 @@ use App\Blueprint\Repositories\CompanyUserRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
 use App\Blueprint\RequestInterface;
 use App\Facades\Fractal;
+use App\Facades\MoneyFormat;
 use App\Models\PayrollRequest;
 use App\Traits\HasTime;
 use App\Transformers\Payroll\BasicTransformer as PayrollBasicTransformer;
 use App\Transformers\RequestApprovalState\ListTransformer as RequestApprovalStateListTransformer;
-use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\App;
@@ -48,15 +47,16 @@ class ListTransformer extends TransformerAbstract
             'user_username' => $payrollRequest->requested_by_user_username,
         ]);
 
-        $totalBasicGross = BigDecimal::of((string)$payrollRequest->total_basic_gross);
-        $totalOtherGross = BigDecimal::of((string)$payrollRequest->total_other_gross);
-        $totalTaxable = BigDecimal::of((string)$payrollRequest->total_taxable);
-        $totalNontaxable = BigDecimal::of((string)$payrollRequest->total_nontaxable);
-        $totalContribution = BigDecimal::of((string)$payrollRequest->total_contribution);
-        $totalEmployerContributionShare = BigDecimal::of((string)$payrollRequest->total_employer_contribution_share);
-        $totalWithholdingTax = BigDecimal::of((string)$payrollRequest->total_withholding_tax);
-        $totalDeduction = BigDecimal::of((string)$payrollRequest->total_deduction);
-        $totalNet = BigDecimal::of((string)$payrollRequest->total_net);
+        $totalBasicGross = MoneyFormat::toLocale($payrollRequest->total_basic_gross ?? 0, $payrollRequest->company_currency_code);
+        $totalOtherGross = MoneyFormat::toLocale($payrollRequest->total_other_gross ?? 0, $payrollRequest->company_currency_code);
+        $totalTaxable = MoneyFormat::toLocale($payrollRequest->total_taxable ?? 0, $payrollRequest->company_currency_code);
+        $totalNontaxable = MoneyFormat::toLocale($payrollRequest->total_nontaxable ?? 0, $payrollRequest->company_currency_code);
+        $totalContribution = MoneyFormat::toLocale($payrollRequest->total_contribution ?? 0, $payrollRequest->company_currency_code);
+        $totalEmployerContributionShare = MoneyFormat::toLocale($payrollRequest->total_employer_contribution_share ?? 0, $payrollRequest->company_currency_code);
+        $totalWithholdingTax = MoneyFormat::toLocale($payrollRequest->total_withholding_tax ?? 0, $payrollRequest->company_currency_code);
+        $totalTaxRefund = MoneyFormat::toLocale($payrollRequest->total_tax_refund ?? 0, $payrollRequest->company_currency_code);
+        $totalDeduction = MoneyFormat::toLocale($payrollRequest->total_deduction ?? 0, $payrollRequest->company_currency_code);
+        $totalNet = MoneyFormat::toLocale($payrollRequest->total_net ?? 0, $payrollRequest->company_currency_code);
 
         $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee
             ? $companyUserRequestedByHydrated->company_employee_full_name
@@ -72,15 +72,16 @@ class ListTransformer extends TransformerAbstract
 
             'payroll' => [
                 ...$payroll,
-                'total_basic_gross' => $totalBasicGross->toScale(4, RoundingMode::HalfUp),
-                'total_other_gross' => $totalOtherGross->toScale(4, RoundingMode::HalfUp),
-                'total_taxable' => $totalTaxable->toScale(4, RoundingMode::HalfUp),
-                'total_nontaxable' => $totalNontaxable->toScale(4, RoundingMode::HalfUp),
-                'total_contribution' => $totalContribution->toScale(4, RoundingMode::HalfUp),
-                'total_employer_contribution_share' => $totalEmployerContributionShare->toScale(4, RoundingMode::HalfUp),
-                'total_withholding_tax' => $totalWithholdingTax->toScale(4, RoundingMode::HalfUp),
-                'total_deduction' => $totalDeduction->toScale(4, RoundingMode::HalfUp),
-                'total_net' => $totalNet->toScale(4, RoundingMode::HalfUp),
+                'total_basic_gross' => $totalBasicGross,
+                'total_other_gross' => $totalOtherGross ,
+                'total_taxable' => $totalTaxable,
+                'total_nontaxable' => $totalNontaxable,
+                'total_contribution' => $totalContribution,
+                'total_employer_contribution_share' => $totalEmployerContributionShare,
+                'total_withholding_tax' => $totalWithholdingTax,
+                'total_tax_refund' => $totalTaxRefund,
+                'total_deduction' => $totalDeduction,
+                'total_net' => $totalNet,
             ],
 
             'id' => $payrollRequest->id,

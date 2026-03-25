@@ -2,10 +2,10 @@
 
 namespace App\Transformers\SalaryStatementAttendanceDetail;
 
+use App\Facades\MoneyFormat;
 use App\Helpers\TimeHelper;
 use App\Models\SalaryStatementAttendanceDetail;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class ListTransformer extends TransformerAbstract
@@ -33,15 +33,15 @@ class ListTransformer extends TransformerAbstract
             'work_hour_type' => $salaryStatementAttendanceDetail->work_hour_type?->toArray(),
             'hourly_rate_type' => $salaryStatementAttendanceDetail->hourly_rate_type?->toArray(),
 
-            'hourly_rate' => BigDecimal::of($salaryStatementAttendanceDetail->hourly_rate)->toScale(4, RoundingMode::HalfUp),
+            'hourly_rate' => MoneyFormat::numberFormat($salaryStatementAttendanceDetail->hourly_rate, 4),
             'actual_present' => $salaryStatementAttendanceDetail->actual_present,
 
-            'regular_pay' => $regularPay->isZero() ? '--' : $regularPay->toScale(4, RoundingMode::HalfUp),
-            'allowance' => $allowance->isZero() ? '--' : $allowance->toScale(4, RoundingMode::HalfUp),
-            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : $nightDifferentialPay->toScale(4, RoundingMode::HalfUp),
-            'rest_day_pay' => $restDayPay->isZero() ? '--' : $restDayPay->toScale(4, RoundingMode::HalfUp),
-            'leave_pay' => $leavePay->isZero() ? '--' : $leavePay->toScale(4, RoundingMode::HalfUp),
-            'holiday_pay' => $holidayPay->isZero() ? '--' : $holidayPay->toScale(4, RoundingMode::HalfUp),
+            'regular_pay' => $regularPay->isZero() ? '--' : MoneyFormat::numberFormat($regularPay, 4),
+            'allowance' => $allowance->isZero() ? '--' : MoneyFormat::numberFormat($allowance, 4),
+            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : MoneyFormat::numberFormat($nightDifferentialPay, 4),
+            'rest_day_pay' => $restDayPay->isZero() ? '--' : MoneyFormat::numberFormat($restDayPay, 4),
+            'leave_pay' => $leavePay->isZero() ? '--' : MoneyFormat::numberFormat($leavePay, 4),
+            'holiday_pay' => $holidayPay->isZero() ? '--' : MoneyFormat::numberFormat($holidayPay, 4),
 
             'holiday_pay_forfeited' => boolval($salaryStatementAttendanceDetail->holiday_pay_forfeited),
         ];

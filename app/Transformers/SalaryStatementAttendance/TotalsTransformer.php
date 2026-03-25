@@ -2,9 +2,9 @@
 
 namespace App\Transformers\SalaryStatementAttendance;
 
+use App\Facades\MoneyFormat;
 use App\Models\Hydrations\SalaryStatementAttendanceTotals;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class TotalsTransformer extends TransformerAbstract
@@ -17,10 +17,10 @@ class TotalsTransformer extends TransformerAbstract
         $total = BigDecimal::of($salaryStatementAttendanceTotals->total ?? 0);
 
         return [
-            'regular_pay' => $totalRegularPay->toScale(4, RoundingMode::HalfUp),
-            'night_differential_pay' => $totalNightDifferentialPay->toScale(4, RoundingMode::HalfUp),
-            'rest_day_pay' => $totalRestDayPay->toScale(4, RoundingMode::HalfUp),
-            'total' => $total->toScale(4, RoundingMode::HalfUp),
+            'regular_pay' => MoneyFormat::toLocale($totalRegularPay, $salaryStatementAttendanceTotals->company_currency_code),
+            'night_differential_pay' => MoneyFormat::toLocale($totalNightDifferentialPay, $salaryStatementAttendanceTotals->company_currency_code),
+            'rest_day_pay' => MoneyFormat::toLocale($totalRestDayPay, $salaryStatementAttendanceTotals->company_currency_code),
+            'total' => MoneyFormat::toLocale($total, $salaryStatementAttendanceTotals->company_currency_code),
         ];
     }
 }

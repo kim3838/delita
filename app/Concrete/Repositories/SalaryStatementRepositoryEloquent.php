@@ -123,6 +123,12 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             ELSE CAST('0.000000' AS DECIMAL(21,6))
                             END AS total_13th_month_amount
                         "),
+                        DB::raw("
+                            CASE WHEN salary_statement_details.formulable_type = ". Formulable::EARNINGS->value ." AND salary_statement_details.component_sub_type = '" . FormulableComponentSubType::TAX_REFUND->value . "' AND salary_statement_details.component_type IN (". implode(",", [Compensation::TAX_ADJUSTMENT->value]) .")
+                            THEN CAST(salary_statement_details.nontaxable AS DECIMAL(21,6))
+                            ELSE CAST('0.000000' AS DECIMAL(21,6))
+                            END AS total_tax_refund
+                        "),
                     ]);
 
                 //Aggregate detail totals by salary statement id
@@ -141,6 +147,8 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                         DB::raw("SUM(details_total_sub.total_taxable_nonstatutory_bonus) AS total_taxable_nonstatutory_bonus"),
                         DB::raw("SUM(details_total_sub.total_nontaxable_nonstatutory_bonus) AS total_nontaxable_nonstatutory_bonus"),
                         DB::raw("SUM(details_total_sub.total_13th_month_amount) AS total_13th_month_amount"),
+
+                        DB::raw("SUM(details_total_sub.total_tax_refund) AS total_tax_refund"),
                     ])->groupBy('salary_statement_id');
 
                 //Get actual basic pay
@@ -166,6 +174,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                             ) AS total_nonstatutory_bonus"
                         ),
                         DB::raw("details_total_sub.total_13th_month_amount"),
+                        DB::raw("details_total_sub.total_tax_refund"),
                     ]);
 
                 $builder->joinSub($salaryStatementDetailTotalBuilder, 'details_total_sub', function ($join) {
@@ -210,6 +219,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                     "details_total_sub.total_nontaxable_nonstatutory_bonus AS total_nontaxable_nonstatutory_bonus",
                     "details_total_sub.total_nonstatutory_bonus AS total_nonstatutory_bonus",
                     "details_total_sub.total_13th_month_amount AS total_13th_month_amount",
+                    "details_total_sub.total_tax_refund AS total_tax_refund",
                 ] : []),
 
                 "employee_sub.company_currency_code AS company_currency_code",
@@ -298,11 +308,14 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
          **/
         $totals = $this->queryAsSub($queryBuilder, 'salary_statements_sub')
             ->select([
+                "salary_statements_sub.company_currency_code",
                 DB::raw("SUM(salary_statements_sub.total_basic_gross) AS basic_gross"),
                 DB::raw("SUM(salary_statements_sub.taxable) AS taxable"),
                 DB::raw("SUM(salary_statements_sub.withholding_tax) AS withholding_tax"),
+                DB::raw("SUM(salary_statements_sub.total_tax_refund) AS tax_refund"),
                 DB::raw("SUM(salary_statements_sub.net) AS net"),
-            ]);
+            ])
+            ->groupBy('salary_statements_sub.company_currency_code');
 
         /**
          * Get paginator

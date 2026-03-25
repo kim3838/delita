@@ -2,9 +2,9 @@
 
 namespace App\Transformers\SalaryStatementAttendancePayrollComponent;
 
+use App\Facades\MoneyFormat;
 use App\Models\SalaryStatementAttendancePayrollComponent;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use League\Fractal\TransformerAbstract;
 
 class NonComputableListTransformer extends TransformerAbstract
@@ -25,10 +25,10 @@ class NonComputableListTransformer extends TransformerAbstract
             'component_sub_type' => $salaryStatementAttendancePayrollComponent->component_sub_type,
             'component_name' => $salaryStatementAttendancePayrollComponent->component_name,
 
-            'regular_pay' => $regularPay->isZero() ? '--' : $regularPay->toScale(4, RoundingMode::HalfUp),
-            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : $nightDifferentialPay->toScale(4, RoundingMode::HalfUp),
-            'rest_day_pay' => $restDayPay->isZero() ? '--' : $restDayPay->toScale(4, RoundingMode::HalfUp),
-            'total' => $total->isZero() ? '--' : $total->toScale(4, RoundingMode::HalfUp),
+            'regular_pay' => $regularPay->isZero() ? '--' : MoneyFormat::numberFormat($regularPay, 4),
+            'night_differential_pay' => $nightDifferentialPay->isZero() ? '--' : MoneyFormat::numberFormat($nightDifferentialPay, 4),
+            'rest_day_pay' => $restDayPay->isZero() ? '--' : MoneyFormat::numberFormat($restDayPay, 4),
+            'total' => $total->isZero() ? '--' : MoneyFormat::numberFormat($total, 4),
         ];
     }
 }

@@ -105,6 +105,7 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
                 ] : []),
 
                 ...(in_array('salary_statement', $relations) && in_array('payroll_components', $relations) ? [
+                    DB::raw("salary_statement_sub.company_currency_code as company_currency_code"),
                     DB::raw("salary_statement_sub.employee_id as employee_id"),
                     DB::raw("salary_statement_sub.employee_number as employee_number"),
                     DB::raw("salary_statement_sub.employee_full_name as employee_full_name"),
@@ -166,11 +167,13 @@ class SalaryStatementAttendanceRepositoryEloquent extends BaseRepositoryEloquent
          **/
         $totals = $this->queryAsSub($queryBuilder, 'per_day_statements_sub')
             ->select([
+                "per_day_statements_sub.company_currency_code",
                 DB::raw("SUM(per_day_statements_sub.regular_pay) AS regular_pay"),
                 DB::raw("SUM(per_day_statements_sub.night_differential_pay) AS night_differential_pay"),
                 DB::raw("SUM(per_day_statements_sub.rest_day_pay) AS rest_day_pay"),
                 DB::raw("SUM(per_day_statements_sub.total) AS total"),
-            ]);
+            ])
+            ->groupBy('per_day_statements_sub.company_currency_code');
 
         /**
          * Get paginator
