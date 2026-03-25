@@ -35,7 +35,7 @@ class SalaryStatementAttendanceController extends Controller
             list($paginator, $totals) = $this->repository->paginateWithTotals($filters, ['salary_statement', 'payroll_components']);
 
             $perDayStatements = Fractal::collection($paginator, ListTransformer::class);
-            $perDayStatementTotals = Fractal::item($totals->first(), TotalsTransformer::class);
+            $perDayStatementTotals = $totals->first() ? Fractal::item($totals->first(), TotalsTransformer::class) : $totals->first();
 
             return ResponseJson::successfulResponse([
                 'per_day_statement_totals' => $perDayStatementTotals,

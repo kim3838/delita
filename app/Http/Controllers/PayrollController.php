@@ -34,7 +34,7 @@ class PayrollController extends Controller
             list($paginator, $totals) = $this->repository->paginateWithTotals($filters, ['salary_statement']);
 
             $payrolls = Fractal::collection($paginator, ListTransformer::class);
-            $payrollTotals = Fractal::item($totals->first(), TotalsTransformer::class);
+            $payrollTotals = $totals->first() ? Fractal::item($totals->first(), TotalsTransformer::class) : $totals->first();
 
             return ResponseJson::successfulResponse([
                 'payroll_totals' => $payrollTotals,
