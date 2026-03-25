@@ -110,7 +110,15 @@ class PayslipTransformer extends TransformerAbstract
                         break;
                     case Deduction::DEDUCTION:
                     case Deduction::MANUAL_DEDUCTION:
+                        $payslipViewable = true;
+                        $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
+                        $payslipItemValue = $deduction;
+                        break;
                     case Deduction::TAX_ADJUSTMENT:
+                        $payslipViewable = true;
+                        $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
+                        $payslipItemValue = $withholding_tax;
+                        break;
                     case Deduction::THIRTEENTH_MONTH_ADJUSTMENT:
                         $payslipColumn = PayslipColumn::EARNINGS;
 
