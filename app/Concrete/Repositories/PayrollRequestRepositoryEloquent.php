@@ -81,6 +81,7 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
                  **/
                 'payroll_requests.id AS id',
                 'payroll_requests.company_id AS company_id',
+                'payroll_sub.company_currency_code AS company_currency_code',
                 'payroll_requests.number AS number',
                 'payroll_requests.requested_by AS requested_by',
                 DB::raw("CONVERT_TZ(payroll_requests.date_requested, 'UTC', companies.timezone) AS date_requested"),
@@ -99,6 +100,7 @@ class PayrollRequestRepositoryEloquent extends BaseRepositoryEloquent implements
                 DB::raw("payroll_sub.total_contribution"),
                 DB::raw("payroll_sub.total_employer_contribution_share"),
                 DB::raw("payroll_sub.total_withholding_tax"),
+                DB::raw("payroll_sub.total_tax_refund"),
                 DB::raw("payroll_sub.total_deduction"),
                 DB::raw("payroll_sub.total_net"),
 

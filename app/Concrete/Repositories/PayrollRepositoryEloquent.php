@@ -29,6 +29,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         ];
 
         $queryBuilder = $this->model::query()->getQuery()
+            ->leftJoin('companies', 'companies.id', '=', 'payrolls.company_id')
             ->when(in_array('salary_statement', $relations), function ($builder) use($filters) {
 
                 $salaryStatementRepositoryFilter = clone $filters;
@@ -93,6 +94,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                 "payrolls.id",
                 "payrolls.ulid",
                 "payrolls.company_id",
+                "companies.currency AS company_currency_code",
                 "payrolls.number",
                 "payrolls.year",
                 "payrolls.month",
@@ -111,6 +113,7 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                     DB::raw("COALESCE(SUM(salary_statement_sub.contribution), '0.000000') AS total_contribution"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.total_employer_contribution_share), '0.000000') AS total_employer_contribution_share"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.withholding_tax), '0.000000') AS total_withholding_tax"),
+                    DB::raw("COALESCE(SUM(salary_statement_sub.total_tax_refund), '0.000000') AS total_tax_refund"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.deduction), '0.000000') AS total_deduction"),
                     DB::raw("COALESCE(SUM(salary_statement_sub.net), '0.000000') AS total_net"),
                 ] : []),
@@ -159,11 +162,14 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
          **/
         $totals = $this->queryAsSub($queryBuilder, 'payrolls_sub')
             ->select([
+                "payrolls_sub.company_currency_code",
                 DB::raw("SUM(payrolls_sub.total_employer_contribution_share) AS employer_contribution_share"),
                 DB::raw("SUM(payrolls_sub.total_taxable) AS taxable"),
                 DB::raw("SUM(payrolls_sub.total_withholding_tax) AS withholding_tax"),
+                DB::raw("SUM(payrolls_sub.total_tax_refund) AS tax_refund"),
                 DB::raw("SUM(payrolls_sub.total_net) AS net"),
-            ]);
+            ])
+            ->groupBy('payrolls_sub.company_currency_code');
 
         /**
          * Get paginator
