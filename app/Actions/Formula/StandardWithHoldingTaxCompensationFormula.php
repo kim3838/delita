@@ -222,6 +222,19 @@ class StandardWithHoldingTaxCompensationFormula
                         ]);
                     }
 
+                    /**
+                     * Update withholding tax with deficit adjustment
+                     **/
+                    $runningWithholdingTax = BigDecimal::of($context->totals['withholding_tax'] ?? '0');
+
+                    $context->totals = [
+                        ...$context->totals,
+                        'withholding_tax' => $runningWithholdingTax->plus($negativeAdjustment)->toScale(6, RoundingMode::HalfUp)->toString(),
+                    ];
+
+                    /**
+                     * Add the tax deficit as another withholding tax
+                     **/
                     $context->statementDetails[] = [
                         'id' => null,
                         'statement_level' => true,
@@ -232,9 +245,9 @@ class StandardWithHoldingTaxCompensationFormula
                         'component_values' => $negativeAdjustmentComponentValues,
                         'taxable' => 0.0,
                         'nontaxable' => 0.0,
-                        'deduction' => $negativeAdjustment->toScale(6, RoundingMode::HalfUp)->toString(),
+                        'deduction' => 0.0,
                         'contribution' => 0.0,
-                        'withholding_tax' => 0.0,
+                        'withholding_tax' => $negativeAdjustment->toScale(6, RoundingMode::HalfUp)->toString(),
                         'net' => 0.0,
                     ];
                 }
