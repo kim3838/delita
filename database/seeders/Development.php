@@ -88,7 +88,7 @@ class Development extends Seeder
         //Account 1003
         $account1003 = Account::query()->firstOrCreate(
             ['number' => 'DSNVHF4Q0060294'],
-            ['number' => 'DSNVHF4Q0060294', 'ulid' => Str::ulid(), 'email' => '	email-alias-003@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
+            ['number' => 'DSNVHF4Q0060294', 'ulid' => Str::ulid(), 'email' => 'email-alias-003@kunsel-erp.com', 'date_registered' => Carbon::now()->toDateTimeString(),]
         );
 
          //Account chain, role creation
