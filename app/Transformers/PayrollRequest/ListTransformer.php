@@ -47,16 +47,27 @@ class ListTransformer extends TransformerAbstract
             'user_username' => $payrollRequest->requested_by_user_username,
         ]);
 
-        $totalBasicGross = MoneyFormat::toLocale($payrollRequest->total_basic_gross ?? 0, $payrollRequest->company_currency_code);
-        $totalOtherGross = MoneyFormat::toLocale($payrollRequest->total_other_gross ?? 0, $payrollRequest->company_currency_code);
-        $totalTaxable = MoneyFormat::toLocale($payrollRequest->total_taxable ?? 0, $payrollRequest->company_currency_code);
-        $totalNontaxable = MoneyFormat::toLocale($payrollRequest->total_nontaxable ?? 0, $payrollRequest->company_currency_code);
-        $totalContribution = MoneyFormat::toLocale($payrollRequest->total_contribution ?? 0, $payrollRequest->company_currency_code);
-        $totalEmployerContributionShare = MoneyFormat::toLocale($payrollRequest->total_employer_contribution_share ?? 0, $payrollRequest->company_currency_code);
-        $totalWithholdingTax = MoneyFormat::toLocale($payrollRequest->total_withholding_tax ?? 0, $payrollRequest->company_currency_code);
-        $totalTaxRefund = MoneyFormat::toLocale($payrollRequest->total_tax_refund ?? 0, $payrollRequest->company_currency_code);
-        $totalDeduction = MoneyFormat::toLocale($payrollRequest->total_deduction ?? 0, $payrollRequest->company_currency_code);
-        $totalNet = MoneyFormat::toLocale($payrollRequest->total_net ?? 0, $payrollRequest->company_currency_code);
+        $totalBasicGross = MoneyFormat::numberFormat($payrollRequest->total_basic_gross ?? 0);
+        $totalOtherGross = MoneyFormat::numberFormat($payrollRequest->total_other_gross ?? 0);
+        $totalTaxable = MoneyFormat::numberFormat($payrollRequest->total_taxable ?? 0);
+        $totalNontaxable = MoneyFormat::numberFormat($payrollRequest->total_nontaxable ?? 0);
+        $totalContribution = MoneyFormat::numberFormat($payrollRequest->total_contribution ?? 0);
+        $totalEmployerContributionShare = MoneyFormat::numberFormat($payrollRequest->total_employer_contribution_share ?? 0);
+        $totalWithholdingTax = MoneyFormat::numberFormat($payrollRequest->total_withholding_tax ?? 0);
+        $totalTaxRefund = MoneyFormat::numberFormat($payrollRequest->total_tax_refund ?? 0);
+        $totalDeduction = MoneyFormat::numberFormat($payrollRequest->total_deduction ?? 0);
+        $totalNet = MoneyFormat::numberFormat($payrollRequest->total_net ?? 0);
+
+        $totalBasicGrossFormatted = MoneyFormat::toLocale($payrollRequest->total_basic_gross, $payrollRequest->company_currency_code);
+        $totalOtherGrossFormatted = MoneyFormat::toLocale($payrollRequest->total_other_gross, $payrollRequest->company_currency_code);
+        $totalTaxableFormatted = MoneyFormat::toLocale($payrollRequest->total_taxable, $payrollRequest->company_currency_code);
+        $totalNontaxableFormatted = MoneyFormat::toLocale($payrollRequest->total_nontaxable, $payrollRequest->company_currency_code);
+        $totalContributionFormatted = MoneyFormat::toLocale($payrollRequest->total_contribution, $payrollRequest->company_currency_code);
+        $totalEmployerContributionShareFormatted = MoneyFormat::toLocale($payrollRequest->total_employer_contribution_share, $payrollRequest->company_currency_code);
+        $totalWithholdingTaxFormatted = MoneyFormat::toLocale($payrollRequest->total_withholding_tax, $payrollRequest->company_currency_code);
+        $totalTaxRefundFormatted = MoneyFormat::toLocale($payrollRequest->total_tax_refund, $payrollRequest->company_currency_code);
+        $totalDeductionFormatted = MoneyFormat::toLocale($payrollRequest->total_deduction, $payrollRequest->company_currency_code);
+        $totalNetFormatted = MoneyFormat::toLocale($payrollRequest->total_net, $payrollRequest->company_currency_code);
 
         $companyUserRequestedByEmployeeFullName = $companyUserRequestedByHydrated->is_employee
             ? $companyUserRequestedByHydrated->company_employee_full_name
@@ -72,8 +83,9 @@ class ListTransformer extends TransformerAbstract
 
             'payroll' => [
                 ...$payroll,
+
                 'total_basic_gross' => $totalBasicGross,
-                'total_other_gross' => $totalOtherGross ,
+                'total_other_gross' => $totalOtherGross,
                 'total_taxable' => $totalTaxable,
                 'total_nontaxable' => $totalNontaxable,
                 'total_contribution' => $totalContribution,
@@ -82,6 +94,18 @@ class ListTransformer extends TransformerAbstract
                 'total_tax_refund' => $totalTaxRefund,
                 'total_deduction' => $totalDeduction,
                 'total_net' => $totalNet,
+
+                'total_basic_gross_formatted' => $totalBasicGrossFormatted,
+                'total_other_gross_formatted' => $totalOtherGrossFormatted,
+                'total_taxable_formatted' => $totalTaxableFormatted,
+                'total_nontaxable_formatted' => $totalNontaxableFormatted,
+                'total_contribution_formatted' => $totalContributionFormatted,
+                'total_employer_contribution_share_formatted' => $totalEmployerContributionShareFormatted,
+                'total_withholding_tax_formatted' => $totalWithholdingTaxFormatted,
+                'total_tax_refund_formatted' => $totalTaxRefundFormatted,
+                'total_deduction_formatted' => $totalDeductionFormatted,
+                'total_net_formatted' => $totalNetFormatted,
+
             ],
 
             'id' => $payrollRequest->id,
