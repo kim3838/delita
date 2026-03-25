@@ -20,9 +20,9 @@ class MysqlBootProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $recursionDepth = 1200;
+        $recursionDepth = 8000;
 
-        $override = false;
+        $override = true;
 
         if($override){
 
