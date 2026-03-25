@@ -7,8 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 
     <style>
         html, body {
@@ -24,17 +23,15 @@
         }
 
         .font {
-            font-family: "Google Sans", sans-serif;
+            font-family: "Geist", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
-            font-variation-settings: "GRAD" 0;
         }
 
         .font-numeric {
-            font-family: "Google Sans", sans-serif;
+            font-family: "Geist", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
-            font-variation-settings: "GRAD" 0;
         }
 
         .payslip-body {
@@ -55,7 +52,7 @@
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 0.75rem;
         }
 
         .flex { display: flex; }
@@ -70,6 +67,7 @@
         .justify-between { justify-content: space-between; }
         .justify-around { justify-content: space-around; }
         .justify-center { justify-content: center; }
+        .justify-end { justify-content: flex-end; }
         .gap-1 { gap: 0.25rem; }
         .gap-2 { gap: 0.5rem; }
         .gap-4 { gap: 1rem; }
@@ -84,12 +82,17 @@
         .min-w-180 { min-width: 180px; }
         .min-w-200 { min-width: 200px; }
         .min-h-80 { min-height: 80px; }
+        .min-h-120 { min-height: 120px; }
+        .min-h-100 { min-height: 100px; }
         .min-h-200 { min-height: 200px; }
 
         .p-1 { padding: 0.25rem; }
         .pl-2 { padding-left: 0.5rem; }
         .pr-2 { padding-right: 0.5rem; }
         .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .pt-1 { padding-top: 0.25rem; }
         .pt-2 { padding-top: 0.5rem; }
 
         .text-xs { font-size: 0.75rem; line-height: 1rem; }
@@ -115,6 +118,7 @@
 
         .border-1 { border-width: 1px; }
         .border-dashed { border-style: dashed; }
+        .border-solid { border-style: solid; }
 
         .border-l-r-b {
             border-left-width: 1px;
@@ -130,6 +134,9 @@
         .divide-x.divide-dashed > * + * {
             border-left-style: dashed;
         }
+        .divide-x.divide-solid > * + * {
+            border-left-style: solid;
+        }
 
         .hidden { display: none; }
         .w-auto { width: auto; }
@@ -144,7 +151,6 @@
             height: 120px;
             display: flex;
             align-items: center;
-            border: 1px dashed oklch(92.8% 0.006 264.531);
         }
 
         .section-title {
@@ -170,7 +176,7 @@
         }
 
         .payroll-item-value-row {
-            min-height: 2.25rem;
+            min-height: 2.5rem;
         }
     </style>
 </head>
@@ -244,14 +250,16 @@
                 <div class="flex flex-row-reverse text-base">
                     <div class="item-label header-bg">{{$earning['payroll_item_name']}}</div>
                 </div>
-                <div class="flex flex-row-reverse gap-2 payroll-item-value-row text-right border-1 border-dashed border-gray-200">
+                <div class="flex flex-row-reverse gap-2 payroll-item-value-row text-right border-1 border-solid border-gray-200">
                     <div class="flex-none flex items-center text-center justify-center min-w-120">
                         <div class="text-base font-medium font-numeric">{{$earning['payroll_item_value']}}</div>
                     </div>
                     @foreach($earning['payroll_item_sub_values'] as $earningSubValue)
-                    <div class="flex-auto">
-                        <div class="text-xs sub-text-color">{{$earningSubValue['label']}}</div>
-                        <div class="text-xs font-numeric">{{$earningSubValue['value']}}</div>
+                    <div class="flex-auto flex items-center justify-end">
+                        <div>
+                            <div class="text-xs sub-text-color">{{$earningSubValue['label']}}</div>
+                            <div class="text-xs font-numeric">{{$earningSubValue['value']}}</div>
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -270,14 +278,16 @@
                         <div class="item-label header-bg">{{$deduction['payroll_item_name']}}</div>
                     </div>
 
-                    <div class="flex flex-row gap-2 payroll-item-value-row text-left border-1 border-dashed border-gray-200">
+                    <div class="flex flex-row gap-2 payroll-item-value-row text-left border-1 border-solid border-gray-200">
                         <div class="flex-none flex items-center text-center justify-center min-w-120">
                             <div class="text-base font-medium font-numeric">{{$deduction['payroll_item_value']}}</div>
                         </div>
                         @foreach($deduction['payroll_item_sub_values'] as $deductionSubValue)
-                        <div class="flex-auto">
-                            <div class="text-xs sub-text-color">{{$deductionSubValue['label']}}</div>
-                            <div class="text-xs font-numeric">{{$deductionSubValue['value']}}</div>
+                        <div class="flex-auto flex items-center">
+                            <div>
+                                <div class="text-xs sub-text-color">{{$deductionSubValue['label']}}</div>
+                                <div class="text-xs font-numeric">{{$deductionSubValue['value']}}</div>
+                            </div>
                         </div>
                         @endforeach
                     </div>
@@ -291,14 +301,14 @@
         <div class="flex-1 text-sm text-center header-bg">
             Summary
         </div>
-        <div class="flex justify-center border-l-r-b border-dashed border-gray-200 divide-x divide-dashed">
+        <div class="flex justify-center border-l-r-b border-solid border-gray-200 divide-x divide-solid">
             <div class="flex-1 p-1">
                 <div class="flex justify-center text-base">
                     <div class="section-title">Gross</div>
                 </div>
                 <div class="flex justify-center gap-4 text-right">
                     <div class="flex-none flex items-center text-center justify-center">
-                        <div class="text-base font-medium font-numeric">{{$summary['gross']}}</div>
+                        <div class="text-lg font-medium font-numeric">{{$summary['gross']}}</div>
                     </div>
                 </div>
             </div>
@@ -309,7 +319,7 @@
                 </div>
                 <div class="flex justify-center gap-4 text-left">
                     <div class="flex-none flex items-center text-center justify-center">
-                        <div class="text-base font-medium font-numeric">{{$summary['deduction']}}</div>
+                        <div class="text-lg font-medium font-numeric">{{$summary['deduction']}}</div>
                     </div>
                 </div>
             </div>
@@ -320,7 +330,7 @@
                 </div>
                 <div class="flex justify-center gap-4 text-left">
                     <div class="flex-none flex items-center text-center justify-center">
-                        <div class="text-base font-medium font-numeric">{{$summary['net']}}</div>
+                        <div class="text-lg font-medium font-numeric">{{$summary['net']}}</div>
                     </div>
                 </div>
             </div>
@@ -341,8 +351,8 @@
         </div>
 
         <div class="flex-auto basis-5/12 flex gap-6 justify-around items-center">
-            <div class="flex-auto min-w-200 min-h-200 border-1 border-dashed border-gray-200"></div>
-            <div class="flex-auto min-w-200 min-h-200 border-1 border-dashed border-gray-200"></div>
+            <div class="flex-auto min-w-200 min-h-120 border-1 border-dashed border-gray-200"></div>
+            <div class="flex-auto min-w-200 min-h-120 border-1 border-dashed border-gray-200"></div>
         </div>
     </div>
 </div>
