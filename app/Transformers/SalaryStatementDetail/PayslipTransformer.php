@@ -122,9 +122,11 @@ class PayslipTransformer extends TransformerAbstract
                     case Deduction::THIRTEENTH_MONTH_ADJUSTMENT:
                         $payslipColumn = PayslipColumn::EARNINGS;
 
-                        $payslipViewable = true;
-                        $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
-                        $payslipItemValue = $taxable;
+                        if($taxable->isGreaterThan(BigDecimal::zero())){
+                            $payslipViewable = true;
+                            $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
+                            $payslipItemValue = $taxable;
+                        }
 
                         /**
                          * Add another payroll item for deduction column
