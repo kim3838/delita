@@ -34,7 +34,7 @@ class EmployeePayslipMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Payslip of $this->payrollMonthReadable $this->payrollFrequency",
+            subject: "Payslip of $this->payrollMonthReadable",
         );
     }
 
