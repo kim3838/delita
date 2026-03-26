@@ -14,8 +14,7 @@ class MailEmployeePayslip implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 5;
-    public int $backoff = 30;
+    public int $tries = 10;
     public int $timeout = 120;
 
     /**
@@ -25,6 +24,11 @@ class MailEmployeePayslip implements ShouldQueue
         public SalaryStatement $salaryStatement
     ){
         $this->onQueue('notifications');
+    }
+
+    public function backoff(): array
+    {
+        return [10, 30, 60];
     }
 
     /**
