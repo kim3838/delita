@@ -16,6 +16,7 @@ class MailEmployeePayslip implements ShouldQueue
 
     public int $tries = 5;
     public int $backoff = 30;
+    public int $timeout = 120;
 
     /**
      * Create a new job instance.
