@@ -367,6 +367,8 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $this->payroll = $payroll;
 
+        sleep(360);
+
         //Set company formula settings
         $this->resolveCompanyFormulaSettings();
 

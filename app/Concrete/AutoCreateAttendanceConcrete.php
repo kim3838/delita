@@ -34,8 +34,6 @@ class AutoCreateAttendanceConcrete
      */
     public function __invoke($validated): array
     {
-        ini_set('max_execution_time', 6000);
-
         $errors = [];
 
         $companyId = data_get($validated, 'company_id');
