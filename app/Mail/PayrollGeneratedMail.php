@@ -29,7 +29,7 @@ class PayrollGeneratedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Payroll#: {$this->payroll->number} generated.",
+            subject: "Payroll draft#: {$this->payroll->number} generated.",
         );
     }
 
