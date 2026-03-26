@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Blueprint\PayrollServiceInterface;
+use App\Enums\PayrollStatus;
 use App\Exceptions\UnexpectedException;
 use App\Models\Company;
 use App\Models\Payroll;
@@ -15,7 +16,7 @@ class GeneratePayroll implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 600;
+    public int $timeout = 1200;
 
     /**
      * Create a new job instance.
@@ -31,6 +32,7 @@ class GeneratePayroll implements ShouldQueue
 
     /**
      * Execute the job.
+     *
      * @throws UnexpectedException
      */
     public function handle(): void
@@ -38,6 +40,10 @@ class GeneratePayroll implements ShouldQueue
         $payrollService = app(PayrollServiceInterface::class, [$this->company]);
 
         $payrollService->generateSalaryStatements($this->payroll, $this->employeeIds);
+
+        $this->payroll->update([
+            'status' => PayrollStatus::DRAFT
+        ]);
 
         $this->user->notify(new PayrollGeneratedNotification($this->user, $this->payroll));
     }

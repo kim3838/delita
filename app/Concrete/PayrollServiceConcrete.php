@@ -363,11 +363,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
      */
     public function generateSalaryStatements(Payroll $payroll, $employeeIds = []): void
     {
-        $debugEnabled = false;
-
         $this->payroll = $payroll;
-
-        sleep(360);
 
         //Set company formula settings
         $this->resolveCompanyFormulaSettings();
@@ -376,6 +372,26 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
 
         $this->payroll->salaryStatements()->delete();
+
+        $chunkedEmployeeIds = array_chunk($employeeIds, 25);
+
+        foreach($chunkedEmployeeIds as $employeeIdChunk){
+
+            $this->initializeSalaryStatements($payroll, $employeeIdChunk);
+        }
+
+        /**
+         * Post-process salary statements
+         **/
+        $this->postProcessSalaryStatements($payroll);
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function initializeSalaryStatements(Payroll $payroll, $employeeIds = []): void
+    {
+        $debugEnabled = false;
 
         $payFrequency = app(PayFrequencyRepository::class)->model()::query()
             ->where('company_id', $this->payroll->company_id)
@@ -457,6 +473,14 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 }
             }
         }
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function postProcessSalaryStatements(Payroll $payroll): void
+    {
+        $debugEnabled = false;
 
         /**
          * Instantiate Salary Statement Module Service
@@ -547,6 +571,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
         }
     }
+
 
     public function salaryStatementCreateDetails(SalaryStatement $salaryStatement): void
     {

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Payroll#: {{$payroll->number}}</title>
+    <title>Payroll draft #: {{$payroll->number}}</title>
     <style>
         * {
             font-family: sans-serif;
@@ -15,7 +15,7 @@
         <td>
             <p>Hello <strong>{{$user->name}}</strong></p>
 
-            <p>Your Payroll#: <strong>{{$payroll->number}}</strong> has been successfully generated.</p>
+            <p>Your payroll draft #: <strong>{{$payroll->number}}</strong> has been successfully generated.</p>
 
             <ul style="line-height: 1.6;">
                 <li>Month: {{$payroll->month_readable}}</li>

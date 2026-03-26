@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum PayrollStatus: int implements BaseEnum
 {
+    case GENERATING = 10;
     case DRAFT = 100;
     case WORKFLOW_IN_PROGRESS = 200;
     case COMPLETE = 300;
@@ -11,6 +12,7 @@ enum PayrollStatus: int implements BaseEnum
     public function label(): string
     {
         return match ($this) {
+            self::GENERATING => 'Generating',
             self::DRAFT => 'Draft',
             self::WORKFLOW_IN_PROGRESS => 'WiP',
             self::COMPLETE => 'Complete',

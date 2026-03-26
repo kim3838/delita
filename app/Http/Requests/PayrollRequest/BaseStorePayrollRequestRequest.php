@@ -50,6 +50,18 @@ class BaseStorePayrollRequestRequest extends FormRequest
                 );
             }
 
+            $payrollIsGenerating = Payroll::query()
+                ->where('id', $this->input('payroll_id'))
+                ->where('status', PayrollStatus::GENERATING->value)
+                ->first();
+
+            if ($payrollIsGenerating) {
+                $validator->errors()->add(
+                    'payroll_request',
+                    'Payroll is being generated.'
+                );
+            }
+
             $payrollIsCompleted = Payroll::query()
                 ->where('id', $this->input('payroll_id'))
                 ->where('status', PayrollStatus::COMPLETE->value)

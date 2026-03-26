@@ -70,36 +70,21 @@ class PayrollController extends Controller
     {
         if($request->expectsJson()){
 
-            $queue = true;
-
             $companyId = $request->validated()['company_id'];
             $employeeIds = $request->validated()['employee_ids'];
 
             $storePayroll = array_merge($request->validated(), [
-                'status' => PayrollStatus::DRAFT
+                'status' => PayrollStatus::GENERATING
             ]);
 
             $payroll = $this->repository->store($storePayroll);
 
-            if($queue){
-
-                GeneratePayroll::dispatch(
-                    Company::find($companyId),
-                    $request->user(),
-                    $payroll,
-                    $employeeIds
-                );
-
-            } else {
-
-                $payrollService = app(PayrollServiceInterface::class, [Company::find($companyId)]);
-
-                $payrollService->generateSalaryStatements($payroll, $employeeIds);
-
-                $payroll = $this->repository->show($payroll->ulid);
-
-                $payroll = Fractal::item($payroll, ItemTransformer::class);
-            }
+            GeneratePayroll::dispatch(
+                Company::find($companyId),
+                $request->user(),
+                $payroll,
+                $employeeIds
+            );
 
             return ResponseJson::successfulResponse();
         }
