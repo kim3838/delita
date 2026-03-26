@@ -15,6 +15,8 @@ class GeneratePayroll implements ShouldQueue
 {
     use Queueable;
 
+    public int $timeout = 600;
+
     /**
      * Create a new job instance.
      */
