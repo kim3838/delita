@@ -28,7 +28,7 @@ class MailEmployeePayslip implements ShouldQueue
 
     public function backoff(): array
     {
-        return [10, 30, 60];
+        return [10, 20, 30];
     }
 
     /**
