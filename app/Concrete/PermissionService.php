@@ -62,11 +62,7 @@ class PermissionService
                     'key' => 'leave',
                     'readable_name' => 'Leave',
                     'actions' => ['view', 'create', 'delete']
-                ],[
-                    'key' => 'leave-balance-adjustment',
-                    'readable_name' => 'Leave balance adjustment',
-                    'actions' => ['view', 'create', 'update', 'delete']
-                ],
+                ]
             ]
         ],
         [
@@ -87,6 +83,10 @@ class PermissionService
                 ],[
                     'key' => 'employee-leave-type-assignment',
                     'readable_name' => 'Employee leave type assignment',
+                    'actions' => ['view', 'create', 'update', 'delete']
+                ],[
+                    'key' => 'leave-balance-adjustment',
+                    'readable_name' => 'Leave balance adjustment',
                     'actions' => ['view', 'create', 'update', 'delete']
                 ],[
                     'key' => 'holiday',
