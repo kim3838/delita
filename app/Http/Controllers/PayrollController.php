@@ -12,6 +12,7 @@ use App\Http\Requests\Payroll\BatchDestroyPayrollRequest;
 use App\Http\Requests\Payroll\ListPayrollRequest;
 use App\Http\Requests\Payroll\StorePayrollRequest;
 use App\Http\Requests\Payroll\ViewPayrollRequest;
+use App\Jobs\GeneratePayroll;
 use App\Models\Company;
 use App\Transformers\Payroll\ItemTransformer;
 use App\Transformers\Payroll\ListTransformer;
@@ -69,7 +70,7 @@ class PayrollController extends Controller
     {
         if($request->expectsJson()){
 
-            ini_set('max_execution_time', 6000);
+            $queue = true;
 
             $companyId = $request->validated()['company_id'];
             $employeeIds = $request->validated()['employee_ids'];
@@ -80,16 +81,27 @@ class PayrollController extends Controller
 
             $payroll = $this->repository->store($storePayroll);
 
-            $payrollService = app(PayrollServiceInterface::class, [Company::find($companyId)]);
+            if($queue){
 
-            $payrollService->generateSalaryStatements($payroll, $employeeIds);
+                GeneratePayroll::dispatch(
+                    Company::find($companyId),
+                    $request->user(),
+                    $payroll,
+                    $employeeIds
+                );
 
-            $payroll = $this->repository->show($payroll->ulid);
+            } else {
 
-            return ResponseJson::successfulResponse([
-                'payroll' => Fractal::item($payroll, ItemTransformer::class),
-                'salary_statements' => []
-            ]);
+                $payrollService = app(PayrollServiceInterface::class, [Company::find($companyId)]);
+
+                $payrollService->generateSalaryStatements($payroll, $employeeIds);
+
+                $payroll = $this->repository->show($payroll->ulid);
+
+                $payroll = Fractal::item($payroll, ItemTransformer::class);
+            }
+
+            return ResponseJson::successfulResponse();
         }
 
         abort(404);
