@@ -10,6 +10,7 @@ use App\Actions\Formula\StandardWithHoldingTaxCompensationFormula;
 use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Blueprint\Repositories\JsonPresetRepository;
 use App\Enums\PayFrequency;
+use App\Facades\MoneyFormat;
 use App\Facades\ResponseJson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaxCalculator\TaxCalculatorRequest;
@@ -89,14 +90,14 @@ class TaxCalculatorController extends Controller
             return ResponseJson::successfulResponse([
                 'result' => [
                     'contributions' => [
-                        'sss' => $sssContribution->toScale(4, RoundingMode::HalfUp)->toString(),
-                        'philhealth' => $philHealthContribution->toScale(4, RoundingMode::HalfUp)->toString(),
-                        'pag_ibig' => $pagIbigContribution->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'sss' => MoneyFormat::toLocale($sssContribution, 'PHP'),
+                        'philhealth' => MoneyFormat::toLocale($philHealthContribution, 'PHP'),
+                        'pag_ibig' => MoneyFormat::toLocale($pagIbigContribution, 'PHP'),
                     ],
                     'taxable' => [
-                        'taxable' => $taxable->toScale(4, RoundingMode::HalfUp)->toString(),
-                        'withholding_tax' => $withholdingTaxCompensation->toScale(4, RoundingMode::HalfUp)->toString(),
-                        'net' => $net->toScale(4, RoundingMode::HalfUp)->toString(),
+                        'taxable' => MoneyFormat::toLocale($taxable, 'PHP'),
+                        'withholding_tax' => MoneyFormat::toLocale($withholdingTaxCompensation, 'PHP'),
+                        'net' => MoneyFormat::toLocale($net, 'PHP'),
                     ]
                 ]
             ]);
