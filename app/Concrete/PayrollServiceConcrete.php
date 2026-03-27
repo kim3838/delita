@@ -358,32 +358,25 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         ]);
     }
 
-    /**
-     * @throws UnexpectedException
-     */
-    public function generateSalaryStatements(Payroll $payroll, $employeeIds = []): void
+    public function preProcessSalaryStatements(Payroll $payroll): void
     {
         $this->payroll = $payroll;
+
+        $this->payroll->salaryStatements()->delete();
 
         //Set company formula settings
         $this->resolveCompanyFormulaSettings();
 
         //Set company night hours
         $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+    }
 
-        $this->payroll->salaryStatements()->delete();
-
-        $chunkedEmployeeIds = array_chunk($employeeIds, 25);
-
-        foreach($chunkedEmployeeIds as $employeeIdChunk){
-
-            $this->initializeSalaryStatements($payroll, $employeeIdChunk);
-        }
-
-        /**
-         * Post-process salary statements
-         **/
-        $this->postProcessSalaryStatements($payroll);
+    /**
+     * @throws UnexpectedException
+     */
+    public function generateSalaryStatements(Payroll $payroll, $employeeIds = []): void
+    {
+        $this->initializeSalaryStatements($payroll, $employeeIds);
     }
 
     /**
@@ -468,6 +461,15 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 if($payableNoneAttendance){
 
+                    /**
+                     * Needs to resolve hourly rates first via static::preProcessSalaryStatements()
+                     *
+                     * $this->resolveCompanyFormulaSettings();
+                     * $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+                     *
+                     * createSalaryStatementAttendanceDetails->breakdownWorkPeriods->categorizeWorkPeriod->getHourlyRateMultiplier
+                     * is depending on the boot of hourly rates resolveCompanyFormulaSettings()
+                     **/
                     $this->createSalaryStatementAttendanceDetails($employeeShift, $salaryStatementAttendance);
 
                 }
@@ -571,7 +573,6 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
         }
     }
-
 
     public function salaryStatementCreateDetails(SalaryStatement $salaryStatement): void
     {

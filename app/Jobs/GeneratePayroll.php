@@ -39,7 +39,16 @@ class GeneratePayroll implements ShouldQueue
     {
         $payrollService = app(PayrollServiceInterface::class, [$this->company]);
 
-        $payrollService->generateSalaryStatements($this->payroll, $this->employeeIds);
+        $payrollService->preProcessSalaryStatements($this->payroll);
+
+        $chunkedEmployeeIds = array_chunk($this->employeeIds, 100);
+
+        foreach($chunkedEmployeeIds as $employeeIdChunk){
+
+            $payrollService->generateSalaryStatements($this->payroll, $employeeIdChunk);
+        }
+
+        $payrollService->postProcessSalaryStatements($this->payroll);
 
         $this->payroll->update([
             'status' => PayrollStatus::DRAFT

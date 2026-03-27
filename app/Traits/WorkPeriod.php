@@ -27,43 +27,43 @@ use Illuminate\Support\Facades\App;
 trait WorkPeriod
 {
     //Set on construct
-    protected string $nightStart = '22:00';
+    public string $nightStart = '22:00';
     //Set on construct
-    protected string $nightEnd = '06:00';
+    public string $nightEnd = '06:00';
     //Set on generate: attendance shift
-    protected ?Shift $shift = null;
+    public ?Shift $shift = null;
     //Set on generate: shift work_start_grace_time
-    protected int $shiftWorkStartGraceTime = 0;
+    public int $shiftWorkStartGraceTime = 0;
     //Set on generate: shift holiday_policy
-    protected ?ShiftHolidayPolicy $shiftHolidayPolicy = null;
+    public ?ShiftHolidayPolicy $shiftHolidayPolicy = null;
     //Set on generate: shift except_holidays
-    protected array $shiftExceptHolidays = [];
+    public array $shiftExceptHolidays = [];
     //Set on generate: shift require_lunch_time_in_and_out
-    protected bool $shiftRequireLunchOutAndIn = false;
+    public bool $shiftRequireLunchOutAndIn = false;
     //Set on generate: shift lunch_start_grace_time
-    protected int $shiftLunchStartGraceTime = 0;
+    public int $shiftLunchStartGraceTime = 0;
     //Set on generate: shift max_overtime
-    protected float $shiftOvertimeLimit = 0;
+    public float $shiftOvertimeLimit = 0;
     //Set on generate: shift schedules rest days
-    protected array $restDays = [];
+    public array $restDays = [];
     //Set on generate: shift schedules
-    protected array $schedules = [];
+    public array $schedules = [];
     //Set on generate: Schedule of the same week day as the attendance date
-    protected ?array $attendanceSchedule = null;
+    public ?array $attendanceSchedule = null;
     //Set on generate: Has lunch break from attendance schedule
-    protected ?bool $attendanceScheduleHasLunchBreak = false;
+    public ?bool $attendanceScheduleHasLunchBreak = false;
     //Set on generate: Is day off from attendance schedule
-    protected ?bool $attendanceScheduleIsDayOff = false;
+    public ?bool $attendanceScheduleIsDayOff = false;
     //Set on generate: Is flexible from attendance schedule
-    protected ?bool $attendanceScheduleIsFlexible = false;
+    public ?bool $attendanceScheduleIsFlexible = false;
     //Set on generate: Total work hours with breaks from attendance schedule
-    protected ?int $attendanceScheduleTotalWorkHoursWithBreaks = 0;
-    protected ?Collection $companyBasicPayFormulaSettings = null;
-    protected ?Collection $companyOvertimeFormulaSettings = null;
-    protected ?Collection $basicPayRegularRates = null;
-    protected ?Collection $basicPayNightDifferentialRates = null;
-    protected ?Collection $overtimeRegularRates = null;
-    protected ?Collection $overtimeNightDifferentialRates = null;
+    public ?int $attendanceScheduleTotalWorkHoursWithBreaks = 0;
+    public ?Collection $companyBasicPayFormulaSettings = null;
+    public ?Collection $companyOvertimeFormulaSettings = null;
+    public ?Collection $basicPayRegularRates = null;
+    public ?Collection $basicPayNightDifferentialRates = null;
+    public ?Collection $overtimeRegularRates = null;
+    public ?Collection $overtimeNightDifferentialRates = null;
 
     use HasTime;
 
