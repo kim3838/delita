@@ -557,15 +557,19 @@ class Standard13thMonthFormula
 
         $currentUpToEndOfYear = $payrollService->getCurrentUpToEndOfYear($context->company->id, $context->payroll->year, [$payrollPayFrequency->value]);
 
-        $nextPayrolls = Fractal::collection($currentUpToEndOfYear['next'], PayrollPayloadListTransformer::class)['data'];
-        foreach($nextPayrolls as $nextPayroll){
-            _debug([
-                'Project payroll' => [
-                    'Year' => $nextPayroll['year'],
-                    'Month' => $nextPayroll['month'],
-                    'Frequency sequence' => $nextPayroll['frequency_sequence'],
-                ]
-            ]);
+        if($debugEnabled){
+
+            $nextPayrolls = Fractal::collection($currentUpToEndOfYear['next'], PayrollPayloadListTransformer::class)['data'];
+
+            foreach($nextPayrolls as $nextPayroll){
+                _debug([
+                    'Project payroll' => [
+                        'Year' => $nextPayroll['year'],
+                        'Month' => $nextPayroll['month'],
+                        'Frequency sequence' => $nextPayroll['frequency_sequence'],
+                    ]
+                ]);
+            }
         }
 
         $nextPayrolls = $currentUpToEndOfYear['next'];
