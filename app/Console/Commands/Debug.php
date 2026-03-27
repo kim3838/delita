@@ -146,10 +146,10 @@ class Debug extends Command
 
     private function payroll()
     {
-        $payrollService = App::make(PayrollServiceInterface::class, [Company::find(4)]);
-        $payroll = App::make(PayrollRepository::class)->model()::first();
+        $payrollService = app(PayrollServiceInterface::class, [Company::find(1)]);
+        $payroll = App::make(PayrollRepository::class)->model()::query()->find(244);
 
-        $payrollService->generateSalaryStatements($payroll);
+        //$payrollService->preProcessSalaryStatements($payroll);
     }
 
     private function userFiledRequest()
