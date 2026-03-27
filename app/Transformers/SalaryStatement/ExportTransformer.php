@@ -61,9 +61,9 @@ class ExportTransformer extends TransformerAbstract
 
             'basic_gross' => $basicGross->toScale(4, RoundingMode::HalfUp)->toString(),
             'other_gross' => $otherGross->toScale(4, RoundingMode::HalfUp)->toString(),
+            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp)->toString(),
             'taxable' => $taxable->toScale(4, RoundingMode::HalfUp)->toString(),
             'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp)->toString(),
-            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp)->toString(),
             'withholding_tax' => $withholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
             'deduction' => $deduction->toScale(4, RoundingMode::HalfUp)->toString(),
             'net' => $net->toScale(4, RoundingMode::HalfUp)->toString(),
