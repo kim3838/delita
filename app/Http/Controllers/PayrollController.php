@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\PayrollRepository;
 use App\Enums\PayrollStatus;
 use App\Exceptions\UnexpectedException;
+use App\Exports\PayrollExport;
 use App\Facades\Fractal;
 use App\Facades\ResponseJson;
 use App\Http\Requests\Payroll\BatchDestroyPayrollRequest;
+use App\Http\Requests\Payroll\ExportPayrollRequest;
 use App\Http\Requests\Payroll\ListPayrollRequest;
 use App\Http\Requests\Payroll\StorePayrollRequest;
 use App\Http\Requests\Payroll\ViewPayrollRequest;
 use App\Jobs\GeneratePayroll;
 use App\Models\Company;
+use App\Transformers\Payroll\ExportTransformer;
 use App\Transformers\Payroll\ItemTransformer;
 use App\Transformers\Payroll\ListTransformer;
 use App\Transformers\Payroll\SelectionTransformer;
 use App\Transformers\Payroll\TotalsTransformer;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel as ExcelFacade;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class PayrollController extends Controller
 {
@@ -41,6 +46,27 @@ class PayrollController extends Controller
                 'payroll_totals' => $payrollTotals,
                 'payrolls' => $payrolls,
             ]);
+        }
+
+        abort(404);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function export(ExportPayrollRequest $request)
+    {
+        if($request->expectsJson()){
+
+            $filters = json_decode($request->get('filters'));
+
+            $data = $this->repository->list($filters, ['salary_statement']);
+            $data = Fractal::collection($data, ExportTransformer::class)['data'];
+
+            $export = new PayrollExport(collect($data));
+
+            return ExcelFacade::download($export, 'payrolls.csv', Excel::CSV);
         }
 
         abort(404);

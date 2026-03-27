@@ -20,7 +20,7 @@ class ExportTransformer extends TransformerAbstract
         $taxable = BigDecimal::of($salaryStatement->taxable);
         $nontaxable = BigDecimal::of($salaryStatement->nontaxable);
         $contribution = BigDecimal::of($salaryStatement->contribution);
-        $withholding_tax = BigDecimal::of($salaryStatement->withholding_tax);
+        $withholdingTax = BigDecimal::of($salaryStatement->withholding_tax);
         $deduction = BigDecimal::of($salaryStatement->deduction);
         $net = BigDecimal::of($salaryStatement->net);
 
@@ -59,14 +59,14 @@ class ExportTransformer extends TransformerAbstract
             'type' => $salaryStatement->type?->label(),
             'is_paid' => $salaryStatement->is_paid ? 'Yes' : 'No',
 
-            'basic_gross' => $basicGross->toScale(4, RoundingMode::HalfUp),
-            'other_gross' => $otherGross->toScale(4, RoundingMode::HalfUp),
-            'taxable' => $taxable->toScale(4, RoundingMode::HalfUp),
-            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp),
-            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp),
-            'withholding_tax' => $withholding_tax->toScale(4, RoundingMode::HalfUp),
-            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp),
-            'net' => $net->toScale(4, RoundingMode::HalfUp),
+            'basic_gross' => $basicGross->toScale(4, RoundingMode::HalfUp)->toString(),
+            'other_gross' => $otherGross->toScale(4, RoundingMode::HalfUp)->toString(),
+            'taxable' => $taxable->toScale(4, RoundingMode::HalfUp)->toString(),
+            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp)->toString(),
+            'contribution' => $contribution->toScale(4, RoundingMode::HalfUp)->toString(),
+            'withholding_tax' => $withholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
+            'deduction' => $deduction->toScale(4, RoundingMode::HalfUp)->toString(),
+            'net' => $net->toScale(4, RoundingMode::HalfUp)->toString(),
         ];
     }
 }

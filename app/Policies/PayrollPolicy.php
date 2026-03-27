@@ -18,6 +18,16 @@ class PayrollPolicy extends BasePolicy
             && $this->hasPermission($user, 'view-payroll');
     }
 
+    public function export(User $user): bool
+    {
+        if($user->isSuperAdmin()){
+            return true;
+        }
+
+        return $this->userIsAdminInCompany($user, app(RequestInterface::class)->companyId)
+            && $this->hasPermission($user, 'export-payroll');
+    }
+
     public function view(User $user, Payroll $payroll): bool
     {
         if($user->isSuperAdmin()){

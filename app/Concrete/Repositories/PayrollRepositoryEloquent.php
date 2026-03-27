@@ -182,14 +182,17 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
         ];
     }
 
-    public function list($filters): Collection
+    public function list($filters, $relations = []): Collection
     {
         $orders = [
             ['field' => 'payrolls.year', 'direction' => 'ASC'],
             ['field' => 'payrolls.month', 'direction' => 'ASC'],
+            ['field' => 'payrolls.pay_frequency', 'direction' => 'ASC'],
+            ['field' => 'payrolls.frequency_sequence', 'direction' => 'ASC'],
+            ['field' => 'payrolls.start_date', 'direction' => 'ASC'],
         ];
 
-        $queryBuilder = $this->baseQueryBuilder($filters, $orders);
+        $queryBuilder = $this->baseQueryBuilder($filters, $orders, $relations);
 
         $this->setOrdersOnBuilder($queryBuilder, $orders);
 

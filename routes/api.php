@@ -581,6 +581,7 @@ Route::group([
     Route::get('payroll-inquiry', [PayrollInquiryController::class, 'index']);
 
     Route::get('payrolls', [PayrollController::class, 'index']);
+    Route::get('payrolls-export', [PayrollController::class, 'export']);
     Route::get('payroll-selections', [PayrollController::class, 'selection']);
     Route::post('payroll', [PayrollController::class, 'store']);
     Route::get('payroll/{ulid}', [PayrollController::class, 'show']);
