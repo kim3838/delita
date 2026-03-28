@@ -25,9 +25,9 @@ return new class extends Migration
             $table->string('split_end', 5);
             $table->smallInteger('split_duration');
             $table->smallInteger('work_hour_type');
+            $table->smallInteger('hourly_rate_type');
             $table->decimal('regular_rate_multiplier', 8, 6)->nullable();
             $table->decimal('non_rest_rate_multiplier', 8, 6)->nullable();
-            $table->smallInteger('hourly_rate_type');
             $table->decimal('hourly_rate_multiplier', 8, 6);
             $table->decimal('base_rate_multiplier', 8, 6);
             $table->smallInteger('order');
