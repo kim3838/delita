@@ -61,7 +61,7 @@ class EmployeeIdentificationRepositoryEloquent extends BaseRepositoryEloquent im
     {
         $orders = [
             ['field' => 'employee_sub.number', 'direction' => 'ASC'],
-            ['field' => 'type', 'direction' => 'ASC'],
+            ['field' => 'employee_identifications.type', 'direction' => 'ASC'],
         ];
 
         $queryBuilder = $this->baseQueryBuilder($filters);

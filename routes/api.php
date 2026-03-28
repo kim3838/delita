@@ -29,6 +29,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeEmployeeIdentificationController;
 use App\Http\Controllers\EmployeeEmploymentProfilesController;
 use App\Http\Controllers\EmployeeIdentificationController;
 use App\Http\Controllers\EmployeeIdentificationTemplateController;
@@ -410,6 +411,9 @@ Route::group([
     Route::post('employee-identification', [EmployeeIdentificationController::class, 'store']);
     Route::patch('employee-identification/{employeeIdentificationId}', [EmployeeIdentificationController::class, 'update']);
     Route::delete('employee-identifications', [EmployeeIdentificationController::class, 'batchDestroy']);
+
+    //Employee Employee Identifications
+    Route::get('employee-employee-identifications/{employeeId}', [EmployeeEmployeeIdentificationController::class, 'index']);
 
     Route::post('employee-identification-import-validate', [EmployeeIdentificationImportController::class, 'read']);
     Route::post('employee-identification-import-re-validate', [EmployeeIdentificationImportController::class, 'reValidate']);
