@@ -36,9 +36,6 @@ class FormulaBindingsServiceProvider extends ServiceProvider
          * Salary statement level
          **/
         'initialize-salary-statement' => InitializeSalaryStatementFormula::class,
-        'standard-absence' => StandardAbsenceFormula::class,
-        'standard-undertime' => StandardUndertimeFormula::class,
-        'standard-tardiness' => StandardTardinessFormula::class,
         'manual-earning' => ManualEarningFormula::class,
         'standard-sss-employed-contribution' => StandardSSSEmployedContributionFormula::class,
         'standard-philhealth-contribution' => StandardPhilhealthContributionFormula::class,
