@@ -45,7 +45,7 @@ class GeneratePayroll implements ShouldQueue
 
         foreach($chunkedEmployeeIds as $employeeIdChunk){
 
-            $payrollService->generateSalaryStatements($this->payroll, $employeeIdChunk);
+            $payrollService->generateSalaryStatements($employeeIdChunk);
         }
 
         $payrollService->postProcessSalaryStatements($this->payroll);

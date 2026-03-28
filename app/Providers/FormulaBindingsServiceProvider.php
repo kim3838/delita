@@ -7,12 +7,9 @@ use App\Actions\Formula\ManualDeductionFormula;
 use App\Actions\Formula\ManualEarningFormula;
 use App\Actions\Formula\Standard13thMonthFormula;
 use App\Actions\Formula\StandardAbsenceFormula;
-use App\Actions\Formula\StandardAllowanceFormula;
-use App\Actions\Formula\StandardBasicPayFormula;
 use App\Actions\Formula\StandardWithHoldingTaxCompensationFormula;
 use App\Actions\Formula\StandardNetIncomeFormula;
 use App\Actions\Formula\StandardNontaxableIncomeFormula;
-use App\Actions\Formula\StandardOvertimeFormula;
 use App\Actions\Formula\StandardPagIBIGContributionFormula;
 use App\Actions\Formula\StandardPhilhealthContributionFormula;
 use App\Actions\Formula\StandardSSSEmployedContributionFormula;
@@ -26,11 +23,11 @@ class FormulaBindingsServiceProvider extends ServiceProvider
     public $bindings = [
 
         /**
-         * Per day
+         * Auto deductions
          **/
-        'standard-basic-pay' => StandardBasicPayFormula::class,
-        'standard-allowance' => StandardAllowanceFormula::class,
-        'standard-overtime' => StandardOvertimeFormula::class,
+        'standard-absence' => StandardAbsenceFormula::class,
+        'standard-undertime' => StandardUndertimeFormula::class,
+        'standard-tardiness' => StandardTardinessFormula::class,
 
         /**
          * Salary statement level

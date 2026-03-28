@@ -358,6 +358,13 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         ]);
     }
 
+    public static function datePresets(): array
+    {
+        return [
+
+        ];
+    }
+
     public function preProcessSalaryStatements(Payroll $payroll): void
     {
         $this->payroll = $payroll;
@@ -374,15 +381,15 @@ class PayrollServiceConcrete implements PayrollServiceInterface
     /**
      * @throws UnexpectedException
      */
-    public function generateSalaryStatements(Payroll $payroll, $employeeIds = []): void
+    public function generateSalaryStatements($employeeIds = []): void
     {
-        $this->initializeSalaryStatements($payroll, $employeeIds);
+        $this->initializeSalaryStatements($employeeIds);
     }
 
     /**
      * @throws UnexpectedException
      */
-    public function initializeSalaryStatements(Payroll $payroll, $employeeIds = []): void
+    public function initializeSalaryStatements($employeeIds = []): void
     {
         $debugEnabled = false;
 
@@ -474,6 +481,229 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
                 }
             }
+        }
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    private function buildEmployeeSalaryStatementAttendances(Employee $employee): array
+    {
+        $debugEnabled = false;
+
+        $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+        $employeeShifts = EmployeeShift::where('employee_id', $employee->id)->get();
+
+        $periodDaysSummary = [
+            'total_days' => 0,
+            'total_day_offs' => 0,
+
+            'total_working_days' => 0,
+            'total_regular_work_days' => 0,
+            'total_working_rest_days' => 0,
+
+            'total_special_holidays' => 0,
+            'total_legal_holidays' => 0,
+            'total_double_holidays' => 0,
+
+            'total_full_present' => 0,
+            'total_present_with_irregularity' => 0,
+
+            'total_leave_without_pay' => 0,
+            'total_leave_with_pay' => 0,
+            'total_absent' => 0,
+        ];
+
+        //Payroll date period
+        $datePeriod = CarbonPeriod::create($this->payroll->start_date, $this->payroll->end_date);
+        $periodDaysSummary['total_days'] = $datePeriod->count();
+
+        //Build employee's salary attendance
+        $salaryStatementAttendances = [];
+
+        $employeeDatePeriodAttendances = app(AttendanceRepository::class)
+            ->model()::where('employee_id', $employee->id)
+            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
+            ->get();
+        $employeeDatePeriodLeaves = app(LeaveRepository::class)
+            ->model()::where('employee_id', $employee->id)
+            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
+            ->get();
+
+        $employeeDatePeriodAttendances = Fractal::collection(
+            $employeeDatePeriodAttendances,
+            AttendancePatchableTransformer::class
+        )['data'];
+
+        $employeeDatePeriodLeaves = Fractal::collection(
+            $employeeDatePeriodLeaves,
+            LeaveBasicTransformer::class
+        )['data'];
+
+        foreach($datePeriod as $date){
+
+            $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+
+            if(empty($employeeShiftPivot)) continue;
+
+            $employeeShift = $employeeShiftPivot->shift;
+
+            $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
+            $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
+
+            $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
+            $hasLeave = $leave->isNotEmpty();
+            $leaveType = null;
+
+            if($hasLeave){
+                $leaveType = app(LeaveTypeRepository::class)->model()::find($leave->first()['leave_type']['id']);
+            }
+
+            if($debugEnabled){
+                _debug([
+                    'date' => $date->toDateString(),
+                    '$attendance status' => $attendance?->status?->label(),
+                    '$hasLeave' => $hasLeave,
+                    '$leaveType is_paid' => $leaveType?->is_paid,
+                ]);
+            }
+
+            $this->setShift($employeeShift);
+            $this->setAttendanceSchedule($date);
+            $dayOff = $this->attendanceScheduleIsDayOff;
+            $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+            $holidayType = !empty($holiday) ? $holiday->type : null;
+            $isRestDay = in_array($date->dayOfWeek, $this->restDays);
+
+            $isDateIsHoliday = !empty($holidayType);
+            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+            $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+            $dayOffOrHolidayDayOff = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
+
+            $dayType = $dayOffOrHolidayDayOff
+                ? SalaryStatementAttendanceDayType::DAY_OFF
+                : SalaryStatementAttendanceDayType::WORKING_DAY;
+
+            if($dayType == SalaryStatementAttendanceDayType::WORKING_DAY){
+
+                $periodDaysSummary['total_working_days'] += 1;
+                $periodDaysSummary['total_working_rest_days'] += $isRestDay ? 1 : 0;
+            }
+
+            $dayType = $isDateIsHoliday && !$dayOff
+                ? match($holidayType){
+                    HolidayType::SPECIAL => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY,
+                    HolidayType::LEGAL => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
+                    HolidayType::DOUBLE => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
+                } : $dayType;
+
+            if(empty($attendance) && $dayOffOrHolidayDayOff){
+                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::DAY_OFF;
+            } else if(empty($attendance) && !$hasLeave) {
+                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::ABSENT;
+            } else if (empty($attendance) && $hasLeave){
+                $payrollAttendanceStatus = match($leaveType?->is_paid){
+                    true => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY,
+                    false, null => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
+                };
+            } else {
+                $payrollAttendanceStatus = match($attendance->status){
+                    AttendanceStatus::FULL_PRESENT => SalaryStatementAttendanceStatus::FULL_PRESENT,
+                    AttendanceStatus::PRESENT_WITH_IRREGULARITIES => SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
+                    AttendanceStatus::ABSENT => SalaryStatementAttendanceStatus::ABSENT,
+                    null => SalaryStatementAttendanceStatus::TO_BE_DETERMINED,
+                };
+            }
+
+            switch($dayType){
+                case SalaryStatementAttendanceDayType::WORKING_DAY: $periodDaysSummary['total_regular_work_days']++; break;
+                case SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY: $periodDaysSummary['total_special_holidays']++; break;
+                case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY: $periodDaysSummary['total_double_holidays']++; break;
+                case SalaryStatementAttendanceDayType::LEGAL_HOLIDAY: $periodDaysSummary['total_legal_holidays']++; break;
+            }
+
+            switch($payrollAttendanceStatus){
+                case SalaryStatementAttendanceStatus::DAY_OFF: $periodDaysSummary['total_day_offs']++; break;
+                case SalaryStatementAttendanceStatus::FULL_PRESENT: $periodDaysSummary['total_full_present']++; break;
+                case SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES: $periodDaysSummary['total_present_with_irregularity']++; break;
+                case SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY: $periodDaysSummary['total_leave_without_pay']++; break;
+                case SalaryStatementAttendanceStatus::LEAVE_WITH_PAY: $periodDaysSummary['total_leave_with_pay']++; break;
+                case SalaryStatementAttendanceStatus::ABSENT: $periodDaysSummary['total_absent']++; break;
+            }
+
+            $salaryStatementAttendance = [
+                ...(false ? [
+                    '_employee_id' => $employee->id,
+                    '_is_day_off' => $dayOff,
+                    '_is_holiday' => $isDateIsHoliday,
+                    '_is_day_off_and_holiday_day_off' => $dayOffAndHolidayDayOff,
+                    '_holiday_type' => $holidayType,
+                    '_shift_holiday_policy_is_day_off' => $shiftHolidayPolicyIsDayOff,
+                ] : []),
+                'attendance_id' => $attendance?->id ?? null,
+                'date' => $date->toDateString(),
+                'status' => $payrollAttendanceStatus->value,
+                'day_type' => $dayType->value,
+            ];
+
+            if($debugEnabled){
+                _debug([
+                    '$salaryStatementAttendance' => [
+                        'attendance_id' => $attendance?->id ?? null,
+                        'date' => $date->toDateString(),
+                        'status' => $payrollAttendanceStatus->label(),
+                        'day_type' => $dayType->label(),
+                    ],
+                ]);
+            }
+
+            $salaryStatementAttendances[] = $salaryStatementAttendance;
+        }
+
+        return [
+            $employeeService,
+            $employeeShifts,
+            $periodDaysSummary,
+            $salaryStatementAttendances
+        ];
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    private function createSalaryStatementAttendanceDetails(Shift $employeeShift, SalaryStatementAttendance $salaryStatementAttendance): void
+    {
+        $debugEnabled = false;
+
+        $date = $salaryStatementAttendance->date;
+
+        $this->setShift($employeeShift);
+        $this->setAttendanceSchedule($date);
+
+        $startingDateHolidayType = $this->getDateHolidayType($date);
+        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+
+        $schedule = $this->attendanceSchedule;
+        $schedule = $this->parseSchedule($schedule, $salaryStatementAttendance->date);
+
+        $workPeriods = $this->calculateWorkPeriods($schedule);
+
+        list($scheduleBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType, [ShiftBreakDownSplitType::WORK]);
+
+        if($debugEnabled){
+            _debug([
+                'date' => $date->toDateString(),
+                'shift class' => get_class($employeeShift),
+                'salary statement class' => get_class($salaryStatementAttendance),
+                'status' => $salaryStatementAttendance->status?->label(),
+                'day_type' => $salaryStatementAttendance->day_type?->label(),
+                '$scheduleBreakdown' => $scheduleBreakdown,
+            ]);
+        }
+
+        foreach($scheduleBreakdown as $scheduleBreakdownItem){
+
+            $salaryStatementAttendance->details()->create($scheduleBreakdownItem);
         }
     }
 
@@ -572,161 +802,6 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
             $salaryStatementModuleService->processPipelineOfFormulasAndUpdateStatementSummary($salaryStatementCursor);
         }
-    }
-
-    public function salaryStatementCreateDetails(SalaryStatement $salaryStatement): void
-    {
-        $debugEnabled = false;
-        $salaryStatementDetails = [];
-
-        /**
-         * Sum payroll items from attendance into $salaryStatementDetails with component_sub_type as key
-         **/
-        foreach($salaryStatement->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
-
-            $payrollComponents = $salaryStatementAttendance->payrollComponents->sortBy(function($payrollComponent){
-                return $payrollComponent->component_type->value;
-            }, SORT_NUMERIC);
-
-            foreach($payrollComponents as $payrollComponent){
-
-                if(!isset($salaryStatementDetails[$payrollComponent->component_sub_type])){
-
-                    $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
-
-                    $salaryStatementDetails[$payrollComponent->component_sub_type] = [
-                        'formulable_type' => $payrollComponent->formulable_type->value,
-                        'component_type' => $payrollComponent->component_type->value,
-                        'component_sub_type' => $payrollComponent->component_sub_type,
-                        'component_name' => $payrollComponent->component_name,
-                        'component_values' => [
-                            'type' => $componentValueType?->value,
-                            'regular_pay' => new MutableBigDecimal(),
-                            'night_differential_pay' => new MutableBigDecimal(),
-                            'rest_day_pay' => new MutableBigDecimal(),
-                            'total' => new MutableBigDecimal(),
-                        ],
-                        'taxable' => new MutableBigDecimal(),
-                    ];
-                }
-
-                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
-                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
-                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
-                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
-
-                $salaryStatementDetails[$payrollComponent->component_sub_type]['taxable'] = $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total'];
-            }
-        }
-
-        /**
-         * Order salary statement details by component_sub_type
-         **/
-        $salaryStatementDetails = collect($salaryStatementDetails)
-            ->sortBy('component_sub_type', SORT_NATURAL)->values()->toArray();
-
-        /**
-         * Add component values (breakdown pay splits) for basic pay and overtime
-         **/
-        foreach($salaryStatementDetails as $salaryStatementDetail){
-
-            $componentValues = null;
-
-            if(in_array($salaryStatementDetail['component_type'], [
-                CompensationEnum::BASIC_PAY->value,
-                CompensationEnum::OVERTIME->value,
-            ])){
-                $componentValues = [
-                    'type' => $salaryStatementDetail['component_values']['type'] ?? null,
-                    'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
-                    'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
-                    'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
-                    'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
-                ];
-            }
-
-            $salaryStatement->details()->create([
-                'statement_level' => false,
-                'formulable_type' => $salaryStatementDetail['formulable_type'],
-                'component_type' => $salaryStatementDetail['component_type'],
-                'component_sub_type' => $salaryStatementDetail['component_sub_type'],
-                'component_name' => $salaryStatementDetail['component_name'],
-                'component_values' => $componentValues,
-                'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(4, RoundingMode::HalfUp)->toString()
-            ]);
-        }
-
-        if($debugEnabled){
-
-            _debug([
-                'SalaryStatement create details' => [
-                    'SalaryStatement' => $salaryStatement->toArray(),
-                    'Details' => $salaryStatement->details->toArray(),
-                ]
-            ]);
-        }
-    }
-
-    public static function datePresets(): array
-    {
-        return [
-            //Cut off 2026-01-26-2026-02-25
-            //'2026-01-26',//FULL PRESENT NON-REST WITH OT
-            //'2026-01-27',//FULL PRESENT NON-REST
-
-            //'2026-01-28',//LWP REGULAR DAY
-            //'2026-01-29',//LWOP
-
-            //'2026-01-31',//FULL PRESENT REST DAY WITH OT
-
-            //'2026-02-02',//LWP SPECIAL HOLIDAY
-            //'2026-02-03',//LWOP SPECIAL HOLIDAY
-
-            //'2026-02-05',//LWP LEGAL HOLIDAY
-            //'2026-02-06',//LWOP LEGAL HOLIDAY
-
-            //'2026-02-07',//FULL PRESENT REST DAY LEGAL HOLIDAY WITH OT
-            //'2026-02-09',//ABSENT LEGAL HOLIDAY
-            //'2026-02-10',//FULL PRESENT REGULAR DAY LEGAL HOLIDAY
-            //'2026-02-11',//ABSENT REGULAR DAY SPECIAL HOLIDAY
-            //'2026-02-12',//FULL PRESENT REGULAR DAY SPECIAL HOLIDAY WITH OT
-            //'2026-02-13',//ABSENT REGULAR DAY
-            //'2026-02-14',//FULL PRESENT REST DAY DOUBLE HOLIDAY WITH OT
-            //'2026-02-17',//ABSENT LEGAL HOLIDAY FORFEITED DUE TO 2026-02-16 NOT PAID (ABSENT OR LWOP)
-
-            //'2026-02-19',//LWP DOUBLE HOLIDAY
-            //'2026-02-20',//LWOP DOUBLE HOLIDAY
-
-            //'2026-02-21',//FULL PRESENT REST DAY SPECIAL HOLIDAY WITH OT
-            //'2026-02-24',//FULL PRESENT REGULAR DAY DOUBLE HOLIDAY WITH OT
-            //'2026-02-25',//ABSENT REGULAR DAY DOUBLE HOLIDAY
-
-            //Cut off 2026-02-26-2026-03-25
-            //'2026-02-26',//ABSENT LEGAL HOLIDAY
-            //'2026-02-27',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-02-28',//FULL PRESENT REST DAY REGULAR DAY
-            //'2026-03-02',//ABSENT REGULAR DAY
-            //'2026-03-03',//ABSENT REGULAR DAY
-            //'2026-03-04',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-03-05',//LWP LEGAL HOLIDAY
-            //'2026-03-06',//ABSENT REGULAR DAY
-            //'2026-03-07',//ABSENT SPECIAL HOLIDAY
-            //'2026-03-09',//ABSENT LEGAL HOLIDAY FORFEITED
-
-            //'2026-03-11',//LWP SPECIAL HOLIDAY
-            //'2026-03-12',//ABSENT LEGAL HOLIDAY
-            //'2026-03-13',//LWOP SPECIAL HOLIDAY
-            //'2026-03-14',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-03-16',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-03-17',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-03-18',//ABSENT DOUBLE HOLIDAY FORFEITED
-            //'2026-03-19',//ABSENT REGULAR DAY
-            //'2026-03-20',//ABSENT LEGAL HOLIDAY FORFEITED
-            //'2026-03-21',//ABSENT DOUBLE HOLIDAY FORFEITED
-            //'2026-03-23',//LWP REGULAR DAY
-            //'2026-03-24',//ABSENT LEGAL HOLIDAY
-            //'2026-03-25',//ABSENT DOUBLE HOLIDAY FORFEITED
-        ];
     }
 
     /**
@@ -924,10 +999,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                             if(isset($employeePerDayableCompensationsPayload[$componentableSubType])){
                                 $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate'] =
                                     $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
-                                    $payrollFrequency,
-                                    $employeePerDayableCompensation,
-                                    $totalWorkMinutes
-                                ));
+                                        $payrollFrequency,
+                                        $employeePerDayableCompensation,
+                                        $totalWorkMinutes
+                                    ));
                             }break;
 
                         case CompensationEnum::REGULAR_ALLOWANCE:
@@ -935,10 +1010,10 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                             if(isset($employeePerDayableCompensationsPayload[$componentableSubType])){
                                 $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate'] =
                                     $employeePerDayableCompensationsPayload[$componentableSubType]['hourly_rate']->plus($this->getAssignedPayrollComponentHourlyRate(
-                                    $payrollFrequency,
-                                    $employeePerDayableCompensation,
-                                    $totalWorkMinutes
-                                ));
+                                        $payrollFrequency,
+                                        $employeePerDayableCompensation,
+                                        $totalWorkMinutes
+                                    ));
                             }
                     }
                 }
@@ -1040,227 +1115,97 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         }
     }
 
-    /**
-     * @throws UnexpectedException
-     */
-    public function createSalaryStatementAttendanceDetails(Shift $employeeShift, SalaryStatementAttendance $salaryStatementAttendance): void
+    public function salaryStatementCreateDetails(SalaryStatement $salaryStatement): void
     {
         $debugEnabled = false;
+        $salaryStatementDetails = [];
 
-        $date = $salaryStatementAttendance->date;
+        /**
+         * Sum payroll items from attendance into $salaryStatementDetails with component_sub_type as key
+         **/
+        foreach($salaryStatement->salaryStatementAttendances()->cursor() as $salaryStatementAttendance){
 
-        $this->setShift($employeeShift);
-        $this->setAttendanceSchedule($date);
+            $payrollComponents = $salaryStatementAttendance->payrollComponents->sortBy(function($payrollComponent){
+                return $payrollComponent->component_type->value;
+            }, SORT_NUMERIC);
 
-        $startingDateHolidayType = $this->getDateHolidayType($date);
-        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+            foreach($payrollComponents as $payrollComponent){
 
-        $schedule = $this->attendanceSchedule;
-        $schedule = $this->parseSchedule($schedule, $salaryStatementAttendance->date);
+                if(!isset($salaryStatementDetails[$payrollComponent->component_sub_type])){
 
-        $workPeriods = $this->calculateWorkPeriods($schedule);
+                    $componentValueType = $this->getComponentValueType($payrollComponent->formulable_type, $payrollComponent->component_type);
 
-        list($scheduleBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType, [ShiftBreakDownSplitType::WORK]);
+                    $salaryStatementDetails[$payrollComponent->component_sub_type] = [
+                        'formulable_type' => $payrollComponent->formulable_type->value,
+                        'component_type' => $payrollComponent->component_type->value,
+                        'component_sub_type' => $payrollComponent->component_sub_type,
+                        'component_name' => $payrollComponent->component_name,
+                        'component_values' => [
+                            'type' => $componentValueType?->value,
+                            'regular_pay' => new MutableBigDecimal(),
+                            'night_differential_pay' => new MutableBigDecimal(),
+                            'rest_day_pay' => new MutableBigDecimal(),
+                            'total' => new MutableBigDecimal(),
+                        ],
+                        'taxable' => new MutableBigDecimal(),
+                    ];
+                }
 
-        if($debugEnabled){
-            _debug([
-                'date' => $date->toDateString(),
-                'shift class' => get_class($employeeShift),
-                'salary statement class' => get_class($salaryStatementAttendance),
-                'status' => $salaryStatementAttendance->status?->label(),
-                'day_type' => $salaryStatementAttendance->day_type?->label(),
-                '$scheduleBreakdown' => $scheduleBreakdown,
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['regular_pay']->plus(BigDecimal::of($payrollComponent->regular_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['night_differential_pay']->plus(BigDecimal::of($payrollComponent->night_differential_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['rest_day_pay']->plus(BigDecimal::of($payrollComponent->rest_day_pay));
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total']->plus(BigDecimal::of($payrollComponent->total));
+
+                $salaryStatementDetails[$payrollComponent->component_sub_type]['taxable'] = $salaryStatementDetails[$payrollComponent->component_sub_type]['component_values']['total'];
+            }
+        }
+
+        /**
+         * Order salary statement details by component_sub_type
+         **/
+        $salaryStatementDetails = collect($salaryStatementDetails)
+            ->sortBy('component_sub_type', SORT_NATURAL)->values()->toArray();
+
+        /**
+         * Add component values (breakdown pay splits) for basic pay and overtime
+         **/
+        foreach($salaryStatementDetails as $salaryStatementDetail){
+
+            $componentValues = null;
+
+            if(in_array($salaryStatementDetail['component_type'], [
+                CompensationEnum::BASIC_PAY->value,
+                CompensationEnum::OVERTIME->value,
+            ])){
+                $componentValues = [
+                    'type' => $salaryStatementDetail['component_values']['type'] ?? null,
+                    'regular_pay' => $salaryStatementDetail['component_values']['regular_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'night_differential_pay' => $salaryStatementDetail['component_values']['night_differential_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'rest_day_pay' => $salaryStatementDetail['component_values']['rest_day_pay']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
+                    'total' => $salaryStatementDetail['component_values']['total']->shallow()->toScale(4, RoundingMode::HalfUp)->toString(),
+                ];
+            }
+
+            $salaryStatement->details()->create([
+                'statement_level' => false,
+                'formulable_type' => $salaryStatementDetail['formulable_type'],
+                'component_type' => $salaryStatementDetail['component_type'],
+                'component_sub_type' => $salaryStatementDetail['component_sub_type'],
+                'component_name' => $salaryStatementDetail['component_name'],
+                'component_values' => $componentValues,
+                'taxable' => $salaryStatementDetail['taxable']->shallow()->toScale(4, RoundingMode::HalfUp)->toString()
             ]);
         }
 
-        foreach($scheduleBreakdown as $scheduleBreakdownItem){
+        if($debugEnabled){
 
-            $salaryStatementAttendance->details()->create($scheduleBreakdownItem);
+            _debug([
+                'SalaryStatement create details' => [
+                    'SalaryStatement' => $salaryStatement->toArray(),
+                    'Details' => $salaryStatement->details->toArray(),
+                ]
+            ]);
         }
-    }
-
-    /**
-     * @throws UnexpectedException
-     */
-    public function buildEmployeeSalaryStatementAttendances(Employee $employee): array
-    {
-        $debugEnabled = false;
-
-        $employeeService = app(EmployeeServiceInterface::class, [$employee]);
-        $employeeShifts = EmployeeShift::where('employee_id', $employee->id)->get();
-
-        $periodDaysSummary = [
-            'total_days' => 0,
-            'total_day_offs' => 0,
-
-            'total_working_days' => 0,
-            'total_regular_work_days' => 0,
-            'total_working_rest_days' => 0,
-
-            'total_special_holidays' => 0,
-            'total_legal_holidays' => 0,
-            'total_double_holidays' => 0,
-
-            'total_full_present' => 0,
-            'total_present_with_irregularity' => 0,
-
-            'total_leave_without_pay' => 0,
-            'total_leave_with_pay' => 0,
-            'total_absent' => 0,
-        ];
-
-        //Payroll date period
-        $datePeriod = CarbonPeriod::create($this->payroll->start_date, $this->payroll->end_date);
-        $periodDaysSummary['total_days'] = $datePeriod->count();
-
-        //Build employee's salary attendance
-        $salaryStatementAttendances = [];
-
-        $employeeDatePeriodAttendances = app(AttendanceRepository::class)
-            ->model()::where('employee_id', $employee->id)
-            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
-            ->get();
-        $employeeDatePeriodLeaves = app(LeaveRepository::class)
-            ->model()::where('employee_id', $employee->id)
-            ->whereBetween('date', [$datePeriod->start->toDateString(), $datePeriod->end->toDateString()])
-            ->get();
-
-        $employeeDatePeriodAttendances = Fractal::collection(
-            $employeeDatePeriodAttendances,
-            AttendancePatchableTransformer::class
-        )['data'];
-
-        $employeeDatePeriodLeaves = Fractal::collection(
-            $employeeDatePeriodLeaves,
-            LeaveBasicTransformer::class
-        )['data'];
-
-        foreach($datePeriod as $date){
-
-            $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
-
-            if(empty($employeeShiftPivot)) continue;
-
-            $employeeShift = $employeeShiftPivot->shift;
-
-            $attendance = collect($employeeDatePeriodAttendances)->where('date', $date->toDateString())->first();
-            $attendance = $attendance ? app(AttendanceRepository::class)->hydrateItem($attendance) : null;
-
-            $leave = collect($employeeDatePeriodLeaves)->where('date', $date->toDateString());
-            $hasLeave = $leave->isNotEmpty();
-            $leaveType = null;
-
-            if($hasLeave){
-                $leaveType = app(LeaveTypeRepository::class)->model()::find($leave->first()['leave_type']['id']);
-            }
-
-            if($debugEnabled){
-                _debug([
-                    'date' => $date->toDateString(),
-                    '$attendance status' => $attendance?->status?->label(),
-                    '$hasLeave' => $hasLeave,
-                    '$leaveType is_paid' => $leaveType?->is_paid,
-                ]);
-            }
-
-            $this->setShift($employeeShift);
-            $this->setAttendanceSchedule($date);
-            $dayOff = $this->attendanceScheduleIsDayOff;
-            $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
-            $holidayType = !empty($holiday) ? $holiday->type : null;
-            $isRestDay = in_array($date->dayOfWeek, $this->restDays);
-
-            $isDateIsHoliday = !empty($holidayType);
-            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
-            $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isDateIsHoliday && $shiftHolidayPolicyIsDayOff);
-            $dayOffOrHolidayDayOff = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
-
-            $dayType = $dayOffOrHolidayDayOff
-                ? SalaryStatementAttendanceDayType::DAY_OFF
-                : SalaryStatementAttendanceDayType::WORKING_DAY;
-
-            if($dayType == SalaryStatementAttendanceDayType::WORKING_DAY){
-
-                $periodDaysSummary['total_working_days'] += 1;
-                $periodDaysSummary['total_working_rest_days'] += $isRestDay ? 1 : 0;
-            }
-
-            $dayType = $isDateIsHoliday && !$dayOff
-                ? match($holidayType){
-                    HolidayType::SPECIAL => SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY,
-                    HolidayType::LEGAL => SalaryStatementAttendanceDayType::LEGAL_HOLIDAY,
-                    HolidayType::DOUBLE => SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY,
-                } : $dayType;
-
-            if(empty($attendance) && $dayOffOrHolidayDayOff){
-                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::DAY_OFF;
-            } else if(empty($attendance) && !$hasLeave) {
-                $payrollAttendanceStatus = SalaryStatementAttendanceStatus::ABSENT;
-            } else if (empty($attendance) && $hasLeave){
-                $payrollAttendanceStatus = match($leaveType?->is_paid){
-                    true => SalaryStatementAttendanceStatus::LEAVE_WITH_PAY,
-                    false, null => SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY,
-                };
-            } else {
-                $payrollAttendanceStatus = match($attendance->status){
-                    AttendanceStatus::FULL_PRESENT => SalaryStatementAttendanceStatus::FULL_PRESENT,
-                    AttendanceStatus::PRESENT_WITH_IRREGULARITIES => SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES,
-                    AttendanceStatus::ABSENT => SalaryStatementAttendanceStatus::ABSENT,
-                    null => SalaryStatementAttendanceStatus::TO_BE_DETERMINED,
-                };
-            }
-
-            switch($dayType){
-                case SalaryStatementAttendanceDayType::WORKING_DAY: $periodDaysSummary['total_regular_work_days']++; break;
-                case SalaryStatementAttendanceDayType::SPECIAL_HOLIDAY: $periodDaysSummary['total_special_holidays']++; break;
-                case SalaryStatementAttendanceDayType::DOUBLE_HOLIDAY: $periodDaysSummary['total_double_holidays']++; break;
-                case SalaryStatementAttendanceDayType::LEGAL_HOLIDAY: $periodDaysSummary['total_legal_holidays']++; break;
-            }
-
-            switch($payrollAttendanceStatus){
-                case SalaryStatementAttendanceStatus::DAY_OFF: $periodDaysSummary['total_day_offs']++; break;
-                case SalaryStatementAttendanceStatus::FULL_PRESENT: $periodDaysSummary['total_full_present']++; break;
-                case SalaryStatementAttendanceStatus::PRESENT_WITH_IRREGULARITIES: $periodDaysSummary['total_present_with_irregularity']++; break;
-                case SalaryStatementAttendanceStatus::LEAVE_WITHOUT_PAY: $periodDaysSummary['total_leave_without_pay']++; break;
-                case SalaryStatementAttendanceStatus::LEAVE_WITH_PAY: $periodDaysSummary['total_leave_with_pay']++; break;
-                case SalaryStatementAttendanceStatus::ABSENT: $periodDaysSummary['total_absent']++; break;
-            }
-
-            $salaryStatementAttendance = [
-                ...(false ? [
-                    '_employee_id' => $employee->id,
-                    '_is_day_off' => $dayOff,
-                    '_is_holiday' => $isDateIsHoliday,
-                    '_is_day_off_and_holiday_day_off' => $dayOffAndHolidayDayOff,
-                    '_holiday_type' => $holidayType,
-                    '_shift_holiday_policy_is_day_off' => $shiftHolidayPolicyIsDayOff,
-                ] : []),
-                'attendance_id' => $attendance?->id ?? null,
-                'date' => $date->toDateString(),
-                'status' => $payrollAttendanceStatus->value,
-                'day_type' => $dayType->value,
-            ];
-
-            if($debugEnabled){
-                _debug([
-                    '$salaryStatementAttendance' => [
-                        'attendance_id' => $attendance?->id ?? null,
-                        'date' => $date->toDateString(),
-                        'status' => $payrollAttendanceStatus->label(),
-                        'day_type' => $dayType->label(),
-                    ],
-                ]);
-            }
-
-            $salaryStatementAttendances[] = $salaryStatementAttendance;
-        }
-
-        return [
-            $employeeService,
-            $employeeShifts,
-            $periodDaysSummary,
-            $salaryStatementAttendances
-        ];
     }
 
     public function isDateOnAnyPayrollStatementAttendance(Employee $employee, Carbon $date): bool
