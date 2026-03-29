@@ -78,8 +78,8 @@ class PayrollRepositoryEloquent extends BaseRepositoryEloquent implements Payrol
                 (isset($filters->from_month) && Carbon::createFromFormat('Y-m', $filters->from_month)) &&
                 (isset($filters->to_month) && Carbon::createFromFormat('Y-m', $filters->to_month))
             ),function($builder) use ($filters){
-                $from = Carbon::createFromFormat('Y-m', $filters->from_month)->startOfMonth();
-                $to = Carbon::createFromFormat('Y-m', $filters->to_month)->endOfMonth();
+                $from = Carbon::createFromFormat('Y-m-d', $filters->from_month . '-01');
+                $to = Carbon::createFromFormat('Y-m-d', $filters->to_month . '-01')->endOfMonth();
 
                 $builder->whereBetween(DB::raw("DATE(CONCAT(payrolls.year, '-',LPAD(payrolls.month, 2, '0'),'-01'))"), [$from->toDateString(), $to->toDateString()]);
             })
