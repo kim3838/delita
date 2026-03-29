@@ -2,9 +2,9 @@
 
 namespace App\Transformers\Tax;
 
-use App\Facades\MoneyFormat;
 use App\Models\SalaryStatementDetail;
 use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
@@ -14,9 +14,6 @@ class ExportTransformer extends TransformerAbstract
     {
         $nontaxable = BigDecimal::of($salaryStatementDetail->nontaxable);
         $withholdingTax = BigDecimal::of($salaryStatementDetail->withholding_tax);
-
-        $componentValues = MoneyFormat::numberFormatComponentValue($salaryStatementDetail->component_values, 2);
-        $componentValueType = $componentValues['type'] ?? null;
 
         return [
             'payroll_number' => $salaryStatementDetail->payroll_number,
@@ -30,8 +27,8 @@ class ExportTransformer extends TransformerAbstract
             'component_type' => $salaryStatementDetail->component_type?->label(),
             'component_name' => $salaryStatementDetail->component_name,
 
-            'withholding_tax' => MoneyFormat::numberFormat($withholdingTax),
-            'nontaxable' => MoneyFormat::numberFormat($nontaxable),
+            'withholding_tax' => $withholdingTax->toScale(4, RoundingMode::HalfUp)->toString(),
+            'nontaxable' => $nontaxable->toScale(4, RoundingMode::HalfUp)->toString(),
         ];
     }
 }

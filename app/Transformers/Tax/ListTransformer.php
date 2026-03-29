@@ -38,8 +38,8 @@ class ListTransformer extends TransformerAbstract
             'component_name' => $salaryStatementDetail->component_name,
             'component_value_type' => $componentValueType,
             'component_values' => empty($componentValues) ? [] : [$componentValues],
-            'withholding_tax' => MoneyFormat::numberFormat($withholdingTax),
-            'nontaxable' => MoneyFormat::numberFormat($nontaxable),
+            'withholding_tax' => MoneyFormat::numberFormat($withholdingTax, 4),
+            'nontaxable' => MoneyFormat::numberFormat($nontaxable,4),
         ];
     }
 }

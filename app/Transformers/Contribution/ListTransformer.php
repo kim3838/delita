@@ -15,10 +15,10 @@ class ListTransformer extends TransformerAbstract
     {
         $contribution = BigDecimal::of($salaryStatementDetail->contribution);
 
-        $componentValues = MoneyFormat::numberFormatComponentValue($salaryStatementDetail->component_values, 2);
+        $componentValues = MoneyFormat::numberFormatComponentValue($salaryStatementDetail->component_values, 4);
         $componentValueType = $componentValues['type'] ?? null;
 
-        $totalEmployerShare = Arr::get($componentValues, 'employer_share.total', MoneyFormat::numberFormat(0));
+        $totalEmployerShare = Arr::get($componentValues, 'employer_share.total', MoneyFormat::numberFormat(0, 4));
 
         return [
             'row_number' => $salaryStatementDetail->row_number,
@@ -40,7 +40,7 @@ class ListTransformer extends TransformerAbstract
             'component_name' => $salaryStatementDetail->component_name,
             'component_value_type' => $componentValueType,
             'component_values' => empty($componentValues) ? [] : [$componentValues],
-            'employee_contribution' => MoneyFormat::numberFormat($contribution, 2),
+            'employee_contribution' => MoneyFormat::numberFormat($contribution, 4),
             'employer_share' => $totalEmployerShare,
         ];
     }

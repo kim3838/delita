@@ -2,9 +2,9 @@
 
 namespace App\Transformers\Contribution;
 
-use App\Facades\MoneyFormat;
 use App\Models\SalaryStatementDetail;
 use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use League\Fractal\TransformerAbstract;
@@ -15,10 +15,10 @@ class ExportTransformer extends TransformerAbstract
     {
         $contribution = BigDecimal::of($salaryStatementDetail->contribution);
 
-        $componentValues = MoneyFormat::numberFormatComponentValue($salaryStatementDetail->component_values, 2);
+        $componentValues = $salaryStatementDetail->component_values;
         $componentValueType = $componentValues['type'] ?? null;
 
-        $totalEmployerShare = Arr::get($componentValues, 'employer_share.total', MoneyFormat::numberFormat(0));
+        $totalEmployerShare = BigDecimal::of(Arr::get($componentValues, 'employer_share.total', '0'));
 
         return [
             'payroll_number' => $salaryStatementDetail->payroll_number,
@@ -32,8 +32,8 @@ class ExportTransformer extends TransformerAbstract
             'component_type' => $salaryStatementDetail->component_type?->label() ?? '',
             'component_name' => $salaryStatementDetail->component_name,
 
-            'employee_contribution' => MoneyFormat::numberFormat($contribution, 2),
-            'employer_share' => $totalEmployerShare,
+            'employee_contribution' => $contribution->toScale(4, RoundingMode::HalfUp)->toString(),
+            'employer_share' => $totalEmployerShare->toScale(4, RoundingMode::HalfUp)->toString(),
         ];
     }
 }
