@@ -22,6 +22,8 @@ class ContributionExport extends Statementable implements FromCollection, WithHe
         return array_merge(
             parent::headings(),
             [
+                'Type',
+                'Sub-type',
                 'Employee contribution',
                 'Employer share'
             ]

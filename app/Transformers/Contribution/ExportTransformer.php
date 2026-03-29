@@ -29,6 +29,7 @@ class ExportTransformer extends TransformerAbstract
             'employee_number' => $salaryStatementDetail->employee_number,
             'name' => $salaryStatementDetail->employee_full_name,
 
+            'component_type' => $salaryStatementDetail->component_type?->label() ?? '',
             'component_name' => $salaryStatementDetail->component_name,
 
             'employee_contribution' => MoneyFormat::numberFormat($contribution, 2),

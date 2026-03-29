@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Contributions;
+namespace App\Http\Requests\Contribution;
 
 use App\Models\Hydrations\Contribution;
 use Illuminate\Foundation\Http\FormRequest;
