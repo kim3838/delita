@@ -170,6 +170,10 @@ class PermissionService
                     'key' => 'contribution',
                     'readable_name' => 'Contribution',
                     'actions' => ['view', 'export']
+                ],[
+                    'key' => 'tax',
+                    'readable_name' => 'Tax',
+                    'actions' => ['view', 'export']
                 ],
             ]
         ],

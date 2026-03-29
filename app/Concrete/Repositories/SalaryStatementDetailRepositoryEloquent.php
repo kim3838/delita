@@ -38,6 +38,9 @@ class SalaryStatementDetailRepositoryEloquent extends BaseRepositoryEloquent imp
             ->when(!empty($filters->component_types) && is_array($filters->component_types), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("salary_statement_details.component_type"), $filters->component_types);
             })
+            ->when(!empty($filters->component_sub_types) && is_array($filters->component_sub_types), function ($builder) use ($filters) {
+                $builder->whereIn(DB::raw("salary_statement_details.component_sub_type"), $filters->component_sub_types);
+            })
             ->select([
                 DB::raw("ROW_NUMBER() OVER(".$this->rowNumberOrder($orders).") AS `row_number`"),
 

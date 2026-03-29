@@ -99,6 +99,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryStatementAttendanceController;
 use App\Http\Controllers\SalaryStatementController;
 use App\Http\Controllers\SalaryStatementManualAddDetailController;
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\TimePeriodPresetController;
 use App\Http\Controllers\PrototypeController;
 use App\Http\Controllers\SalaryStatementModuleController;
@@ -617,6 +618,10 @@ Route::group([
     //Contributions
     Route::get('contributions', [ContributionController::class, 'index']);
     Route::get('contributions-export', [ContributionController::class, 'export']);
+
+    //Contributions
+    Route::get('taxes', [TaxController::class, 'index']);
+    Route::get('taxes-export', [TaxController::class, 'export']);
 
     //Salary statement attendance
     Route::get('per-day-salary-statement-totals', [SalaryStatementAttendanceController::class, 'index']);

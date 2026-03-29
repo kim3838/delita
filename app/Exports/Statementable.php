@@ -13,7 +13,6 @@ abstract class Statementable
             'Month readable',
             'Employee #',
             'Name',
-            'Component name',
         ];
     }
 }
