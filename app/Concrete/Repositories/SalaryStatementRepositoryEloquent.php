@@ -223,6 +223,7 @@ class SalaryStatementRepositoryEloquent extends BaseRepositoryEloquent implement
                 ] : []),
 
                 "employee_sub.company_currency_code AS company_currency_code",
+                "employee_sub.ulid AS employee_ulid",
                 "employee_sub.number AS employee_number",
                 "employee_sub.full_name AS employee_full_name",
 

@@ -166,7 +166,11 @@ class PermissionService
                     'key' => 'leave-running-balance',
                     'readable_name' => 'Leave running balance',
                     'actions' => ['view']
-                ]
+                ],[
+                    'key' => 'contribution',
+                    'readable_name' => 'Contribution',
+                    'actions' => ['view', 'export']
+                ],
             ]
         ],
     ];

@@ -24,6 +24,7 @@ use App\Http\Controllers\CompanyUserController;
 use App\Http\Controllers\CompanyUserRolePermissionController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\CompanyFormulaController;
+use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\DeductionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
@@ -612,6 +613,10 @@ Route::group([
 
     Route::get('employee-portal-salary-statements', [EmployeeSalaryStatementController::class, 'index']);
     Route::get('employee-portal-salary-statement/{ulid}', [EmployeeSalaryStatementController::class, 'show']);
+
+    //Contributions
+    Route::get('contributions', [ContributionController::class, 'index']);
+    Route::get('contributions-export', [ContributionController::class, 'export']);
 
     //Salary statement attendance
     Route::get('per-day-salary-statement-totals', [SalaryStatementAttendanceController::class, 'index']);
