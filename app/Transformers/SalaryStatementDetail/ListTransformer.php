@@ -14,7 +14,7 @@ class ListTransformer extends TransformerAbstract
         $taxable = BigDecimal::of($salaryStatementDetail->taxable);
         $nontaxable = BigDecimal::of($salaryStatementDetail->nontaxable);
         $contribution = BigDecimal::of($salaryStatementDetail->contribution);
-        $withholding_tax = BigDecimal::of($salaryStatementDetail->withholding_tax);
+        $withholdingTax = BigDecimal::of($salaryStatementDetail->withholding_tax);
         $deduction = BigDecimal::of($salaryStatementDetail->deduction);
         $net = BigDecimal::of($salaryStatementDetail->net);
 
@@ -32,7 +32,7 @@ class ListTransformer extends TransformerAbstract
             'taxable' => $taxable->isZero() ? '--' : MoneyFormat::numberFormat($taxable, 4),
             'nontaxable' => $nontaxable->isZero() ? '--' : MoneyFormat::numberFormat($nontaxable, 4),
             'contribution' => $contribution->isZero() ? '--' : MoneyFormat::numberFormat($contribution, 4),
-            'withholding_tax' => $withholding_tax->isZero() ? '--' : MoneyFormat::numberFormat($withholding_tax, 4),
+            'withholding_tax' => $withholdingTax->isZero() ? '--' : MoneyFormat::numberFormat($withholdingTax, 4),
             'deduction' => $deduction->isZero() ? '--' : MoneyFormat::numberFormat($deduction, 4),
             'net' => $net->isZero() ? '--' : MoneyFormat::numberFormat($net, 4),
         ];

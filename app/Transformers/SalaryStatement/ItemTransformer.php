@@ -51,7 +51,7 @@ class ItemTransformer extends TransformerAbstract
         $taxable = MoneyFormat::toLocale($salaryStatement->taxable, $companyCurrencyCode);
         $nontaxable = MoneyFormat::toLocale($salaryStatement->nontaxable, $companyCurrencyCode);
         $contribution = MoneyFormat::toLocale($salaryStatement->contribution, $companyCurrencyCode);
-        $withholding_tax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $companyCurrencyCode);
+        $withholdingTax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $companyCurrencyCode);
         $deduction = MoneyFormat::toLocale($salaryStatement->deduction, $companyCurrencyCode);
         $net = MoneyFormat::toLocale($salaryStatement->net, $companyCurrencyCode);
 
@@ -97,7 +97,7 @@ class ItemTransformer extends TransformerAbstract
             'taxable' => $taxable,
             'nontaxable' => $nontaxable,
             'contribution' => $contribution,
-            'withholding_tax' => $withholding_tax,
+            'withholding_tax' => $withholdingTax,
             'deduction' => $deduction,
             'net' => $net,
 

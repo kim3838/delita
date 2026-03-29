@@ -44,7 +44,7 @@ class PayslipTransformer extends TransformerAbstract
         $taxable = MoneyFormat::toLocale($salaryStatement->taxable, $company['currency']);
         $nontaxable = MoneyFormat::toLocale($salaryStatement->nontaxable, $company['currency']);
         $contribution = MoneyFormat::toLocale($salaryStatement->contribution, $company['currency']);
-        $withholding_tax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $company['currency']);
+        $withholdingTax = MoneyFormat::toLocale($salaryStatement->withholding_tax, $company['currency']);
         $deduction = MoneyFormat::toLocale($salaryStatement->deduction, $company['currency']);
         $net = MoneyFormat::toLocale($salaryStatement->net, $company['currency']);
 
@@ -90,7 +90,7 @@ class PayslipTransformer extends TransformerAbstract
             'taxable' => $taxable,
             'nontaxable' => $nontaxable,
             'contribution' => $contribution,
-            'withholding_tax' => $withholding_tax,
+            'withholding_tax' => $withholdingTax,
             'deduction' => $deduction,
             'net' => $net,
 

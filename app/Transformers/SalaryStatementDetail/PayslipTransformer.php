@@ -21,7 +21,7 @@ class PayslipTransformer extends TransformerAbstract
         $taxable = BigDecimal::of($salaryStatementDetail->taxable);
         $nontaxable = BigDecimal::of($salaryStatementDetail->nontaxable);
         $contribution = BigDecimal::of($salaryStatementDetail->contribution);
-        $withholding_tax = BigDecimal::of($salaryStatementDetail->withholding_tax);
+        $withholdingTax = BigDecimal::of($salaryStatementDetail->withholding_tax);
         $deduction = BigDecimal::of($salaryStatementDetail->deduction);
         $net = BigDecimal::of($salaryStatementDetail->net);
 
@@ -117,7 +117,7 @@ class PayslipTransformer extends TransformerAbstract
                     case Deduction::TAX_ADJUSTMENT:
                         $payslipViewable = true;
                         $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
-                        $payslipItemValue = $withholding_tax;
+                        $payslipItemValue = $withholdingTax;
                         break;
                     case Deduction::THIRTEENTH_MONTH_ADJUSTMENT:
                         $payslipColumn = PayslipColumn::EARNINGS;
@@ -152,7 +152,7 @@ class PayslipTransformer extends TransformerAbstract
                     case IncomeTax::WITHHOLDING_TAX:
                         $payslipViewable = true;
                         $payslipItemName = $salaryStatementDetail->component_name ?? $salaryStatementDetail->component_sub_type?->label();
-                        $payslipItemValue = $withholding_tax;
+                        $payslipItemValue = $withholdingTax;
                         break;
                 }
                 break;
@@ -196,7 +196,7 @@ class PayslipTransformer extends TransformerAbstract
             'taxable' => $taxable->toScale(2, RoundingMode::HalfUp)->toString(),
             'nontaxable' => $nontaxable->toScale(2, RoundingMode::HalfUp)->toString(),
             'contribution' => $contribution->toScale(2, RoundingMode::HalfUp)->toString(),
-            'withholding_tax' => $withholding_tax->toScale(2, RoundingMode::HalfUp)->toString(),
+            'withholding_tax' => $withholdingTax->toScale(2, RoundingMode::HalfUp)->toString(),
             'deduction' => $deduction->toScale(2, RoundingMode::HalfUp)->toString(),
             'net' => $net->toScale(2, RoundingMode::HalfUp)->toString(),
         ];

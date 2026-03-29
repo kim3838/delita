@@ -58,7 +58,7 @@ class ListTransformer extends TransformerAbstract
         $taxable = MoneyFormat::numberFormat($salaryStatement->taxable);
         $nontaxable = MoneyFormat::numberFormat($salaryStatement->nontaxable);
         $contribution = MoneyFormat::numberFormat($salaryStatement->contribution);
-        $withholding_tax = MoneyFormat::numberFormat($salaryStatement->withholding_tax);
+        $withholdingTax = MoneyFormat::numberFormat($salaryStatement->withholding_tax);
         $deduction = MoneyFormat::numberFormat($salaryStatement->deduction);
         $net = MoneyFormat::numberFormat($salaryStatement->net);
 
@@ -99,7 +99,7 @@ class ListTransformer extends TransformerAbstract
             'taxable' => $taxable,
             'nontaxable' => $nontaxable,
             'contribution' => $contribution,
-            'withholding_tax' => $withholding_tax,
+            'withholding_tax' => $withholdingTax,
             'deduction' => $deduction,
             'net' => $net,
 
