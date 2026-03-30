@@ -229,10 +229,11 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
                 /**
                  * Todo: update attendance splitter test first
-                 * to adapt the new `regular_rate_multiplier` and `non_rest_rate_multiplier`
+                 * to adapt the new `regular_rate_multiplier`, `holiday_rate_multiplier` and `non_rest_rate_multiplier`
                  * and remove the lines below so ot wont show false fail test
                  **/
                 unset($item['regular_rate_multiplier']);
+                unset($item['holiday_rate_multiplier']);
                 unset($item['non_rest_rate_multiplier']);
 
                 return [

@@ -319,6 +319,10 @@ trait HasPayableDay
 
                     $splitWorkHourType = $workSplit['work_hour_type'];
                     $splitRegularMultiplier = $workSplit['regular_rate_multiplier'];
+                    /**
+                     * Justify holiday multiplier rates by: Special: 0.3, Legal 1, Double 1
+                     **/
+                    $splitHolidayMultiplier = $workSplit['holiday_rate_multiplier'];
                     $splitNonRestMultiplier = $workSplit['non_rest_rate_multiplier'];
 
                     $splitHourlyMultiplier = $workSplit['hourly_rate_multiplier'];
@@ -346,8 +350,26 @@ trait HasPayableDay
 
                         $regularMultiplier = $splitBaseMultiplier;
                         $nightMultiplier = $splitHourlyMultiplier->minus($splitRegularMultiplier);
-                        $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
-                        $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier)->minus($restMultiplier);
+
+                        /**
+                         * Use the split holiday multiplier if it is set, (greater than 0),
+                         * Deduct holiday multiplier first from split hour multiplier using the split holiday rate,
+                         * and then use the remaining rate as the rest day multiplier
+                         **/
+                        if($splitHolidayMultiplier->isGreaterThan(BigDecimal::zero())){
+
+                            $holidayMultiplier = $splitHolidayMultiplier;
+                            $restMultiplier = ($isRestDay
+                                ? $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier)->minus($holidayMultiplier)
+                                : BigDecimal::zero()
+                            );
+
+                        } else {
+
+                            $restMultiplier = ($isRestDay ? $splitHourlyMultiplier->minus($splitNonRestMultiplier) : BigDecimal::zero());
+                            $holidayMultiplier = $splitHourlyMultiplier->minus($splitBaseMultiplier)->minus($nightMultiplier)->minus($restMultiplier);
+                        }
+
 
                         $regularPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($regularMultiplier);
                         $holidayPay = $hours->multipliedBy($basicPayHourlyRate)->multipliedBy($holidayMultiplier);
@@ -408,6 +430,7 @@ trait HasPayableDay
                             'ACTUAL_PRESENT' => (string)$splitActualPresent,
                             'WORKED HOURS' => (string)$hours,
                             'REGULAR MULTIPLIER' => (string)$splitRegularMultiplier,
+                            'HOLIDAY_MULTIPLIER' => (string)$splitHolidayMultiplier,
                             'NON-RESTMULTIPLIER' => (string)$splitNonRestMultiplier,
                             'HOURLYR_MULTIPLIER' => (string)$splitHourlyMultiplier,
                             'BASE_RA_MULTIPLIER' => (string)$splitBaseMultiplier,

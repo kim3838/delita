@@ -21,6 +21,7 @@ class SalaryStatementAttendanceDetail extends Model
         'work_hour_type',
         'hourly_rate_type',
         'regular_rate_multiplier',
+        'holiday_rate_multiplier',
         'non_rest_rate_multiplier',
         'hourly_rate_multiplier',
         'base_rate_multiplier',

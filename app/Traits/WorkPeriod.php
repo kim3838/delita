@@ -20,6 +20,7 @@ use App\Models\Shift;
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
+use Brick\Math\BigDecimal;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -524,7 +525,7 @@ trait WorkPeriod
              * Include regular rate if rate is night multiplier
              * Include non rest rate multiplier if rate is rest multiplier
              * */
-            list($regularMultiplier, $nonRestRateMultiplier, $multiplier) = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType);
+            list($regularMultiplier, $holidayRateMultiplier, $nonRestRateMultiplier, $multiplier) = $this->getHourlyRateMultiplier($workHourType, $hourlyRateType, $splitType, $startingDateHolidayType);
 
             $baseMultiplier = $this->getSplitTypeBaseMultiplier($splitType);
 
@@ -538,6 +539,7 @@ trait WorkPeriod
                 'work_hour_type' => $workHourType,
                 'hourly_rate_type' => $hourlyRateType,
                 'regular_rate_multiplier' => $regularMultiplier,
+                'holiday_rate_multiplier' => $holidayRateMultiplier,
                 'non_rest_rate_multiplier' => $nonRestRateMultiplier,
                 'hourly_rate_multiplier' => $multiplier,
                 'base_rate_multiplier' => $baseMultiplier,
@@ -714,7 +716,7 @@ trait WorkPeriod
     /**
      * @throws UnexpectedException
      */
-    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType): array
+    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType, ?HolidayType $startingDateHolidayType): array
     {
         /**
          * If multiplier is night, include a regular multiplier by renaming the HourlyRateType by its regular version
@@ -732,6 +734,27 @@ trait WorkPeriod
 
             if(empty($nonRestHourlyRate)){
                 throw new UnexpectedException('Non-rest rate not found');
+            }
+        }
+
+        /**
+         * If the hourly rate type is rest and
+         * Starting date is a holiday, get its original holiday rate
+         **/
+        $holidayRateMultiplier = null;
+
+        if($hourlyRateIsRest && !empty($startingDateHolidayType)){
+
+            switch ($startingDateHolidayType) {
+                case HolidayType::SPECIAL:
+                    $tempRegularMultiplier = $this->basicPayRegularRates->where('hourly_rate_type', HourlyRateType::REGULAR)->first()?->value;
+                    $tempSpecialMultiplier = $this->basicPayRegularRates->where('hourly_rate_type', HourlyRateType::SPECIAL_HOLIDAY)->first()?->value;
+                    $holidayRateMultiplier = BigDecimal::of($tempSpecialMultiplier)->minus(BigDecimal::of($tempRegularMultiplier))->toFloat();
+
+                    break;
+                case HolidayType::LEGAL:
+                case HolidayType::DOUBLE:
+                    $holidayRateMultiplier = 1;
             }
         }
 
@@ -802,7 +825,7 @@ trait WorkPeriod
             }
         }
 
-        return [$regularMultiplier, $nonRestMultiplier, $multiplier];
+        return [$regularMultiplier, $holidayRateMultiplier, $nonRestMultiplier, $multiplier];
     }
 
     protected function getSplitTypeBaseMultiplier(ShiftBreakDownSplitType $splitType): float

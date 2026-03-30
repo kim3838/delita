@@ -17,6 +17,7 @@ class PayableSplitTransformer extends TransformerAbstract
             'split_duration' => BigDecimal::of((string)$salaryStatementAttendanceDetail->split_duration),
             'work_hour_type' => $salaryStatementAttendanceDetail->work_hour_type,
             'regular_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->regular_rate_multiplier ?? 0),
+            'holiday_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->holiday_rate_multiplier ?? 0),
             'non_rest_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->non_rest_rate_multiplier ?? 0),
             'hourly_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->hourly_rate_multiplier ?? 0),
             'base_rate_multiplier' => BigDecimal::of($salaryStatementAttendanceDetail->base_rate_multiplier ?? 0),
