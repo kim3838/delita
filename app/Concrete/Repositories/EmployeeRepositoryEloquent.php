@@ -99,6 +99,13 @@ class EmployeeRepositoryEloquent extends BaseRepositoryEloquent implements Emplo
             ->when(!empty($filters->designation_ids) && is_array($filters->designation_ids), function ($builder) use ($filters) {
                 $builder->whereIn(DB::raw("employees.designation_id"), $filters->designation_ids);
             })
+            ->when(isset($filters->has_user_account) && is_bool($filters->has_user_account) && $filters->has_user_account, function ($builder) use ($filters) {
+                $builder->whereExists(function ($query) use ($filters) {
+                    $query->select(DB::raw(1))
+                        ->from('users')
+                        ->whereColumn('employees.user_id', 'users.id');
+                });
+            })
             ->when(!empty($filters->department_ids) && is_array($filters->department_ids), function ($builder) use ($filters) {
                 $builder->whereExists(function ($query) use ($filters) {
                     $query->select(DB::raw(1))
