@@ -7,13 +7,10 @@ use App\Exceptions\UnexpectedException;
 use App\Facades\ResponseJson;
 use App\Http\Requests\AutoCreateAttendance\StoreAutoCreateAttendanceRequest;
 use App\Models\Company;
-use App\Traits\WorkPeriod;
 
 class AutoCreateAttendanceController extends Controller
 {
     protected ?Company $company;
-
-    use WorkPeriod;
 
     /**
      * @throws UnexpectedException
