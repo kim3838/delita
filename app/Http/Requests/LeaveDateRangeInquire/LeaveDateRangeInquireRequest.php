@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\LeaveDateRangeInquire;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class LeaveDateRangeInquireRequest extends FormRequest
+class LeaveDateRangeInquireRequest extends BaseLeaveDateRangeRequest
 {
     public function rules(): array
     {
@@ -13,8 +11,7 @@ class LeaveDateRangeInquireRequest extends FormRequest
             'employee_id' => 'required|numeric|exists:employees,id',
             'shift_id' => 'required|numeric|exists:shifts,id',
             'leave_type_id' => 'required|numeric|exists:leave_types,id',
-            'date_from' => 'required|date|date_format:Y-m-d',
-            'date_to' => 'required|date|after_or_equal:date_from|date_format:Y-m-d',
+            ...(parent::rules())
         ];
     }
 
@@ -30,9 +27,7 @@ class LeaveDateRangeInquireRequest extends FormRequest
             'leave_type_id.exists' => 'Leave type not found',
             'leave_type_id.required' => 'Leave type is required',
             'leave_type_id.numeric' => 'Leave type id must be numeric',
-            'date_from.date_format' => 'Date from must match the format Y-m-d e.g.(2000-12-31)',
-            'date_to.date_format' => 'Date to must match the format Y-m-d e.g.(2000-12-31)',
-            'date_to.after_or_equal' => 'Date to must be after or equal to date from',
+            ...(parent::messages())
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\LeaveRequest;
 
 use App\Blueprint\PayrollServiceInterface;
+use App\Http\Requests\LeaveDateRangeInquire\BaseLeaveDateRangeRequest;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
@@ -11,9 +12,8 @@ use App\Traits\HasApproval;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Foundation\Http\FormRequest;
 
-class BaseStoreLeaveRequestRequest extends FormRequest
+class BaseStoreLeaveRequestRequest extends BaseLeaveDateRangeRequest
 {
     use HasApproval;
 
@@ -58,8 +58,7 @@ class BaseStoreLeaveRequestRequest extends FormRequest
                     }
                 }
             ],
-            'date_from' => 'required|date_format:Y-m-d',
-            'date_to' => 'required|date_format:Y-m-d|after_or_equal:date_from',
+            ...(parent::rules()),
             'remarks' => 'nullable|string|max:255',
         ];
     }
@@ -117,11 +116,7 @@ class BaseStoreLeaveRequestRequest extends FormRequest
             'leave_type_id.exists' => 'Leave type not found',
             'leave_type_id.required' => 'Leave type is required',
             'leave_type_id.numeric' => 'Leave type id must be numeric',
-            'date_from.required' => 'Date from is required',
-            'date_from.date_format' => 'Date from must be in Y-m-d format',
-            'date_to.required' => 'Date to is required',
-            'date_to.date_format' => 'Date to must be in Y-m-d format',
-            'date_to.after_or_equal' => 'Date to must be after or equal to date from',
+            ...(parent::messages()),
             'remarks.max' => 'Remarks must not exceed 255 characters'
         ]);
     }
