@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Requests\Company;
+
+use App\Enums\RegexValidation;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class BaseCompanyRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'account_id' => 'required|numeric',
+            'country_id' => 'required|numeric',
+            'currency' => 'required|string',
+            'code' => [
+                'required',
+                'string',
+                'regex:' . RegexValidation::NO_WHITESPACE->value,
+                'max:255',
+                Rule::unique('companies')
+                    ->ignore($this->route('companyId'))
+            ],
+            'short_name' => 'required|string|max:25',
+            'name' => 'required|string|max:255',
+            'address_line_1' => 'nullable|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:255',
+            'timezone' => 'required|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'account_id.required' => 'Account number is required',
+            'code.required' => 'Company code is required',
+            'code.regex' => 'Code must not contain spaces',
+            'country_id.required' => 'Country is required',
+            'currency.required' => 'Currency is required',
+            'code.unique' => 'Code has already been taken',
+            'code.max' => 'Code must not be greater than 255 characters',
+            'short_name.required' => 'Company short name is required',
+            'name.required' => 'Company name is required',
+            'name.max' => 'Company name must not be greater than 255 characters',
+            'short_name.max' => 'Company short name must not be greater than 25 characters',
+            'address_line_1.max' => 'Address line 1 must not be greater than 255 characters',
+            'address_line_2.max' => 'Address line 2 must not be greater than 255 characters',
+            'city.max' => 'City must not be greater than 255 characters',
+            'state.max' => 'State must not be greater than 255 characters',
+            'postal_code.max' => 'Postal code must not be greater than 255 characters',
+            'timezone.required' => 'Company timezone is required',
+        ];
+    }
+}
