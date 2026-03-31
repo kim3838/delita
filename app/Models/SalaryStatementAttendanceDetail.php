@@ -53,6 +53,9 @@ class SalaryStatementAttendanceDetail extends Model
 
         'work_hour_type' => WorkHourType::class,
         'hourly_rate_type' => HourlyRateType::class,
+        'regular_rate_multiplier' => 'decimal:6',
+        'holiday_rate_multiplier' => 'decimal:6',
+        'non_rest_rate_multiplier' => 'decimal:6',
         'hourly_rate_multiplier' => 'decimal:6',
         'base_rate_multiplier' => 'decimal:6',
         'order' => 'int',
