@@ -193,7 +193,7 @@
             <div class="text-base">
                 <div>{{$company_address_line_1}}</div>
                 <div>{{$company_address_line_2}}</div>
-                <div>{{$company_country}}</div>
+                <div>{{$company_city_state_postal_code}} {{$company_country}}</div>
             </div>
         </div>
     </div>

@@ -133,6 +133,14 @@ class PayslipServiceConcrete implements PayslipServiceInterface
         $companyName = $company['name'];
         $companyAddressLine1 = $company['address_line_1'];
         $companyAddressLine2 = $company['address_line_2'];
+        $companyCity = $company['city'];
+        $companyState = $company['state'];
+        $companyPostalCode = $company['postal_code'];
+        $companyCityStatePostalCode = collect([
+            $companyCity,
+            $companyState,
+            $companyPostalCode,
+        ])->filter()->implode(' ');
         $companyCountryName = $company['country']['name'];
         $companyCountrySubregionName = $company['country']['subregion'];
 
@@ -248,6 +256,7 @@ class PayslipServiceConcrete implements PayslipServiceInterface
             'company_name' => $companyName,
             'company_address_line_1' => $companyAddressLine1,
             'company_address_line_2' => $companyAddressLine2,
+            'company_city_state_postal_code' => $companyCityStatePostalCode,
             'company_country' => $companyCountryName,
             'company_country_subregion_name' => $companyCountryName . ', ' . $companyCountrySubregionName,
 
