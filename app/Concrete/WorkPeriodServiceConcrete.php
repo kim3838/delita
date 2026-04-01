@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Traits;
+namespace App\Concrete;
 
 use App\Blueprint\Repositories\CompanyFormulaRepository;
 use App\Blueprint\Repositories\ShiftRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\Compensation;
 use App\Enums\Formulable;
 use App\Enums\HolidayType;
@@ -15,18 +16,21 @@ use App\Enums\WorkHourType;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Helpers\TimeHelper;
+use App\Models\Company;
 use App\Models\Holiday;
 use App\Models\Shift;
+use App\Traits\HasTime;
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
-use App\Transformers\ShiftSchedule\PatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
 use Brick\Math\BigDecimal;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 
-trait WorkPeriod
+class WorkPeriodServiceConcrete implements WorkPeriodServiceInterface
 {
+    public ?Company $company = null;
+
     //Set on construct
     public string $nightStart = '22:00';
     //Set on construct
@@ -67,6 +71,13 @@ trait WorkPeriod
     public ?Collection $overtimeNightDifferentialRates = null;
 
     use HasTime;
+
+    function setCompany(int|Company $company): void
+    {
+        $this->company = $company instanceof Company
+            ? $company
+            : Company::query()->find($company);
+    }
 
     function resolveCompanyFormulaSettings(): void
     {
@@ -118,17 +129,17 @@ trait WorkPeriod
             ->sortBy('order');
     }
 
-    protected function companyBasicPayFormulaSettings(): ?Collection
+    public function companyBasicPayFormulaSettings(): ?Collection
     {
         return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::BASIC_PAY->value);
     }
 
-    protected function companyOvertimeFormulaSettings(): ?Collection
+    public function companyOvertimeFormulaSettings(): ?Collection
     {
         return $this->getCompanyFormulaSettings(Formulable::EARNINGS->value, Compensation::OVERTIME->value);
     }
 
-    protected function getBasicPayRegularRates(): ?Collection
+    public function getBasicPayRegularRates(): ?Collection
     {
         if(empty($this->companyBasicPayFormulaSettings)){
             return null;
@@ -163,7 +174,7 @@ trait WorkPeriod
         });
     }
 
-    protected function getBasicPayNightDifferentialRates(): ?Collection
+    public function getBasicPayNightDifferentialRates(): ?Collection
     {
         if(empty($this->companyBasicPayFormulaSettings)){
             return null;
@@ -198,7 +209,7 @@ trait WorkPeriod
         });
     }
 
-    protected function getOvertimeRegularRates(): ?Collection
+    public function getOvertimeRegularRates(): ?Collection
     {
         if(empty($this->companyOvertimeFormulaSettings)){
             return null;
@@ -233,7 +244,7 @@ trait WorkPeriod
         });
     }
 
-    protected function getOvertimeNightDifferentialRates(): ?Collection
+    public function getOvertimeNightDifferentialRates(): ?Collection
     {
         if(empty($this->companyOvertimeFormulaSettings)){
             return null;
@@ -286,7 +297,7 @@ trait WorkPeriod
 
         $shift = clone $this->shift;
 
-        $this->schedules = Fractal::collection($shift->schedules, PatchableTransformer::class)['data'];
+        $this->schedules = Fractal::collection($shift->schedules, ShiftSchedulePatchableTransformer::class)['data'];
 
         $this->restDays = collect($this->schedules)
             ->filter(fn($schedule)=>$schedule['is_rest_day'])
@@ -305,7 +316,7 @@ trait WorkPeriod
     /**
      * @throws UnexpectedException
      */
-    protected function setAttendanceSchedule(Carbon $attendanceDate): void
+    public function setAttendanceSchedule(Carbon $attendanceDate): void
     {
         $attendanceDayOfWeek = $attendanceDate->dayOfWeek;
 
@@ -323,7 +334,7 @@ trait WorkPeriod
         $this->attendanceScheduleTotalWorkHoursWithBreaks = TimeHelper::timeToMinutes($this->attendanceSchedule['total_work_hours_with_breaks']);
     }
 
-    protected function resetShift(): void
+    public function resetShift(): void
     {
         $this->shift = null;
         $this->shiftWorkStartGraceTime = 0;
@@ -339,34 +350,34 @@ trait WorkPeriod
         $this->attendanceScheduleTotalWorkHoursWithBreaks = 0;
     }
 
-    protected function nightDifferentialStart(): string
+    public function nightDifferentialStart(): string
     {
         return $this->nightStart;
     }
 
-    protected function nightDifferentialEnd(): string
+    public function nightDifferentialEnd(): string
     {
         return $this->nightEnd;
     }
 
-    protected function shiftWorkStartGraceTime(): int
+    public function shiftWorkStartGraceTime(): int
     {
         return $this->shiftWorkStartGraceTime;
     }
 
-    protected function shiftRequireLunchOutAndIn(): bool
+    public function shiftRequireLunchOutAndIn(): bool
     {
         return $this->shiftRequireLunchOutAndIn &&
             $this->attendanceScheduleHasLunchBreak &&
             !$this->attendanceScheduleIsFlexible;
     }
 
-    protected function shiftLunchStartGraceTime(): int
+    public function shiftLunchStartGraceTime(): int
     {
         return $this->shiftLunchStartGraceTime;
     }
 
-    protected function parseSchedule(array $schedule, Carbon $date): array
+    public function parseSchedule(array $schedule, Carbon $date): array
     {
         // Work start
         $workStart = $date->copy()->setTimeFromTimeString($schedule['work_start']);
@@ -410,7 +421,7 @@ trait WorkPeriod
         ];
     }
 
-    protected function parseAttendance(array $attendanceData): array
+    public function parseAttendance(array $attendanceData): array
     {
         return [
             'first_in' => Carbon::parse($attendanceData['first_in']),
@@ -420,7 +431,7 @@ trait WorkPeriod
         ];
     }
 
-    protected function calculateWorkPeriods(array $schedule): array
+    public function calculateWorkPeriods(array $schedule): array
     {
         $periods = [];
 
@@ -470,7 +481,7 @@ trait WorkPeriod
     /**
      * @throws UnexpectedException
      */
-    protected function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType, $splitTypes = []): array
+    public function breakdownWorkPeriods(array $periods, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType, $splitTypes = []): array
     {
         $breakdownSequence = 1;
         $schedule = [];
@@ -503,7 +514,7 @@ trait WorkPeriod
     /**
      * @throws UnexpectedException
      */
-    protected function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
+    public function categorizeWorkPeriod(Carbon $startTime, Carbon $endTime, ShiftBreakDownSplitType $splitType, &$breakdownSequence, $startingDateIsRestDay, ?HolidayType $startingDateHolidayType): array
     {
         $breakdown = [];
         $current = $startTime->copy();
@@ -552,7 +563,7 @@ trait WorkPeriod
         return $breakdown;
     }
 
-    protected function getNextTimeBoundary(Carbon $current, Carbon $endTime): Carbon
+    public function getNextTimeBoundary(Carbon $current, Carbon $endTime): Carbon
     {
         $boundaries = [];
 
@@ -603,7 +614,7 @@ trait WorkPeriod
         return $endTime;
     }
 
-    protected function getWorkHourType(Carbon $time): WorkHourType
+    public function getWorkHourType(Carbon $time): WorkHourType
     {
         if($this->attendanceScheduleIsFlexible){
             return WorkHourType::REGULAR;
@@ -619,7 +630,7 @@ trait WorkPeriod
         return WorkHourType::REGULAR;
     }
 
-    protected function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType, $overrideIsRestDay, ?HolidayType $overrideHolidayType): HourlyRateType
+    public function getHourlyRate(Carbon $date, ?WorkHourType $workHourType, ShiftBreakDownSplitType $splitType, $overrideIsRestDay, ?HolidayType $overrideHolidayType): HourlyRateType
     {
         $everySplitHaveTheirOwnHolidayType = false;//Every split have their own holiday type
         $everySplitHaveTheirOwnDayType = false;//Every split have their own rest or regular day
@@ -716,7 +727,7 @@ trait WorkPeriod
     /**
      * @throws UnexpectedException
      */
-    protected function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType, ?HolidayType $startingDateHolidayType): array
+    public function getHourlyRateMultiplier(WorkHourType $workHourType, HourlyRateType $hourlyRateType, ShiftBreakDownSplitType $splitType, ?HolidayType $startingDateHolidayType): array
     {
         /**
          * If multiplier is night, include a regular multiplier by renaming the HourlyRateType by its regular version
@@ -828,7 +839,7 @@ trait WorkPeriod
         return [$regularMultiplier, $holidayRateMultiplier, $nonRestMultiplier, $multiplier];
     }
 
-    protected function getSplitTypeBaseMultiplier(ShiftBreakDownSplitType $splitType): float
+    public function getSplitTypeBaseMultiplier(ShiftBreakDownSplitType $splitType): float
     {
         $baseMultiplier = match($splitType){
             ShiftBreakDownSplitType::WORK => $this->basicPayRegularRates?->where('hourly_rate_type', HourlyRateType::REGULAR)->first()?->value ?? 1.0,
@@ -839,21 +850,21 @@ trait WorkPeriod
         return (float)$baseMultiplier;
     }
 
-    protected function getDateHolidayType($date): ?HolidayType
+    public function getDateHolidayType($date): ?HolidayType
     {
         $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
 
         return !empty($holiday) ? $holiday->type : null;
     }
 
-    protected function getDateHolidayPayForfeiture($date): ?bool
+    public function getDateHolidayPayForfeiture($date): ?bool
     {
         $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
 
         return !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
     }
 
-    protected function getCompanyHolidayByDate(string $date, $companyId = null): ?Holiday
+    public function getCompanyHolidayByDate(string $date, $companyId = null): ?Holiday
     {
         if(empty($companyId)){
             return null;
@@ -878,11 +889,11 @@ trait WorkPeriod
                         ->whereRaw('MONTH(date) = ?', [$searchDate->month])
                         ->whereRaw('DAY(date) = ?', [$searchDate->day]);
                 })
-                // For non-recurring holidays: exact date match
-                ->orWhere(function ($subQuery) use ($searchDate) {
-                    $subQuery->where('recurring', false)
-                        ->where('date', $searchDate->format('Y-m-d'));
-                });
+                    // For non-recurring holidays: exact date match
+                    ->orWhere(function ($subQuery) use ($searchDate) {
+                        $subQuery->where('recurring', false)
+                            ->where('date', $searchDate->format('Y-m-d'));
+                    });
             });
 
         return $queryBuilder->first();
@@ -891,7 +902,7 @@ trait WorkPeriod
     /**
      * Validate attendance shift details if still match the current shift and schedule settings
      * */
-    protected function validateAttendanceShiftDetails(
+    public function validateAttendanceShiftDetails(
         $shift,
         $shiftSchedule,
         $attendanceShift,

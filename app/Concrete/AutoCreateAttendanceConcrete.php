@@ -9,13 +9,13 @@ use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\EmployeeRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\ShiftBreakDownSplitType;
 use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use App\Models\Company;
 use App\Models\EmployeeShift;
-use App\Traits\WorkPeriod;
 use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
@@ -27,14 +27,14 @@ class AutoCreateAttendanceConcrete
 {
     protected ?Company $company;
 
-    use WorkPeriod;
-
     /**
      * @throws UnexpectedException
      */
     public function __invoke($validated): array
     {
         $errors = [];
+
+        $workPeriodService = app(WorkPeriodServiceInterface::class);
 
         $companyId = data_get($validated, 'company_id');
         $employeeIds = data_get($validated, 'employee_ids', []);
@@ -44,12 +44,13 @@ class AutoCreateAttendanceConcrete
         $replaceExistingAttendance = data_get($validated, 'replace_existing_attendance', true);
 
         $this->company = Company::findOrFail($companyId);
+        $workPeriodService->setCompany($this->company);
 
         //Set company formula settings
-        $this->resolveCompanyFormulaSettings();
+        $workPeriodService->resolveCompanyFormulaSettings();
 
         //Set company night hours
-        $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+        $workPeriodService->resolveCompanyNightHoursFromBasicPayFormulaSettings();
 
         $employeeRepositoryFilters = (object) [
             'company_id' => $companyId,
@@ -128,30 +129,30 @@ class AutoCreateAttendanceConcrete
                 //Skip if employee has a leave on this date
                 if($hasLeave) continue;
 
-                $this->setShift($employeeShift);
-                $this->setAttendanceSchedule($date);
+                $workPeriodService->setShift($employeeShift);
+                $workPeriodService->setAttendanceSchedule($date);
 
-                $dayOff = $this->attendanceScheduleIsDayOff;
-                $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+                $dayOff = $workPeriodService->attendanceScheduleIsDayOff;
+                $holiday = $workPeriodService->getCompanyHolidayByDate($date, $this->company->id);
                 $holidayType = !empty($holiday) ? $holiday->type : null;
 
                 $isDateIsHoliday = !empty($holidayType);
-                $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+                $shiftHolidayPolicyIsDayOff = $workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
                 $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isDateIsHoliday && $shiftHolidayPolicyIsDayOff);
                 $dayOffOrHolidayDayOff = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
 
                 //Skip if day type is day off or holiday and shift holiday policy is day off
                 if($dayOffOrHolidayDayOff) continue;
 
-                $startingDateHolidayType = $this->getDateHolidayType($date->toDateString());
-                $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+                $startingDateHolidayType = $workPeriodService->getDateHolidayType($date->toDateString());
+                $startingDateIsRestDay = in_array($date->dayOfWeek, $workPeriodService->restDays);
 
-                $schedule = $this->attendanceSchedule;
-                $schedule = $this->parseSchedule($schedule, $date);
+                $schedule = $workPeriodService->attendanceSchedule;
+                $schedule = $workPeriodService->parseSchedule($schedule, $date);
 
-                $workPeriods = $this->calculateWorkPeriods($schedule);
-                list($scheduleBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
-                $hasLunchBreak = $this->shiftRequireLunchOutAndIn();
+                $workPeriods = $workPeriodService->calculateWorkPeriods($schedule);
+                list($scheduleBreakdown) = $workPeriodService->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
+                $hasLunchBreak = $workPeriodService->shiftRequireLunchOutAndIn();
 
                 $firstWorkSplit = null;
                 $firstLunchSplit = null;
@@ -183,11 +184,11 @@ class AutoCreateAttendanceConcrete
                     }
                 }
 
-                $shiftScheduleHydrated = $shiftSchedule->hydrateItem($this->attendanceSchedule);
+                $shiftScheduleHydrated = $shiftSchedule->hydrateItem($workPeriodService->attendanceSchedule);
 
                 $shiftDetail = [
                     ...Fractal::item($employeeShiftPivot, EmployeeShiftPatchableTransformer::class),
-                    ...Fractal::item($this->shift, ShiftPatchableTransformer::class),
+                    ...Fractal::item($workPeriodService->shift, ShiftPatchableTransformer::class),
                     ...Fractal::item($shiftScheduleHydrated, ShiftSchedulePatchableTransformer::class)
                 ];
 

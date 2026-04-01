@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Blueprint\LeaveServiceInterface;
 use App\Exceptions\UnexpectedException;
 use App\Facades\ResponseJson;
 use App\Http\Requests\LeaveDateRangeInquire\LeaveDateRangeInquireRequest;
-use App\Traits\HasLeave;
 use Carbon\CarbonPeriod;
 
 class LeaveDateRangeInquireController extends Controller
 {
-    use HasLeave;
-
     /**
      * @throws UnexpectedException
      */
@@ -27,7 +25,9 @@ class LeaveDateRangeInquireController extends Controller
 
             $datePeriod = CarbonPeriod::create($dateFrom, $dateTo);
 
-            $inquiredDates = $this->leaveInquiryMap(
+            $leaveService = app(LeaveServiceInterface::class);
+
+            $inquiredDates = $leaveService->leaveInquiryMap(
                 $companyId,
                 $employeeId,
                 $shiftId,

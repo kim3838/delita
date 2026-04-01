@@ -3,19 +3,19 @@
 namespace App\Http\Requests\OvertimeRequest;
 
 use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Http\Requests\Overtime\ImportOvertime;
 use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\OvertimeRequest;
 use App\Models\Shift;
 use App\Traits\HasApproval;
-use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class BaseStoreOvertimeRequestRequest extends ImportOvertime
 {
-    use WorkPeriod, HasApproval;
+    use HasApproval;
 
     public function authorize(): bool
     {
@@ -58,19 +58,21 @@ class BaseStoreOvertimeRequestRequest extends ImportOvertime
                         $fail('No approvers found for this request.');
                     }
 
+                    $workPeriodService = app(WorkPeriodServiceInterface::class);
+
                     $shift = Shift::query()->find($attendance->shift_id);
 
                     if(!$shift instanceof Shift){
                         $fail('Shift not found');
                     }
 
-                    $this->setShift($shift);
+                    $workPeriodService->setShift($shift);
 
                     /**
                      * After setting up shift,
                      * Get the shift work day by attendance date
                      **/
-                    $this->setAttendanceSchedule($date);
+                    $workPeriodService->setAttendanceSchedule($date);
 
                     /**
                      * Validate attendance shift details if still match the current shift and schedule settings
@@ -78,9 +80,9 @@ class BaseStoreOvertimeRequestRequest extends ImportOvertime
                     list(
                         $currentShiftAndAttendanceShiftStillTheSame,
                         $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                        ) = $this->validateAttendanceShiftDetails(
-                        $this->shift,
-                        $this->attendanceSchedule,
+                    ) = $workPeriodService->validateAttendanceShiftDetails(
+                        $workPeriodService->shift,
+                        $workPeriodService->attendanceSchedule,
                         $attendance->shiftDetail->toArray(),
                         $attendance->shiftDetail->toArray()
                     );
@@ -94,7 +96,7 @@ class BaseStoreOvertimeRequestRequest extends ImportOvertime
                         /**
                          * Get the schedule for the attendance date
                          **/
-                        $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
+                        $schedule = $workPeriodService->parseSchedule($workPeriodService->attendanceSchedule, $date);
 
                         $overtimeValidatedErrors = $this->validateOvertime($attendance, $overtimeStart, $overtimeEnd, $schedule);
 

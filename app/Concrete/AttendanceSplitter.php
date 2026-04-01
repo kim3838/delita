@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\AttendanceSplitterInterface;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\AttendanceStatus;
 use App\Enums\ShiftBreakDownSplitType;
 use App\Enums\ShiftHolidayPolicy;
@@ -10,21 +11,23 @@ use App\Exceptions\UnexpectedException;
 use App\Helpers\TimeHelper;
 use App\Models\Attendance;
 use App\Models\Company;
-use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 
 class AttendanceSplitter implements AttendanceSplitterInterface
 {
-    use WorkPeriod;
+    public WorkPeriodServiceInterface $workPeriodService;
 
     public function __construct(
         protected readonly ?Company $company
     ){
+        $this->workPeriodService = app(WorkPeriodServiceInterface::class);
+        $this->workPeriodService->setCompany($company);
+
         //Set company formula settings
-        $this->resolveCompanyFormulaSettings();
+        $this->workPeriodService->resolveCompanyFormulaSettings();
 
         //Set company night hours
-        $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+        $this->workPeriodService->resolveCompanyNightHoursFromBasicPayFormulaSettings();
     }
 
     /**
@@ -38,7 +41,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Set attendance shift
          **/
-        $this->setShift($attendanceArray['shift_id']);
+        $this->workPeriodService->setShift($attendanceArray['shift_id']);
 
         $testCase = null;
         $testScenario = null;
@@ -74,19 +77,19 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Set schedule is day off
          * Set schedule is flexible
          **/
-        $this->setAttendanceSchedule($date);
+        $this->workPeriodService->setAttendanceSchedule($date);
 
         /**
          * If the attendance date is a day off, return
          **/
-        if($this->attendanceScheduleIsDayOff){
+        if($this->workPeriodService->attendanceScheduleIsDayOff){
             return [];
         }
 
-        $startingDateHolidayType = $this->getDateHolidayType($date->toDateString());
-        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+        $startingDateHolidayType = $this->workPeriodService->getDateHolidayType($date->toDateString());
+        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->workPeriodService->restDays);
         $isAttendanceDateIsHoliday = !empty($startingDateHolidayType);
-        $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+        $shiftHolidayPolicyIsDayOff = $this->workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
         /**
          * If the attendance date is a holiday and shift holiday policy is a day off, return
@@ -98,8 +101,8 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Parse schedule times
          **/
-        $schedule = $this->attendanceSchedule;
-        $schedule = $this->parseSchedule($schedule, $date);
+        $schedule = $this->workPeriodService->attendanceSchedule;
+        $schedule = $this->workPeriodService->parseSchedule($schedule, $date);
 
         if(!$test && $debug){
 
@@ -119,7 +122,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Parse attendance times
          **/
-        $parsedAttendance = $this->parseAttendance($attendanceArray);
+        $parsedAttendance = $this->workPeriodService->parseAttendance($attendanceArray);
 
         if(!$test && $debug){
 
@@ -139,7 +142,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Calculate work periods
          **/
-        $workPeriods = $this->calculateWorkPeriods($schedule);
+        $workPeriods = $this->workPeriodService->calculateWorkPeriods($schedule);
 
         if(!$test && $debug){
 
@@ -161,7 +164,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Breakdown work periods by shift breakdown split type with holiday and rest day info,
          * Separates schedule and overtime by $breakdown->schedule and $breakdown->overtime
          **/
-        list($scheduleBreakdown, $overtimeBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
+        list($scheduleBreakdown, $overtimeBreakdown) = $this->workPeriodService->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
 
         if(!$test && $debug){
             _debug([
@@ -198,7 +201,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Apply overtime if attendance has overtime
          * and schedule is not flexible
          **/
-        $attendanceDetails = (!empty($overtime) && !$this->attendanceScheduleIsFlexible)
+        $attendanceDetails = (!empty($overtime) && !$this->workPeriodService->attendanceScheduleIsFlexible)
             ? array_merge($attendanceDetails, $this->breakdownOvertime($overtimeBreakdown, $overtime))
             : $attendanceDetails;
 
@@ -333,7 +336,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * Make the lunch in as first in
          **/
         if (
-            $this->shiftRequireLunchOutAndIn() &&
+            $this->workPeriodService->shiftRequireLunchOutAndIn() &&
             $firstIn->lt($firstWorkSplitStart) &&
             ($lunchIn->lt($firstWorkSplitStart) || $lunchOut->lt($firstWorkSplitStart))
         ) {
@@ -356,7 +359,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          **/
         if(!$allTimeOutOfShift && $firstIn->gt($firstWorkSplitStart)){
             //Create a first in copy with grace time
-            $firstInCopy = $firstIn->copy()->subMinutes($this->shiftWorkStartGraceTime());
+            $firstInCopy = $firstIn->copy()->subMinutes($this->workPeriodService->shiftWorkStartGraceTime());
 
             //Is first in copy with grace time lesser or equal to the first start time
             if($firstInCopy->lte($firstWorkSplitStart)){
@@ -389,7 +392,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                     if($split['split_type'] == ShiftBreakDownSplitType::WORK){
 
                         if(
-                            !$this->shiftRequireLunchOutAndIn() ||
+                            !$this->workPeriodService->shiftRequireLunchOutAndIn() ||
                             $lunchInIsTheNewFirstIn ||
                             (!is_numeric($firstLunchOrderSequence) || $split['order'] < $firstLunchOrderSequence)
                         ){
@@ -404,7 +407,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
                     if(
                         $split['split_type'] == ShiftBreakDownSplitType::LUNCH &&
-                        !$this->shiftRequireLunchOutAndIn()
+                        !$this->workPeriodService->shiftRequireLunchOutAndIn()
                     ){
                         $split['actual_end'] = $firstIn->format('Y-m-d H:i');
                         $split['first_in'] = true;
@@ -439,7 +442,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Lunch out
          **/
-        if($this->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
+        if($this->workPeriodService->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
 
             /**
              * Pre-Lunch out: Apply lunch start grace if valid
@@ -464,7 +467,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                     //Is lunch out too early for lunch start time?
                     if($lunchOut->lt($lunchSplitStart)){
                         //Create a lunch out copy with grace time
-                        $lunchOutCopy = $lunchOut->copy()->addMinutes($this->shiftLunchStartGraceTime());
+                        $lunchOutCopy = $lunchOut->copy()->addMinutes($this->workPeriodService->shiftLunchStartGraceTime());
 
                         //Is lunch out copy with grace time greater or equal to lunch start time
                         if($lunchOutCopy->gte($lunchSplitStart)){
@@ -594,7 +597,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                     (
                         $firstInLogged ||
                         $lastOut->gt($firstIn) ||
-                        ($this->shiftRequireLunchOutAndIn() && $lastOut->gt($lunchIn))
+                        ($this->workPeriodService->shiftRequireLunchOutAndIn() && $lastOut->gt($lunchIn))
                     )
                 ){
 
@@ -640,7 +643,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         /**
          * Lunch in
          **/
-        if($this->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
+        if($this->workPeriodService->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
 
             $breakdown = collect($breakdown);
             $breakdown = $breakdown->sortBy('order');
@@ -732,7 +735,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
         $breakdown = $breakdown->sortBy('order');
         $breakdown = $breakdown->values()->toArray();
 
-        if($this->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
+        if($this->workPeriodService->shiftRequireLunchOutAndIn() && !empty($lunchOut) && !empty($lunchIn)){
 
             /**
              * Shift that requires lunch out and in
@@ -881,7 +884,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          * If the first in order sequence still isn't found, and shift requires lunch out and in,
          * Search for lunch in as first in
          **/
-        if($this->shiftRequireLunchOutAndIn() && !is_numeric($firstInOrderSequence)){
+        if($this->workPeriodService->shiftRequireLunchOutAndIn() && !is_numeric($firstInOrderSequence)){
             foreach ($attendanceBreakdown as $split) {
                 if(!is_numeric($firstInOrderSequence) && $split['lunch_in']){
                     $firstInOrderSequence = $split['order'];
@@ -922,7 +925,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                     !$allTimeOutOfShift &&
                     $split['order'] < $firstInOrderSequence &&
                     $split['split_type'] == ShiftBreakDownSplitType::WORK &&
-                    !$this->attendanceScheduleIsFlexible
+                    !$this->workPeriodService->attendanceScheduleIsFlexible
                 ){
                     $split['late'] = $split['split_duration'];
                 }
@@ -953,7 +956,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
                     if(
                         $splitActualStart->gt($splitStart) &&
-                        !$this->attendanceScheduleIsFlexible
+                        !$this->workPeriodService->attendanceScheduleIsFlexible
                     ){
                         $late = intval($splitActualStart->diffInMinutes($splitStart, true));
                         $split['late'] = $late;
@@ -985,9 +988,9 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                 $actualPresent = intval($splitActualStart->diffInMinutes($splitActualEnd, true));
 
                 //If Schedule is flexible, actual present should not exceed the required schedule total work hours
-                if($this->attendanceScheduleIsFlexible){
-                    $actualPresent = $actualPresent > $this->attendanceScheduleTotalWorkHoursWithBreaks
-                        ? $this->attendanceScheduleTotalWorkHoursWithBreaks
+                if($this->workPeriodService->attendanceScheduleIsFlexible){
+                    $actualPresent = $actualPresent > $this->workPeriodService->attendanceScheduleTotalWorkHoursWithBreaks
+                        ? $this->workPeriodService->attendanceScheduleTotalWorkHoursWithBreaks
                         : $actualPresent;
                 }
 
@@ -996,7 +999,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                  * and shift requires lunch out and in
                  * Deduct actual duration of total duration of lunch out and lunch in
                  * */
-                if($split['first_in'] && $split['lunch_out'] && $split['lunch_in']&& $split['last_out'] && $this->shiftRequireLunchOutAndIn()){
+                if($split['first_in'] && $split['lunch_out'] && $split['lunch_in']&& $split['last_out'] && $this->workPeriodService->shiftRequireLunchOutAndIn()){
                     $split['actual_irregularity_duration_start'] = $lunchOut->format('Y-m-d H:i');
                     $split['actual_irregularity_duration_end'] = $lunchIn->format('Y-m-d H:i');
 
@@ -1020,7 +1023,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
                         $split['order'] >= $firstInOrderSequence ||
                         ($split['last_out'] && $split['order'] != $lastOrderSequence)
                     ) &&
-                    !$this->attendanceScheduleIsFlexible
+                    !$this->workPeriodService->attendanceScheduleIsFlexible
                 ){
                     $actualPresentWithLate = $actualPresent + $late;
 
@@ -1041,16 +1044,16 @@ class AttendanceSplitter implements AttendanceSplitterInterface
          **/
         if(
             !$allTimeOutOfShift &&
-            $this->attendanceScheduleIsFlexible
+            $this->workPeriodService->attendanceScheduleIsFlexible
         ){
 
             $totalActualPresent = collect($attendanceBreakdown)
                 ->where('split_type', ShiftBreakDownSplitType::WORK)
                 ->sum('actual_present');
 
-            $flexibleUndertime =  $totalActualPresent >= $this->attendanceScheduleTotalWorkHoursWithBreaks
+            $flexibleUndertime =  $totalActualPresent >= $this->workPeriodService->attendanceScheduleTotalWorkHoursWithBreaks
                 ? 0
-                : $this->attendanceScheduleTotalWorkHoursWithBreaks - $totalActualPresent;
+                : $this->workPeriodService->attendanceScheduleTotalWorkHoursWithBreaks - $totalActualPresent;
 
             $attendanceBreakdownCollection = collect($attendanceBreakdown);
             $attendanceBreakdownDescending = $attendanceBreakdownCollection->sortByDesc('order');
@@ -1259,8 +1262,8 @@ class AttendanceSplitter implements AttendanceSplitterInterface
     {
         $attendanceDetails = collect($attendanceDetails);
 
-        $totalShiftWorkDuration = $this->attendanceScheduleIsFlexible
-            ? $this->attendanceScheduleTotalWorkHoursWithBreaks
+        $totalShiftWorkDuration = $this->workPeriodService->attendanceScheduleIsFlexible
+            ? $this->workPeriodService->attendanceScheduleTotalWorkHoursWithBreaks
             : $attendanceDetails
                 ->where('split_type', ShiftBreakDownSplitType::WORK)
                 ->sum('split_duration');
@@ -1273,7 +1276,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
             ->where('split_type', ShiftBreakDownSplitType::WORK)
             ->sum('late');
 
-        $totalUndertime = $this->attendanceScheduleIsFlexible
+        $totalUndertime = $this->workPeriodService->attendanceScheduleIsFlexible
             ? $attendanceDetails
                 ->where('split_type', ShiftBreakDownSplitType::WORK)
                 ->sum('flexible_undertime')
