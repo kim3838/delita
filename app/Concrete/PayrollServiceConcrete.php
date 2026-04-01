@@ -13,6 +13,7 @@ use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\PayrollPayloadRepository;
 use App\Blueprint\Repositories\SalaryStatementAttendanceRepository;
 use App\Blueprint\Repositories\SalaryStatementRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\AttendanceStatus;
 use App\Enums\Compensation as CompensationEnum;
 use App\Enums\Formulable;
@@ -40,7 +41,6 @@ use App\Models\SalaryStatementAttendance;
 use App\Models\Shift;
 use App\Traits\HasPayableDay;
 use App\Traits\HasTime;
-use App\Traits\WorkPeriod;
 use App\Transformers\Attendance\PatchableTransformer as AttendancePatchableTransformer;
 use App\Transformers\AttendanceDetail\PayableSplitTransformer as AttendanceDetailPayableSplitTransformer;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
@@ -58,13 +58,16 @@ use Illuminate\Support\Facades\App;
 
 class PayrollServiceConcrete implements PayrollServiceInterface
 {
+    public WorkPeriodServiceInterface $workPeriodService;
+
     public ?Payroll $payroll;
     public string $timezone = 'UTC';
     public Carbon $date;
     public Collection $payFrequencies;
     public int $frequencyWorkingDayCount = 0;
+    public array $restDays = [];
 
-    use HasTime, HasPayableDay, WorkPeriod;
+    use HasTime, HasPayableDay;
 
     public function __construct(
         protected ?Company $company
@@ -72,6 +75,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
         $this->timezone = $company?->timezone ?? 'UTC';
         $this->date = Carbon::now()->timezone($this->timezone);
         $this->payFrequencies = $company?->payFrequencies ?? collect();
+        $this->workPeriodService = app(WorkPeriodServiceInterface::class);
     }
 
     public function resetDate(): static
@@ -371,11 +375,13 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $this->payroll->salaryStatements()->delete();
 
+        $this->workPeriodService->setCompany($this->company);
+
         //Set company formula settings
-        $this->resolveCompanyFormulaSettings();
+        $this->workPeriodService->resolveCompanyFormulaSettings();
 
         //Set company night hours
-        $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+        $this->workPeriodService->resolveCompanyNightHoursFromBasicPayFormulaSettings();
     }
 
     /**
@@ -568,15 +574,15 @@ class PayrollServiceConcrete implements PayrollServiceInterface
                 ]);
             }
 
-            $this->setShift($employeeShift);
-            $this->setAttendanceSchedule($date);
-            $dayOff = $this->attendanceScheduleIsDayOff;
-            $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+            $this->workPeriodService->setShift($employeeShift);
+            $this->workPeriodService->setAttendanceSchedule($date);
+            $dayOff = $this->workPeriodService->attendanceScheduleIsDayOff;
+            $holiday = $this->workPeriodService->getCompanyHolidayByDate($date, $this->company->id);
             $holidayType = !empty($holiday) ? $holiday->type : null;
-            $isRestDay = in_array($date->dayOfWeek, $this->restDays);
+            $isRestDay = in_array($date->dayOfWeek, $this->workPeriodService->restDays);
 
             $isDateIsHoliday = !empty($holidayType);
-            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+            $shiftHolidayPolicyIsDayOff = $this->workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
             $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isDateIsHoliday && $shiftHolidayPolicyIsDayOff);
             $dayOffOrHolidayDayOff = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
 
@@ -677,18 +683,18 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $date = $salaryStatementAttendance->date;
 
-        $this->setShift($employeeShift);
-        $this->setAttendanceSchedule($date);
+        $this->workPeriodService->setShift($employeeShift);
+        $this->workPeriodService->setAttendanceSchedule($date);
 
-        $startingDateHolidayType = $this->getDateHolidayType($date);
-        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+        $startingDateHolidayType = $this->workPeriodService->getDateHolidayType($date);
+        $startingDateIsRestDay = in_array($date->dayOfWeek, $this->workPeriodService->restDays);
 
-        $schedule = $this->attendanceSchedule;
-        $schedule = $this->parseSchedule($schedule, $salaryStatementAttendance->date);
+        $schedule = $this->workPeriodService->attendanceSchedule;
+        $schedule = $this->workPeriodService->parseSchedule($schedule, $salaryStatementAttendance->date);
 
-        $workPeriods = $this->calculateWorkPeriods($schedule);
+        $workPeriods = $this->workPeriodService->calculateWorkPeriods($schedule);
 
-        list($scheduleBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType, [ShiftBreakDownSplitType::WORK]);
+        list($scheduleBreakdown) = $this->workPeriodService->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType, [ShiftBreakDownSplitType::WORK]);
 
         if($debugEnabled){
             _debug([
@@ -822,8 +828,12 @@ class PayrollServiceConcrete implements PayrollServiceInterface
 
         $payrollFrequency = $this->payroll->pay_frequency;
 
-        $this->setShift($employeeShift);
-        $this->setAttendanceSchedule($date);
+        $this->workPeriodService->setShift($employeeShift);
+        /**
+         * Set restDays for statementAttendanceSetAmountableOnSplits usage
+         **/
+        $this->restDays = $this->workPeriodService->restDays;
+        $this->workPeriodService->setAttendanceSchedule($date);
 
         //Get total work hours for the day
         $hasAttendance = boolval($salaryStatementAttendance->attendance);
@@ -1062,7 +1072,7 @@ class PayrollServiceConcrete implements PayrollServiceInterface
             /**
              * Set holiday pay forfeiture flag before set amount on splits
              **/
-            $holiday = $this->getCompanyHolidayByDate($date->toDateString(), $this->company->id);
+            $holiday = $this->workPeriodService->getCompanyHolidayByDate($date->toDateString(), $this->company->id);
             $this->holidayPayForfeiture = !empty($holiday) ? $holiday->holiday_pay_forfeiture : false;
 
             $this->statementAttendanceSetAmountableOnSplits(

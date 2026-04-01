@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Blueprint\LeaveServiceInterface;
 use App\Exceptions\UnexpectedException;
 use App\Facades\ResponseJson;
 use App\Http\Requests\LeaveDateRangeFilter\LeaveDateRangeFilterRequest;
-use App\Traits\HasLeave;
 use Carbon\CarbonPeriod;
 
 class LeaveDateRangeFilterController extends Controller
 {
-    use HasLeave;
-
     /**
      * @throws UnexpectedException
      */
@@ -27,7 +25,9 @@ class LeaveDateRangeFilterController extends Controller
 
             $datePeriod = CarbonPeriod::create($dateFrom, $dateTo);
 
-            $filteredDates = $this->filterLeaveDateRange(
+            $leaveService = app(LeaveServiceInterface::class);
+
+            $filteredDates = $leaveService->filterLeaveDateRange(
                 $companyId,
                 $employeeId,
                 $shiftId,

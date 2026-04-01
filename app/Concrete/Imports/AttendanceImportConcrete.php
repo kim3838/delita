@@ -7,6 +7,7 @@ use App\Blueprint\Imports\AttendanceImport;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\ShiftScheduleRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Concrete\BaseImportConcrete;
 use App\Enums\ShiftHolidayPolicy;
 use App\Exceptions\UnexpectedException;
@@ -18,7 +19,6 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Leave;
 use App\Models\Shift;
-use App\Traits\WorkPeriod;
 use App\Transformers\EmployeeShift\PatchableTransformer as EmployeeShiftPatchableTransformer;
 use App\Transformers\Shift\PatchableTransformer as ShiftPatchableTransformer;
 use App\Transformers\ShiftSchedule\PatchableTransformer as ShiftSchedulePatchableTransformer;
@@ -29,8 +29,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceImport
 {
-    use WorkPeriod;
-
     public function model(): string
     {
         return Attendance::class;
@@ -50,6 +48,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
         $dataToImport = [];
         $employee = null;
         $shift = null;
+        $workPeriodService = app(WorkPeriodServiceInterface::class);
 
         foreach ($data as $index => $row) {
 
@@ -89,7 +88,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             } else {
 
                 $row['shift_id'] = $shift->id;
-                $this->setShift($shift);
+                $workPeriodService->setShift($shift);
             }
 
             /**
@@ -174,12 +173,12 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             /**
              * Get the shift work day by attendance date
              **/
-            $this->setAttendanceSchedule($date);
+            $workPeriodService->setAttendanceSchedule($date);
 
             /**
              * Attendance date should not be a day off
              **/
-            if($this->attendanceScheduleIsDayOff){
+            if($workPeriodService->attendanceScheduleIsDayOff){
                 $validationErrors[] = 'Attendance date is a day off.';
 
                 $this->resolveValidatedRow($row, $validationErrors, $dataToImport);
@@ -189,15 +188,15 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             /**
              * Get the schedule for the attendance date
              **/
-            $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
+            $schedule = $workPeriodService->parseSchedule($workPeriodService->attendanceSchedule, $date);
 
             /**
              * Validate if the shift is assigned to the employee within its shift assignment date
              **/
             $employeeShiftAssignment = $employee->shifts->where('id', $shift->id)->first()?->pivot;
 
-            $row['require_lunch_time_in_and_out'] = $this->shiftRequireLunchOutAndIn;
-            $row['is_flexible'] = $this->attendanceScheduleIsFlexible;
+            $row['require_lunch_time_in_and_out'] = $workPeriodService->shiftRequireLunchOutAndIn;
+            $row['is_flexible'] = $workPeriodService->attendanceScheduleIsFlexible;
 
             if(empty($employeeShiftAssignment)){
 
@@ -236,8 +235,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
              * Check if the attendance's date is a holiday
              * And shift holiday policy if its day off
              **/
-            $isAttendanceDateIsHoliday = !empty($this->getCompanyHolidayByDate($date->toDateString(), $companyId));
-            $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+            $isAttendanceDateIsHoliday = !empty($workPeriodService->getCompanyHolidayByDate($date->toDateString(), $companyId));
+            $shiftHolidayPolicyIsDayOff = $workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
             /**
              * If the attendance's date is a holiday, and shift holiday policy is a day off, attendance is not needed
@@ -254,14 +253,14 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $importAttendanceRules = $importAttendance->rules();
             $importAttendanceRulesMessages = $importAttendance->messages();
 
-            if($this->attendanceScheduleIsFlexible || !$this->shiftRequireLunchOutAndIn || !$this->attendanceScheduleHasLunchBreak){
+            if($workPeriodService->attendanceScheduleIsFlexible || !$workPeriodService->shiftRequireLunchOutAndIn || !$workPeriodService->attendanceScheduleHasLunchBreak){
                 $row['lunch_out'] = null;
                 $row['lunch_in'] = null;
             }
 
             $timeValidation = Validator::make($row,[
                 'first_in' => $importAttendanceRules['first_in'],
-                ...(!$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak ? [
+                ...(!$workPeriodService->attendanceScheduleIsFlexible && $workPeriodService->shiftRequireLunchOutAndIn && $workPeriodService->attendanceScheduleHasLunchBreak ? [
                     'lunch_out' => $importAttendanceRules['lunch_out'],
                     'lunch_in' => $importAttendanceRules['lunch_in']
                 ] : []),
@@ -288,7 +287,7 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
             $attendanceValidationErrors = $importAttendance->validateAttendance(
                 $firstIn, $lunchOut, $lunchIn, $lastOut,
                 $schedule,
-                !$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak
+                !$workPeriodService->attendanceScheduleIsFlexible && $workPeriodService->shiftRequireLunchOutAndIn && $workPeriodService->attendanceScheduleHasLunchBreak
             );
 
             foreach($attendanceValidationErrors as $error){
@@ -307,6 +306,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
      */
     public function resolvedData($data, $companyId): array
     {
+        $workPeriodService = app(WorkPeriodServiceInterface::class);
+
         $repository = App::make(AttendanceRepository::class);
         $attendanceSplitter = App::make(AttendanceSplitterInterface::class, [Company::query()->find($companyId)]);
         $shiftSchedule = App::make(ShiftScheduleRepository::class);
@@ -324,20 +325,20 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
                 'last_out' => $row['last_out'],
             ];
 
-            $this->setShift($row['shift_id']);
-            $this->setAttendanceSchedule(Carbon::parse($row['date']));
+            $workPeriodService->setShift($row['shift_id']);
+            $workPeriodService->setAttendanceSchedule(Carbon::parse($row['date']));
 
-            $shiftAssignment = Employee::query()->find($row['employee_id'])->shifts->where('id', $this->shift->id)->first()?->pivot;
+            $shiftAssignment = Employee::query()->find($row['employee_id'])->shifts->where('id', $workPeriodService->shift->id)->first()?->pivot;
 
             if(empty($shiftAssignment)){
                 throw new UnexpectedException("Attendance shift assignment not found: C.AttendanceImportConcrete [" . __LINE__ . "]");
             }
 
-            $shiftScheduleHydrated = $shiftSchedule->hydrateItem($this->attendanceSchedule);
+            $shiftScheduleHydrated = $shiftSchedule->hydrateItem($workPeriodService->attendanceSchedule);
 
             $shiftDetail = [
                 ...Fractal::item($shiftAssignment, EmployeeShiftPatchableTransformer::class),
-                ...Fractal::item($this->shift, ShiftPatchableTransformer::class),
+                ...Fractal::item($workPeriodService->shift, ShiftPatchableTransformer::class),
                 ...Fractal::item($shiftScheduleHydrated, ShiftSchedulePatchableTransformer::class)
             ];
 

@@ -2,6 +2,10 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\EmployeeServiceInterface;
+use App\Blueprint\LeaveServiceInterface;
+use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\EmploymentStatus;
 use App\Enums\EmploymentType;
 use App\Enums\LeaveBalanceAdjustmentType;
@@ -9,24 +13,33 @@ use App\Enums\LeaveCarryOverType;
 use App\Enums\LeaveIntervalSpanType;
 use App\Enums\LeavePeriodType;
 use App\Enums\LeaveUsageSpanType;
+use App\Enums\ShiftHolidayPolicy;
+use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
+use App\Models\Attendance;
+use App\Models\Company;
 use App\Models\Employee;
+use App\Models\EmployeeShift;
 use App\Models\Hydrations\LeaveRunningBalance as LeaveRunningBalance;
 use App\Models\Leave;
 use App\Models\LeaveBalanceAdjustment;
 use App\Models\LeaveType;
 use App\Models\LeaveTypeBalancePerPeriod;
 use App\Traits\HasTime;
+use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use App\Transformers\LeaveRunningBalance\ItemTransformer as LeaveRunningBalanceItemTransformer;
 use App\Transformers\LeaveTypeBalancePerPeriod\ListTransformer as LeaveTypeBalancePerPeriodListTransformer;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon as LaravelCarbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class LeaveService
+class LeaveService implements LeaveServiceInterface
 {
+    public WorkPeriodServiceInterface $workPeriodService;
+
     public bool $carryOverBalancePerNewPeriod = false;
     public ?float $carryOverBalanceLimitValue = null;
     public ?int $carryOverBalanceType = null;
@@ -34,6 +47,168 @@ class LeaveService
     public Collection $additionalBalancePerPeriod;
 
     use HasTime;
+
+    public function __construct()
+    {
+        $this->workPeriodService = app(WorkPeriodServiceInterface::class);
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function filterLeaveDateRange($companyId, $employeeId, $shiftId, CarbonPeriod $datePeriod): array
+    {
+        $this->workPeriodService->setShift($shiftId);
+
+        $leaves = $this->getEmployeeLeaves($employeeId, $datePeriod);
+
+        $shiftHolidayPolicyIsDayOff = $this->workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+
+        $filteredDates = $this->processLeaveDatePeriod($datePeriod, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff, 'filter');
+
+        return collect($filteredDates)->map(function ($date){
+            return $date->toDateString();
+        })->values()->toArray();
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    public function leaveInquiryMap($companyId, $employeeId, $shiftId, CarbonPeriod $datePeriod): array
+    {
+        $this->workPeriodService->setShift($shiftId);
+
+        $leaves = $this->getEmployeeLeaves($employeeId, $datePeriod);
+
+        $shiftHolidayPolicyIsDayOff = $this->workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+
+        return $this->processLeaveDatePeriod($datePeriod, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff, 'map');
+    }
+
+    private function getEmployeeLeaves($employeeId, CarbonPeriod $datePeriod): Collection
+    {
+        $leaves = Leave::query()
+            ->where('employee_id', $employeeId)
+            ->whereBetween('date', [$datePeriod->getStartDate(), $datePeriod->getEndDate()])
+            ->get();
+
+        return collect(Fractal::collection($leaves, LeaveBasicTransformer::class)['data']);
+    }
+
+    private function processLeaveDatePeriod(CarbonPeriod $datePeriod, Collection $leaves, $companyId, $employeeId, bool $shiftHolidayPolicyIsDayOff, string $operation): array
+    {
+        return collect($datePeriod)
+            ->when($operation === 'filter',
+
+                fn($collection) => $collection->filter(
+                    function ($date) use ($leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff) {
+
+                        $dateEvaluation = $this->evaluateLeaveDate($date, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff);
+
+                        return $dateEvaluation['is_claimable'];
+                    }
+                ),
+
+                fn($collection) => collect($collection->map(function ($date) use ($leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff) {
+
+                    $dateEvaluation = $this->evaluateLeaveDate($date, $leaves, $companyId, $employeeId, $shiftHolidayPolicyIsDayOff);
+
+                    return [
+                        'date' => $date->toDateString(),
+                        'message' => $dateEvaluation['message'],
+                        'is_claimable' => $dateEvaluation['is_claimable'],
+                    ];
+                }))
+            )->toArray();
+    }
+
+    /**
+     * @throws UnexpectedException
+     */
+    private function evaluateLeaveDate($date, Collection $leaves, $companyId, $employeeId, bool $shiftHolidayPolicyIsDayOff): array
+    {
+        $this->workPeriodService->setAttendanceSchedule($date);
+
+        $isAttendanceDateIsHoliday = !empty($this->workPeriodService->getCompanyHolidayByDate($date->toDateString(), $companyId));
+        $dayOff = $this->workPeriodService->attendanceScheduleIsDayOff;
+        $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff = ($isAttendanceDateIsHoliday && $shiftHolidayPolicyIsDayOff);
+        $dayOffOrHoliday = $dayOff || $attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff;
+        $hasLeave = $leaves->where('date', $date->toDateString())->isNotEmpty();
+
+        $payrollService = app(PayrollServiceInterface::class, [Company::query()->find($companyId)]);
+        $employee = Employee::query()->find($employeeId);
+
+        $result = [
+            'message' => 'Claimable',
+            'is_claimable' => true,
+        ];
+
+        /**
+         * Validate if the shift assignment is valid
+         **/
+        $employeeService = app(EmployeeServiceInterface::class, [$employee]);
+        $employeeShifts = EmployeeShift::where('employee_id', $employee->id)
+            ->where('shift_id', $this->workPeriodService->shift->id)->get();
+
+        $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
+
+        if(empty($employeeShiftPivot)){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Out of shift schedule';
+        }
+
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if date is on any payroll statement attendance
+         **/
+        $isDateOnAnyPayrollStatementAttendance = $payrollService->isDateOnAnyPayrollStatementAttendance($employee, $date);
+        if($isDateOnAnyPayrollStatementAttendance){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Payroll generated';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if the date is a day off
+         **/
+        if($dayOff){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Day off';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if the date is a holiday and shift holiday policy is a day off
+         **/
+        if($attendanceDateIsHolidayAndShiftHolidayPolicyIsDayOff){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Holiday';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if date has leave claim
+         **/
+        if($hasLeave){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Leave claimed';
+        }
+        if(!$result['is_claimable']) return $result;
+
+        /**
+         * Validate if attendance exists
+         **/
+        $attendance = Attendance::query()->where('employee_id', $employeeId)
+            ->where('date', $date->toDateString())
+            ->where('shift_id', $this->workPeriodService->shift->id)->first();
+        if(!empty($attendance)){
+            $result['is_claimable'] = false;
+            $result['message'] = 'Attendance exists';
+        }
+
+        return $result;
+    }
 
     public function getRunningBalanceByDate(Employee $employee, LeaveType $leaveType, $date)
     {

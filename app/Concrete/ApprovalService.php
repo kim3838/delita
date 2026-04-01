@@ -2,10 +2,12 @@
 
 namespace App\Concrete;
 
+use App\Blueprint\LeaveServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\PayrollStatus;
 use App\Enums\RequestApprovalStatus;
 use App\Exceptions\UnexpectedException;
@@ -15,7 +17,6 @@ use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\RequestApprovalState;
 use App\Models\Shift;
-use App\Traits\HasLeave;
 use App\Transformers\AttendanceAdjustmentRequest\PatchableTransformer as AttendanceAdjustmentRequestPatchableTransformer;
 use App\Transformers\LeaveRequest\PatchableTransformer as LeaveRequestPatchableTransformer;
 use App\Transformers\OvertimeRequest\PatchableTransformer as OvertimeRequestPatchableTransformer;
@@ -28,8 +29,6 @@ use Illuminate\Support\Facades\App;
 class ApprovalService
 {
     public ?Company $company;
-
-    use HasLeave;
 
     public static array $seriesMap = [
         [
@@ -148,13 +147,15 @@ class ApprovalService
                                 $validationErrors[] = 'Shift not found';
                             } else {
 
-                                $this->setShift($shift);
+                                $workPeriodService = app(WorkPeriodServiceInterface::class);
+
+                                $workPeriodService->setShift($shift);
 
                                 /**
                                  * After setting up shift,
                                  * Get the shift work day by attendance date
                                  **/
-                                $this->setAttendanceSchedule($attendanceDate);
+                                $workPeriodService->setAttendanceSchedule($attendanceDate);
 
                                 /**
                                  * Validate attendance shift details if still match the current shift and schedule settings
@@ -162,9 +163,9 @@ class ApprovalService
                                 list(
                                     $currentShiftAndAttendanceShiftStillTheSame,
                                     $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                                ) = $this->validateAttendanceShiftDetails(
-                                    $this->shift,
-                                    $this->attendanceSchedule,
+                                ) = $workPeriodService->validateAttendanceShiftDetails(
+                                    $workPeriodService->shift,
+                                    $workPeriodService->attendanceSchedule,
                                     $attendance->shiftDetail->toArray(),
                                     $attendance->shiftDetail->toArray()
                                 );
@@ -249,9 +250,11 @@ class ApprovalService
                 break;
             case 'leave_request':
 
+                $leaveService = app(LeaveServiceInterface::class);
+
                 $leaveDatePeriod = CarbonPeriod::create($patchable['date_from'], $patchable['date_to']);
 
-                $filteredDates = $this->filterLeaveDateRange(
+                $filteredDates = $leaveService->filterLeaveDateRange(
                     $patchable['company_id'],
                     $patchable['employee_id'],
                     $patchable['shift_id'],

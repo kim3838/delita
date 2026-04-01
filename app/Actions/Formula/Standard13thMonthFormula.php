@@ -6,6 +6,7 @@ use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\EmployeePayrollComponentRepository;
 use App\Blueprint\Repositories\LeaveRepository;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Concrete\SalaryStatementContext;
 use App\Concrete\SalaryStatementModuleServiceConcrete;
 use App\Enums\Compensation as CompensationEnum;
@@ -25,7 +26,6 @@ use App\Models\Company;
 use App\Models\Compensation;
 use App\Models\EmployeeShift;
 use App\Traits\HasPayableDay;
-use App\Traits\WorkPeriod;
 use App\Transformers\Leave\BasicTransformer as LeaveBasicTransformer;
 use App\Transformers\PayrollPayload\ListTransformer as PayrollPayloadListTransformer;
 use Brick\Math\BigDecimal;
@@ -37,6 +37,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class Standard13thMonthFormula
 {
     public SalaryStatementContext $context;
+
+    public WorkPeriodServiceInterface $workPeriodService;
 
     protected ?Company $company;
     public int $frequencyWorkingDayCount = 0;
@@ -52,7 +54,7 @@ class Standard13thMonthFormula
 
     public ?BigDecimal $taxExempt;
 
-    use WorkPeriod, HasPayableDay;
+    use HasPayableDay;
 
     /**
      * @throws UnexpectedException
@@ -541,11 +543,15 @@ class Standard13thMonthFormula
 
         $nextPayrollBasicPayAssumptions = [];
 
+        $this->workPeriodService = app(WorkPeriodServiceInterface::class);
+
         $this->company = $context->company;
+        $this->workPeriodService->setCompany($this->company);
+
         //Set company formula settings
-        $this->resolveCompanyFormulaSettings();
+        $this->workPeriodService->resolveCompanyFormulaSettings();
         //Set company night hours
-        $this->resolveCompanyNightHoursFromBasicPayFormulaSettings();
+        $this->workPeriodService->resolveCompanyNightHoursFromBasicPayFormulaSettings();
 
         $employeeService = app(EmployeeServiceInterface::class, [$context->employee]);
         $employeeShifts = EmployeeShift::where('employee_id', $context->employee->id)->get();
@@ -608,18 +614,18 @@ class Standard13thMonthFormula
                 //Skip if employee has unpaid leave on this date
                 if($hasUnpaidLeave)continue;
 
-                $this->setShift($employeeShift);
-                $this->setAttendanceSchedule($date);
+                $this->workPeriodService->setShift($employeeShift);
+                $this->workPeriodService->setAttendanceSchedule($date);
 
-                $dayOff = $this->attendanceScheduleIsDayOff;
-                $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+                $dayOff = $this->workPeriodService->attendanceScheduleIsDayOff;
+                $holiday = $this->workPeriodService->getCompanyHolidayByDate($date, $this->company->id);
                 $holidayType = !empty($holiday) ? $holiday->type : null;
 
                 $isDateIsHoliday = !empty($holidayType);
                 $isLegalHoliday = in_array($holidayType, [HolidayType::LEGAL, HolidayType::DOUBLE]);
                 $isSpecialHoliday = in_array($holidayType, [HolidayType::SPECIAL]);
 
-                $shiftHolidayPolicyIsDayOff = $this->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
+                $shiftHolidayPolicyIsDayOff = $this->workPeriodService->shiftHolidayPolicy == ShiftHolidayPolicy::DAY_OFF;
 
                 if($dayOff) continue;
 
@@ -632,20 +638,20 @@ class Standard13thMonthFormula
 
             foreach($workDates as $date){
 
-                $startingDateHolidayType = $this->getDateHolidayType($date->toDateString());
-                $startingDateIsRestDay = in_array($date->dayOfWeek, $this->restDays);
+                $startingDateHolidayType = $this->workPeriodService->getDateHolidayType($date->toDateString());
+                $startingDateIsRestDay = in_array($date->dayOfWeek, $this->workPeriodService->restDays);
 
                 $employeeShiftPivot = $employeeService->getEmployeeShiftFromEmployeeShiftCollection($employeeShifts, $date);
                 $employeeShift = $employeeShiftPivot->shift;
 
-                $this->setShift($employeeShift);
-                $this->setAttendanceSchedule($date);
+                $this->workPeriodService->setShift($employeeShift);
+                $this->workPeriodService->setAttendanceSchedule($date);
 
-                $schedule = $this->attendanceSchedule;
-                $schedule = $this->parseSchedule($schedule, $date);
+                $schedule = $this->workPeriodService->attendanceSchedule;
+                $schedule = $this->workPeriodService->parseSchedule($schedule, $date);
 
-                $workPeriods = $this->calculateWorkPeriods($schedule);
-                list($scheduleBreakdown) = $this->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
+                $workPeriods = $this->workPeriodService->calculateWorkPeriods($schedule);
+                list($scheduleBreakdown) = $this->workPeriodService->breakdownWorkPeriods($workPeriods, $startingDateIsRestDay, $startingDateHolidayType);
 
                 $totalWorkMinutes = collect($scheduleBreakdown)->filter(function($split){return $split['split_type'] == ShiftBreakDownSplitType::WORK;})->sum('split_duration');
 
@@ -719,7 +725,7 @@ class Standard13thMonthFormula
                     }
                 }
 
-                $holiday = $this->getCompanyHolidayByDate($date, $this->company->id);
+                $holiday = $this->workPeriodService->getCompanyHolidayByDate($date, $this->company->id);
                 $holidayType = !empty($holiday) ? $holiday->type : null;
                 $isDoubleHoliday = $holidayType == HolidayType::DOUBLE;
 

@@ -3,19 +3,19 @@
 namespace App\Http\Requests\AttendanceAdjustmentRequest;
 
 use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\WorkPeriodServiceInterface;
 use App\Http\Requests\Attendance\ImportAttendance;
 use App\Models\Attendance;
 use App\Models\AttendanceAdjustmentRequest;
 use App\Models\Company;
 use App\Models\Shift;
 use App\Traits\HasApproval;
-use App\Traits\WorkPeriod;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class BaseStoreAttendanceAdjustmentRequestRequest extends ImportAttendance
 {
-    use WorkPeriod, HasApproval;
+    use HasApproval;
 
     public function authorize(): bool
     {
@@ -62,19 +62,21 @@ class BaseStoreAttendanceAdjustmentRequestRequest extends ImportAttendance
                         $fail('No changes found');
                     }
 
+                    $workPeriodService = app(WorkPeriodServiceInterface::class);
+
                     $shift = Shift::query()->find($attendance->shift_id);
 
                     if(!$shift instanceof Shift){
                         $fail('Shift not found');
                     }
 
-                    $this->setShift($shift);
+                    $workPeriodService->setShift($shift);
 
                     /**
                      * After setting up shift,
                      * Get the shift work day by attendance date
                      **/
-                    $this->setAttendanceSchedule($date);
+                    $workPeriodService->setAttendanceSchedule($date);
 
                     /**
                      * Validate attendance shift details if still match the current shift and schedule settings
@@ -82,9 +84,9 @@ class BaseStoreAttendanceAdjustmentRequestRequest extends ImportAttendance
                     list(
                         $currentShiftAndAttendanceShiftStillTheSame,
                         $currentShiftScheduleAndAttendanceShiftScheduleStillTheSame
-                        ) = $this->validateAttendanceShiftDetails(
-                        $this->shift,
-                        $this->attendanceSchedule,
+                    ) = $workPeriodService->validateAttendanceShiftDetails(
+                        $workPeriodService->shift,
+                        $workPeriodService->attendanceSchedule,
                         $attendance->shiftDetail->toArray(),
                         $attendance->shiftDetail->toArray()
                     );
@@ -98,7 +100,7 @@ class BaseStoreAttendanceAdjustmentRequestRequest extends ImportAttendance
                         /**
                          * Get the schedule for the attendance date
                          **/
-                        $schedule = $this->parseSchedule($this->attendanceSchedule, $date);
+                        $schedule = $workPeriodService->parseSchedule($workPeriodService->attendanceSchedule, $date);
 
                         $firstIn = Carbon::parse($this->input('first_in'));
                         $lunchOut = empty($this->input('lunch_out'))? null : Carbon::parse($this->input('lunch_out'));
@@ -108,7 +110,7 @@ class BaseStoreAttendanceAdjustmentRequestRequest extends ImportAttendance
                         $attendanceValidationErrors = $this->validateAttendance(
                             $firstIn, $lunchOut, $lunchIn, $lastOut,
                             $schedule,
-                            !$this->attendanceScheduleIsFlexible && $this->shiftRequireLunchOutAndIn && $this->attendanceScheduleHasLunchBreak
+                            !$workPeriodService->attendanceScheduleIsFlexible && $workPeriodService->shiftRequireLunchOutAndIn && $workPeriodService->attendanceScheduleHasLunchBreak
                         );
 
                         foreach($attendanceValidationErrors as $error){
