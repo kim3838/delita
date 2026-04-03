@@ -137,9 +137,10 @@ class PreGeneratePayrollController extends Controller
                                 $query->whereNotNull('end_date')
                                     ->where('end_date', '<=', $payrollEndDate->toDateString());
                             });
-                        });
+                        })
+                        ->orderBy('start_date', 'asc');
 
-                    $proximityEmploymentProfile = $proximityEmploymentProfilesQueryBuilder->get()->first();
+                    $proximityEmploymentProfile = $proximityEmploymentProfilesQueryBuilder->get()->last();
 
                     if(empty($proximityEmploymentProfile)) continue;
 
