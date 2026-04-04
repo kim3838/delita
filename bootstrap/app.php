@@ -100,7 +100,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 if(App::environment('production')){
 
                     NotificationFacade::route('mail',
-                        ['info@kunsel-erp.com' => 'Kim De Guzman']
+                        ['no-reply@kunsel-erp.com' => 'Kim De Guzman']
                     )->notify(new ErrorLogNotification(new LogContext(
                         get_class($throwable),
                         $throwable instanceof Exception,
