@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Blueprint\PayrollComponentServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\PayrollRepository;
@@ -49,6 +50,17 @@ class Debug extends Command
      */
     public function handle()
     {
+
+    }
+
+    private function chainPayrollComponents()
+    {
+        $company = Company::query()->find(3);
+
+        $payrollComponentService = app(PayrollComponentServiceInterface::class);
+        $payrollComponentService->setCompany($company);
+
+        $payrollComponentService->createDefaults();
 
     }
 
