@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Blueprint\PayrollComponentServiceInterface;
 use App\Blueprint\Repositories\FormulaRepository;
 use App\Blueprint\Repositories\PayFrequencyRepository;
 use App\Blueprint\Repositories\SalaryStatementModuleRepository;
@@ -61,6 +62,14 @@ class CompanyCreatedChain
         }
 
         $event->company->formulas()->sync($formulas);
+
+        /**
+         * Create payroll components
+         **/
+        $payrollComponentService = app(PayrollComponentServiceInterface::class);
+        $payrollComponentService->setCompany($event->company);
+
+        $payrollComponentService->createDefaults();
 
         /**
          * Create approval settings for requestable model

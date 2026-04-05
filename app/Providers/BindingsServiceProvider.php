@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Blueprint\AttendanceSplitterInterface;
 use App\Blueprint\EmployeeServiceInterface;
 use App\Blueprint\LeaveServiceInterface;
+use App\Blueprint\PayrollComponentServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\PayslipServiceInterface;
 use App\Blueprint\RequestInterface;
@@ -12,6 +13,7 @@ use App\Blueprint\WorkPeriodServiceInterface;
 use App\Concrete\AttendanceSplitter;
 use App\Concrete\EmployeeServiceConcrete;
 use App\Concrete\LeaveService;
+use App\Concrete\PayrollComponentServiceConcrete;
 use App\Concrete\PayrollServiceConcrete;
 use App\Concrete\PayslipServiceConcrete;
 use App\Concrete\RequestConcrete;
@@ -33,6 +35,11 @@ class BindingsServiceProvider extends ServiceProvider
         $this->app->bind(WorkPeriodServiceInterface::class, function ($app) {
 
             return new WorkPeriodServiceConcrete();
+        });
+
+        $this->app->bind(PayrollComponentServiceInterface::class, function ($app) {
+
+            return new PayrollComponentServiceConcrete();
         });
 
         $this->app->bind(LeaveServiceInterface::class, function ($app) {
