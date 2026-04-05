@@ -10,9 +10,9 @@
     </style>
 </head>
 <body style="background-color: #f9f9f9; padding: 30px;">
-<table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; padding: 20px;">
+<table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd;">
     <tr>
-        <td>
+        <td style="padding: 20px;">
             <p>Hello <strong>{{$employee_full_name}}</strong></p>
 
             <p>Good day!</p>
