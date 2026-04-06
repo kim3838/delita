@@ -7,6 +7,8 @@ use App\Blueprint\PayrollServiceInterface;
 use App\Blueprint\Repositories\AttendanceRepository;
 use App\Blueprint\Repositories\LeaveRepository;
 use App\Blueprint\Repositories\OvertimeRepository;
+use App\Blueprint\Repositories\RequestApprovalStateRepository;
+use App\Blueprint\RequestInterface;
 use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\PayrollStatus;
 use App\Enums\RequestApprovalStatus;
@@ -17,6 +19,8 @@ use App\Models\Attendance;
 use App\Models\Company;
 use App\Models\RequestApprovalState;
 use App\Models\Shift;
+use App\Models\User;
+use App\Notifications\AwaitingApprovalNotification;
 use App\Transformers\AttendanceAdjustmentRequest\PatchableTransformer as AttendanceAdjustmentRequestPatchableTransformer;
 use App\Transformers\LeaveRequest\PatchableTransformer as LeaveRequestPatchableTransformer;
 use App\Transformers\OvertimeRequest\PatchableTransformer as OvertimeRequestPatchableTransformer;
@@ -29,6 +33,8 @@ use Illuminate\Support\Facades\App;
 class ApprovalService
 {
     public ?Company $company;
+
+    public ?RequestApprovalState $currentApprovalState;
 
     public static array $seriesMap = [
         [
@@ -83,6 +89,11 @@ class ApprovalService
         $this->company = $company;
     }
 
+    public function setCurrentApprovalState(RequestApprovalState $approvalState): void
+    {
+        $this->currentApprovalState = $approvalState;
+    }
+
     /**
      *
      * Respond with a validation error if there's any
@@ -94,6 +105,8 @@ class ApprovalService
      */
     public function chainRequestableWorkflow(RequestApprovalStatus $action, RequestApprovalState $approvalState): array
     {
+        $this->currentApprovalState = $approvalState;
+
         $validationErrors = [];
         $requestable = $approvalState->requestable;
         $requestablePatchable = null;
@@ -299,5 +312,57 @@ class ApprovalService
                 }
 
         }
+    }
+
+    public function attemptNotifyNextApprover(RequestApprovalStatus $recentAction, RequestApprovalState $approvalState): void
+    {
+        if($recentAction == RequestApprovalStatus::APPROVED){
+
+            $awaitingApprovalContext = new AwaitingApprovalContext(
+                $approvalState->requestable_type,
+                $approvalState->requestable_id,
+            );
+
+            $awaitingApprovalContext->resolveRequestable();
+
+            $this->initializeNextAwaitingApproverNotification($awaitingApprovalContext, $approvalState->requestable_type);
+        }
+    }
+
+    public function initializeNextAwaitingApproverNotification(AwaitingApprovalContext $awaitingApprovalContext, string $requestableType): void
+    {
+        $requestInterface = app(RequestInterface::class);
+        $requestInterface->resetPayloadAndFilters();
+
+        $filters = (object)[
+            'account_id' => $requestInterface->accountId,
+            'associated_companies' => [$requestInterface->companyId],
+            'requestable_type' => $requestableType,
+            'requestable_ids' => [$awaitingApprovalContext->requestable->id],
+            'show_only_current_state' => true
+        ];
+
+        $requestableAwaitingApproval = app(RequestApprovalStateRepository::class)->list($filters)->first();
+
+        if(!empty($requestableAwaitingApproval)){
+
+            $approver = User::query()->find($requestableAwaitingApproval->request_approval_state_approver_id);
+
+            if(!empty($approver) && $approver instanceof User){
+
+                $awaitingApprovalContext->approver = $approver;
+
+                $awaitingApprovalContext->setMailPayload();
+
+                $awaitingApprovalContext->summarizeMailPayload();
+
+                $this->notifyApprover($awaitingApprovalContext);
+            }
+        }
+    }
+
+    public function notifyApprover(AwaitingApprovalContext $awaitingApprovalContext): void
+    {
+        $awaitingApprovalContext->approver->notify(new AwaitingApprovalNotification($awaitingApprovalContext));
     }
 }

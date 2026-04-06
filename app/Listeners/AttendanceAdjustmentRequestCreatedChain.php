@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Concrete\ApprovalService;
+use App\Concrete\AwaitingApprovalContext;
 use App\Events\Repositories\AttendanceAdjustmentRequestCreated;
 use App\Traits\HasApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,5 +37,15 @@ class AttendanceAdjustmentRequestCreatedChain
 
         //Create approval states
         $event->attendanceAdjustmentRequest->approvalStates()->createMany($approversArray);
+
+        /**
+         * Notify first approver
+         **/
+        $approvalService = new ApprovalService();
+
+        $awaitingApprovalContext = new AwaitingApprovalContext($modelAlias, $attendanceAdjustmentRequest->id,);
+        $awaitingApprovalContext->requestable = $attendanceAdjustmentRequest;
+
+        $approvalService->initializeNextAwaitingApproverNotification($awaitingApprovalContext, $modelAlias);
     }
 }

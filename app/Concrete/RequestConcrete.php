@@ -31,4 +31,10 @@ class RequestConcrete implements RequestInterface
             ],
         ]);
     }
+
+    public function resetPayloadAndFilters(): void
+    {
+        $this->payload = (object) [];
+        $this->filters = (object) [];
+    }
 }
