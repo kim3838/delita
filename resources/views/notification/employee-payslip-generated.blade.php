@@ -6,18 +6,19 @@
     <style>
         * {
             font-family: sans-serif;
+            font-size: 1.25rem;
         }
     </style>
 </head>
 <body style="background-color: #f9f9f9; padding: 30px;">
-<table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd;">
+<table width="100%" style="max-width: 860px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd;">
     <tr>
         <td style="padding: 20px;">
             <p>Hello <strong>{{$employee_full_name}}</strong></p>
 
             <p>Good day!</p>
 
-            <p>We’re pleased to inform you that your payslip for <strong>{{$payroll_month_readable}}</strong>, sequence of <strong>{{$payroll_frequency}}</strong> has been successfully generated.</p>
+            <p>Your payslip for <strong>{{$payroll_month_readable}}</strong>, sequence of <strong>{{$payroll_frequency}}</strong> has been successfully generated.</p>
 
             <p>Please find your payslip attached to this email for your reference.</p>
 
@@ -28,7 +29,7 @@
                 <li>followed by your date of birth in this format: YYYYMMDD</li>
             </ul>
 
-            <p>Example password: <strong>delacruzemp100019920101</strong></p>
+            <p>Example password: <strong>delacruzemp100019921231</strong></p>
 
             <p>Thank you for your continued hard work and dedication.</p>
 
