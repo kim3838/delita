@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Concrete\ApprovalService;
+use App\Concrete\AwaitingApprovalContext;
 use App\Events\Repositories\PayrollRequestCreated;
 use App\Traits\HasApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,5 +35,15 @@ class PayrollRequestCreatedChain
 
         //Create approval states
         $event->payrollRequest->approvalStates()->createMany($approversArray);
+
+        /**
+         * Notify first approver
+         **/
+        $approvalService = new ApprovalService();
+
+        $awaitingApprovalContext = new AwaitingApprovalContext($modelAlias, $payrollRequest->id,);
+        $awaitingApprovalContext->requestable = $payrollRequest;
+
+        $approvalService->initializeNextAwaitingApproverNotification($awaitingApprovalContext, $modelAlias);
     }
 }

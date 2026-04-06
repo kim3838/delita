@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Blueprint\PayrollComponentServiceInterface;
 use App\Blueprint\PayrollServiceInterface;
+use App\Blueprint\Repositories\AttendanceAdjustmentRequestRepository;
 use App\Blueprint\Repositories\CompanyUserRolePermissionRepository;
 use App\Blueprint\Repositories\PayrollRepository;
 use App\Blueprint\Repositories\RequestApprovalStateRepository;
@@ -25,7 +26,7 @@ use App\Models\Employee;
 use App\Models\LeaveType;
 use App\Models\Payroll;
 use App\Models\SalaryStatement;
-use App\Transformers\SalaryStatementAttendance\ListTransformer;
+use App\Transformers\SalaryStatementAttendance\ListTransformer as SalaryStatementAttendanceListTransformer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 
@@ -51,6 +52,42 @@ class Debug extends Command
     public function handle()
     {
 
+    }
+
+    private function attendanceAdjustRequest()
+    {
+        $data = [
+            'first_in' => '2025-01-01 06:00',
+            'last_out' => '2025-01-01 23:30',
+            'company_id' => 1,
+            'attendance_id' => 375,
+            'remarks' => NULL,
+            'requested_by' => 4,
+            'date_requested' => '2026-04-05 06:29:03',
+        ];
+
+        $repository = app(AttendanceAdjustmentRequestRepository::class)->store($data);
+    }
+
+    private function notifyAwaitingApproversApproval()
+    {
+        $requestable = app(AttendanceAdjustmentRequestRepository::class)->model()::query()->find(6);
+
+        $filters = (object)[
+            'account_id' => $requestable->company->account->id,
+            'associated_companies' => [$requestable->company->id],
+            'requestable_type' => 'attendance_adjustment_request',
+            'requestable_ids' => [$requestable->id],
+            'show_only_current_state' => true
+        ];
+
+        $requestableAwaitingApproval = app(RequestApprovalStateRepository::class)->list($filters)->first();
+
+        _debug([
+            'Requestable' => $requestable->toArray(),
+            'Filters' => $filters,
+            'RequestableAwaitingApproval' => $requestableAwaitingApproval->toArray(),
+        ]);
     }
 
     private function chainPayrollComponents()
@@ -103,7 +140,7 @@ class Debug extends Command
         ];
 
         $perDayStatements = app(SalaryStatementAttendanceRepository::class)->paginate($filters, ['salary_statement', 'payroll_components']);
-        $perDayStatements = Fractal::collection($perDayStatements, ListTransformer::class);
+        $perDayStatements = Fractal::collection($perDayStatements, SalaryStatementAttendanceListTransformer::class);
         _debug($perDayStatements);
     }
 

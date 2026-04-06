@@ -6,11 +6,12 @@
     <style>
         * {
             font-family: sans-serif;
+            font-size: 1.25rem;
         }
     </style>
 </head>
 <body style="background-color: #f9f9f9; padding: 30px;">
-<table width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd;">
+<table width="100%" style="max-width: 860px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd;">
     <tr>
         <td style="padding: 20px;">
             <p>Password Reset</p>

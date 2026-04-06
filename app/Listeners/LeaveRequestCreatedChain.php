@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Concrete\ApprovalService;
+use App\Concrete\AwaitingApprovalContext;
 use App\Events\Repositories\LeaveRequestCreated;
 use App\Traits\HasApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,5 +37,15 @@ class LeaveRequestCreatedChain
 
         //Create approval states
         $event->leaveRequest->approvalStates()->createMany($approversArray);
+
+        /**
+         * Notify first approver
+         **/
+        $approvalService = new ApprovalService();
+
+        $awaitingApprovalContext = new AwaitingApprovalContext($modelAlias, $leaveRequest->id,);
+        $awaitingApprovalContext->requestable = $leaveRequest;
+
+        $approvalService->initializeNextAwaitingApproverNotification($awaitingApprovalContext, $modelAlias);
     }
 }

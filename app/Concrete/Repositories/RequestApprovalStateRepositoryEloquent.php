@@ -335,12 +335,23 @@ class RequestApprovalStateRepositoryEloquent extends BaseRepositoryEloquent impl
              * If no validation error, update approval state
              * */
             if($noValidationError){
-                $this->update($approvalStateId, [
-                    'approved_by' => Auth::id(),
-                    'remarks' => $remarks,
-                    'status' => $action->value,
-                    'approved_at' => Carbon::now()->toDateTimeString()
-                ]);
+
+                $byPassWorkFlow = false;
+
+                if(!$byPassWorkFlow){
+
+                    $this->update($approvalStateId, [
+                        'approved_by' => Auth::id(),
+                        'remarks' => $remarks,
+                        'status' => $action->value,
+                        'approved_at' => Carbon::now()->toDateTimeString()
+                    ]);
+                }
+
+                /**
+                 * Notify next approver
+                 **/
+                $approvalService->attemptNotifyNextApprover($action, $approvalService->currentApprovalState);
             }
 
             $results[] = [

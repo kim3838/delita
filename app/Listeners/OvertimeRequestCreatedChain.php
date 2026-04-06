@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Concrete\ApprovalService;
+use App\Concrete\AwaitingApprovalContext;
 use App\Events\Repositories\OvertimeRequestCreated;
 use App\Traits\HasApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,5 +37,15 @@ class OvertimeRequestCreatedChain
 
         //Create approval states
         $event->overtimeRequest->approvalStates()->createMany($approversArray);
+
+        /**
+         * Notify first approver
+         **/
+        $approvalService = new ApprovalService();
+
+        $awaitingApprovalContext = new AwaitingApprovalContext($modelAlias, $overtimeRequest->id,);
+        $awaitingApprovalContext->requestable = $overtimeRequest;
+
+        $approvalService->initializeNextAwaitingApproverNotification($awaitingApprovalContext, $modelAlias);
     }
 }
