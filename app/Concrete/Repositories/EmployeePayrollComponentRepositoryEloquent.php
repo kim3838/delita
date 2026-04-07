@@ -109,6 +109,7 @@ class EmployeePayrollComponentRepositoryEloquent extends BaseRepositoryEloquent 
     public function paginate($filters): LengthAwarePaginator
     {
         $orders = [
+            ...$this->orders(),
             ['field' => 'payroll_component_sub.employee_number', 'direction' => 'ASC'],
             ['field' => 'payroll_component_sub.formulable_type', 'direction' => 'ASC'],
             ['field' => 'payroll_component_sub.payroll_componentable_morph_to_type', 'direction' => 'ASC'],

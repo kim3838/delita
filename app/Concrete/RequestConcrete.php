@@ -13,11 +13,13 @@ class RequestConcrete implements RequestInterface
 
     public object $payload;
     public object $filters;
+    public object $orders;
 
     public function __construct()
     {
         $this->payload = (object) [];
         $this->filters = (object) [];
+        $this->orders = (object) [];
     }
 
     public function debug($caller): void
@@ -28,6 +30,7 @@ class RequestConcrete implements RequestInterface
                 'companyId' => $this->companyId,
                 'payload' => $this->payload,
                 'filters' => $this->filters,
+                'orders' => $this->orders,
             ],
         ]);
     }
@@ -36,5 +39,6 @@ class RequestConcrete implements RequestInterface
     {
         $this->payload = (object) [];
         $this->filters = (object) [];
+        $this->orders = (object) [];
     }
 }

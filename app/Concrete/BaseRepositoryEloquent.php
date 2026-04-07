@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\RequestInterface;
+use App\Enums\Sort;
 use App\Exceptions\UnexpectedException;
 use App\Facades\Fractal;
 use Illuminate\Container\Container as Application;
@@ -206,6 +207,33 @@ abstract class BaseRepositoryEloquent
             ->implode(', ');
 
         return "ORDER BY $order";
+    }
+
+    protected function orders(): array
+    {
+        $requestInterface = app(RequestInterface::class);
+
+        $requestOrders = $requestInterface->orders;
+
+        $requestOrders = collect($requestOrders)->map(function($order){
+            return [
+                'field' => $order->field,
+                'direction' => $this->transformOrder($order->direction),
+            ];
+        })->filter(function($order){
+            return $order['direction'];
+        })->toArray();
+
+        return $requestOrders;
+    }
+
+    protected function transformOrder(int $order): string | null
+    {
+        return match ($order) {
+            1 => Sort::ASC->value,
+            2 => Sort::DESC->value,
+            DEFAULT => null
+        };
     }
 
     protected function setOrdersOnBuilder(QueryBuilder $builder, $orders = []): void
