@@ -97,7 +97,9 @@ return Application::configure(basePath: dirname(__DIR__))
                     'request' => Request::url(),
                 ]);
 
-                if(App::environment('production')){
+                $mailErrorLog = false;
+
+                if($mailErrorLog && App::environment('production')){
 
                     NotificationFacade::route('mail',
                         ['no-reply@kunsel-erp.com' => 'Kim De Guzman']
