@@ -28,7 +28,7 @@ class TaxCalculatorController extends Controller
     {
         if($request->expectsJson()){
 
-            if(RateLimiter::tooManyAttempts(Throttle::key($request), 1)){
+            if(RateLimiter::tooManyAttempts(Throttle::key($request), 3)){
 
                 event(new Lockout($request));
 
