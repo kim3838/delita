@@ -97,7 +97,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'request' => Request::url(),
                 ]);
 
-                $mailErrorLog = false;
+                $mailErrorLog = true;
 
                 if($mailErrorLog && App::environment('production')){
 
