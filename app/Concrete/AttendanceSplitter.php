@@ -3,6 +3,7 @@
 namespace App\Concrete;
 
 use App\Blueprint\AttendanceSplitterInterface;
+use App\Blueprint\Repositories\OvertimeRepository;
 use App\Blueprint\WorkPeriodServiceInterface;
 use App\Enums\AttendanceStatus;
 use App\Enums\ShiftBreakDownSplitType;
@@ -34,7 +35,7 @@ class AttendanceSplitter implements AttendanceSplitterInterface
      *
      * @throws UnexpectedException
      */
-    public function generate(Attendance $attendance, $test = false, $debug = false): bool | array
+    public function generate(Attendance $attendance, $test = false, $debug = false, $skipAutoOvertime = true): bool | array
     {
         $attendanceArray = $attendance->toArray();
 
@@ -266,6 +267,38 @@ class AttendanceSplitter implements AttendanceSplitterInterface
 
             $attendance->save();
             $attendance->details()->createMany($attendanceDetails);
+        }
+
+        //If shift has automatic overtime enabled, create overtime
+        $overtimeLimit = $this->workPeriodService->shiftOvertimeLimit;
+        $overtimeLimitInMinutes = $overtimeLimit * 60;
+
+        $overtimeStart = $schedule['work_end'];
+        $overtimeEnd = $lastOut;
+
+        if(
+            !$skipAutoOvertime &&
+            !$this->workPeriodService->attendanceScheduleIsFlexible &&
+            !empty($overtimeEnd) &&
+            $overtimeEnd->gt($overtimeStart) &&
+            $this->workPeriodService->shiftAutomaticOvertime
+        ){
+
+            if(abs($overtimeEnd->diffInMinutes($overtimeStart)) > $overtimeLimitInMinutes){
+                $overtimeEnd = $overtimeStart->copy()->addMinutes($overtimeLimitInMinutes);
+            }
+
+            $createOvertime = [
+                'company_id' => $this->workPeriodService->company->id,
+                'attendance_id' => $attendance->id,
+                'start' => $overtimeStart->format('Y-m-d H:i'),
+                'end' => $overtimeEnd->format('Y-m-d H:i'),
+                'duration' => abs($overtimeEnd->diffInMinutes($overtimeStart))
+            ];
+
+            $overtimeRepository = app(OvertimeRepository::class);
+
+            $overtimeRepository->store($createOvertime);
         }
 
         return $attendanceDetails;

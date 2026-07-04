@@ -356,7 +356,8 @@ class AttendanceImportConcrete extends BaseImportConcrete implements AttendanceI
 
             } else {
                 //Generate attendance splitter on newly created attendance
-                $attendanceSplitter->generate($attendance);
+                $skipAutoOvertime = false;
+                $attendanceSplitter->generate($attendance, false ,false, $skipAutoOvertime);
             }
 
             //Update attendance shift details every created or modified

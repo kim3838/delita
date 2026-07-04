@@ -232,7 +232,8 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
 
         $attendance->update($update);
 
-        $attendanceSplitter->generate($attendance);
+        $skipAutoOvertime = false;
+        $attendanceSplitter->generate($attendance, false, false, $skipAutoOvertime);
 
         return $attendance;
     }
