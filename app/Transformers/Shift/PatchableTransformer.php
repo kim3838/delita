@@ -22,6 +22,7 @@ class PatchableTransformer extends TransformerAbstract
             'work_start_grace_time' => $model->work_start_grace_time,
             'require_lunch_time_in_and_out' => intval($model->require_lunch_time_in_and_out),
             'lunch_start_grace_time' => $model->lunch_start_grace_time,
+            'automatic_overtime' => intval($model->automatic_overtime),
             'max_overtime' => $model->max_overtime,
         ];
     }

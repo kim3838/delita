@@ -30,6 +30,7 @@ class AttendanceShiftDetail extends Model
         'work_start_grace_time',
         'require_lunch_time_in_and_out',
         'lunch_start_grace_time',
+        'automatic_overtime',
         'max_overtime',
 
         /**
@@ -75,6 +76,7 @@ class AttendanceShiftDetail extends Model
         'work_start_grace_time' => 'int',
         'require_lunch_time_in_and_out' => 'boolean',
         'lunch_start_grace_time' => 'int',
+        'automatic_overtime' => 'boolean',
         'max_overtime' => 'decimal:2',
 
         /**

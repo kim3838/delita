@@ -38,6 +38,7 @@ class ListTransformer extends TransformerAbstract
                 'work_start_grace_time' => $attendance->shift_work_start_grace_time,
                 'require_lunch_time_in_and_out' => $attendance->shift_require_lunch_time_in_and_out,
                 'lunch_start_grace_time' => $attendance->shift_lunch_start_grace_time,
+                'automatic_overtime' => $attendance->shift_automatic_overtime,
                 'max_overtime' => $attendance->shift_max_overtime,
             ]);
 

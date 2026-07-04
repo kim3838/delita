@@ -33,6 +33,7 @@ return new class extends Migration
             $table->tinyInteger('work_start_grace_time')->default(0);
             $table->boolean('require_lunch_time_in_and_out')->default(false);
             $table->tinyInteger('lunch_start_grace_time')->default(0);
+            $table->boolean('automatic_overtime')->default(false);
             $table->decimal('max_overtime', 4, 2)->default(0);
 
             /**

@@ -47,6 +47,8 @@ class WorkPeriodServiceConcrete implements WorkPeriodServiceInterface
     public bool $shiftRequireLunchOutAndIn = false;
     //Set on generate: shift lunch_start_grace_time
     public int $shiftLunchStartGraceTime = 0;
+    //Set on generate: shift automatic_overtime
+    public bool $shiftAutomaticOvertime = false;
     //Set on generate: shift max_overtime
     public float $shiftOvertimeLimit = 0;
     //Set on generate: shift schedules rest days
@@ -310,6 +312,7 @@ class WorkPeriodServiceConcrete implements WorkPeriodServiceInterface
         $this->shiftWorkStartGraceTime = $this->shift->work_start_grace_time;
         $this->shiftRequireLunchOutAndIn = $this->shift->require_lunch_time_in_and_out;
         $this->shiftLunchStartGraceTime = $this->shift->lunch_start_grace_time;
+        $this->shiftAutomaticOvertime = $this->shift->automatic_overtime;
         $this->shiftOvertimeLimit = $this->shift->max_overtime;
     }
 

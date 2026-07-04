@@ -22,6 +22,7 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'work_start_grace_time' => ['required', 'integer', 'between:0,30'],
             'require_lunch_time_in_and_out' => ['required', 'boolean'],
             'lunch_start_grace_time' => ['sometimes', 'required', 'integer', 'between:0,30'],
+            'automatic_overtime' => ['required', 'boolean'],
             'max_overtime' => ['required', 'numeric', 'between:0,10'],
 
             'shift_schedules' => ['required', 'array', 'size:7'],
@@ -349,6 +350,8 @@ class BaseShiftStoreAndUpdateRequest extends FormRequest
             'lunch_start_grace_time.required' => 'Lunch start grace time is required',
             'lunch_start_grace_time.integer' => 'Lunch start grace time must be an integer',
             'lunch_start_grace_time.between' => 'Lunch start grace time must be between 0 and 30 minutes',
+            'automatic_overtime.required' => 'Automatic overtime is required',
+            'automatic_overtime.boolean' => 'Automatic overtime must be true or false',
             'max_overtime.required' => 'Max overtime hours is required',
             'max_overtime.numeric' => 'Max overtime hours must be a number',
             'max_overtime.between' => 'Max overtime hours must be between 0 and 10 hours',

@@ -123,6 +123,7 @@ class AttendanceRepositoryEloquent extends BaseRepositoryEloquent implements Att
                 "attendance_shift_details.work_start_grace_time AS shift_work_start_grace_time",
                 "attendance_shift_details.require_lunch_time_in_and_out AS shift_require_lunch_time_in_and_out",
                 "attendance_shift_details.lunch_start_grace_time AS shift_lunch_start_grace_time",
+                "attendance_shift_details.automatic_overtime AS shift_automatic_overtime",
                 "attendance_shift_details.max_overtime AS shift_max_overtime",
 
                 /**
